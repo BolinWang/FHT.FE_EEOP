@@ -9,6 +9,7 @@
 
 import Vue from 'vue';
 import Router from 'vue-router';
+import '../icons'
 const _import = require('./_import_' + process.env.NODE_ENV);
 
 /* dashboard login 404 */
@@ -47,7 +48,7 @@ export const asyncRouterMap = [{
         component: Layout,
         redirect: 'noredirect',
         name: '运营管理',
-        icon: 'zujian',
+        icon: 'dashboard',
         children: [
             { path: 'activityPage', component: _import('eeop/activety'), name: '精彩活动' },
             { path: 'interviewPage', component: _import('eeop/interview'), name: '麦友专访' },
@@ -60,7 +61,7 @@ export const asyncRouterMap = [{
         component: Layout,
         redirect: '/houseManage/displayPage',
         name: '房源管理',
-        icon: 'tubiaoleixingzhengchang',
+        icon: 'table',
         children: [
             { path: 'displayPage', component: Table, name: '推广展示', meta: { role: ['admin'] }},
             { path: 'auditCenterPage', component: _import('houseManage/auditCenter'), name: '电子签章审核' },
@@ -72,7 +73,7 @@ export const asyncRouterMap = [{
         component: Layout,
         redirect: '/userManage/feedbackPage',
         name: '用户管理',
-        icon: 'tubiaoleixingzhengchang',
+        icon: 'peoples',
         children: [
             { path: 'feedbackPage', component: Table, name: '意见反馈' },
             { path: 'userInfoPage', component: Table, name: '用户信息' }
