@@ -1,11 +1,13 @@
-/**
- * Created by jiachenpan on 16/11/18.
- */
-
 /* 是否是公司邮箱*/
 export function isWscnEmail(str) {
     const reg = /^[a-z0-9](?:[-_.+]?[a-z0-9]+)*@wallstreetcn\.com$/i;
     return reg.test(str.trim());
+}
+
+/* 手机号 */
+export function validateMobile(str){
+    const reg = /^((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(18[0,5-9]))\d{8}$/;
+    return reg.test(str);
 }
 
 /* 合法uri*/

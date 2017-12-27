@@ -1,18 +1,18 @@
 <template>
     <div class="login-container">
         <el-form autoComplete="on" :model="loginForm" :rules="loginRules" ref="loginForm" label-position="left" label-width="0px" class="card-box login-form">
-            <h3 class="title">系统登录</h3>
-            <el-form-item prop="email">
+            <h3 class="title">FHT BOP</h3>
+            <el-form-item prop="mobile">
                 <span class="svg-container">
-                  <icon-svg icon-class="jiedianyoujian"></icon-svg>
+                  <icon-svg icon-class="peoples"></icon-svg>
                 </span>
-                <el-input name="email" type="text" v-model="loginForm.email" autoComplete="on" placeholder="邮箱"></el-input>
+                <el-input name="mobile" type="text" v-model="loginForm.mobile" autoComplete="on" placeholder="请输入用户名"></el-input>
             </el-form-item>
             <el-form-item prop="password">
                 <span class="svg-container">
-                  <icon-svg icon-class="mima" ></icon-svg>
+                  <icon-svg icon-class="password" ></icon-svg>
                 </span>
-                <el-input name="password" type="password" @keyup.enter.native="handleLogin" v-model="loginForm.password" autoComplete="on" placeholder="密码"></el-input>
+                <el-input name="password" type="password" @keyup.enter.native="handleLogin" v-model="loginForm.password" autoComplete="on" placeholder="请输入密码"></el-input>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" style="width:100%;" :loading="loading" @click.native.prevent="handleLogin">
@@ -23,18 +23,18 @@
     </div>
 </template>
 <script>
-import { isWscnEmail } from '@/utils/validate';
+import { validateMobile } from '@/utils/validate';
 
 export default {
     name: 'login',
     data() {
-        const validateEmail = (rule, value, callback) => {
-            if (!isWscnEmail(value)) {
-                callback(new Error('请输入正确的合法邮箱'));
+        /*const validatePhone = (rule, value, callback) => {
+            if (!validateMobile(value)) {
+                callback(new Error('请输入正确的手机号'));
             } else {
                 callback();
             }
-        };
+        };*/
         const validatePass = (rule, value, callback) => {
             if (value.length < 6) {
                 callback(new Error('密码不能小于6位'));
@@ -44,12 +44,12 @@ export default {
         };
         return {
             loginForm: {
-                email: 'admin@wallstreetcn.com',
-                password: '111111'
+                mobile: 'admin',
+                password: '123456'
             },
             loginRules: {
-                email: [
-                    { required: true, trigger: 'blur', validator: validateEmail }
+                mobile: [
+                    { required: true, trigger: 'blur'/*, validator: validatePhone*/ }
                 ],
                 password: [
                     { required: true, trigger: 'blur', validator: validatePass }
