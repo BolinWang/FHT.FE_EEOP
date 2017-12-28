@@ -1,8 +1,9 @@
-const path = require('path')
+const path = require('path')  // node path模块
 const utils = require('./utils')
 const config = require('../config')
 const vueLoaderConfig = require('./vue-loader.conf')
 
+/* 转换绝对路径 */
 function resolve(dir) {
     return path.join(__dirname, '..', dir)
 }
@@ -19,7 +20,7 @@ module.exports = {
             config.build.assetsPublicPath : config.dev.assetsPublicPath
     },
     resolve: {
-        extensions: ['.js', '.vue', '.json'],
+        extensions: ['.js', '.vue', '.json'],  // 补全路径
         alias: {
             'vue$': 'vue/dist/vue.esm.js',
             '@': resolve('src')

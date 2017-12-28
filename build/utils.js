@@ -1,6 +1,6 @@
-var path = require('path')
+var path = require('path') // node path模块
 var config = require('../config')
-var ExtractTextPlugin = require('extract-text-webpack-plugin')
+var ExtractTextPlugin = require('extract-text-webpack-plugin') // 提取代码的css为独立css文件
 
 exports.assetsPath = function(_path) {
     var assetsSubDirectory = process.env.NODE_ENV === 'production' ?
