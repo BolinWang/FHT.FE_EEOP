@@ -58,10 +58,10 @@
                     <template slot-scope="scope">
                         <el-button-group>
                             <el-tooltip effect="dark" content="编辑" placement="bottom">
-                                <el-button type="primary" icon="el-icon-edit" size="small" @click.native="updateRow(scope.row)"></el-button>
+                                <el-button type="primary" icon="el-icon-edit" size="small" @click.native="updateRow(scope.$index,scope.row)"></el-button>
                             </el-tooltip>
                             <el-tooltip effect="dark" content="删除" placement="bottom">
-                                <el-button type="danger" icon="el-icon-delete" size="small" @click.native="deleteRow(scope.row)"></el-button>
+                                <el-button type="danger" icon="el-icon-delete" size="small" @click.native="deleteRow(scope.$index,scope.row)"></el-button>
                             </el-tooltip>
                         </el-button-group>
                     </template>
@@ -74,7 +74,7 @@
                 @size-change="handleSizeChange" 
                 @current-change="handleCurrentChange" 
                 :current-page.sync="pageItems.pageNo"
-                :page-sizes="pageItems.pageSizeList" 
+                :page-sizes="pageSizeList" 
                 :page-size="pageItems.pageSize" 
                 layout="total, sizes, prev, pager, next, jumper" 
                 :total="total">
@@ -94,7 +94,10 @@
 
         <!-- 新增编辑dialog -->
         <div class="dialog-info">
-            <el-dialog :title="textMap[dialogStatus] + eeopTypeStr" :visible.sync="layer_showInfo" width="600px">
+            <el-dialog 
+                :title="textMap[dialogStatus] + eeopTypeStr" 
+                :visible.sync="layer_showInfo" width="600px"
+                @close="dialogClose">
                 <el-form size="small" :rules="rules" ref="dataForm" :model="temp" label-position="left" label-width="100px" style='width: 500px; margin-left:20px;'>
                     <el-form-item :label="eeopType == 'interview' ? '麦友昵称' : '标题'" prop="title">
                         <el-input v-model="temp.title" placeholder="请输入内容" :maxlength="20"></el-input>
@@ -115,15 +118,18 @@
                     </el-form-item>
                     <el-form-item label="图片" prop="picUrl">
                         <el-upload
-                            action="https:/test.memorhome.com/hms/sys/uploadPicture.htm"
+                            action='/api/util/upload/uploadPicture'
+                            :before-upload="pictureUpload"
                             :on-preview="picturePreview"
-                            :on-remove="pictureRemove"
+                            :on-remove="(file, fileList)=>{
+                                return pictureRemove(file, fileList, `picUrl`)
+                            }"
+                            :on-success="(response, file, fileList)=>{
+                                return pictureSuccess(response, file, fileList, `picUrl`)
+                            }"
                             :on-change="resetFile"
-                            :on-success="pictureSuccess"
                             :on-error="pictureError"
                             :file-list="fileList"
-                            :limit="1"
-                            :on-exceed="limitCallback"
                             accept="image/jpg,image/jpeg,image/png"
                             list-type="picture">
                             <el-button size="small" type="primary">点击上传</el-button>
@@ -132,15 +138,17 @@
                     </el-form-item>
                     <el-form-item v-if="eeopType == 'banner'" label="缩略图" prop="thumbnail">
                         <el-upload
-                            action="https:/test.memorhome.com/hms/sys/uploadPicture.htm"
+                            action="/api/util/upload/uploadPicture"
                             :on-preview="picturePreview"
-                            :on-remove="pictureRemove"
+                            :on-remove="(file, fileList)=>{
+                                return pictureRemove(file, fileList, `thumbnail`)
+                            }"
+                            :on-success="(response, file, fileList)=>{
+                                return pictureSuccess(response, file, fileList, `thumbnail`)
+                            }"
                             :on-change="resetFile"
-                            :on-success="pictureSuccess"
                             :on-error="pictureError"
                             :file-list="thumFileList"
-                            :limit="1"
-                            :on-exceed="limitCallback"
                             accept="image/jpg,image/jpeg,image/png"
                             list-type="picture">
                             <el-button size="small" type="primary">点击上传</el-button>
@@ -154,8 +162,7 @@
                     </el-form>
                     <div slot="footer" class="dialog-footer">
                         <el-button @click="layer_showInfo = false" size="small">取 消</el-button>
-                        <el-button v-if="dialogStatus=='create'" size="small" type="primary" @click="createData">确 定</el-button>
-                        <el-button v-else type="primary" size="small" @click="updateData">确 定</el-button>
+                        <el-button type="primary" size="small" @click="createAndUpdateData">确 定</el-button>
                     </div>
             </el-dialog>
         </div>
@@ -168,8 +175,8 @@
                     @start="isDragging=true" 
                     @end="isDragging=false"> 
                     <transition-group type="transition" :name="'flip-list'">
-                        <li class="list-group-item" v-for="(item,index) in sort_tableData" :key="item.order"> 
-                            <el-badge :value="item.order">
+                        <li class="list-group-item" v-for="(item,index) in sort_tableData" :key="item.sortNum"> 
+                            <el-badge :value="item.sortNum">
                             </el-badge>
                             <i class="el-icon-d-caret" aria-hidden="true"></i>
                             {{item.title}}
@@ -178,7 +185,7 @@
                 </draggable>
                 <div slot="footer" class="dialog-footer">
                     <el-button @click="layer_appsort = false" size="small">取 消</el-button>
-                    <el-button type="primary" @click="saveAppsortData" size="small">确 定</el-button>
+                    <el-button type="primary" @click="saveData(sort_tableData)" size="small">确 定</el-button>
                 </div>
             </el-dialog>
         </div>
@@ -188,7 +195,8 @@
 import fetch from '@/utils/fetch';
 import waves from '@/directive/waves' // 水波纹指令
 import draggable from 'vuedraggable'
-import { parseTime } from '@/utils'
+import { parseTime, ObjectMap } from '@/utils'
+import { getGridApi, saveDataApi } from '@/api/eeop';
 
 const defaultOptions = [
     { value: 1, label: '待上线'},
@@ -244,8 +252,8 @@ export default {
                 { prop:'title', label: '标题'},
                 { prop:'picUrl', label: '图片', width: 80, type: 'img'},
                 { prop:'linkUrl', label: '链接', type: 'link'},
-                { prop:'effectiveTime', label: '上线时间', width: 180, type:'formatTime'},
-                { prop:'ineffectiveTime', label: '下线时间', width: 180, type:'formatTime'},
+                { prop:'effectiveTime', label: '上线时间', width: 180},
+                { prop:'ineffectiveTime', label: '下线时间', width: 180},
                 { prop:'introduction', label: '简介'}
             ],
             showPicUrl: '',
@@ -271,9 +279,9 @@ export default {
             total: null,
             pageItems: {
                 pageNo: 1,
-                pageSize: 20,
-                pageSizeList: [10, 20, 30, 50]
+                pageSize: 20
             },
+            pageSizeList: [10, 20, 30, 50],
             sort_tableData: [],
             listLoading: true,
             layer_showImage: false,
@@ -337,7 +345,7 @@ export default {
                 this.uploadTips = '请上传1080 * 648的jpg/png图片，且不超过500kb';
                 break;
         }
-        this.getGridData();
+        this.getGridData(this.pageItems);
     },
     mounted() {
         /* 表格高度控制 */
@@ -367,62 +375,90 @@ export default {
     },
     methods: {
         /* 上传图片 */
-        pictureRemove(file, fileList) {
+        pictureUpload(file){
+            //const isLt500k = file.size / 1024 / 1024 / 1024 < 500;
+            if (['image/jpeg', 'image/jpg', 'image/png'].indexOf(file.type) == -1) {
+                this.$message.error('请上传jpg/png的图片');
+                return false;
+            }
+            /*if (!isLt500k) {
+                this.$message.error('请上传大小不超过500kb的图片');
+                return false;
+            }*/
+        },
+        pictureRemove(file, fileList, picType) {
+            console.log(response, file, fileList, picType)
             this.showPicUrl = '';
+            if (picType) {
+                this[picType] = '';
+            }
         },
         picturePreview(file) {
             this.showPicUrl = file.url;
             this.layer_showImage = true;
         },
-        pictureSuccess(response, file, fileList){
-            this.temp.picUrl = file.url; 
-            this.fileList = [{name:'活动图片',url:file.url}];
+        pictureSuccess(response, file, fileList, picType){
+            console.log(response, file, fileList, picType)
+            if (picType) {
+                this[picType] = response.data[0];
+                this.temp[picType] = response.data[0];
+            }
+            if (fileList.length > 1) {
+                fileList.splice(0,1);
+            }
         },
         pictureError(err,file){
-            this.fileList = [];
+            file = null;
         },
         resetFile(file){
             file = null;
         },
-        limitCallback(file,fileList){
-            this.$message.warning('只能上传 1 个活动图片');
-        },
         /* 查询列表 */
         change(value) {
-            this.getGridData(value);
+            this.getGridData(this.pageItems);
         },
         /* 查看图片 */
         showImage(picUrl){
             this.showPicUrl = picUrl;
             this.layer_showImage = true;
         },
+        /* 弹窗关闭时的回调 */
+        dialogClose(){
+            this.fileList = [];
+            this.thumbnail = [];
+            this.resetTemp();
+        },
         closeDialog(){
             this.layer_showImage = false;
         },
-        /* 分页 */
         handleSizeChange(val) {
-            console.log(`每页 ${val} 条`);
+            this.pageItems.pageSize = val;
+            this.getGridData(this.pageItems);
         },
         handleCurrentChange(val) {
-            console.log(`当前页: ${val}`);
+            this.pageItems.pageNo = val;
+            this.getGridData(this.pageItems);
         },
-        /* 列表渲染 */
-        getGridData(value) {
+        /* 列表渲染，数据请求 */
+        getGridData(params) {
             this.listLoading = true;
-            fetch({
-                url: '/table/list',
-                method: 'get',
-                params: {
-                    status:value
-                }
-            }).then(response => {
-                this.tableData = response.data.items;
-                this.total = this.tableData.length;
-                this.tableData.forEach(function(item,index){
-                    item.picUrl = 'http://imgtest.memorhome.com/20171128114234448591';
-                    item.linkUrl = 'http://www.mdguanjia.com/waptest/activePages/inviteModule/index.html';
-                    item.effectiveTime = 1512027461000;
-                });
+            switch(this.eeopType) {
+                case 'interview':
+                    params.activityStatus = this.selectData.value
+                    break;
+                case 'advertis':
+                    params.activityStatus = this.selectData.value
+                    break;
+                case 'activety': 
+                    params.activityStatus = this.selectData.value
+                    break;
+                case 'banner':
+                    params.activityStatus = this.selectData.value
+                    break;
+            }
+            getGridApi(ObjectMap(params)).then(response => {
+                this.tableData = response.data.content;
+                this.total = response.data.totalElements;
                 this.listLoading = false;
             })
         },
@@ -438,8 +474,10 @@ export default {
             }
         },
         /* 列表删除 */
-        deleteRow(row){
-
+        deleteRow(index,row){
+            row.isDelete = 1;
+            this.tableData.splice(index,0,row);
+            this.saveData(this.tableData);
         },
         /* 新增 */
         createRow(){
@@ -451,62 +489,65 @@ export default {
             });
         },
         /* 编辑 */
-        updateRow(row){
+        updateRow(index,row){
             this.layer_showInfo = true;
             this.dialogStatus = 'update';
+            this.editRowIndex = index;
+            if (row.picUrl) {
+                this.fileList.push({name: '图片', url: row.picUrl});
+            }
+            if (row.thumbnail) {
+                this.fileList.push({name: '缩略图', url: row.thumbnail});
+            }
             this.temp = Object.assign({}, row);
             this.$nextTick(() => {
                 this.$refs['dataForm'].clearValidate()
             });
         },
-        /* 创建活动 */
-        createData() {
+        /* 创建、更新活动 */
+        createAndUpdateData() {
+            if (this.dialogStatus == 'update'){
+                this.temp.effectiveTime = new Date(this.temp.effectiveTime);
+                this.temp.ineffectiveTime = new Date(this.temp.ineffectiveTime);
+            }
             this.$refs['dataForm'].validate((valid) => {
                 if (valid) {
-                    this.$notify({
-                        title: '成功',
-                        message: '创建成功',
-                        type: 'success',
-                        duration: 2000
-                    })
-                }
-            })
-        },
-        /* 更新活动 */
-        updateData() {
-            this.$refs['dataForm'].validate((valid) => {
-                if (valid) {
-                    const tempData = Object.assign({}, this.temp)
-                    tempData.timestamp = +new Date(tempData.timestamp)
-                    /*updateArticle(tempData).then(() => {
-                        for (const v of this.list) {
-                            if (v.id === this.temp.id) {
-                                const index = this.list.indexOf(v)
-                                this.list.splice(index, 1, this.temp)
-                                break
-                            }
-                        }
-                        this.dialogFormVisible = false
-                        this.$notify({
-                            title: '成功',
-                            message: '更新成功',
-                            type: 'success',
-                            duration: 2000
-                        })
-                    })*/
+                    this.temp.effectiveTime = parseTime(this.temp.effectiveTime);
+                    this.temp.ineffectiveTime = parseTime(this.temp.ineffectiveTime);
+                    let saveList = [];
+                    if (this.dialogStatus == 'update'){
+                        this.tableData.splice(this.editRowIndex,1,this.temp);
+                        saveList = this.tableData;
+                    }else{
+                        saveList = [this.temp]
+                    }
+                    this.saveData(saveList);
                 }
             })
         },
         /* 列表排序 */
         sortApp(){
-            this.sort_tableData = this.tableData.slice();
-            this.sort_tableData.forEach(function(item,index){
-                item.order = index * 1 + 1;
+            getGridApi({
+                pageNo:1,
+                pageSize:9999,
+                activityStatus:2
+            }).then(response => {
+                this.sort_tableData = response.data.content
+                this.layer_appsort = true;
             });
-            this.layer_appsort = true;
         },
-        saveAppsortData(){
-            console.log(this.sort_tableData);
+        saveData(params){
+            saveDataApi(params).then(response => {
+                this.layer_appsort = false;
+                this.layer_showInfo = false;
+                this.getGridData(this.pageItems);
+                this.$notify({
+                    title: '成功',
+                    message: '操作成功',
+                    type: 'success',
+                    duration: 2000
+                })
+            });
         }
     },
     watch: {

@@ -10,13 +10,8 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import '../icons'
-const _import = require('./_import_' + process.env.NODE_ENV);
-
-/* dashboard login 404 */
 import Layout from '../views/layout/Layout';
-const dashboard = _import('dashboard/index');
-const Login = _import('login/index');
-const Err404 = _import('404');
+const _import = require('./_import_' + process.env.NODE_ENV);
 
 /* pages */
 const Form = _import('page/form');
@@ -25,20 +20,20 @@ const Table = _import('table/index');
 Vue.use(Router);
 
 export const constantRouterMap = [
-    { path: '/login', component: Login, hidden: true },
-    { path: '/404', component: Err404, hidden: true },
+    { path: '/login', component: _import('login/index'), hidden: true },
+    { path: '/404', component: _import('404'), hidden: true },
     {
         path: '/',
         component: Layout,
         redirect: '/dashboard',
         name: 'Home',
         hidden: true,
-        children: [{ path: 'dashboard', component: dashboard }]
+        children: [{ path: 'dashboard', component: _import('dashboard/index') }]
     }
 ]
 
 export default new Router({
-    /*mode: 'history', //后端支持可开*/
+    /*mode: 'history', //需要服务器配置路由 */
     scrollBehavior: () => ({ y: 0 }), //后退后页面位置
     routes: constantRouterMap
 });
@@ -63,7 +58,7 @@ export const asyncRouterMap = [{
         name: '房源管理',
         icon: 'table',
         children: [
-            { path: 'displayPage', component: Table, name: '推广展示', meta: { role: ['admin'] }},
+            { path: 'displayPage', component: Table, name: '推广展示' },
             { path: 'auditCenterPage', component: _import('houseManage/auditCenter'), name: '电子签章审核' },
             { path: 'queryCenterPage', component: _import('houseManage/queryCenter'), name: '查询中心' }
         ]
@@ -75,6 +70,7 @@ export const asyncRouterMap = [{
         name: '用户管理',
         icon: 'peoples',
         children: [
+            { path: 'userListPage', component: Table, name: '账号管理', meta: { role: ['admin'] }},
             { path: 'feedbackPage', component: Table, name: '意见反馈' },
             { path: 'userInfoPage', component: Table, name: '用户信息' }
         ]

@@ -1,7 +1,7 @@
 <template>
     <div class="login-container">
         <el-form autoComplete="on" :model="loginForm" :rules="loginRules" ref="loginForm" label-position="left" label-width="0px" class="card-box login-form">
-            <h3 class="title">FHT BOP</h3>
+            <h3 class="title">运营系统</h3>
             <el-form-item prop="mobile">
                 <span class="svg-container">
                   <icon-svg icon-class="peoples"></icon-svg>
@@ -28,13 +28,13 @@ import { validateMobile } from '@/utils/validate';
 export default {
     name: 'login',
     data() {
-        /*const validatePhone = (rule, value, callback) => {
+        const validatePhone = (rule, value, callback) => {
             if (!validateMobile(value)) {
                 callback(new Error('请输入正确的手机号'));
             } else {
                 callback();
             }
-        };*/
+        };
         const validatePass = (rule, value, callback) => {
             if (value.length < 6) {
                 callback(new Error('密码不能小于6位'));
@@ -44,12 +44,12 @@ export default {
         };
         return {
             loginForm: {
-                mobile: 'admin',
+                mobile: '15158864844',
                 password: '123456'
             },
             loginRules: {
                 mobile: [
-                    { required: true, trigger: 'blur'/*, validator: validatePhone*/ }
+                    { required: true, trigger: 'blur', validator: validatePhone }
                 ],
                 password: [
                     { required: true, trigger: 'blur', validator: validatePass }

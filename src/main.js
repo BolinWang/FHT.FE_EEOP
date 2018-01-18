@@ -8,7 +8,7 @@ import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import 'normalize.css/normalize.css'
 import IconSvg from '@/components/Icon-svg/index.vue'
-import { getToken } from '@/utils/auth'
+import { getSessionId } from '@/utils/auth'
 import * as filters from './filters'
 import VuePreview from 'vue-preview'
 import VueLazyload from 'vue-lazyload'
@@ -27,13 +27,13 @@ Object.keys(filters).forEach(key => {
 const whiteList = ['/login'];
 router.beforeEach((to, from, next) => {
     NProgress.start();
-    if (getToken()) {
+    if (getSessionId()) {
         if (to.path === '/login') {
             next({ path: '/' });
         } else {
             if (store.getters.roles.length === 0) {
                 store.dispatch('GetInfo').then(res => {
-                    const roles = res.data.role;
+                    const roles = res.data.isAdmin == 1 ? 'admin' : 'other';
                     store.dispatch('GenerateRoutes', { roles }).then(() => {
                         router.addRoutes(store.getters.addRouters);
                         next({ ...to });

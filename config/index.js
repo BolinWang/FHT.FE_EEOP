@@ -5,11 +5,12 @@ module.exports = {
         assetsSubDirectory: 'static',
         assetsPublicPath: '/',
         proxyTable: {
-            '/hms': {
-                target: 'https://h.mdguanjia.com/hms',
+            '/api': {
+                target: 'http://192.168.1.103:1234/',   // 万里小哥哥
+                /*target: 'http://192.168.5.241:1234/',  */     // 水滴灯小哥哥
                 changeOrigin: true,
                 pathRewrite: {
-                    '^/hms': '/hms'
+                    '^/api': ''
                 }
             }
         },

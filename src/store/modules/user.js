@@ -1,17 +1,17 @@
 import { login, logout, getInfo } from '@/api/login';
-import { getToken, setToken, removeToken } from '@/utils/auth';
+import { getSessionId, setSessionId, removeSessionId } from '@/utils/auth';
 
 const user = {
     state: {
-        token: getToken(),
+        sessionId: getSessionId(),
         name: '',
         avatar: '',
         roles: []
     },
 
     mutations: {
-        SET_TOKEN: (state, token) => {
-            state.token = token;
+        SET_SESSIONID: (state, sessionId) => {
+            state.sessionId = sessionId;
         },
         SET_NAME: (state, name) => {
             state.name = name;
@@ -20,7 +20,7 @@ const user = {
             state.avatar = avatar;
         },
         SET_ROLES: (state, roles) => {
-            state.roles = roles;
+            state.roles = roles == 1 ? 'admin' : 'other';
         }
     },
 
@@ -31,8 +31,8 @@ const user = {
             return new Promise((resolve, reject) => {
                 login(mobile, userInfo.password).then(response => {
                     const data = response.data;
-                    setToken(data.token);
-                    commit('SET_TOKEN', data.token);
+                    setSessionId(data.sessionId);
+                    commit('SET_SESSIONID', data.sessionId);
                     resolve();
                 }).catch(error => {
                     reject(error);
@@ -44,11 +44,11 @@ const user = {
         // 获取用户信息
         GetInfo({ commit, state }) {
             return new Promise((resolve, reject) => {
-                getInfo(state.token).then(response => {
+                getInfo(state.sessionId).then(response => {
                     const data = response.data;
-                    commit('SET_ROLES', data.role);
-                    commit('SET_NAME', data.name);
-                    commit('SET_AVATAR', data.avatar);
+                    commit('SET_ROLES', data.isAdmin);
+                    commit('SET_NAME', data.userName || data.name);
+                    commit('SET_AVATAR', data.picUrl);
                     resolve(response);
                 }).catch(error => {
                     reject(error);
@@ -59,9 +59,9 @@ const user = {
         // 登出
         LogOut({ commit, state }) {
             return new Promise((resolve, reject) => {
-                logout(state.token).then(() => {
-                    removeToken();
-                    commit('SET_TOKEN', '');
+                logout(state.sessionId).then(() => {
+                    removeSessionId();
+                    commit('SET_SESSIONID', '');
                     commit('SET_ROLES', []);
                     resolve();
                 }).catch(error => {
@@ -73,8 +73,8 @@ const user = {
         // 前端 登出
         FedLogOut({ commit }) {
             return new Promise(resolve => {
-                removeToken();
-                commit('SET_TOKEN', '');
+                removeSessionId();
+                commit('SET_SESSIONID', '');
                 resolve();
             });
         }

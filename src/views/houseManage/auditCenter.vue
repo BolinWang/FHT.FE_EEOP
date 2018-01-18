@@ -165,7 +165,7 @@ export default {
                 auditStatus: ''
             },
             colModels:[
-                { prop:'id', label: '审核号', width: 80,},
+                { prop:'id', label: '审核号', width: 80},
                 { prop:'gmtCreate', label: '申请时间', width: 180, type: 'formatTime'},
                 { prop:'organizationName', label: '申请组织'},
                 { prop:'typeStr', label: '模块',  width: 100, type: 'formatType'},

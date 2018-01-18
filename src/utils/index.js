@@ -80,6 +80,17 @@ export function cleanArray(actual) {
     return newArray
 }
 
+export function ObjectMap(obj = {}){
+    let newObject = {}
+    for(let key of Object.keys(obj)){
+        const value = obj[key]
+        if(typeof value !== 'undefined' && value!=='' && value !== null && !Number.isNaN(value) && value !== -1){
+            newObject[key] = value
+        }
+    }
+    return newObject
+}
+
 export function param(json) {
     if (!json) return ''
     return cleanArray(Object.keys(json).map(key => {
