@@ -253,7 +253,8 @@ export default {
             this.temp.contactNameInfo = this.temp.contactName ? 
                 this.temp.contactName + (this.temp.contactGender == 1 ? ' 先生 ' : ' 女士 ') + this.temp.contactMobile : '';
             this.temp.bmapData = this.temp.longitude + ',' + this.temp.latitude;
-            this.temp.picList = this.temp.estatePictureList.length > 0 ? this.temp.estatePictureList.map((item) => ({'src':item})) : [{src:noPic}];
+            this.temp.picList = this.temp.estatePictureList.length > 0 ? this.temp.estatePictureList.map((item) => ({'src':item.smallImage})) :
+             [{src:noPic}];
             this.layer_showInfo = true;
         },
         /* 查询列表 */
