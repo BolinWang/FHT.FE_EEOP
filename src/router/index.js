@@ -58,7 +58,7 @@ export const asyncRouterMap = [{
         name: '房源管理',
         icon: 'table',
         children: [
-            { path: 'displayPage', component: Table, name: '推广展示' },
+            { path: 'displayPage', component: _import('houseManage/promotionDisplay'), name: '推广展示' },
             { path: 'auditCenterPage', component: _import('houseManage/auditCenter'), name: '电子签章审核' },
             { path: 'queryCenterPage', component: _import('houseManage/queryCenter'), name: '查询中心' }
         ]

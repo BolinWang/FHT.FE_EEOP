@@ -1,5 +1,6 @@
 import { login, logout, getInfo } from '@/api/login';
 import { getSessionId, setSessionId, removeSessionId } from '@/utils/auth';
+import defaultAvatar from '@/assets/defaultAvatar.png'
 
 const user = {
     state: {
@@ -48,7 +49,7 @@ const user = {
                     const data = response.data;
                     commit('SET_ROLES', data.isAdmin);
                     commit('SET_NAME', data.userName || data.name);
-                    commit('SET_AVATAR', data.picUrl);
+                    commit('SET_AVATAR', data.picUrl || defaultAvatar);
                     resolve(response);
                 }).catch(error => {
                     reject(error);

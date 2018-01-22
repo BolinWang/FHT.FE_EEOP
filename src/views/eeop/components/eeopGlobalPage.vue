@@ -27,10 +27,9 @@
                     :width="item.width"
                     key="index"
                     fit
-                    show-overflow-tooltip 
-                    sortable>
+                    show-overflow-tooltip>
                     <template slot-scope="scope">
-                        <img class="image image-center" width="40" height="40" 
+                        <img class="image image-center" width="40" height="40"
                             v-if="item.type === 'img'"
                             v-lazy="scope.row[item.prop]"
                             @click="showImage(scope.row[item.prop])" /> 
@@ -109,7 +108,7 @@
                         <el-input v-model="temp.linkUrl" placeholder="请输入有效链接"></el-input>
                     </el-form-item>
                     <el-form-item label="上线时间" prop="effectiveTime">
-                        <el-date-picker v-model="temp.effectiveTime" type="datetime" placeholder="选择上线时间">
+                        <el-date-picker v-model="temp.effectiveTime" type="datetime" placeholder="选择上线时间" >
                         </el-date-picker>
                     </el-form-item>
                     <el-form-item v-if="eeopType != 'interview'" label="下线时间" prop="ineffectiveTime">
@@ -176,8 +175,6 @@
                     @end="isDragging=false"> 
                     <transition-group type="transition" :name="'flip-list'">
                         <li class="list-group-item" v-for="(item,index) in sort_tableData" :key="item.sortNum"> 
-                            <el-badge :value="item.sortNum">
-                            </el-badge>
                             <i class="el-icon-d-caret" aria-hidden="true"></i>
                             {{item.title}}
                         </li> 
@@ -185,7 +182,7 @@
                 </draggable>
                 <div slot="footer" class="dialog-footer">
                     <el-button @click="layer_appsort = false" size="small">取 消</el-button>
-                    <el-button type="primary" @click="saveData(sort_tableData)" size="small">确 定</el-button>
+                    <el-button type="primary" @click="saveData(sort_tableData,`sort`)" size="small">确 定</el-button>
                 </div>
             </el-dialog>
         </div>
@@ -195,7 +192,7 @@
 import fetch from '@/utils/fetch';
 import waves from '@/directive/waves' // 水波纹指令
 import draggable from 'vuedraggable'
-import { parseTime, ObjectMap } from '@/utils'
+import { parseTime, ObjectMap, deepClone } from '@/utils'
 import { getGridApi, saveDataApi } from '@/api/eeop';
 
 const defaultOptions = [
@@ -230,8 +227,8 @@ export default {
         },
         statusFilter(status) {
             const statusMap = {
-                '1': 'success',
-                '2': 'info',
+                '1': 'info',
+                '2': 'success',
                 '3': 'danger'
             }
             return statusMap[status] || 'success'
@@ -248,7 +245,7 @@ export default {
                 value:''
             },
             colModels:[
-                { prop:'activityStatus', label: '状态', width: 80, type: 'status'},
+                { prop:'status', label: '状态', width: 80, type: 'status'},
                 { prop:'title', label: '标题'},
                 { prop:'picUrl', label: '图片', width: 80, type: 'img'},
                 { prop:'linkUrl', label: '链接', type: 'link'},
@@ -261,8 +258,6 @@ export default {
                 picUrl: '',
                 linkUrl: '',
                 effectiveTime: '',
-                estateName: '',
-                ineffectiveTime: '',
                 title: '',
                 introduction: ''
             },
@@ -280,6 +275,9 @@ export default {
             pageItems: {
                 pageNo: 1,
                 pageSize: 20
+            },
+            searchParams: {
+
             },
             pageSizeList: [10, 20, 30, 50],
             sort_tableData: [],
@@ -329,20 +327,48 @@ export default {
                 let _optionList = [...defaultOptions];
                 _optionList.pop();
                 this.selectData.options = _optionList;
+                this.$set(this.colModels[0], 'prop', 'interviewStatus');
                 this.$set(this.colModels[1], 'label', '麦友昵称');
                 this.colModels.splice(5, 1);
                 this.colModels.splice(2, 0, {prop:'estateName', label: '公寓', width: 200});
                 this.uploadTips = '请上传1024 * 1024的jpg/png图片，且不超过1Mb';
+                /* api url */
+                this.urlPathObj = {
+                    urlPath: 'interview',
+                    queryMethod: 'queryInterviewListByPage',
+                    saveMethod: 'saveInterview'
+                }
                 break;
             case 'advertis':
+                this.$set(this.colModels[0], 'prop', 'interviewStatus');
                 this.uploadTips = '请上传1080 * 1920的jpg/png图片，且不超过1Mb';
                 this.isShowSortApp = false;
+                /* api url */
+                this.urlPathObj = {
+                    urlPath: 'advertisement',
+                    queryMethod: 'queryAdvertisementListByPage',
+                    saveMethod: 'saveAdvertisement'
+                }
                 break;
             case 'activety': 
+                this.$set(this.colModels[0], 'prop', 'activityStatus');
                 this.uploadTips = '请上传480 * 240的jpg/png图片，且不超过500kb';
+                /* api url */
+                this.urlPathObj = {
+                    urlPath: 'activity',
+                    queryMethod: 'queryActivityListByPage',
+                    saveMethod: 'saveActivity'
+                }
                 break;
             case 'banner':
+                this.$set(this.colModels[0], 'prop', 'focusPictureStatus');
                 this.uploadTips = '请上传1080 * 648的jpg/png图片，且不超过500kb';
+                /* api url */
+                this.urlPathObj = {
+                    urlPath: 'focus',
+                    queryMethod: 'queryFocusPictureListByPage',
+                    saveMethod: 'saveFocusPicture'
+                }
                 break;
         }
         this.getGridData(this.pageItems);
@@ -376,21 +402,17 @@ export default {
     methods: {
         /* 上传图片 */
         pictureUpload(file){
-            //const isLt500k = file.size / 1024 / 1024 / 1024 < 500;
             if (['image/jpeg', 'image/jpg', 'image/png'].indexOf(file.type) == -1) {
                 this.$message.error('请上传jpg/png的图片');
                 return false;
             }
-            /*if (!isLt500k) {
-                this.$message.error('请上传大小不超过500kb的图片');
-                return false;
-            }*/
         },
         pictureRemove(file, fileList, picType) {
-            console.log(response, file, fileList, picType)
+            console.log('remove')
             this.showPicUrl = '';
             if (picType) {
                 this[picType] = '';
+                this.temp[picType] = '';
             }
         },
         picturePreview(file) {
@@ -398,7 +420,7 @@ export default {
             this.layer_showImage = true;
         },
         pictureSuccess(response, file, fileList, picType){
-            console.log(response, file, fileList, picType)
+            console.log('success')
             if (picType) {
                 this[picType] = response.data[0];
                 this.temp[picType] = response.data[0];
@@ -442,21 +464,9 @@ export default {
         /* 列表渲染，数据请求 */
         getGridData(params) {
             this.listLoading = true;
-            switch(this.eeopType) {
-                case 'interview':
-                    params.activityStatus = this.selectData.value
-                    break;
-                case 'advertis':
-                    params.activityStatus = this.selectData.value
-                    break;
-                case 'activety': 
-                    params.activityStatus = this.selectData.value
-                    break;
-                case 'banner':
-                    params.activityStatus = this.selectData.value
-                    break;
-            }
-            getGridApi(ObjectMap(params)).then(response => {
+            this.searchParams = deepClone(params);
+            this.searchParams.status = this.selectData.value
+            getGridApi(ObjectMap(this.searchParams),this.urlPathObj).then(response => {
                 this.tableData = response.data.content;
                 this.total = response.data.totalElements;
                 this.listLoading = false;
@@ -468,7 +478,6 @@ export default {
                 picUrl: '',
                 linkUrl: '',
                 effectiveTime: '',
-                ineffectiveTime: '',
                 title: '',
                 introduction: ''
             }
@@ -494,10 +503,10 @@ export default {
             this.dialogStatus = 'update';
             this.editRowIndex = index;
             if (row.picUrl) {
-                this.fileList.push({name: '图片', url: row.picUrl});
+                this.fileList = [{name: '查看图片', url: row.picUrl}];
             }
             if (row.thumbnail) {
-                this.fileList.push({name: '缩略图', url: row.thumbnail});
+                this.fileList = [{name: '查看缩略图', url: row.thumbnail}];
             }
             this.temp = Object.assign({}, row);
             this.$nextTick(() => {
@@ -506,14 +515,16 @@ export default {
         },
         /* 创建、更新活动 */
         createAndUpdateData() {
-            if (this.dialogStatus == 'update'){
-                this.temp.effectiveTime = new Date(this.temp.effectiveTime);
+            this.temp.effectiveTime = new Date(this.temp.effectiveTime);
+            if(this.eeopType != 'interview'){
                 this.temp.ineffectiveTime = new Date(this.temp.ineffectiveTime);
             }
             this.$refs['dataForm'].validate((valid) => {
                 if (valid) {
                     this.temp.effectiveTime = parseTime(this.temp.effectiveTime);
-                    this.temp.ineffectiveTime = parseTime(this.temp.ineffectiveTime);
+                    if(this.eeopType != 'interview'){
+                        this.temp.ineffectiveTime = parseTime(this.temp.ineffectiveTime);
+                    }
                     let saveList = [];
                     if (this.dialogStatus == 'update'){
                         this.tableData.splice(this.editRowIndex,1,this.temp);
@@ -530,14 +541,23 @@ export default {
             getGridApi({
                 pageNo:1,
                 pageSize:9999,
-                activityStatus:2
-            }).then(response => {
-                this.sort_tableData = response.data.content
+                status:2
+            },this.urlPathObj).then(response => {
+                this.sort_tableData = response.data.content.sort((a,b) => a['sortNum'] * 1 - b['sortNum'] * 1);
+                if (this.sort_tableData.length == 0) {
+                    this.$message.error('没有【已上线】的数据');
+                    return false;
+                }
                 this.layer_appsort = true;
             });
         },
-        saveData(params){
-            saveDataApi(params).then(response => {
+        saveData(params,type){
+            /* 列表排序 */
+            let savePatams = deepClone(params);
+            if (type == 'sort'){
+                savePatams.forEach((item,index) => item.sortNum = index * 1 + 1);
+            }
+            saveDataApi(savePatams,this.urlPathObj).then(response => {
                 this.layer_appsort = false;
                 this.layer_showInfo = false;
                 this.getGridData(this.pageItems);

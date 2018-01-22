@@ -35,7 +35,7 @@ service.interceptors.request.use(config => {
     }
     return config;
 }, error => {
-    console.log(error);
+    console.log('【REQUEST】'+error);
     Promise.reject(error);
 })
 
@@ -67,11 +67,11 @@ service.interceptors.response.use(
         }
     },
     error => {
-        console.log('err' + error);
+        console.log('【response】' + error);
         Message({
             message: error.message,
             type: 'error',
-            duration: 5 * 1000
+            duration: 5000
         });
         return Promise.reject(error);
     }

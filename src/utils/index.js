@@ -53,7 +53,6 @@ export function formatTime(time, option) {
     }
 }
 
-// 格式化时间
 export function getQueryObject(url) {
     url = url == null ? window.location.href : url
     const search = url.substring(url.lastIndexOf('?') + 1)
@@ -69,7 +68,7 @@ export function getQueryObject(url) {
     return obj
 }
 
-/* 去除空值 */
+/* 去除数组空值 */
 export function cleanArray(actual) {
     const newArray = []
     for (let i = 0; i < actual.length; i++) {
@@ -80,6 +79,7 @@ export function cleanArray(actual) {
     return newArray
 }
 
+/* 去除对象空值 */
 export function ObjectMap(obj = {}){
     let newObject = {}
     for(let key of Object.keys(obj)){
@@ -234,6 +234,8 @@ export function debounce(func, wait, immediate) {
     }
 }
 
+
+/* 深拷贝 */
 export function deepClone(source) {
     if (!source && typeof source !== 'object') {
         throw new Error('error arguments', 'shallowClone')
