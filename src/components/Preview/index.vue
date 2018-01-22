@@ -6,7 +6,7 @@
             <img class="preview-img img-center"
                 v-lazy="item.src" 
                 :key="index">
-            <span class="preview-item-actions" :style="{opacity: item.opacityVal }">
+            <span class="preview-item-actions" :style="{opacity: item.opacityVal}">
                 <span class="preview-item__item-preview" @click="$preview.open(index, list)">
                     <i class="el-icon-zoom-in"></i>
                 </span>
@@ -55,6 +55,11 @@ export default {
         handleMouseleave(item,index){
             item.opacityVal = 0;
             this.$set(this.list,index,item)
+        }
+    },
+    watch:{
+        picList(val){
+            this.list = val;
         }
     }
 }

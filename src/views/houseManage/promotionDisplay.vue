@@ -65,6 +65,7 @@
         <div class="dialog-info">
             <el-dialog 
                 title="查看公寓信息" 
+                @close="layerClose"
                 :visible.sync="layer_showInfo" width="700px">
                 <el-form size="small" :model="temp" label-position="left" label-width="80px" style='width: 620px; margin-left:20px;'>
                     <el-form-item label="公寓名称">
@@ -248,14 +249,29 @@ export default {
         },
         /* 公寓信息 */
         showEstateInfo(row){
-            this.temp = deepClone(row);
-            this.temp.estateName = (this.temp.type == 1 ? '【集中式】' : '【分散式】') + this.temp.estateName;
-            this.temp.contactNameInfo = this.temp.contactName ? 
-                this.temp.contactName + (this.temp.contactGender == 1 ? ' 先生 ' : ' 女士 ') + this.temp.contactMobile : '';
+            let deepCloneObj = deepClone(row);
+            this.temp.estateName = (deepCloneObj.type == 1 ? '【集中式】' : '【分散式】') + deepCloneObj.estateName;
+            this.temp.contactNameInfo = deepCloneObj.contactName ? 
+                deepCloneObj.contactName + (deepCloneObj.contactGender == 1 ? ' 先生 ' : ' 女士 ') + deepCloneObj.contactMobile : '';
+            this.temp.longitude = deepCloneObj.longitude;
+            this.temp.latitude = deepCloneObj.latitude;
             this.temp.bmapData = this.temp.longitude + ',' + this.temp.latitude;
-            this.temp.picList = this.temp.estatePictureList.length > 0 ? this.temp.estatePictureList.map((item) => ({'src':item.smallImage})) :
+            this.temp.picList = deepCloneObj.estatePictureList.length > 0 ? deepCloneObj.estatePictureList.map((item) => ({'src':item.smallImage})) :
              [{src:noPic}];
             this.layer_showInfo = true;
+        },
+        layerClose(){
+            this.temp = {
+                longitude:'',
+                latitude:'',
+                estateName:'',
+                contactNameInfo:'',
+                bmapData:'',
+                picList:[],
+                addressName:'',
+                zoneName:'',
+                introduction:''
+            };
         },
         /* 查询列表 */
         change(value) {
