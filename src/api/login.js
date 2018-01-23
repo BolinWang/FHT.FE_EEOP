@@ -30,9 +30,13 @@ export function getInfo(sessionId) {
 }
 
 /* 退出系统 */
-export function logout() {
+export function logout(params={}) {
     return fetch({
-        url: '/user/logout',
-        method: 'post'
+        url: '/api/user/',
+        method: 'post',
+        data:{
+            method: 'logout',
+            params
+        }
     });
 }

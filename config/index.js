@@ -1,13 +1,15 @@
-var path = require('path')
-
+let path = require('path')
+let proxyIPs = {
+    WANLI: 'http://192.168.1.103:1234/',      // 万里小哥哥
+    HONGDENG: 'http://192.168.5.241:1234/'    // 水滴灯小哥哥
+}
 module.exports = {
     dev: {
         assetsSubDirectory: 'static',
         assetsPublicPath: '/',
         proxyTable: {
             '/api': {
-                /*target: 'http://192.168.1.103:1234/',*/   // 万里小哥哥
-                target: 'http://192.168.5.241:1234/',       // 水滴灯小哥哥
+                target: proxyIPs.WANLI,   
                 changeOrigin: true,
                 pathRewrite: {
                     '^/api': ''

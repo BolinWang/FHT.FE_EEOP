@@ -1,36 +1,55 @@
 <template>
-    <el-menu class="navbar" mode="horizontal">
-        <hamburger class="hamburger-container" :toggleClick="toggleSideBar" :isActive="sidebar.opened"></hamburger>
-        <levelbar></levelbar>
-        <div class="right-menu">
-            <el-tooltip effect="dark" content="全屏" placement="bottom">
-                <screenfull class="screenfull right-menu-item"></screenfull>
-            </el-tooltip>
-            <el-tooltip effect="dark" content="换肤" placement="bottom">
-                <theme-picker class="theme-switch right-menu-item"></theme-picker>
-            </el-tooltip>
-            <el-dropdown class="avatar-container right-menu-item" trigger="click">
-                <div class="avatar-wrapper">
-                    <img class="user-avatar" :src="avatar">
-                    <span class="user-name">{{name}}</span>
-                    <i class="el-icon-caret-bottom"></i>
-                </div>
-                <el-dropdown-menu class="user-dropdown" slot="dropdown">
-                    <el-dropdown-item>
-                        <span @click="showUserInfo" style="display:block;">个人信息</span>
-                    </el-dropdown-item>
-                    <router-link class='inlineBlock' to="/">
+    <div class="clearfix">
+        <el-menu class="navbar" mode="horizontal">
+            <hamburger class="hamburger-container" :toggleClick="toggleSideBar" :isActive="sidebar.opened"></hamburger>
+            <levelbar></levelbar>
+            <div class="right-menu">
+                <el-tooltip effect="dark" content="全屏" placement="bottom">
+                    <screenfull class="screenfull right-menu-item"></screenfull>
+                </el-tooltip>
+                <el-tooltip effect="dark" content="换肤" placement="bottom">
+                    <theme-picker class="theme-switch right-menu-item"></theme-picker>
+                </el-tooltip>
+                <el-dropdown class="avatar-container right-menu-item" trigger="click">
+                    <div class="avatar-wrapper">
+                        <img class="user-avatar" :src="avatar">
+                        <span class="user-name">{{name}}</span>
+                        <i class="el-icon-caret-bottom"></i>
+                    </div>
+                    <el-dropdown-menu class="user-dropdown" slot="dropdown">
                         <el-dropdown-item>
-                            首页
+                            <span @click="layer_showUserInfo = true" style="display:block;">个人信息</span>
                         </el-dropdown-item>
-                    </router-link>
-                    <el-dropdown-item divided>
-                        <span @click="logout" style="display:block;">退出</span>
-                    </el-dropdown-item>
-                </el-dropdown-menu>
-            </el-dropdown>
-        </div>
-    </el-menu>
+                        <router-link class='inlineBlock' to="/">
+                            <el-dropdown-item>
+                                首页
+                            </el-dropdown-item>
+                        </router-link>
+                        <el-dropdown-item divided>
+                            <span @click="logout" style="display:block;">退出</span>
+                        </el-dropdown-item>
+                    </el-dropdown-menu>
+                </el-dropdown>
+            </div>
+        </el-menu>
+    <!-- 个人信息 -->
+        <el-dialog 
+            title="个人信息" 
+            :visible.sync="layer_showUserInfo" width="600px">
+            <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="100px">
+                <el-form-item label="用户名" prop="name">
+                    <el-input v-model="ruleForm.name"></el-input>
+                </el-form-item>
+                <el-form-item label="密码" prop="password">
+                    <el-input type="password" v-model="ruleForm.password" auto-complete="off"></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="layer_showUserInfo = false" size="small">取 消</el-button>
+                <el-button type="primary" size="small" @click="handelSaveUserInfo">确定并重新登录</el-button>
+            </div>
+        </el-dialog>
+    </div>
 </template>
 <script>
 import { mapGetters } from 'vuex';
@@ -38,6 +57,8 @@ import Levelbar from './Levelbar';
 import Hamburger from '@/components/Hamburger';
 import ThemePicker from '@/components/ThemePicker'
 import Screenfull from '@/components/Screenfull'
+import { saveSelfDetailApi } from '@/api/userManage'
+import { ObjectMap } from '@/utils'
 
 export default {
     components: {
@@ -47,13 +68,38 @@ export default {
         Screenfull
     },
     data (){
+        const validateName = (rule, value, callback) => {
+            if (!value) {
+                callback(new Error('请输入用户名'));
+            } else {
+                callback();
+            }
+        };
+        const validatePass = (rule, value, callback) => {
+            if (value && value.length < 6) {
+                callback(new Error('密码不能小于6位'));
+            } else {
+                callback();
+            }
+        };
         return{
-            userName: null
+            layer_showUserInfo: false,
+            ruleForm: {
+                name: this.$store.state.user.name,
+                password: ''
+            },
+            rules: { 
+                password: [
+                    { trigger: 'blur', validator: validatePass }
+                ],
+                name: [
+                    { required: true, trigger: 'blur', validator: validateName }
+                ]
+            }
         }
     },
     created(){
 
-        this.userName = 'bolin';
     },
     computed: {
         ...mapGetters([
@@ -71,12 +117,19 @@ export default {
                 location.reload(); // 为了重新实例化vue-router对象 避免bug
             });
         },
-        showUserInfo(){
-            this.$notify({
-                title: '个人信息',
-                message: '哇哦，我是爸爸',
-                type: 'success',
-                duration: 2000
+        handelSaveUserInfo(){
+            this.$refs.ruleForm.validate(valid => {
+                if (valid) {
+                    saveSelfDetailApi(ObjectMap(this.ruleForm)).then(response => {
+                        this.layer_showUserInfo = false;
+                        this.$store.dispatch('LogOut').then(() => {
+                            location.reload(); // 为了重新实例化vue-router对象 避免bug
+                        });
+                    });
+                } else {
+                    console.log('error submit!!');
+                    return false;
+                }
             })
         }
     }

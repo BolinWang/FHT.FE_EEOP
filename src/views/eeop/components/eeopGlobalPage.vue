@@ -53,7 +53,7 @@
                         </span>
                     </template>
                 </el-table-column>
-                <el-table-column fixed="right" label="操作" width="122">
+                <el-table-column label="操作" width="122">
                     <template slot-scope="scope">
                         <el-button-group>
                             <el-tooltip effect="dark" content="编辑" placement="bottom">
@@ -97,7 +97,7 @@
                 :title="textMap[dialogStatus] + eeopTypeStr" 
                 :visible.sync="layer_showInfo" width="600px"
                 @close="dialogClose">
-                <el-form size="small" :rules="rules" ref="dataForm" :model="temp" label-position="left" label-width="100px" style='width: 500px; margin-left:20px;'>
+                <el-form size="small" status-icon :rules="rules" ref="dataForm" :model="temp" label-position="left" label-width="100px" style='width: 500px; margin-left:20px;'>
                     <el-form-item :label="eeopType == 'interview' ? '麦友昵称' : '标题'" prop="title">
                         <el-input v-model="temp.title" placeholder="请输入内容" :maxlength="20"></el-input>
                     </el-form-item>
@@ -189,8 +189,6 @@
     </div>
 </template>
 <script>
-import fetch from '@/utils/fetch';
-import waves from '@/directive/waves' // 水波纹指令
 import draggable from 'vuedraggable'
 import { parseTime, ObjectMap, deepClone } from '@/utils'
 import { getGridApi, saveDataApi } from '@/api/eeop';
@@ -209,9 +207,6 @@ const eeopTypeMap = {
 
 export default {
     name: 'eeopGlobalPage',
-    directives: {
-        waves
-    },
     components:{
         draggable
     },
@@ -485,7 +480,7 @@ export default {
         /* 列表删除 */
         deleteRow(index,row){
             row.isDelete = 1;
-            this.tableData.splice(index,0,row);
+            this.tableData.splice(index, 1, row);
             this.saveData(this.tableData);
         },
         /* 新增 */

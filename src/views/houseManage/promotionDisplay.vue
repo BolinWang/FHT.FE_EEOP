@@ -139,7 +139,6 @@
     </div>
 </template>
 <script>
-import fetch from '@/utils/fetch';
 import draggable from 'vuedraggable'
 import Preview from '@/components/Preview'
 import { parseTime, ObjectMap, deepClone } from '@/utils'
@@ -244,7 +243,7 @@ export default {
             }
             row.showStatus = 1;
             row.publishStatus = 1;
-            this.tableData.splice(index,0,row);
+            this.tableData.splice(index, 1, row);
             this.saveData(this.tableData);
         },
         /* 公寓信息 */
@@ -257,7 +256,7 @@ export default {
             this.temp.latitude = deepCloneObj.latitude;
             this.temp.bmapData = this.temp.longitude + ',' + this.temp.latitude;
             this.temp.picList = deepCloneObj.estatePictureList.length > 0 ? deepCloneObj.estatePictureList.map((item) => ({'src':item.smallImage})) :
-             [{src:noPic}];
+             [{src:noPic,isnoPic:true}];
             this.layer_showInfo = true;
         },
         layerClose(){
@@ -317,7 +316,7 @@ export default {
             if (type == 'sort'){
                 savePatams.forEach((item,index) => item.sortNum = index * 1 + 1);
             }
-            saveDataApi(savePatams,this.urlPathObj).then(response => {
+            saveDataApi(savePatams).then(response => {
                 this.layer_appsort = false;
                 this.getGridData(this.pageItems);
                 this.$notify({

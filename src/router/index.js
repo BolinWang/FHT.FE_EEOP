@@ -70,9 +70,8 @@ export const asyncRouterMap = [{
         name: '用户管理',
         icon: 'peoples',
         children: [
-            { path: 'userListPage', component: Table, name: '账号管理', meta: { role: ['admin'] }},
-            { path: 'feedbackPage', component: Table, name: '意见反馈' },
-            { path: 'userInfoPage', component: Table, name: '用户信息' }
+            { path: 'userListPage', component: _import('userManage/userList'), name: '账号管理', meta: { role: ['admin'] }},
+            { path: 'feedbackPage', component: _import('userManage/feedback'), name: '意见反馈' }
         ]
     },
     { path: '*', redirect: '/404', hidden: true }

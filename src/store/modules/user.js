@@ -48,7 +48,7 @@ const user = {
                 getInfo(state.sessionId).then(response => {
                     const data = response.data;
                     commit('SET_ROLES', data.isAdmin);
-                    commit('SET_NAME', data.userName || data.name);
+                    commit('SET_NAME', data.name);
                     commit('SET_AVATAR', data.picUrl || defaultAvatar);
                     resolve(response);
                 }).catch(error => {
@@ -60,7 +60,7 @@ const user = {
         // 登出
         LogOut({ commit, state }) {
             return new Promise((resolve, reject) => {
-                logout(state.sessionId).then(() => {
+                logout({sessionId:state.sessionId}).then(() => {
                     removeSessionId();
                     commit('SET_SESSIONID', '');
                     commit('SET_ROLES', []);

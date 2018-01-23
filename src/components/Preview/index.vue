@@ -7,7 +7,7 @@
                 v-lazy="item.src" 
                 :key="index">
             <span class="preview-item-actions" :style="{opacity: item.opacityVal}">
-                <span class="preview-item__item-preview" @click="$preview.open(index, list)">
+                <span class="preview-item__item-preview" @click="handlePreview(index)">
                     <i class="el-icon-zoom-in"></i>
                 </span>
                 <!-- <span class="preview-item__item-delete">
@@ -18,6 +18,7 @@
     </ul>
 </template>
 <script>
+import { deepClone } from '@/utils'
 export default {
     name: 'preview',
     props:{
@@ -39,11 +40,10 @@ export default {
         }
     },
     created(){
-        this.list = this.picList.slice();
-        let listLength = this.list.length;
-        this.list.forEach(function(item,index){
-            item.w = 800
-            item.h = 600
+        this.list = deepClone(this.picList);
+        this.list.forEach((item,index) => {
+            item.w = 800;
+            item.h = 600;
             item.opacityVal = '0';
         });
     },
@@ -55,6 +55,13 @@ export default {
         handleMouseleave(item,index){
             item.opacityVal = 0;
             this.$set(this.list,index,item)
+        },
+        handlePreview(index){
+            if (this.picList.length == 1 && this.picList[0].isnoPic) {
+                this.$message.error('友情提示：暂无图片');
+                return false;
+            }
+            this.$preview.open(index, this.list)
         }
     },
     watch:{
