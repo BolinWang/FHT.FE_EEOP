@@ -2,7 +2,8 @@
     <div class="app-container">
         <div class="model-search clearfix">
            <el-form size="small" :inline="true" :model="formData">
-                <el-select size="small" v-model="formData.feedbackType" placeholder="意见反馈类型" class="item-select" 
+                <el-select size="small" v-model="formData.feedbackType" 
+                    placeholder="意见反馈类型" class="item-select" style="width: 150px;"
                     clearable>
                     <el-option
                         v-for="item in typeOptions"
@@ -14,6 +15,7 @@
                 <el-date-picker
                     v-model="dateTime"
                     size="small"
+                    class="filter-item" 
                     type="datetimerange"
                     range-separator="至"
                     start-placeholder="开始日期"
@@ -25,7 +27,7 @@
                 </el-input>
                 <el-button type="primary" size="small" icon="el-icon-search" @click.native="searchParam" v-waves class="filter-item">查询</el-button>
                 <el-button plain size="small" icon="el-icon-remove-outline" @click.native="clearForm">清空</el-button>
-                <el-button class="right" type="danger" size="small" icon="el-icon-remove">批量删除</el-button>
+                <el-button class="right" type="danger" size="small" icon="el-icon-remove" @click.native="multiDelete">批量删除</el-button>
             </el-form>
         </div>
         <el-tabs style='margin-top:10px;' v-model="activeName" type="border-card">
@@ -78,13 +80,18 @@ export default {
                 endTime: '',
                 keyword: ''
             }
+            this.$refs.feedbacktable[0].searchParam();
         },
         searchParam(){
             this.$refs.feedbacktable[0].searchParam();
+        },
+        multiDelete(){
+            this.$refs.feedbacktable[0].handleDelete(undefined, undefined, 'multi');
         }
     },
     watch:{
         dateTime(val){
+            val = val || [];
             this.formData.startTime = val[0] ? parseTime(val[0]) : '';
             this.formData.endTime = val[1] ? parseTime(val[1]) : '';
         }
@@ -93,7 +100,9 @@ export default {
 </script>
 
 <style rel="stylesheet/scss" lang="scss">
-   
+    .model-search .filter-item{
+        margin-left: 10px;
+    }
 </style>
 
 

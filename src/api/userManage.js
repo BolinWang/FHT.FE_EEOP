@@ -54,7 +54,7 @@ export function saveFeedbackApi(params={}) {
         url: '/api/market/feedback/',
         method: 'post',
         data: {
-            method: 'queryFeedbackByPage',
+            method: 'saveFeedback',
             params
         }
     });

@@ -6,7 +6,12 @@
 	            v-loading.body="listLoading" 
 	            :max-height="tableHeight" 
 	            size="small"
+	            @selection-change="handleSelectionChange"
 	            fit stripe highlight-current-row>
+	            <el-table-column
+			      	type="selection"
+			      	width="55">
+			    </el-table-column>
 	            <el-table-column type="index" width="60" align="center">
 
 	            </el-table-column>
@@ -119,8 +124,9 @@ export default {
                 pageNo: 1,
                 pageSize: 20
             },
-            privateFormData:{},
-            privateDateTime:[],
+            privateFormData: {},
+            privateDateTime: [],
+            multipleSelection: [],
             searchParams: {},
             pageSizeList: [10, 20, 30, 50],
             showPicUrl: '',
@@ -157,6 +163,10 @@ export default {
             this.showPicUrl = picUrl;
             this.layer_showImage = true;
         },
+        /* 多选 */
+        handleSelectionChange(val){
+        	this.multipleSelection = val;
+        },
         /* 查询列表 */
         change(value) {
             this.getGridData(this.pageItems);
@@ -184,15 +194,29 @@ export default {
             this.getGridData(this.pageItems);
         },
         /* 删除 */
-        handleDelete(index,row){
-            this.$confirm('此操作将永久删除该数据, 是否继续?', '提示', {
+        handleDelete(index,row,type){
+        	let needDeleteList = [], confirmContent = '';
+        	if (type == 'multi') {
+        		if (this.multipleSelection.length == 0) {
+        			this.$message.error('请选择需要删除的数据');
+        			return false;
+        		}
+        		this.multipleSelection.map((item) => {
+        			item.isDelete = 1;
+        		});
+        		needDeleteList = this.multipleSelection;
+        		confirmContent = `已选择${this.multipleSelection.length}条数据`;
+        	}else{
+        		row.isDelete = 1;
+                needDeleteList = [row];
+                confirmContent = '此操作将永久删除该数据';
+        	}
+            this.$confirm(`${confirmContent}, 是否继续?`, '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
-                row.isDelete = 1;
-                this.tableData.splice(index, 1, row);
-                this.saveData(this.tableData);
+                this.saveData(needDeleteList);
             }).catch(() => {})
         },
         /* 保存 */

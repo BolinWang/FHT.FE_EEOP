@@ -13,10 +13,6 @@ import '../icons'
 import Layout from '../views/layout/Layout';
 const _import = require('./_import_' + process.env.NODE_ENV);
 
-/* pages */
-const Form = _import('page/form');
-const Table = _import('table/index');
-
 Vue.use(Router);
 
 export const constantRouterMap = [
@@ -38,7 +34,8 @@ export default new Router({
     routes: constantRouterMap
 });
 
-export const asyncRouterMap = [{
+export const asyncRouterMap = [
+    {
         path: '/eeop',
         component: Layout,
         redirect: 'noredirect',
@@ -71,7 +68,18 @@ export const asyncRouterMap = [{
         icon: 'peoples',
         children: [
             { path: 'userListPage', component: _import('userManage/userList'), name: '账号管理', meta: { role: ['admin'] }},
-            { path: 'feedbackPage', component: _import('userManage/feedback'), name: '意见反馈' }
+            { path: 'feedbackPage', component: _import('userManage/feedback'), name: '意见反馈' },
+            { path: 'applyRegister', component: _import('userManage/applyRegister'), name: '申请注册' }
+        ]
+    },
+    {
+        path: '/pangu',
+        component: Layout,
+        redirect: 'noredirect',
+        icon: 'chart',
+        noDropdown: true,
+        children: [
+            { path: 'dataReportPage', component: _import('pangu/dataReport'), name: '房源报表' },
         ]
     },
     { path: '*', redirect: '/404', hidden: true }
