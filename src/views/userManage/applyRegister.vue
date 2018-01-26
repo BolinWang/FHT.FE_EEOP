@@ -1,7 +1,7 @@
 <template>
     <div class="app-container">
         <div class="model-search clearfix">
-            <el-select size="small" v-model="formData.status" 
+            <el-select size="small" v-model="formData.requestStatus" 
                 placeholder="联系状态" class="item-select" style="width: 150px;"
                 clearable>
                 <el-option
@@ -46,12 +46,8 @@
                 </el-table-column>
                 <el-table-column label="操作" width="220">
                     <template slot-scope="scope">
-                        <el-button-group>
-                            <el-button type="warning" icon="el-icon-refresh" size="small" @click.native="resetUserPsw(scope.$index,scope.row)">密码重置</el-button>
-                            <el-button type="danger" icon="el-icon-delete" size="small" 
-                                v-if="scope.row.isAdmin != 1"
-                                @click.native="deleteUser(scope.$index,scope.row)">删除</el-button>
-                        </el-button-group>
+                        <el-button v-if="scope.row.requestStatus == 1" type="primary" icon="el-icon-star-off" size="small" @click.native="signContactor(scope.$index,scope.row)">标为已联系</el-button>
+                        <el-button v-else type="success" disabled icon="el-icon-star-on" size="small" @click.native="signContactor(scope.$index,scope.row)">已联系</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -69,10 +65,10 @@
             </el-pagination>
         </div>
 
-        <!-- 新增账号 -->
+        <!-- 注册账号 -->
         <div class="dialog-info">
             <el-dialog 
-                title="新增账号" 
+                title="注册账号" 
                 :visible.sync="layer_showInfo" width="600px"
                 @close="dialogClose">
                 <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="100px">
@@ -83,6 +79,7 @@
                         <el-input v-model="ruleForm.name" auto-complete="off"></el-input>
                     </el-form-item>
                 </el-form>
+                <div class="tips">温馨提示：默认密码为1234567，请提醒用户首次登录后立即更改密码</div>
                 <div slot="footer" class="dialog-footer">
                     <el-button @click="layer_showInfo = false" size="small">取 消</el-button>
                     <el-button type="primary" size="small" @click="handleSaveData">确 定</el-button>
@@ -94,7 +91,7 @@
 <script>
 import waves from '@/directive/waves' // 水波纹指令
 import { parseTime, ObjectMap, deepClone } from '@/utils'
-import { getGridApi, saveDataApi } from '@/api/userManage'
+import { queryUserRequestByPageApi, saveUserRequestApi, registeredUserApi } from '@/api/userManage'
 import { validateMobile } from '@/utils/validate'
 
 export default {
@@ -116,6 +113,13 @@ export default {
         }
     },
     data() {
+        const validateName = (rule, value, callback) => {
+            if (!value) {
+                callback(new Error('请输入姓名'));
+            } else {
+                callback();
+            }
+        };
         const validatePhone = (rule, value, callback) => {
             if (!validateMobile(value)) {
                 callback(new Error('请输入正确的手机号'));
@@ -131,10 +135,10 @@ export default {
             colModels:[
                 { prop:'mobile', label: '手机号码', width: 150},
                 { prop:'name', label: '姓名'},
-                { prop:'housePosion', label: '地区', type: 'formatAdmin'},
+                { prop:'housePosion', label: '地区'},
                 { prop:'houseAmount', label: '房源数量', width: 100},
                 { prop:'gmtCreate', label: '申请时间', width: 180},
-                { prop:'requestStatus', label: '联系状态', width: 100},
+                { prop:'requestStatus', label: '联系状态', width: 100, type: 'status'},
                 { prop:'operator', label: '操作人'},
                 { prop:'gmtModified', label: '操作时间', width: 180}
             ],
@@ -148,7 +152,7 @@ export default {
             pageSizeList: [10, 20, 30, 50],
             layer_showInfo: false,
             formData: {
-                status: '',
+                requestStatus: '',
                 mobile: ''
             },
             ruleForm: {
@@ -159,6 +163,9 @@ export default {
             rules: {
                 mobile: [
                    { required: true, trigger: 'blur', validator: validatePhone }
+                ],
+                name: [
+                   { required: true, trigger: 'blur', validator: validateName }
                 ]
             }
         }
@@ -169,11 +176,11 @@ export default {
     mounted() {
         /* 表格高度控制 */
         let temp_height = document.body.clientHeight - 200;
-        this.tableHeight = temp_height > 400 ? temp_height : 400;
+        this.tableHeight = temp_height > 300 ? temp_height : 300;
         window.onresize = () => {
             return (() => {
                 temp_height = document.body.clientHeight - 200;
-                this.tableHeight = this.tableHeight = temp_height > 400 ? temp_height : 400;
+                this.tableHeight = this.tableHeight = temp_height > 300 ? temp_height : 300;
             })()
         }
     },
@@ -194,10 +201,6 @@ export default {
                 checkPass: ''
             }
         },
-        /* 查询列表 */
-        change(value) {
-            this.getGridData(this.pageItems);
-        },
         handleSizeChange(val) {
             this.pageItems.pageSize = val;
             this.getGridData(this.pageItems);
@@ -209,26 +212,49 @@ export default {
         /* 列表渲染，数据请求 */
         getGridData(params) {
             this.listLoading = true;
-            this.searchParams = deepClone(params);
-            getGridApi(ObjectMap(this.searchParams)).then(response => {
+            this.searchParams = Object.assign(deepClone(params), deepClone(this.formData));
+            queryUserRequestByPageApi(ObjectMap(this.searchParams)).then(response => {
                 this.tableData = response.data.content;
                 this.total = response.data.totalElements;
                 this.listLoading = false;
             })
         },
-        
+        searchParam(){
+            this.getGridData(this.pageItems);
+        },
         handleSaveData(){
             this.$refs.ruleForm.validate(valid => {
                 if (valid) {
-                    this.saveData([{
-                        mobile: this.ruleForm.mobile,
-                        password: this.ruleForm.password
-                    }]);
+                    registeredUserApi({
+                        mobile: this.ruleForm.mobile + '',
+                        name: this.ruleForm.name
+                    }).then(response => {
+                        this.layer_showInfo = false;
+                        this.getGridData(this.pageItems);
+                        this.$notify({
+                            title: '成功',
+                            message: '注册成功，初始密码为：1234567',
+                            type: 'success',
+                            duration: 2000
+                        })
+                    })
                 } else {
                     console.log('error submit!!');
                     return false;
                 }
             });
+        },
+        signContactor(index, row){
+            row.requestStatus = 2;
+            saveUserRequestApi([row]).then(response => {
+                this.getGridData(this.pageItems);
+                this.$notify({
+                    title: '成功',
+                    message: '标记成功',
+                    type: 'success',
+                    duration: 2000
+                })
+            })
         }
     }
 };

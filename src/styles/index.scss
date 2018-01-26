@@ -101,6 +101,10 @@ a:hover {
     max-height: 100%; 
 }
 
+.tips{
+    color: #9f9f9f;
+}
+
 .right{
     float: right;
 }
@@ -150,6 +154,18 @@ a:hover {
 }
 .list-group-item i{
     cursor: pointer;
+}
+
+
+/* elementUI 修改 */
+.el-form-item--small.el-form-item{
+    margin-bottom: 10px;
+}
+.el-dialog__body{
+    padding: 20px;
+}
+.el-dialog__title{
+    font-size: 14px;
 }
 
 .svg-icon {

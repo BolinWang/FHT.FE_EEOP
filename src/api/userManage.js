@@ -60,4 +60,41 @@ export function saveFeedbackApi(params={}) {
     });
 }
 
+/* 申请注册获取列表数据 */
+export function queryUserRequestByPageApi(params={}) {
+    return fetch({
+        url: '/api/market/apply/',
+        method: 'post',
+        data: {
+            method: 'queryUserRequestByPage',
+            params
+        }
+    });
+}
+
+/* 申请注册保存 */
+export function saveUserRequestApi(params={}) {
+    return fetch({
+        url: '/api/market/apply/',
+        method: 'post',
+        data: {
+            method: 'saveUserRequest',
+            params
+        }
+    });
+}
+
+
+/* 申请注册注册账号 */
+export function registeredUserApi(params={}) {
+    return fetch({
+        url: '/api/market/apply/',
+        method: 'post',
+        data: {
+            method: 'registeredUser',
+            params
+        }
+    });
+}
+
 

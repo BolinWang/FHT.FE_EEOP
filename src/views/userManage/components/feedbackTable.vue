@@ -1,6 +1,6 @@
 <template>
 	<div class="clearfix">
-		<div class="model-table" :style="tableStyle" style="margin: 0;">
+		<div class="model-table" :style="tableStyle" style="margin-top: 0;">
 	        <el-table 
 	            :data="tableData" 
 	            v-loading.body="listLoading" 
@@ -140,12 +140,12 @@ export default {
     },
     mounted() {
         /* 表格高度控制 */
-        let temp_height = document.body.clientHeight - 257;
-        this.tableHeight = temp_height > 400 ? temp_height : 400;
+        let temp_height = document.body.clientHeight - 267;
+        this.tableHeight = temp_height > 300 ? temp_height : 300;
         window.onresize = () => {
             return (() => {
-                temp_height = document.body.clientHeight - 257;
-                this.tableHeight = this.tableHeight = temp_height > 400 ? temp_height : 400;
+                temp_height = document.body.clientHeight - 267;
+                this.tableHeight = this.tableHeight = temp_height > 300 ? temp_height : 300;
             })()
         }
     },

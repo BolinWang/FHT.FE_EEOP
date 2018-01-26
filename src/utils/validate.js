@@ -6,7 +6,7 @@ export function isWscnEmail(str) {
 
 /* 手机号 */
 export function validateMobile(str){
-    const reg = /^((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(18[0,5-9]))\d{8}$/;
+    const reg = /^(((13[0-9]{1})|(14[0-9]{1})|(17[0-9]{1})|(15[0-3]{1})|(15[4-9]{1})|(18[0-9]{1})|(199))+\d{8})$/;
     return reg.test(str);
 }
 

@@ -253,3 +253,9 @@ export function deepClone(source) {
     }
     return targetObj
 }
+
+/* *号隐藏 */
+export function plusXing (str,frontLen,endLen) { 
+    let len = str.length - frontLen - endLen;
+    return str.substring(0,frontLen) + '*'.repeat(len) + str.substring(str.length - endLen);
+}

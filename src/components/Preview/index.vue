@@ -78,6 +78,9 @@ export default {
     .pswp{
         z-index: 9999999;
     }
+    .pswp__img{
+        background: #fff;
+    }
     .previewItems{
         margin: 0;
         display: inline;

@@ -40,7 +40,8 @@
                             <template slot-scope="props">
                                 <el-form label-position="left" size="small" inline class="table-expand">
                                     <el-form-item v-for="(item,index) in expandCols"
-                                        :label="item.label">
+                                        :label="item.label"
+                                        key="index">
                                         <span>{{ props.row[item.prop] }}</span>
                                     </el-form-item>
                                 </el-form>
@@ -131,11 +132,11 @@ export default {
     mounted() {
         /* 表格高度控制 */
         let temp_height = document.body.clientHeight - 152;
-        this.tableHeight = temp_height > 400 ? temp_height : 400;
+        this.tableHeight = temp_height > 300 ? temp_height : 300;
         window.onresize = () => {
             return (() => {
                 temp_height = document.body.clientHeight - 152;
-                this.tableHeight = this.tableHeight = temp_height > 400 ? temp_height : 400;
+                this.tableHeight = this.tableHeight = temp_height > 300 ? temp_height : 300;
             })()
         }
     },

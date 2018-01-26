@@ -1,15 +1,21 @@
 <template>
     <div class="app-container">
         <div class="model-search clearfix">
-            <el-select v-model="selectData.value" size="small" placeholder="数据加载中..." @change="change">
-                <el-option
-                    v-for="item in selectData.options"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value">
-                </el-option>
-            </el-select>
-            <el-button size="small"  class="filter-item right" type="primary" icon="el-icon-rank" @click.native="sortApp">APP展示排序</el-button>
+            <el-form size="small" :inline="true" :model="formData">
+                <el-select size="small" v-model="formData.cityId" 
+                    @change=change
+                    placeholder="城市加载中..." 
+                    class="item-select" style="width: 150px;"
+                    clearable>
+                    <el-option
+                        v-for="item in cityOptions"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value">
+                    </el-option>
+                </el-select>
+                <el-button size="small"  class="filter-item right" type="primary" icon="el-icon-rank" @click.native="sortApp">APP展示排序</el-button>
+            </el-form>
         </div>
         <div class="model-table" :style="tableStyle">
             <el-table 
@@ -162,20 +168,20 @@ export default {
         },
         statusStrFilter(status){
             const statusStrData = ['未申请','已展示','申请中'];
-            return statusStrData[status - 1] || '未申请'
+            return statusStrData[status - 1] || '未发布'
         }
     },
     data() {
         return {
-            selectData:{
-                options: [],
-                value:''
+            formData: {
+                cityId: ''
             },
+            cityOptions: [],
             colModels:[
                 { prop:'showStatus', label: '状态', width: 80, type: 'status'},
+                { prop:'province', label: '房源位置'},
                 { prop:'estateName', label: '公寓'},
-                { prop:'gmtModified', label: '操作时间', width: 180},
-                { prop:'introduction', label: '简介'}
+                { prop:'gmtModified', label: '操作时间', width: 180}
             ],
             isShowSortApp: true,
             tableHeight: 300,
@@ -203,16 +209,16 @@ export default {
     mounted() {
         /* 表格高度控制 */
         let temp_height = document.body.clientHeight - 200;
-        this.tableHeight = temp_height > 400 ? temp_height : 400;
+        this.tableHeight = temp_height > 300 ? temp_height : 300;
         window.onresize = () => {
             return (() => {
                 temp_height = document.body.clientHeight - 200;
-                this.tableHeight = this.tableHeight = temp_height > 400 ? temp_height : 400;
+                this.tableHeight = this.tableHeight = temp_height > 300 ? temp_height : 300;
             })()
         }
     },
     computed: {
-        tableStyle: function () {
+        tableStyle () {
             return {
                 width: '100%',
                 height: this.tableHeight + 'px'
@@ -229,9 +235,11 @@ export default {
     methods: {
         /* 获取城市列表 */
         getCityList(){
-            getCityListApi().then(response => {
-                this.selectData.options = Object.keys(response.data).map((item) => ({'label':response.data[item],'value':item}))
-                this.selectData.value = this.selectData.options[0].value 
+            getCityListApi({
+                housingType: 1
+            }).then(response => {
+                this.cityOptions = Object.keys(response.data).map((item) => ({'label':response.data[item],'value':item * 1}))
+                this.formData.cityId = this.cityOptions[0].value 
                 this.getGridData(this.pageItems);
             });
         },
@@ -288,7 +296,7 @@ export default {
         getGridData(params) {
             this.listLoading = true;
             this.searchParams = deepClone(params);
-            this.searchParams.cityId = this.selectData.value * 1
+            this.searchParams.cityId = this.formData.cityId
             getGridApi(ObjectMap(this.searchParams)).then(response => {
                 this.tableData = response.data.content;
                 this.total = response.data.totalElements;
@@ -300,7 +308,7 @@ export default {
             getGridApi({
                 pageNo:1,
                 pageSize:20,
-                cityId:this.selectData.value * 1,
+                cityId:this.formData.cityId,
                 status:2
             }).then(response => {
                 this.sort_tableData = response.data.content.sort((a,b) => a['sortNum'] * 1 - b['sortNum'] * 1);

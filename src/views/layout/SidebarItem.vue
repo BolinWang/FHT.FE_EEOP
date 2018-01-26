@@ -42,5 +42,9 @@
         display: block;
         text-indent: 10px;
     }
+    .el-submenu .el-menu-item{
+        padding: 0;
+        min-width: inherit;
+    }
 </style>
 
