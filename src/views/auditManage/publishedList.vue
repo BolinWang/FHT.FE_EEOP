@@ -183,9 +183,13 @@ export default {
             listLoading: true,
             data_detail:{
                 picList: [{
-                    src: 'https://placekitten.com/600/400'
+                    src: 'https://placekitten.com/600/400',
+                    w: 800,
+                    h: 600
                 }, {
-                    src: 'https://placekitten.com/1200/900'
+                    src: 'https://placekitten.com/1200/900',
+                    w: 800,
+                    h: 600
                 }]
             },
             showDetail_1: false,

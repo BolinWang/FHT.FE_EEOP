@@ -93,11 +93,15 @@ export default {
             handler(val){
                 this.data_detail = val;
                 this.$emit('handleEmit',{
-                    reject_remark: val.rejectRemark,
-                    status: this.status
+                    reject_remark: val.rejectRemark
                 });
             },
             deep:true
+        },
+        status(val){
+            this.$emit('handleEmit',{
+                status: val
+            });
         }
     }
 };

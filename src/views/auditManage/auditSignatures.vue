@@ -5,6 +5,7 @@
                 <el-date-picker
                     v-model="dateTime"
                     size="small"
+                    id="bolin"
                     type="datetimerange"
                     range-separator="至"
                     start-placeholder="开始日期"
@@ -249,7 +250,7 @@ export default {
             this.data_detail.principalIdCard = plusXing(this.data_detail.principalIdCard, 6, 4);
             let picList = (this.data_detail.licensePicUrls || this.data_detail.electronicSealUrl).split(',') || [];
             this.data_detail.picList = picList.map((item) => {
-                return ({'src': item})
+                return ({src: item, w: 800, h: 600})
             });
             this.currentIndex = index;
             this.layer_showInfo = true;
@@ -258,15 +259,19 @@ export default {
             this.data_detail = {};
         },
         handleEmit(val){
-            this.saveAuditParam.status = val.status;
-            this.saveAuditParam.reject_remark = val.reject_remark;
+            if(val.status){
+                this.saveAuditParam.status = val.status;
+            }
+            if (val.reject_remark) {
+                this.saveAuditParam.reject_remark = val.reject_remark;
+            }
         },
         saveAuditResult(){
             if (!this.saveAuditParam.status) {
                 this.$message.error('请选择审核结果');
                 return false;
             }
-            if (!this.saveAuditParam.reject_remark) {
+            if (this.saveAuditParam.status == 3 && !this.saveAuditParam.reject_remark) {
                 this.$message.error('请输入审核不通过原因');
                 return false;
             }

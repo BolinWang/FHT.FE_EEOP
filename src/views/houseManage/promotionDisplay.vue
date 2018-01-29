@@ -263,8 +263,9 @@ export default {
             this.temp.longitude = deepCloneObj.longitude;
             this.temp.latitude = deepCloneObj.latitude;
             this.temp.bmapData = this.temp.longitude + ',' + this.temp.latitude;
-            this.temp.picList = deepCloneObj.estatePictureList.length > 0 ? deepCloneObj.estatePictureList.map((item) => ({'src':item.smallImage})) :
-             [{src:noPic,isnoPic:true}];
+            this.temp.picList = deepCloneObj.estatePictureList.length > 0 ? deepCloneObj.estatePictureList.map((item) => ({
+                src: item.smallImage, w: 800, h: 600})) :
+             [{src:noPic, w: 800, h: 600, isnoPic:true}];
             this.layer_showInfo = true;
         },
         layerClose(){

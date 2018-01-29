@@ -39,12 +39,12 @@ export default {
             showOpacity: false
         }
     },
-    created(){
+    mounted(){
         this.list = deepClone(this.picList);
-        this.list.forEach((item,index) => {
-            item.w = 800;
-            item.h = 600;
-            item.opacityVal = '0';
+        this.list.forEach((item) => {
+            item.opacityVal = 0;
+            item.w = item.w || 800;
+            item.h = item.h || 600;
         });
     },
     methods:{
@@ -66,7 +66,7 @@ export default {
     },
     watch:{
         picList(val){
-            this.list = val;
+            this.list = val || [];
         }
     }
 }

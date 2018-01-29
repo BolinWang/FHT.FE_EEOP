@@ -121,7 +121,6 @@ import { ObjectMap, deepClone } from '@/utils'
 import { queryReviewCheckListByPageApi, saveReviewStatusApi } from '@/api/auditCenter'
 import { getCityListApi } from '@/api/houseManage'
 import waves from '@/directive/waves' // 水波纹指令
-import Preview from '@/components/Preview'
 import houseInfo from '@/views/auditManage/components/houseInfo'
 import estateInfo from '@/views/auditManage/components/estateInfo'
 
@@ -134,7 +133,6 @@ export default {
 	    }
 	},
     components:{
-        Preview,
         houseInfo,
         estateInfo
     },
@@ -242,7 +240,6 @@ export default {
                 housingType: this.housingType
             }).then(response => {
                 this.cityOptions = Object.keys(response.data).map((item) => ({'label':response.data[item],'value':item * 1}))
-                this.formData.cityId = this.cityOptions[0].value 
                 this.getGridData(this.pageItems);
             });
         },

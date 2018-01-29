@@ -1,6 +1,6 @@
 import fetch from '@/utils/fetch';
 
-/* 获取审核房源列表 */
+/* 获取房源审核列表 */
 export function queryReviewCheckListByPageApi(params = {}) {
     return fetch({
         url: '/api/market/review/',
@@ -12,7 +12,7 @@ export function queryReviewCheckListByPageApi(params = {}) {
     });
 }
 
-/* 审核结果编辑 */
+/* 房源审核结果编辑 */
 export function saveReviewStatusApi(params) {
     return fetch({
         url: '/api/market/review/',
