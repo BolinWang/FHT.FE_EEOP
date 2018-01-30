@@ -6,7 +6,7 @@
                     <div class="clearfix" style="margin-bottom: 10px;">
                         <el-button size="small" class="left" type="primary" icon="el-icon-search" v-waves @click.native="handleSearchParams">查询</el-button>
                         <el-button size="small" class="left" icon="el-icon-remove-outline" @click.native="handleReset">清空</el-button>
-                        <el-button size="small" class="left" type="primary" icon="el-icon-upload" v-waves @click.native="">导出</el-button>
+                        <el-button size="small" class="left" type="primary" icon="el-icon-upload" v-waves @click.native="handleExport">导出</el-button>
                     </div>
                     <el-date-picker
                         :clearable="clearable"
@@ -81,8 +81,9 @@
     </div>
 </template>
 <script>
-import waves from '@/directive/waves' // 水波纹指令
+import waves from '@/directive/waves'
 import { parseTime, ObjectMap, deepClone } from '@/utils'
+import { marketOrgHouseReportListApi } from '@/api/houseManage'
 
 export default {
     name: 'dataReport',
@@ -91,8 +92,9 @@ export default {
     },
     data() {
         return {
+            downloadLoading: false,
             colModels:[
-                { prop:'orgGmtCreate', label: '创建时间', width: 180},
+                { prop:'orgGmtCreateStr', label: '创建时间', width: 180},
                 { prop:'organizationName', label: '组织名称'},
                 { prop:'displayName', label: '组织缩写名'},
                 { prop:'orgTypeName', label: '组织类型'},
@@ -155,9 +157,6 @@ export default {
     },
     methods: {
         /* 查询列表 */
-        change(value) {
-            this.getGridData(this.pageItems);
-        },
         handleSizeChange(val) {
             this.pageItems.pageSize = val;
             this.getGridData(this.pageItems);
@@ -172,22 +171,50 @@ export default {
             this.formData = {}; 
             this.getGridData(this.pageItems);
         },
+        /* 导出 */
+        handleExport() {
+            this.downloadLoading = true
+            this.searchParams = Object.assign({
+                pageNo: 1,
+                pageSize: 999999,
+            }, this.formData);
+            marketOrgHouseReportListApi(ObjectMap(this.searchParams)).then(response => {
+                response.data.list.map((item,index) => {
+                    item.index = index * 1 + 1; 
+                })
+                require.ensure([], () => {
+                    const { export_json_to_excel } = require('@/vendor/Export2Excel')
+                    const tHeader = [
+                        "序号", "创建日期", "组织名称", "组织缩写名", "组织类型", "手机号码", "法人姓名","公寓数", "公寓房间数", 
+                        "分散式套数（非金融）", "分散式间数（非金融）","分散式套数（金融）", "分散式间数 (金融）" ];
+                    const filterVal = [
+                        'index', 'orgGmtCreateStr', 'organizationName', 'displayName', 'orgTypeName', 
+                        'orgContactMobile', 'orgLegalPersonName', 'estateCount', 'estateRoomCount', 'houseCount', 
+                        'houseRoomCount', 'financehouseCount', 'financeRoomCount'
+                    ];
+                    const data = this.formatJson(filterVal, response.data.list || [])
+                    export_json_to_excel(tHeader, data, new Date().getTime(), '组织房源信息表')
+                    this.downloadLoading = false
+                })
+            })
+        },
+        formatJson(filterVal, jsonData) {
+            return jsonData.map(v => filterVal.map(j => {
+                return v[j]
+            }))
+        },
         handleSearchParams(){
             this.getGridData(this.pageItems);
         },
         /* 列表渲染，数据请求 */
         getGridData(params) {
             this.listLoading = true;
-            this.searchParams = deepClone(params);
-            
-            this.tableData = [{ "organizationId": 1, "organizationName": "杭州复恒科技有限公司", "displayName": "复恒", "orgLegalPersonName": null, "orgContactMobile": "18867118214", "orgType": 1, "orgTypeName": "系统", "orgGmtCreate": 1483200000000, "orgGmtCreateStr": "2017-01-01 00:00:00", "estateCount": 1, "estateRoomCount": 24, "houseCount": 2, "houseRoomCount": 3, "financehouseCount": 2, "financeRoomCount": 2 }, { "organizationId": 2, "organizationName": "浙江麦家商业管理有限公司", "displayName": "麦家", "orgLegalPersonName": "曾添", "orgContactMobile": "18758160967", "orgType": 2, "orgTypeName": "公司企业", "orgGmtCreate": 1483200000000, "orgGmtCreateStr": "2017-01-01 00:00:00", "estateCount": 169, "estateRoomCount": 14102, "houseCount": 167, "houseRoomCount": 317, "financehouseCount": 61, "financeRoomCount": 98 }, { "organizationId": 3, "organizationName": "磐谷分期", "displayName": "磐谷", "orgLegalPersonName": "王飞飞", "orgContactMobile": "18870447515", "orgType": 2, "orgTypeName": "公司企业", "orgGmtCreate": 1483200000000, "orgGmtCreateStr": "2017-01-01 00:00:00", "estateCount": 0, "estateRoomCount": 0, "houseCount": 0, "houseRoomCount": 0, "financehouseCount": 0, "financeRoomCount": 0 }, { "organizationId": 3, "organizationName": "磐谷分期", "displayName": "磐谷", "orgLegalPersonName": "王飞飞", "orgContactMobile": "18262297881", "orgType": 2, "orgTypeName": "公司企业", "orgGmtCreate": 1483200000000, "orgGmtCreateStr": "2017-01-01 00:00:00", "estateCount": 0, "estateRoomCount": 0, "houseCount": 0, "houseRoomCount": 0, "financehouseCount": 0, "financeRoomCount": 0 }, { "organizationId": 4, "organizationName": "成都有家商业管理有限公司", "displayName": "成都有家", "orgLegalPersonName": "王飞飞", "orgContactMobile": "18262297911", "orgType": 2, "orgTypeName": "公司企业", "orgGmtCreate": 1483200000000, "orgGmtCreateStr": "2017-01-01 00:00:00", "estateCount": 6, "estateRoomCount": 83, "houseCount": 7, "houseRoomCount": 17, "financehouseCount": 9, "financeRoomCount": 16 }, { "organizationId": 31, "organizationName": "满城", "displayName": "满城", "orgLegalPersonName": "付尖兵", "orgContactMobile": "18158714466", "orgType": 2, "orgTypeName": "公司企业", "orgGmtCreate": 1491815421000, "orgGmtCreateStr": "2017-04-10 17:10:21", "estateCount": 1, "estateRoomCount": 50, "houseCount": 0, "houseRoomCount": 0, "financehouseCount": 1, "financeRoomCount": 1 }, { "organizationId": 95, "organizationName": "liyishi", "displayName": null, "orgLegalPersonName": null, "orgContactMobile": "13588118185", "orgType": 3, "orgTypeName": "个人组织", "orgGmtCreate": 1495627931000, "orgGmtCreateStr": "2017-05-24 20:12:11", "estateCount": 1, "estateRoomCount": 35, "houseCount": 2, "houseRoomCount": 4, "financehouseCount": 0, "financeRoomCount": 0 }, { "organizationId": 98, "organizationName": "test组织", "displayName": "test组织", "orgLegalPersonName": "王飞飞", "orgContactMobile": "13000000001", "orgType": 2, "orgTypeName": "公司企业", "orgGmtCreate": 1495693805000, "orgGmtCreateStr": "2017-05-25 14:30:05", "estateCount": 0, "estateRoomCount": 0, "houseCount": 0, "houseRoomCount": 0, "financehouseCount": 0, "financeRoomCount": 0 }, { "organizationId": 128, "organizationName": "程翠", "displayName": "程翠", "orgLegalPersonName": null, "orgContactMobile": "18657107604", "orgType": 3, "orgTypeName": "个人组织", "orgGmtCreate": 1497239982000, "orgGmtCreateStr": "2017-06-12 11:59:42", "estateCount": 0, "estateRoomCount": 0, "houseCount": 0, "houseRoomCount": 0, "financehouseCount": 0, "financeRoomCount": 0 }, { "organizationId": 129, "organizationName": "李绍光", "displayName": "18667100809", "orgLegalPersonName": null, "orgContactMobile": "18667100805", "orgType": 3, "orgTypeName": "个人组织", "orgGmtCreate": 1497263292000, "orgGmtCreateStr": "2017-06-12 18:28:12", "estateCount": 1, "estateRoomCount": 25, "houseCount": 2, "houseRoomCount": 2, "financehouseCount": 1, "financeRoomCount": 2 }, { "organizationId": 145, "organizationName": "程翠", "displayName": "程翠", "orgLegalPersonName": null, "orgContactMobile": "13512341243", "orgType": 3, "orgTypeName": "个人组织", "orgGmtCreate": 1497952643000, "orgGmtCreateStr": "2017-06-20 17:57:23", "estateCount": 0, "estateRoomCount": 0, "houseCount": 0, "houseRoomCount": 0, "financehouseCount": 0, "financeRoomCount": 0 }, { "organizationId": 151, "organizationName": "18867118217", "displayName": "18867118217", "orgLegalPersonName": null, "orgContactMobile": "18867118217", "orgType": 3, "orgTypeName": "个人组织", "orgGmtCreate": 1498096461000, "orgGmtCreateStr": "2017-06-22 09:54:21", "estateCount": 0, "estateRoomCount": 0, "houseCount": 0, "houseRoomCount": 0, "financehouseCount": 0, "financeRoomCount": 0 }, { "organizationId": 152, "organizationName": "程翠", "displayName": "程翠", "orgLegalPersonName": null, "orgContactMobile": "13429166686", "orgType": 3, "orgTypeName": "个人组织", "orgGmtCreate": 1498183676000, "orgGmtCreateStr": "2017-06-23 10:07:56", "estateCount": 0, "estateRoomCount": 0, "houseCount": 0, "houseRoomCount": 0, "financehouseCount": 0, "financeRoomCount": 0 }, { "organizationId": 153, "organizationName": "css", "displayName": "cscs", "orgLegalPersonName": "程翠", "orgContactMobile": "13419156686", "orgType": 2, "orgTypeName": "公司企业", "orgGmtCreate": 1498184403000, "orgGmtCreateStr": "2017-06-23 10:20:03", "estateCount": 0, "estateRoomCount": 0, "houseCount": 0, "houseRoomCount": 0, "financehouseCount": 0, "financeRoomCount": 0 }, { "organizationId": 154, "organizationName": "测试", "displayName": "12", "orgLegalPersonName": "程翠", "orgContactMobile": "18867119999", "orgType": 2, "orgTypeName": "公司企业", "orgGmtCreate": 1498184441000, "orgGmtCreateStr": "2017-06-23 10:20:41", "estateCount": 0, "estateRoomCount": 0, "houseCount": 0, "houseRoomCount": 0, "financehouseCount": 0, "financeRoomCount": 0 }, { "organizationId": 155, "organizationName": "cs", "displayName": "scs", "orgLegalPersonName": "程翠", "orgContactMobile": "13999888888", "orgType": 2, "orgTypeName": "公司企业", "orgGmtCreate": 1498443784000, "orgGmtCreateStr": "2017-06-26 10:23:04", "estateCount": 0, "estateRoomCount": 0, "houseCount": 0, "houseRoomCount": 0, "financehouseCount": 0, "financeRoomCount": 0 }, { "organizationId": 157, "organizationName": "13512345678", "displayName": "13512345678", "orgLegalPersonName": null, "orgContactMobile": "13512345678", "orgType": 3, "orgTypeName": "个人组织", "orgGmtCreate": 1498526033000, "orgGmtCreateStr": "2017-06-27 09:13:53", "estateCount": 1, "estateRoomCount": 15, "houseCount": 3, "houseRoomCount": 3, "financehouseCount": 0, "financeRoomCount": 0 }, { "organizationId": 158, "organizationName": "cs", "displayName": "Cs", "orgLegalPersonName": "程翠", "orgContactMobile": "18867999999", "orgType": 2, "orgTypeName": "公司企业", "orgGmtCreate": 1498526181000, "orgGmtCreateStr": "2017-06-27 09:16:21", "estateCount": 1, "estateRoomCount": 10, "houseCount": 0, "houseRoomCount": 0, "financehouseCount": 0, "financeRoomCount": 0 }, { "organizationId": 165, "organizationName": "17681887405", "displayName": "17681887405", "orgLegalPersonName": null, "orgContactMobile": "17681887405", "orgType": 3, "orgTypeName": "个人组织", "orgGmtCreate": 1498527883000, "orgGmtCreateStr": "2017-06-27 09:44:43", "estateCount": 0, "estateRoomCount": 0, "houseCount": 0, "houseRoomCount": 0, "financehouseCount": 0, "financeRoomCount": 0 }, { "organizationId": 166, "organizationName": "cs", "displayName": "cs", "orgLegalPersonName": "程翠", "orgContactMobile": "15313705803", "orgType": 2, "orgTypeName": "公司企业", "orgGmtCreate": 1498527996000, "orgGmtCreateStr": "2017-06-27 09:46:36", "estateCount": 24, "estateRoomCount": 77, "houseCount": 15, "houseRoomCount": 24, "financehouseCount": 25, "financeRoomCount": 62 }];
-            this.total = 20;
-            this.listLoading = false;
-            /*getGridApi(ObjectMap(this.searchParams)).then(response => {
-                this.tableData = response.data.content;
-                this.total = response.data.totalElements;
+            this.searchParams = Object.assign(deepClone(params),this.formData);
+            marketOrgHouseReportListApi(ObjectMap(this.searchParams)).then(response => {
+                this.tableData = response.data.list;
+                this.total = response.data.record;
                 this.listLoading = false;
-            })*/
+            })
         }
     },
     watch:{

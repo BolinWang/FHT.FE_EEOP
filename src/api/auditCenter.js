@@ -49,3 +49,18 @@ export function signaturesListsApi(params) {
     });
 }
 
+/* 实名认证 */
+export function upgradeRealNameApi(params) {
+    return fetch({
+        url: '/api/market/audit/',
+        method: 'post',
+        data: {
+            method: 'upgradeRealName',
+            params
+        }
+    });
+}
+
+
+
+

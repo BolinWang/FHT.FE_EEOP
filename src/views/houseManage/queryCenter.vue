@@ -30,11 +30,10 @@
                 <el-button plain size="small" icon="el-icon-remove-outline" @click.native="clearForm">清空</el-button>
             </el-form>
         </div>
-        <query-center-comp :housing-type="housingType"  @housingTypeChange="housingTypeChange"></query-center-comp>
+        <query-center-comp :housing-type="housingType" @housingTypeChange="housingTypeChange"></query-center-comp>
     </div>
 </template>
 <script>
-import fetch from '@/utils/fetch';
 import waves from '@/directive/waves' // 水波纹指令
 import queryCenterComp from './components/queryCenterComp'
 

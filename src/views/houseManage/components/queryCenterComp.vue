@@ -50,7 +50,7 @@
                 @size-change="handleSizeChange" 
                 @current-change="handleCurrentChange" 
                 :current-page.sync="pageItems.pageNo"
-                :page-sizes="pageItems.pageSizeList" 
+                :page-sizes="pageSizeList" 
                 :page-size="pageItems.pageSize" 
                 layout="total, sizes, prev, pager, next, jumper" 
                 :total="total">
@@ -59,7 +59,8 @@
     </div>
 </template>
 <script>
-import fetch from '@/utils/fetch';
+import { marketCityAndSubdistrictListApi, marketReviewCheckListByPageApi } from '@/api/houseManage'
+import { parseTime, ObjectMap, deepClone } from '@/utils'
 
 export default {
     name: 'queryCenterComp',
@@ -97,17 +98,19 @@ export default {
             tableHeight: 300,
             tableData: [],
             housingTypeClone: this.housingType,
+            searchParams: {},
             total: null,
             pageItems: {
                 pageNo: 1,
-                pageSize: 20,
-                pageSizeList: [10, 20, 30, 50]
+                pageSize: 20
             },
+            pageSizeList: [10, 20, 30, 50],
             listLoading: true
         }
     },
     created() {
-        this.getGridData();
+        this.getCityAndEstateList();
+        this.getGridData(this.pageItems);
     },
     mounted() {
         /* 表格高度控制 */
@@ -129,30 +132,31 @@ export default {
         }
     },
     methods: {
-        /* 分页 */
+        /* 获取城市列表 */
+        getCityAndEstateList(){
+            marketCityAndSubdistrictListApi({
+                housingType: this.housingTypeClone
+            }).then(response => {
+
+            })
+        },
+        /* 查询列表 */
         handleSizeChange(val) {
-            console.log(`每页 ${val} 条`);
+            this.pageItems.pageSize = val;
+            this.getGridData(this.pageItems);
         },
         handleCurrentChange(val) {
-            console.log(`当前页: ${val}`);
+            this.pageItems.pageNo = val;
+            this.getGridData(this.pageItems);
         },
         /* 列表渲染 */
-        getGridData(value) {
+        getGridData(params) {
             this.listLoading = true;
-            fetch({
-                url: '/table/list',
-                method: 'get',
-                params: {
-                    status:value
-                }
-            }).then(response => {
-                this.tableData = response.data.items;
-                this.total = this.tableData.length;
-                this.tableData.forEach(function(item,index){
-                    item.picUrl = 'http://imgtest.memorhome.com/20171128114234448591';
-                    item.linkUrl = 'http://www.mdguanjia.com/waptest/activePages/inviteModule/index.html';
-                    item.effectiveTime = 1512027461000;
-                });
+            this.searchParams = deepClone(params);
+            this.searchParams.housingType = this.housingTypeClone
+            marketReviewCheckListByPageApi(ObjectMap(this.searchParams)).then(response => {
+                this.tableData = response.data.content;
+                this.total = response.data.totalElements;
                 this.listLoading = false;
             })
         }
@@ -161,7 +165,7 @@ export default {
         housingType(val){
             this.$nextTick(() => {
                 this.housingTypeClone = val;
-                this.getGridData();
+                this.getGridData(this.pageItems);
                 this.$emit('housingTypeChange',this.housingTypeClone);
             })
         }

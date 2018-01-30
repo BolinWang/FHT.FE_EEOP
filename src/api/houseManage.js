@@ -36,3 +36,39 @@ export function saveDataApi(params) {
     });
 }
 
+/* 房源数据报表列表 */
+export function marketOrgHouseReportListApi(params) {
+    return fetch({
+        url: '/api/market/report/',
+        method: 'post',
+        data: {
+            method: 'marketOrgHouseReportList',
+            params
+        }
+    });
+}
+
+/* 查询中心 城市公寓列表 */
+export function marketCityAndSubdistrictListApi(params) {
+    return fetch({
+        url: '/api/market/center/',
+        method: 'post',
+        data: {
+            method: 'marketCityAndSubdistrictList',
+            params
+        }
+    });
+}
+
+/* 查询中心 房源列表 */
+export function marketReviewCheckListByPageApi(params) {
+    return fetch({
+        url: '/api/market/center/',
+        method: 'post',
+        data: {
+            method: 'marketReviewCheckListByPage',
+            params
+        }
+    });
+}
+

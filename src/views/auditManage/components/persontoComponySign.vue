@@ -44,8 +44,10 @@
             <el-col :span="1">&nbsp;</el-col>
             <el-col :span="12">
                 <el-form-item label="法人身份证">
-                    <el-input v-model="data_detail.principalIdCard" :disabled="true">
-                        <el-button type="primary" slot="append">实名校验</el-button>
+                    <el-input v-model="data_detail.principalIdCard" :disabled="true" class="realNameAuth">
+                        <el-tag v-if="data_detail.realNameAuth == 0" type="info" slot="append" @click.native="upgradeRealName">实名认证</el-tag>
+                        <el-tag v-else-if="data_detail.realNameAuth == 1" type="success" slot="append">实名通过</el-tag>
+                        <el-tag v-else type="danger" slot="append">实名失败</el-tag>
                     </el-input>
                 </el-form-item>
             </el-col>
@@ -70,7 +72,7 @@
         </el-form-item>
         <el-form-item label="审核结果">
             <el-radio-group v-if="data_detail.status == 1" v-model="status">
-                <el-radio :label="2">通过</el-radio>
+                <el-radio v-if="data_detail.realNameAuth != 2" :label="2">通过</el-radio>
                 <el-radio :label="3">不通过</el-radio>
             </el-radio-group>
             <el-tag v-else :type="data_detail.status | statusFilter">
@@ -80,6 +82,7 @@
             </el-input>
             <el-input style="display: inline-block; width:405px; padding-left: 10px;" 
                 v-if="status == 3" placeholder="请输入审核不通过原因" 
+                :autofocus="autofocus"
                 v-model="data_detail.rejectRemark">
             </el-input>
         </el-form-item>
@@ -87,6 +90,7 @@
 </template>
 <script>
 import Preview from '@/components/Preview'
+import { upgradeRealNameApi } from '@/api/auditCenter'
 
 export default {
     name: 'persontoComponySign',
@@ -118,7 +122,8 @@ export default {
     data() {
         return {
             data_detail: {},
-            status: ''
+            status: '',
+            autofocus: false,
         }
     },
     created(){
@@ -128,14 +133,25 @@ export default {
         
     },
     methods: {
-    
+        upgradeRealName(){
+            upgradeRealNameApi({
+                auditId: this.data_detail.id
+            }).then(response => {
+                this.data_detail.realNameAuth = response.data.data.result ? 1 : 2;
+                if ( this.data_detail.realNameAuth == 2) {
+                    this.status = 3;
+                    this.autofocus = true;
+                }
+            })
+        }
     },
     watch:{
         dataSign:{
             handler(val){
                 this.data_detail = val;
                 this.$emit('handleEmit',{
-                    reject_remark: val.rejectRemark
+                    reject_remark: val.rejectRemark,
+                    realNameAuth: val.realNameAuth
                 });
             },
             deep:true
@@ -151,5 +167,20 @@ export default {
 <style rel="stylesheet/scss" lang="scss">
     .el-tag {
         margin: 0 5px 5px 0;
+    }
+    .realNameAuth{
+        .el-input-group__append{
+            padding: 0;
+            border: 0;
+            .el-tag {
+                margin: 0;
+                border-left: 0;
+                border-top-left-radius: 0;
+                border-bottom-left-radius: 0;
+                &.el-tag--info{
+                    cursor: pointer
+                }
+            }
+        }
     }
 </style>
