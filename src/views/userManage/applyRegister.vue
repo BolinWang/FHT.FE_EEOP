@@ -139,7 +139,7 @@ export default {
                 { prop:'houseAmount', label: '房源数量', width: 100},
                 { prop:'gmtCreate', label: '申请时间', width: 180},
                 { prop:'requestStatus', label: '联系状态', width: 100, type: 'status'},
-                { prop:'operator', label: '操作人'},
+                { prop:'operatorName', label: '操作人'},
                 { prop:'gmtModified', label: '操作时间', width: 180}
             ],
             tableHeight: 300,
