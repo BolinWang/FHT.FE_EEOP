@@ -53,15 +53,11 @@
                         </span>
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" width="122">
+                <el-table-column label="操作" width="180">
                     <template slot-scope="scope">
                         <el-button-group>
-                            <el-tooltip effect="dark" content="编辑" placement="bottom">
-                                <el-button type="primary" icon="el-icon-edit" size="small" @click.native="updateRow(scope.$index,scope.row)"></el-button>
-                            </el-tooltip>
-                            <el-tooltip effect="dark" content="删除" placement="bottom">
-                                <el-button type="danger" icon="el-icon-delete" size="small" @click.native="deleteRow(scope.$index,scope.row)"></el-button>
-                            </el-tooltip>
+                            <el-button type="primary" icon="el-icon-edit" size="small" @click.native="updateRow(scope.$index,scope.row)">编辑</el-button>
+                            <el-button type="danger" icon="el-icon-delete" size="small" @click.native="deleteRow(scope.$index,scope.row)">删除</el-button>
                         </el-button-group>
                     </template>
                 </el-table-column>
@@ -131,7 +127,7 @@
                             :file-list="fileList"
                             accept="image/jpg,image/jpeg,image/png"
                             list-type="picture">
-                            <el-button size="small" type="primary">点击上传</el-button>
+                            <el-button size="small" type="primary" icon="el-icon-upload">{{btnText}}</el-button>
                             <div slot="tip" class="el-upload__tip">{{uploadTips}}</div>
                         </el-upload>
                     </el-form-item>
@@ -150,7 +146,7 @@
                             :file-list="thumFileList"
                             accept="image/jpg,image/jpeg,image/png"
                             list-type="picture">
-                            <el-button size="small" type="primary">点击上传</el-button>
+                            <el-button size="small" type="primary" icon="el-icon-upload">{{btnText}}</el-button>
                             <div slot="tip" class="el-upload__tip">请上传350 * 350的jpg/png图片，且不超过500kb</div>
                         </el-upload>
                     </el-form-item>
@@ -261,6 +257,7 @@ export default {
                 update: '编辑',
                 create: '新增'
             },
+            btnText: '',
             uploadTips: '',
             isShowSortApp: true,
             dialogStatus: '',
@@ -436,6 +433,9 @@ export default {
         },
         /* 查看图片 */
         showImage(picUrl){
+            if(!picUrl){
+                return false;
+            }
             this.showPicUrl = picUrl;
             this.layer_showImage = true;
         },
@@ -488,6 +488,7 @@ export default {
             this.resetTemp();
             this.layer_showInfo = true;
             this.dialogStatus = 'create';
+            this.btnText = '上传图片'
             this.$nextTick(() => {
                 this.$refs['dataForm'].clearValidate()
             });
@@ -496,12 +497,13 @@ export default {
         updateRow(index,row){
             this.layer_showInfo = true;
             this.dialogStatus = 'update';
+            this.btnText = '替换图片'
             this.editRowIndex = index;
             if (row.picUrl) {
                 this.fileList = [{name: '查看图片', url: row.picUrl}];
             }
             if (row.thumbnail) {
-                this.fileList = [{name: '查看缩略图', url: row.thumbnail}];
+                this.thumFileList = [{name: '查看缩略图', url: row.thumbnail}];
             }
             this.temp = Object.assign({}, row);
             this.$nextTick(() => {

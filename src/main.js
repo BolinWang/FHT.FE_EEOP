@@ -20,7 +20,7 @@ Vue.config.productionTip = false
 Vue.use(ElementUI);
 Vue.use(VuePreview);
 Vue.use(VueLazyload,{
-    error: errorPic,
+   /* error: errorPic,*/
     loading: loadingPic
 });
 Vue.component('icon-svg', IconSvg)

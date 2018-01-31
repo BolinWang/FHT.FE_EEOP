@@ -298,6 +298,9 @@ export default {
         },
         /* 查看图片 */
         showImage(picUrl){
+            if (!picUrl) {
+                return false;
+            }
             this.showPicUrl = picUrl;
             this.layer_showImage = true;
         },
