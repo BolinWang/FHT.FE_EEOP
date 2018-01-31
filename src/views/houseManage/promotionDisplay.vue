@@ -238,7 +238,7 @@ export default {
             getCityListApi({
                 housingType: 1
             }).then(response => {
-                this.cityOptions = Object.keys(response.data).map((item) => ({'label':response.data[item],'value':item * 1}))
+                this.cityOptions = response.data.list.map((item) => ({'label':item.areaName,'value':item.areaId}))
                 this.formData.cityId = this.cityOptions[0].value 
                 this.getGridData(this.pageItems);
             });

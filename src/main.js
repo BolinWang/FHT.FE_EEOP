@@ -12,12 +12,17 @@ import { getSessionId } from '@/utils/auth'
 import * as filters from './filters'
 import VuePreview from 'vue-preview'
 import VueLazyload from 'vue-lazyload'
+import errorPic from '@/assets/error.png'
+import loadingPic from '@/assets/loading.png'
 
 Vue.config.productionTip = false
 
 Vue.use(ElementUI);
 Vue.use(VuePreview);
-Vue.use(VueLazyload);
+Vue.use(VueLazyload,{
+    error: errorPic,
+    loading: loadingPic
+});
 Vue.component('icon-svg', IconSvg)
 
 Object.keys(filters).forEach(key => {

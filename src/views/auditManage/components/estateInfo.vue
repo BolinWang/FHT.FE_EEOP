@@ -1,22 +1,22 @@
 <template>
-    <el-form size="small" :model="temp" label-position="left" label-width="70px" style='width: 640px; margin-left:20px;'>
+    <el-form size="small" :model="temp" label-position="left" label-width="70px">
         <div class="clearfix">
             <el-col :span="13">
                 <el-form-item label="公寓名称">
-                    <el-input :value="temp.addressName" :disabled="true"></el-input>
+                    <el-input :value="temp.estateName" :disabled="true"></el-input>
                 </el-form-item>
             </el-col>
             <el-col :span="1">&nbsp;&nbsp;</el-col>
             <el-col :span="10">
                 <el-form-item label="看房电话">
-                    <el-input :value="temp.zoneName" :disabled="true"></el-input>
+                    <el-input :value="temp.contactInfo" :disabled="true"></el-input>
                 </el-form-item>
             </el-col>
         </div>
         <div class="clearfix">
             <el-col :span="17">
                 <el-form-item label="房源地址">
-                    <el-input :value="temp.addressName" :disabled="true"></el-input>
+                    <el-input :value="temp.estateAddress" :disabled="true"></el-input>
                 </el-form-item>
             </el-col>
             <el-col :span="1">&nbsp;&nbsp;</el-col>
@@ -31,17 +31,17 @@
             </el-input>
         </el-form-item>
         <el-form-item label="配套服务">
-            <el-tag type="success" v-for="(item,index) in services" key="index">
+            <el-tag v-for="(item,index) in temp.services" key="index">
                 {{item}}
             </el-tag>
         </el-form-item>
         <el-form-item label="门店服务">
-            <el-tag type="success" v-for="(item,index) in storeServices" key="index">
+            <el-tag v-for="(item,index) in temp.storeServices" key="index">
                 {{item}}
             </el-tag>
         </el-form-item>
         <el-form-item label="周边设施">
-            <el-tag type="success" v-for="(item,index) in surroundings" key="index">
+            <el-tag v-for="(item,index) in temp.surroundings" key="index">
                 {{item}}
             </el-tag>
         </el-form-item>
@@ -51,15 +51,19 @@
                 </el-input>
             </el-col>
         </el-form-item>
+        <el-form-item v-if="type == 'published'" label="操作">
+            <el-checkbox v-model="checked">立即下架</el-checkbox>
+        </el-form-item>
         <el-form-item label="房型照片">
-            <Preview :pic-list="temp.picList"></Preview>
+            <Preview :pic-list="temp.picList" :delete-icon="`delete`" @emitPicList="emitPicList"></Preview>
         </el-form-item>
         <el-form-item label="关联房间" style="margin-bottom: 0"></el-form-item>
         <div class="model-table">
             <el-table 
-                :data="tableData" 
+                :data="temp.roomList" 
                 v-loading.body="listLoading" 
                 size="small"
+                max-height="300"
                 fit stripe highlight-current-row>
                 <el-table-column type="index" width="60" align="center"></el-table-column>
                 <el-table-column v-for="(item,index) in colModels"
@@ -69,7 +73,10 @@
                     fit
                     show-overflow-tooltip>
                     <template slot-scope="scope">
-                        <span>
+                        <span v-if="item.type === 'formatTime'">
+                            {{scope.row[item.prop] | parseTime()}}
+                        </span>
+                        <span v-else>
                             {{scope.row[item.prop]}}
                         </span>
                     </template>
@@ -80,6 +87,7 @@
 </template>
 <script>
 import Preview from '@/components/Preview'
+import { parseTime, ObjectMap, deepClone } from '@/utils'
 
 export default {
     name: 'houseInfo',
@@ -87,6 +95,12 @@ export default {
         type:{
             type: String,
             default: 'audit'
+        },
+        tempData: {
+            type: Object,
+            default:function(){
+                return {}
+            }
         }
     },
     components:{
@@ -94,30 +108,60 @@ export default {
     },
     data() {
         return {
-            temp: {},
-            tableData: [],
+            temp: this.tempData,
             listLoading: false,
-            services: ["柏林",'bolin',"柏林",'bolin',"柏林",'bolin',"柏林",'bolin',"柏林",'bolin',"柏林",'bolin',"柏林",'bolin',"柏林",'bolin',"柏林",'bolin',"柏林",'bolin',"柏林",'bolin',"柏林",'bolin'],
-            storeServices: ["柏林",'bolin'],
-            surroundings: ["柏林",'bolin'],
+            checked: false,
+            deleteIds: [],
             colModels:[
-                { prop:'province', label: '房号'},
-                { prop:'estateName', label: '室卫厅'},
-                { prop:'styleName', label: '朝向'},
-                { prop:'roomCount', label: '面积(㎡)'},
-                { prop:'styleName', label: '房源编号'},
-                { prop:'publishTime', label: '发布时间', width: 170}
+                { prop:'roomNo', label: '房号'},
+                { prop:'roomInfo', label: '室卫厅'},
+                { prop:'decorationDegree', label: '朝向'},
+                { prop:'roomArea', label: '面积(㎡)'},
+                { prop:'roomCode', label: '房源编号'},
+                { prop:'publishTime', label: '发布时间', width: 170, type: 'formatTime'}
             ]
         }
     },
     created(){
-
-    },
-    mounted() {
-        
+        let picList = this.temp.roomTypePicUrls || [];
+        this.temp.picList = picList.map((item) => {
+            return {id: item.id, src: item.picUrl, w: 800, h: 600}
+        });
     },
     methods: {
-    
+        emitPicList(val,id){
+            this.temp.picList = val
+            this.deleteIds.push(id)
+        }
+    },
+    watch:{
+        tempData:{
+            handler(val){
+                this.temp = val;
+                this.checked = false;
+                this.deleteIds = [];
+                let picList = val.roomTypePicUrls || [];
+                this.temp.picList = picList.map((item) => {
+                    return {src: item.picUrl, w: 800, h: 600, id: item.id}
+                });
+            },
+            deep:true
+        },
+        checked(val){
+            if (this.type == 'published') {
+                this.$emit('saveReviewData',{
+                    checked: val,
+                    type: 'pulished'
+                });
+            }
+        },
+        deleteIds(val){
+            let deleteIds = Array.from(new Set(val)).join(',')
+            this.$emit('saveReviewData',{
+                ids: deleteIds,
+                type: 'pulished'
+            });
+        }
     }
 };
 </script>

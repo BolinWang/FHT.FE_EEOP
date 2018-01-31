@@ -10,9 +10,11 @@
                 <span class="preview-item__item-preview" @click="handlePreview(index)">
                     <i class="el-icon-zoom-in"></i>
                 </span>
-                <!-- <span class="preview-item__item-delete">
+                <span v-if="deleteFlag == 'delete' && !item.isnoPic" class="preview-item__item-delete"
+                    @click="handleDelete(index,item)"
+                >
                     <i class="el-icon-delete"></i>
-                </span> -->
+                </span>
             </span>
         </li>
     </ul>
@@ -27,6 +29,10 @@ export default {
             default: function(){
                 return [];
             }
+        },
+        deleteIcon:{
+            type: String,
+            default: ''
         }
     },
     data() {
@@ -36,11 +42,13 @@ export default {
                 errorMsg: `<div class="pswp__error-msg" style="width:auto;height:auto;"><a href="%url%" target="_blank">图片</a>加载失败</div>`
             },*/
             list: [],
+            deleteFlag: '',
             showOpacity: false
         }
     },
     mounted(){
         this.list = deepClone(this.picList);
+        this.deleteFlag = this.deleteIcon;
         this.list.forEach((item) => {
             item.opacityVal = 0;
             item.w = item.w || 800;
@@ -57,11 +65,23 @@ export default {
             this.$set(this.list,index,item)
         },
         handlePreview(index){
-            if (this.picList.length == 1 && this.picList[0].isnoPic) {
-                this.$message.error('友情提示：暂无图片');
+            if (this.list.length == 1 && this.list[0].isnoPic) {
+                this.$message.warning('友情提示：暂无图片');
                 return false;
             }
             this.$preview.open(index, this.list)
+        },
+        handleDelete(index,item){
+            this.$confirm('是否删除?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                this.list.splice(index,1);
+                this.$emit('emitPicList', this.list, item.id)
+            }).catch(() => {
+                       
+            });
         }
     },
     watch:{

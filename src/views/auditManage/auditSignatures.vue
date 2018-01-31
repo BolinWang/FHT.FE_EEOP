@@ -262,7 +262,7 @@ export default {
             if(val.status){
                 this.saveAuditParam.status = val.status;
             }
-            if (val.reject_remark) {
+            if (val.reject_remark && this.saveAuditParam.status == 3) {
                 this.saveAuditParam.reject_remark = val.reject_remark;
             }
         },

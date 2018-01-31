@@ -12,22 +12,23 @@
                         :value="item.value">
                     </el-option>
                 </el-select>
-                <el-select v-if="type == 2" size="small" v-model="formData.reviewStatus" 
-                    placeholder="审核状态" class="item-select filter-item" style="width: 150px;"
-                    clearable>
-                    <el-option
-                        v-for="item in auditOptions"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value">
-                    </el-option>
-                </el-select>
                 <el-select v-if="type == 2" size="small" v-model="formData.houseFinanceType" 
                     placeholder="房源类型" class="item-select 
                     filter-item" style="width: 150px;"
                     clearable>
                     <el-option
                         v-for="item in houseFinanceOptions"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value">
+                    </el-option>
+                </el-select>
+                <el-select v-if="type == 2" size="small" v-model="formData.houseRentType" 
+                    placeholder="房源类别" class="item-select 
+                    filter-item" style="width: 150px;"
+                    clearable>
+                    <el-option
+                        v-for="item in houseRentTypeOptions"
                         :key="item.value"
                         :label="item.label"
                         :value="item.value">
@@ -49,33 +50,28 @@
 	            size="small"
 	            fit stripe highlight-current-row>
 	            <el-table-column type="index" width="60" align="center"></el-table-column>
-	            <el-table-column v-for="(item,index) in colModels[type]"
+	            <el-table-column v-for="(item,index) in colModels"
 	                :label="item.label" 
 	                :width="item.width"
 	                key="index"
 	                fit
 	                :show-overflow-tooltip="!item.toolTip">
 	                <template slot-scope="scope">
-	                    <span v-if="item.type === 'formatHouseResource'">
-                            {{scope.row[item.prop] | formatHouseResource(scope.row)}}
+                        <img class="image image-center" width="40" height="40"
+                            v-if="item.type === 'img'"
+                            v-lazy="scope.row[item.prop][0]"
+                            @click="showImage(scope.row[item.prop][0])" /> 
+                        <span v-else-if="item.type === 'tags'" >
+                            <el-tag style="margin: 0 5px 5px 0;"
+                                v-for="(tag,tagIndex) in scope.row.tags"
+                                :type="tag | filterTags"
+                                key="tagIndex">
+                                {{tag}}
+                            </el-tag>
                         </span>
                         <span v-else-if="item.type === 'formatTime'">
-                            {{scope.row[item.prop] | formatTime(item.prop,scope.row)}}
+                            {{scope.row[item.prop] | parseTime()}}
                         </span>
-	                    <span v-else-if="item.type === 'formatType'">
-	                        {{scope.row[item.prop] | formatTypeFilter}}
-	                    </span>
-                        <span v-else-if="item.type === 'formatRoomName'">
-                            {{scope.row[item.prop] | formatRoomName(scope.row)}}
-                        </span>
-                        <span v-else-if="item.type === 'formatEstateName'">
-                            {{scope.row[item.prop] | formatEstateName(scope.row)}}
-                        </span>
-                        <el-tag 
-                            v-else-if="item.type === 'status'" 
-                            :type="scope.row[item.prop] | statusFilter">
-                            {{scope.row[item.prop] | formatStatus}}
-                        </el-tag>
 	                    <span v-else>
 	                        {{scope.row[item.prop]}}
 	                    </span>
@@ -118,16 +114,15 @@
                 title="房源详情" 
                 @close="dialogClose"
                 :visible.sync="layer_showInfo" width="800px">
-                <house-info v-if="housingType == 2" :type="`audit`" :temp-data="temp" 
+                <house-info v-if="housingType == 2" :type="`published`" :temp-data="temp" 
                     @saveReviewData="saveReviewData">
                 </house-info>
-                <estate-info v-if="housingType == 1" :type="`audit`" :temp-data="temp" 
+                <estate-info v-if="housingType == 1" :type="`published`" :temp-data="temp" 
                     @saveReviewData="saveReviewData">
                 </estate-info>
                 <div slot="footer" class="dialog-footer">
-                    <el-button v-if="housingType == 1" @click="layer_showInfo = false" size="small">关 闭</el-button>
-                    <el-button v-else @click="layer_showInfo = false" size="small">取 消</el-button>
-                    <el-button v-if="housingType == 2" type="primary" @click="saveData" size="small">确 定</el-button>
+                    <el-button @click="layer_showInfo = false" size="small">取 消</el-button>
+                    <el-button type="primary" @click="saveData" size="small">确 定</el-button>
                 </div>
             </el-dialog>
         </div>
@@ -135,9 +130,9 @@
 </template>
 <script>
 import { parseTime, ObjectMap, deepClone } from '@/utils'
-import { queryReviewCheckListByPageApi, saveReviewStatusApi, queryReviewCheckRoomDetailApi } from '@/api/auditCenter'
+import { queryPublishRoomListByPageApi, queryPublishRoomDetailApi, savePublishStatusApi, batchRemoveRoomPictureApi } from '@/api/auditCenter'
 import { getCityListApi } from '@/api/houseManage'
-import waves from '@/directive/waves' // 水波纹指令
+import waves from '@/directive/waves'
 import houseInfo from '@/views/auditManage/components/houseInfo'
 import estateInfo from '@/views/auditManage/components/estateInfo'
 
@@ -160,52 +155,25 @@ export default {
         formatTypeFilter(val){
             const filterObj = {
                 '1' : '普通',
-                '2' : '金融',
-                '3' : '金融申请中'
+                '2' : '金融'
             }
             return filterObj[val] || '普通' 
         },
-        statusFilter(val){
+        filterTags(val){
             const filterObj = {
-                '1' : 'info',
-                '2' : 'success',
-                '3' : 'danger'
+                '整租' : '',
+                '合租' : 'info',
+                '金融' : 'warning'
             }
-            return filterObj[val] || 'info'
-        },
-        formatStatus(val){
-            const filterObj = {
-                '1' : '未审核',
-                '2' : '审核通过',
-                '3' : '审核不通过'
-            }
-            return filterObj[val] || '未审核'
-        },
-        formatHouseResource(val,item){
-            return `${item.province}/${item.city}/${item.region}`
-        },
-        formatTime(val,prop,item){
-            let name = prop == 'publishTime' ? item.publisher : item.reviewer;
-            return `${parseTime(val)} ${name}`
-        },
-        formatRoomName(val,item){
-            let unitCodeStr = item.unitCode ? (item.unitCode + '单元 ') : '',
-                buildingNameStr = item.buildingName ? (item.buildingName + '幢 ') : '';
-            return ('【' + item.subdistrictName + '】'+
-                buildingNameStr + unitCodeStr + 
-                item.floorName + '楼 ' + item.roomNo+'号 ' + '- ' + (item.roomName || '整套房间'));
-        },
-        formatEstateName(val,item){
-            return `【${val}】${item.subdistrictAddress}`
+            return filterObj[val] || ''  
         }
     },
     data() {
         return {
             formData: {
                 cityId: '',
-                reviewStatus: 1,
                 houseFinanceType: '',
-                publishStatus: '',
+                houseRentType: '',
                 keyword: ''
             },
             placeholder: [
@@ -213,39 +181,27 @@ export default {
                 '精品公寓名称'
             ],
             cityOptions: [],
-            auditOptions: [
-                {label: '未审核', value: 1},
-                {label: '审核通过', value: 2},
-                {label: '审核不通过', value: 3}
+            houseRentTypeOptions: [
+                {label: '整租', value: 1},
+                {label: '合租', value: 2}
             ],
             houseFinanceOptions: [
                 {label: '普通', value: 1},
-                {label: '金融', value: 2},
-                {label: '金融申请中', value: 3}
+                {label: '金融', value: 2}
             ],
             temp:{},
             reviewData: {},
             listLoading: true,
-            colModels:{
-                '2' : [
-                    { prop:'reviewCheckId', label: '审核号', width: 60},
-                    { prop:'houseResource', label: '房源位置', width: 150, type: 'formatHouseResource', toolTip: true},
-                    { prop:'roomName', label: '小区-房间', width: 200, type: 'formatRoomName', toolTip: true},
-                    { prop:'roomCode', label: '房源编号', width: 100},
-                    { prop:'houseFinanceType', label: '房源类型', type: 'formatType'},
-                    { prop:'publishTime', label: '提交时间', width: 140, type: 'formatTime', toolTip: true},
-                    { prop:'reviewStatus', label: '审核状态', width: 110, type: 'status'},
-                    { prop:'reviewTime', label: '操作时间', width: 140, type: 'formatTime', toolTip: true},
-                    { prop:'reviewRemark', label: '备注'}
-                ],
-                '1' : [
-                    { prop:'province', label: '房源位置', width: 150, type: 'formatHouseResource', toolTip: true},
-                    { prop:'estateName', label: '精品公寓', type: 'formatEstateName', toolTip: true},
-                    { prop:'styleName', label: '房间类型', width: 200},
-                    { prop:'roomCount', label: '数量(间)', width: 80},
-                    { prop:'publishTime', label: '提交时间', width: 140, type: 'formatTime', toolTip: true}
-                ]
-            },
+            colModels:[
+                { prop:'city', label: '城市', width: 100},
+                { prop:'roomInfo', label: '小区-房间'},
+                { prop:'roomCode', label: '房源编号', width: 100},
+                { prop:'picUrls', label: '房源首图', type: 'img', width: 80},
+                { prop:'tags', label: '标签', type: 'tags', width: 200},
+                { prop:'roomType', label: '室卫厅', width: 100},
+                { prop:'roomArea', label: '面积(㎡)', width: 80},
+                { prop:'publishTime', label: '发布时间', width: 140, type: 'formatTime'}
+            ],
             tableHeight: 300,
             tableData: [],
             total: null,
@@ -262,8 +218,10 @@ export default {
     },
     created(){
         this.housingType = this.type;
-        if(this.housingType == 1){
-            this.formData.reviewStatus = '';
+        if (this.housingType == 1) {
+            this.$set(this.colModels[1], 'label', '精品公寓-房型');
+            this.colModels.splice(2, 1);
+            this.colModels.splice(-1, 1);
         }
         this.getCityList();
         this.getGridData(this.pageItems);
@@ -298,6 +256,9 @@ export default {
         },
         /* 查看图片 */
         showImage(picUrl){
+            if (!picUrl) {
+                return false;
+            }
             this.showPicUrl = picUrl;
             this.layer_showImage = true;
         },
@@ -314,7 +275,7 @@ export default {
             this.listLoading = true;
             this.searchParams = Object.assign(deepClone(params),this.formData);
             this.searchParams.housingType = this.housingType;
-            queryReviewCheckListByPageApi(ObjectMap(this.searchParams)).then(response => {
+            queryPublishRoomListByPageApi(ObjectMap(this.searchParams)).then(response => {
                 this.tableData = response.data.list;
                 this.total = response.data.record;
                 this.listLoading = false;
@@ -325,7 +286,6 @@ export default {
                 cityId: '',
                 reviewStatus: '',
                 houseFinanceType: '',
-                publishStatus: '',
                 keyword: ''
             };
             this.getGridData(this.pageItems);
@@ -339,52 +299,66 @@ export default {
         },
         /* 查看详情 */
         handleView(index,row){
-            this.reviewData = {
-                reviewCheckId: row.reviewCheckId
-            };
-            let params = this.housingType == 1 ? {
-                estateId: row.estateId,
-                estateTypeId: row.estateTypeId,
-                publisherId: row.publisherId,
-                publishTime: parseTime(row.publishTime)
+            this.reviewData = this.housingType == 1 ? {
+                estateRoomTypeId: row.estateRoomTypeId
             } : {
-                reviewCheckId: row.reviewCheckId
+                roomId: row.roomId
             }
+            let params = deepClone(this.reviewData);
             params.housingType = this.housingType;
-            queryReviewCheckRoomDetailApi(params).then(response => {
+            queryPublishRoomDetailApi(params).then(response => {
                 this.temp = response.data.result;
                 this.temp.reviewStatus = row.reviewStatus;
                 this.layer_showInfo = true;
             });
         },
         saveReviewData(val){
-            if (val.reviewStatus) {
-                this.reviewData.reviewStatus = val.reviewStatus;
+            if (val.checked != undefined) {
+                this.reviewData.checked = val.checked;
             }
-            if (val.remark && this.reviewData.reviewStatus == 3) {
-                this.reviewData.reviewRemark = val.remark;
+            if (val.ids) {
+                this.reviewData.ids = val.ids;
             }
         },
         /* 保存 */
         saveData(){
-            if (!this.reviewData.reviewStatus) {
-                this.$message.error('请选择审核结果');
-                return false;
-            }
-            if (this.reviewData.reviewStatus == 3 && !this.reviewData.reviewRemark) {
-                this.$message.error('请选择审核不通过原因');
-                return false;
-            }
-            saveReviewStatusApi(ObjectMap(this.reviewData)).then(response => {
+            if (!this.reviewData.checked && !this.reviewData.ids) {
+                this.$message('该数据未修改');
                 this.layer_showInfo = false;
-                this.getGridData(this.pageItems);
-                this.$notify({
-                    title: '成功',
-                    message: '操作成功',
-                    type: 'success',
-                    duration: 2000
-                })
-            });
+                return false;
+            }
+            this.reviewData.housingType = this.housingType;
+
+            /* 删除图片 */
+            if (this.reviewData.ids) {
+                batchRemoveRoomPictureApi(ObjectMap(this.reviewData)).then(response => {
+                    if (!this.reviewData.checked) {
+                        this.layer_showInfo = false;
+                        this.getGridData(this.pageItems);
+                    }
+                    this.$notify({
+                        title: '成功',
+                        message: '图片删除成功',
+                        type: 'success',
+                        duration: 2000
+                    })
+                });
+            }
+            /* 下架 */
+            if (this.reviewData.checked) {
+                this.reviewData.checked = '';
+                this.reviewData.ids = '';
+                savePublishStatusApi(ObjectMap(this.reviewData)).then(response => {
+                    this.layer_showInfo = false;
+                    this.getGridData(this.pageItems);
+                    this.$notify({
+                        title: '成功',
+                        message: '房源下架成功',
+                        type: 'success',
+                        duration: 2000
+                    })
+                });
+            }
         }
     }
 };

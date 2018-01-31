@@ -75,12 +75,12 @@ export default {
     },
     data() {
         return {
-            data_detail: {},
+            data_detail: this.dataSign,
             status: ''
         }
     },
     created(){
-        this.data_detail = this.dataSign;
+
     },
     mounted() {
         
@@ -92,6 +92,7 @@ export default {
         dataSign:{
             handler(val){
                 this.data_detail = val;
+                this.status = '';
                 this.$emit('handleEmit',{
                     reject_remark: val.rejectRemark
                 });

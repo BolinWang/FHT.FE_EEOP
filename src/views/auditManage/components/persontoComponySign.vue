@@ -121,13 +121,13 @@ export default {
     },
     data() {
         return {
-            data_detail: {},
+            data_detail: this.dataSign,
             status: '',
             autofocus: false,
         }
     },
     created(){
-        this.data_detail = this.dataSign;
+
     },
     mounted() {
         
@@ -149,6 +149,8 @@ export default {
         dataSign:{
             handler(val){
                 this.data_detail = val;
+                this.status = '';
+                this.autofocus = false;
                 this.$emit('handleEmit',{
                     reject_remark: val.rejectRemark,
                     realNameAuth: val.realNameAuth
