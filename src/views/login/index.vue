@@ -94,7 +94,7 @@ export default {
     background-size: cover;
     background-position: center center;
     input:-webkit-autofill {
-        -webkit-box-shadow: 0 0 0px 1000px #293444 inset !important;
+        -webkit-box-shadow: 0 0 0px 1000px rgba(0, 0, 0, 0.1) inset !important;
         -webkit-text-fill-color: #fff !important;
     }
     input {
