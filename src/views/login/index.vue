@@ -90,6 +90,9 @@ export default {
     @include relative;
     height: 100vh;
     background-color: #2d3a4b;
+    background-image: url(../../assets/banner.jpg);
+    background-size: cover;
+    background-position: center center;
     input:-webkit-autofill {
         -webkit-box-shadow: 0 0 0px 1000px #293444 inset !important;
         -webkit-text-fill-color: #fff !important;
@@ -100,7 +103,7 @@ export default {
         -webkit-appearance: none;
         border-radius: 0px;
         padding: 12px 5px 12px 15px;
-        color: #eeeeee;
+        color: #fff;
         height: 47px;
     }
     .el-input {
@@ -110,32 +113,41 @@ export default {
     }
     .svg-container {
         padding: 6px 5px 6px 15px;
-        color: #889aa4;
+        color: #fff;
     }
     .title {
         font-size: 26px;
         font-weight: 400;
-        color: #eeeeee;
+        color: #fff;
         margin: 0px auto 40px auto;
         text-align: center;
         font-weight: bold;
     }
     .login-form {
         position: absolute;
-        left: 0;
-        right: 0;
+        left: 50%;
+        top: 50%;
         width: 400px;
         padding: 35px 35px 15px 35px;
-        margin: 120px auto;
+        margin-top: -220px;
+        margin-left: -200px;
+        background-color: rgba(45,58,75,0.4);
+        border-radius: 10px;
     }
     .el-form-item {
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.3);
         background: rgba(0, 0, 0, 0.1);
         border-radius: 5px;
         color: #454545;
+        margin-bottom: 30px;
     }
     .forget-pwd {
         color: #fff;
     }
+}
+.el-form-item__error{
+    color: #ff0;
+    font-size: 13px;
+    line-height: 24px;
 }
 </style>

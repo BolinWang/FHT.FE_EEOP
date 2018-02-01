@@ -1,11 +1,13 @@
 <template>
     <div class="dashboard-container">
-        {{roles | rolesFilter}}{{name}}，欢迎进入复恒科技运营平台
+        <p style="margin-top: 0;">{{roles | rolesFilter}}{{name}}，欢迎进入复恒科技运营平台</p>
+        <div class="img-banner"></div>
     </div>
 </template>
 
 <script>
     import { mapGetters } from 'vuex';
+    import bannerPic from '@/assets/banner1.jpg'
     export default {
         name: 'dashboard',
         filters:{
@@ -15,7 +17,7 @@
         },
         data() {
             return {
-                data: []
+                bannerPic: bannerPic
             }
         },
         computed: {
@@ -30,7 +32,15 @@
 <style rel="stylesheet/scss" lang="scss">
 .dashboard {
     &-container {
-        margin: 30px;
+        padding: 20px;
+        .img-banner{
+            height: 50vh;
+            border-radius: 10px;
+            background-color: #2d3a4b;
+            background-image: url(../../assets/banner1.jpg);
+            background-size: cover;
+            background-position: center center;
+        }
     }
     &-text {
         font-size: 30px;
