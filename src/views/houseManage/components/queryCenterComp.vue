@@ -248,6 +248,10 @@ export default {
                 subdistrictId: '',
                 roomCode: ''
             }
+            this.pageItems = {
+                pageNo: 1,
+                pageSize: 20
+            };
             this.searchParam();
         },
         /* 列表渲染 */

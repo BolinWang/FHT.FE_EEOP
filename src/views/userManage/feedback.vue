@@ -80,6 +80,10 @@ export default {
                 endTime: '',
                 keyword: ''
             }
+            this.pageItems = {
+                pageNo: 1,
+                pageSize: 20
+            };
             this.$refs.feedbacktable[0].searchParam();
         },
         searchParam(){

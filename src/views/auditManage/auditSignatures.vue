@@ -242,7 +242,11 @@ export default {
                 status: '',
                 startDate: '',
                 endDate: ''
-            }
+            };
+            this.pageItems = {
+                pageNo: 1,
+                pageSize: 20
+            };
             this.searchParam();
         },
         showDetail(index,row){

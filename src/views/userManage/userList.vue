@@ -184,11 +184,7 @@ export default {
     methods: {
         /* 弹窗关闭时的回调 */
         dialogClose(){
-            this.ruleForm = {
-                mobile: '',
-                password: '',
-                checkPass: ''
-            }
+            this.$refs.ruleForm.resetFields();
         },
         /* 查询列表 */
         change(value) {

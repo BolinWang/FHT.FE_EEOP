@@ -95,7 +95,7 @@ import { queryUserRequestByPageApi, saveUserRequestApi, registeredUserApi } from
 import { validateMobile } from '@/utils/validate'
 
 export default {
-    name: 'userList',
+    name: 'applyRegister',
     directives: {
         waves
     },
@@ -157,8 +157,7 @@ export default {
             },
             ruleForm: {
                 mobile: '',
-                password: '',
-                checkPass: ''
+                name: ''
             },
             rules: {
                 mobile: [
@@ -195,11 +194,7 @@ export default {
     methods: {
         /* 弹窗关闭时的回调 */
         dialogClose(){
-            this.ruleForm = {
-                mobile: '',
-                password: '',
-                checkPass: ''
-            }
+            this.$refs.ruleForm.resetFields();
         },
         handleSizeChange(val) {
             this.pageItems.pageSize = val;
@@ -220,6 +215,17 @@ export default {
             })
         },
         searchParam(){
+            this.getGridData(this.pageItems);
+        },
+        clearForm(){
+            this.pageItems = {
+                pageNo: 1,
+                pageSize: 20
+            }
+            this.formData = {
+                requestStatus: '',
+                mobile: ''
+            }
             this.getGridData(this.pageItems);
         },
         handleSaveData(){

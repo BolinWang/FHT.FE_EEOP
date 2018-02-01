@@ -35,7 +35,8 @@
     <!-- 个人信息 -->
         <el-dialog 
             title="个人信息" 
-            :visible.sync="layer_showUserInfo" width="600px">
+            :visible.sync="layer_showUserInfo" width="600px"
+            @close="dialogClose">
             <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="100px">
                 <el-form-item label="用户名" prop="name">
                     <el-input v-model="ruleForm.name"></el-input>
@@ -131,6 +132,9 @@ export default {
                     return false;
                 }
             })
+        },
+        dialogClose(){
+            this.$refs.ruleForm.resetFields();
         }
     }
 }

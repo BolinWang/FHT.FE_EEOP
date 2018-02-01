@@ -5,7 +5,7 @@
                 <div class="model-search">
                     <div class="clearfix" style="margin-bottom: 10px;">
                         <el-button size="small" class="left" type="primary" icon="el-icon-search" v-waves @click.native="handleSearchParams">查询</el-button>
-                        <el-button size="small" class="left" icon="el-icon-remove-outline" @click.native="handleReset">清空</el-button>
+                        <el-button size="small" class="left" icon="el-icon-remove-outline" @click.native="clearForm">清空</el-button>
                         <el-button size="small" class="left" type="primary" icon="el-icon-upload" v-waves @click.native="handleExport">导出</el-button>
                     </div>
                     <el-date-picker
@@ -165,10 +165,14 @@ export default {
             this.pageItems.pageNo = val;
             this.getGridData(this.pageItems);
         },
-        handleReset(){
+        clearForm(){
             this.dateTime = []; 
             this.textareaVal = ''; 
             this.formData = {}; 
+            this.pageItems = {
+                pageNo: 1,
+                pageSize: 20
+            }
             this.getGridData(this.pageItems);
         },
         /* 导出 */

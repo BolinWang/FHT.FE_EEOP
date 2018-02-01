@@ -331,6 +331,10 @@ export default {
                 publishStatus: '',
                 keyword: ''
             };
+            this.pageItems = {
+                pageNo: 1,
+                pageSize: 20
+            };
             this.getGridData(this.pageItems);
         },
         searchParam(){
