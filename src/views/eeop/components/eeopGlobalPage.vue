@@ -113,7 +113,7 @@
                     </el-form-item>
                     <el-form-item label="图片" prop="picUrl">
                         <el-upload
-                            action='/util/upload/uploadPicture'
+                            :action="`${actionBaseUrl}/util/upload/uploadPicture`"
                             :before-upload="pictureUpload"
                             :on-preview="picturePreview"
                             :on-remove="(file, fileList)=>{
@@ -133,7 +133,7 @@
                     </el-form-item>
                     <el-form-item v-if="eeopType == 'banner'" label="缩略图" prop="thumbnail">
                         <el-upload
-                            action="/util/upload/uploadPicture"
+                            :action="`${actionBaseUrl}/util/upload/uploadPicture`"
                             :on-preview="picturePreview"
                             :on-remove="(file, fileList)=>{
                                 return pictureRemove(file, fileList, `thumbnail`)
@@ -235,6 +235,7 @@ export default {
                 options: [],
                 value:''
             },
+            actionBaseUrl: process.env.BASE_API,
             colModels:[
                 { prop:'status', label: '状态', width: 80, type: 'status'},
                 { prop:'title', label: '标题'},
