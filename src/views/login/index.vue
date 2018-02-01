@@ -94,7 +94,7 @@ export default {
     background-size: cover;
     background-position: center center;
     input:-webkit-autofill {
-        -webkit-box-shadow: 0 0 0px 1000px rgba(0, 0, 0, 0.1) inset !important;
+        -webkit-box-shadow: 0 0 0px 1000px rgb(133,133,133) inset !important;
         -webkit-text-fill-color: #fff !important;
     }
     input {
@@ -109,7 +109,7 @@ export default {
     .el-input {
         display: inline-block;
         height: 47px;
-        width: 85%;
+        width: 289px;
     }
     .svg-container {
         padding: 6px 5px 6px 15px;
