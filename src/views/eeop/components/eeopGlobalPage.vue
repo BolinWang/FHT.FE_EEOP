@@ -113,7 +113,7 @@
                     </el-form-item>
                     <el-form-item label="图片" prop="picUrl">
                         <el-upload
-                            action='/api/util/upload/uploadPicture'
+                            action='/util/upload/uploadPicture'
                             :before-upload="pictureUpload"
                             :on-preview="picturePreview"
                             :on-remove="(file, fileList)=>{
@@ -133,7 +133,7 @@
                     </el-form-item>
                     <el-form-item v-if="eeopType == 'banner'" label="缩略图" prop="thumbnail">
                         <el-upload
-                            action="/api/util/upload/uploadPicture"
+                            action="/util/upload/uploadPicture"
                             :on-preview="picturePreview"
                             :on-remove="(file, fileList)=>{
                                 return pictureRemove(file, fileList, `thumbnail`)
