@@ -3,7 +3,7 @@ import fetch from '@/utils/fetch';
 /* 查询已有公寓城市列表 */
 export function getCityListApi(params = {}) {
     return fetch({
-        url: '/api/market/estate/',
+        url: '/market/estate/',
         method: 'post',
         data: {
             method: 'hasCityList',
@@ -15,7 +15,7 @@ export function getCityListApi(params = {}) {
 /* 获取表格数据 */
 export function getGridApi(params) {
     return fetch({
-        url: '/api/market/estate/',
+        url: '/market/estate/',
         method: 'post',
         data: {
             method: 'queryEstateListByPage',
@@ -27,7 +27,7 @@ export function getGridApi(params) {
 /* 下架、排序 */
 export function saveDataApi(params) {
     return fetch({
-        url: '/api/market/estate/',
+        url: '/market/estate/',
         method: 'post',
         data: {
             method: 'saveEstate',
@@ -39,7 +39,7 @@ export function saveDataApi(params) {
 /* 房源数据报表列表 */
 export function marketOrgHouseReportListApi(params) {
     return fetch({
-        url: '/api/market/report/',
+        url: '/market/report/',
         method: 'post',
         data: {
             method: 'marketOrgHouseReportList',
@@ -51,7 +51,7 @@ export function marketOrgHouseReportListApi(params) {
 /* 查询中心 城市公寓列表 */
 export function marketCityAndSubdistrictListApi(params) {
     return fetch({
-        url: '/api/market/center/',
+        url: '/market/center/',
         method: 'post',
         data: {
             method: 'marketCityAndSubdistrictList',
@@ -63,7 +63,7 @@ export function marketCityAndSubdistrictListApi(params) {
 /* 查询中心 房源列表 */
 export function marketReviewCheckListByPageApi(params) {
     return fetch({
-        url: '/api/market/center/',
+        url: '/market/center/',
         method: 'post',
         data: {
             method: 'marketReviewCheckListByPage',

@@ -3,7 +3,7 @@ import fetch from '@/utils/fetch';
 /* 登录获取sessionId */
 export function login(mobile, password) {
     return fetch({
-        url: '/api/user/',
+        url: '/user/',
         method: 'post',
         data: {
             method: 'login',
@@ -18,7 +18,7 @@ export function login(mobile, password) {
 /* sessionId获取用户信息 */
 export function getInfo(sessionId) {
     return fetch({
-        url: '/api/user/',
+        url: '/user/',
         method: 'post',
         data: {
             method: 'queryUserDetail',
@@ -32,7 +32,7 @@ export function getInfo(sessionId) {
 /* 退出系统 */
 export function logout(params={}) {
     return fetch({
-        url: '/api/user/',
+        url: '/user/',
         method: 'post',
         data:{
             method: 'logout',

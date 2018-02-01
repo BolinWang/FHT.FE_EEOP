@@ -3,7 +3,7 @@ import fetch from '@/utils/fetch';
 /* 获取房源审核列表 */
 export function queryReviewCheckListByPageApi(params = {}) {
     return fetch({
-        url: '/api/market/review/',
+        url: '/market/review/',
         method: 'post',
         data: {
             method: 'queryReviewCheckListByPage',
@@ -15,7 +15,7 @@ export function queryReviewCheckListByPageApi(params = {}) {
 /* 房源审核结果编辑 */
 export function saveReviewStatusApi(params) {
     return fetch({
-        url: '/api/market/review/',
+        url: '/market/review/',
         method: 'post',
         data: {
             method: 'saveReviewStatus',
@@ -27,7 +27,7 @@ export function saveReviewStatusApi(params) {
 /* 房源详情查看 */
 export function queryReviewCheckRoomDetailApi(params) {
     return fetch({
-        url: '/api/market/review/',
+        url: '/market/review/',
         method: 'post',
         data: {
             method: 'queryReviewCheckRoomDetail',
@@ -40,7 +40,7 @@ export function queryReviewCheckRoomDetailApi(params) {
 /* 签章审核 */
 export function signaturesHandleApi(params) {
     return fetch({
-        url: '/api/market/audit/',
+        url: '/market/audit/',
         method: 'post',
         data: {
             method: 'handle',
@@ -52,7 +52,7 @@ export function signaturesHandleApi(params) {
 /* 签章审核列表 */
 export function signaturesListsApi(params) {
     return fetch({
-        url: '/api/market/audit/',
+        url: '/market/audit/',
         method: 'post',
         data: {
             method: 'list',
@@ -64,7 +64,7 @@ export function signaturesListsApi(params) {
 /* 实名认证 */
 export function upgradeRealNameApi(params) {
     return fetch({
-        url: '/api/market/audit/',
+        url: '/market/audit/',
         method: 'post',
         data: {
             method: 'upgradeRealName',
@@ -76,7 +76,7 @@ export function upgradeRealNameApi(params) {
 /* 已发布房源列表 */
 export function queryPublishRoomListByPageApi(params) {
     return fetch({
-        url: '/api/market/review/',
+        url: '/market/review/',
         method: 'post',
         data: {
             method: 'queryPublishRoomListByPage',
@@ -88,7 +88,7 @@ export function queryPublishRoomListByPageApi(params) {
 /* 已发布房源详情 */
 export function queryPublishRoomDetailApi(params) {
     return fetch({
-        url: '/api/market/review/',
+        url: '/market/review/',
         method: 'post',
         data: {
             method: 'queryPublishRoomDetail',
@@ -100,7 +100,7 @@ export function queryPublishRoomDetailApi(params) {
 /* 已发布房源下架 */
 export function savePublishStatusApi(params) {
     return fetch({
-        url: '/api/market/review/',
+        url: '/market/review/',
         method: 'post',
         data: {
             method: 'savePublishStatus',
@@ -112,7 +112,7 @@ export function savePublishStatusApi(params) {
 /* 已发布房源图片删除 */
 export function batchRemoveRoomPictureApi(params) {
     return fetch({
-        url: '/api/market/review/',
+        url: '/market/review/',
         method: 'post',
         data: {
             method: 'batchRemoveRoomPicture',
