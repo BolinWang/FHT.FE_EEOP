@@ -12,7 +12,7 @@
                 <div class="bullshit__info">版权所有<a class='link-type' href='https://wallstreetcn.com' target='_blank'>杭州复恒科技有限公司</a></div>
                 <div class="bullshit__headline">{{ message }}</div>
                 <div class="bullshit__info">请检查您输入的网址是否正确，请点击以下按钮返回主页</div>
-                <a href="/" class="bullshit__return-home">返回首页</a>
+                <a :href="returnHomePath" class="bullshit__return-home">返回首页</a>
             </div>
         </div>
     </div>
@@ -21,11 +21,14 @@
 import img_404 from '@/assets/404_images/404.png'
 import img_404_cloud from '@/assets/404_images/404_cloud.png'
 
+console.log(window.location)
+
 export default {
     data() {
         return {
             img_404,
-            img_404_cloud
+            img_404_cloud,
+            returnHomePath: window.location.origin + window.location.pathname
         }
     },
     computed: {
