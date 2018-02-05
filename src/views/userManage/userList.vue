@@ -229,8 +229,7 @@ export default {
             }).then(() => {
                 this.pop_visible = false;
                 row.isDelete = 1;
-                this.tableData.splice(index, 1, row);
-                this.saveData(this.tableData);
+                this.saveData([row]);
             }).catch(() => {})
         },
         /* 保存 */

@@ -51,7 +51,7 @@ service.interceptors.response.use(
             });
             // sessionId 失效
             if (res.code == 1016) {
-                MessageBox.confirm(res.message + '，请重新登录', null, {
+                MessageBox.confirm(res.message + '，请重新登录', '提示', {
                     confirmButtonText: '重新登录',
                     cancelButtonText: '取消',
                     type: 'warning'

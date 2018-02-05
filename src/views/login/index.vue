@@ -144,10 +144,10 @@ export default {
     .forget-pwd {
         color: #fff;
     }
-}
-.el-form-item__error{
-    color: #ff0;
-    font-size: 13px;
-    line-height: 24px;
+    .el-form-item__error{
+        color: #ff0;
+        font-size: 13px;
+        line-height: 24px;
+    }
 }
 </style>
