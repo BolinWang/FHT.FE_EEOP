@@ -12,8 +12,7 @@ import { getSessionId } from '@/utils/auth'
 import * as filters from './filters'
 import VuePreview from 'vue-preview'
 import VueLazyload from 'vue-lazyload'
-import errorPic from '@/assets/error.png'
-import loadingPic from '@/assets/loading.png'
+import lazyLoadPic from '@/assets/lazyLoad@3x.png'
 
 Vue.config.productionTip = false
 
@@ -21,7 +20,7 @@ Vue.use(ElementUI);
 Vue.use(VuePreview);
 Vue.use(VueLazyload,{
    /* error: errorPic,*/
-    loading: loadingPic
+    loading: lazyLoadPic
 });
 Vue.component('icon-svg', IconSvg)
 

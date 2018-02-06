@@ -137,6 +137,10 @@ export default {
             upgradeRealNameApi({
                 auditId: this.data_detail.id
             }).then(response => {
+                if (!response.data) {
+                    this.$message.error(response.message || '您的网络出了点差错哦，请稍后重试');
+                    return false;
+                }
                 this.data_detail.realNameAuth = response.data.data.result ? 1 : 2;
                 if ( this.data_detail.realNameAuth == 2) {
                     this.status = 3;
