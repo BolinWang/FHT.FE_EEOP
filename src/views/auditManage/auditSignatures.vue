@@ -252,6 +252,7 @@ export default {
                 startDate: '',
                 endDate: ''
             };
+            this.dateTime = [];
             this.pageItems = {
                 pageNo: 1,
                 pageSize: 20

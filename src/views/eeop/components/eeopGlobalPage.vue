@@ -82,7 +82,8 @@
                 :show-close="false" 
                 :visible.sync="layer_showImage"
                 style="text-align: center;"
-                @click.native="closeDialog">
+                @click.native="closeDialog"
+                @close="showPicUrlClose">
                 <img class="image" :src="showPicUrl" />
             </el-dialog>
         </div>
@@ -104,11 +105,15 @@
                         <el-input v-model="temp.linkUrl" placeholder="请输入有效链接"></el-input>
                     </el-form-item>
                     <el-form-item label="上线时间" prop="effectiveTime">
-                        <el-date-picker v-model="temp.effectiveTime" type="datetime" placeholder="选择上线时间" >
+                        <el-date-picker 
+                            v-model="temp.effectiveTime" 
+                            type="datetime" placeholder="选择上线时间">
                         </el-date-picker>
                     </el-form-item>
                     <el-form-item v-if="eeopType != 'interview'" label="下线时间" prop="ineffectiveTime">
-                        <el-date-picker v-model="temp.ineffectiveTime" type="datetime" placeholder="选择下线时间">
+                        <el-date-picker 
+                            v-model="temp.ineffectiveTime" 
+                            type="datetime" placeholder="选择下线时间">
                         </el-date-picker>
                     </el-form-item>
                     <el-form-item label="图片" prop="picUrl">
@@ -187,6 +192,7 @@
 <script>
 import draggable from 'vuedraggable'
 import { parseTime, ObjectMap, deepClone } from '@/utils'
+import { validateURL } from '@/utils/validate'
 import { getGridApi, saveDataApi } from '@/api/eeop';
 
 const defaultOptions = [
@@ -230,6 +236,13 @@ export default {
         }
     },
     data() {
+        const validateUrl = (rule, value, callback) => {
+            if (!validateURL(value)) {
+                callback(new Error('请输入合法的链接'));
+            } else {
+                callback();
+            }
+        };
         return {
             selectData:{
                 options: [],
@@ -282,13 +295,13 @@ export default {
             thumFileList: [],
             rules: {
                 title: [
-                    { required: true, message: '请输入内容', trigger: 'change' }
+                    { required: true, message: '请输入内容', trigger: 'blur' }
                 ],
                 estateName: [
-                    { required: true, message: '请输入公寓名称', trigger: 'change' }
+                    { required: true, message: '请输入公寓名称', trigger: 'blur' }
                 ],
                 linkUrl: [
-                    { required: true, message: '请输入链接内容', trigger: 'change' }
+                    { required: true, trigger: 'blur', validator: validateUrl }
                 ],
                 thumbnail: [
                     { required: true, message: '请上传缩略图', trigger: 'change' }
@@ -303,7 +316,7 @@ export default {
                     { type: 'date', required: true, message: '请选择下线时间', trigger: 'change' }
                 ],
                 introduction: [
-                    { required: true, message: '请输入简介', trigger: 'change' }
+                    { required: true, message: '请输入简介', trigger: 'blur' }
                 ]
             },
             isDragging: false,
@@ -428,6 +441,9 @@ export default {
         resetFile(file){
             file = null;
         },
+        showPicUrlClose(){
+            this.showPicUrl = '';
+        },
         /* 查询列表 */
         change(value) {
             this.getGridData(this.pageItems);
@@ -443,7 +459,7 @@ export default {
         /* 弹窗关闭时的回调 */
         dialogClose(){
             this.fileList = [];
-            this.thumbnail = [];
+            this.thumFileList = [];
             this.resetTemp();
         },
         closeDialog(){
@@ -513,15 +529,21 @@ export default {
         },
         /* 创建、更新活动 */
         createAndUpdateData() {
-            this.temp.effectiveTime = new Date(this.temp.effectiveTime);
-            if(this.eeopType != 'interview'){
-                this.temp.ineffectiveTime = new Date(this.temp.ineffectiveTime);
+            if(this.dialogStatus == 'update'){
+                this.temp.effectiveTime = new Date(this.temp.effectiveTime);
+                if(this.eeopType != 'interview'){
+                    this.temp.ineffectiveTime = new Date(this.temp.ineffectiveTime);
+                }
             }
             this.$refs['dataForm'].validate((valid) => {
                 if (valid) {
                     this.temp.effectiveTime = parseTime(this.temp.effectiveTime);
                     if(this.eeopType != 'interview'){
                         this.temp.ineffectiveTime = parseTime(this.temp.ineffectiveTime);
+                        if (this.temp.effectiveTime >= this.temp.ineffectiveTime){
+                            this.$message.error('上线时间必须小于下线时间');
+                            return false
+                        }
                     }
                     let saveList = [];
                     if (this.dialogStatus == 'update'){

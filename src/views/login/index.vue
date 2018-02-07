@@ -29,7 +29,7 @@ export default {
     name: 'login',
     data() {
         const validatePhone = (rule, value, callback) => {
-            if (!validateMobile(value)) {
+            if (!validateMobile(value.trim())) {
                 callback(new Error('请输入正确的手机号'));
             } else {
                 callback();

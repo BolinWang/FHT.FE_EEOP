@@ -125,9 +125,9 @@
                     @saveReviewData="saveReviewData">
                 </estate-info>
                 <div slot="footer" class="dialog-footer">
-                    <el-button v-if="housingType == 1" @click="layer_showInfo = false" size="small">关 闭</el-button>
+                    <el-button v-if="housingType == 1 || temp.reviewStatus != 1" @click="layer_showInfo = false" size="small">关 闭</el-button>
                     <el-button v-else @click="layer_showInfo = false" size="small">取 消</el-button>
-                    <el-button v-if="housingType == 2" type="primary" @click="saveData" size="small">确 定</el-button>
+                    <el-button v-if="housingType == 2 && temp.reviewStatus == 1" type="primary" @click="saveData" size="small">确 定</el-button>
                 </div>
             </el-dialog>
         </div>

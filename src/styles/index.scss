@@ -159,13 +159,16 @@ a:hover {
 
 /* elementUI 修改 */
 .el-form-item--small.el-form-item{
-    margin-bottom: 10px;
+    margin-bottom: 16px;
 }
 .el-dialog__body{
     padding: 20px;
 }
 .el-dialog__title{
     font-size: 14px;
+}
+.el-tooltip__popper{
+    max-width: 600px;
 }
 
 .svg-icon {
