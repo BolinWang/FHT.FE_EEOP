@@ -79,7 +79,7 @@
                         <el-input v-model="ruleForm.name" auto-complete="off"></el-input>
                     </el-form-item>
                 </el-form>
-                <div class="tips">温馨提示：默认密码为1234567，请提醒用户首次登录后立即更改密码</div>
+                <div class="tips">温馨提示：默认密码为123456，请提醒用户首次登录后立即更改密码</div>
                 <div slot="footer" class="dialog-footer">
                     <el-button @click="layer_showInfo = false" size="small">取 消</el-button>
                     <el-button type="primary" size="small" @click="handleSaveData">确 定</el-button>
@@ -239,7 +239,7 @@ export default {
                         this.getGridData(this.pageItems);
                         this.$notify({
                             title: '成功',
-                            message: '注册成功，初始密码为：1234567',
+                            message: '注册成功，初始密码为：123456',
                             type: 'success',
                             duration: 2000
                         })

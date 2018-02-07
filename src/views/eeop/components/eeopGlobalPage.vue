@@ -179,9 +179,16 @@
                     @start="isDragging=true" 
                     @end="isDragging=false"> 
                     <transition-group type="transition" :name="'flip-list'">
-                        <li class="list-group-item" v-for="(item,index) in sort_tableData" :key="item.sortNum"> 
-                            <i class="el-icon-d-caret" aria-hidden="true"></i>
-                            {{item.title}}
+                        <li class="list-group-item clearfix" v-for="(item,index) in sort_tableData" :key="item.sortNum">
+                            <el-button class="right" size="mini" 
+                                type="primary" icon="el-icon-setting"
+                                v-if="index != 0" @click="setSortFirst(index)">
+                                设置首位
+                            </el-button> 
+                            <span class="left sortContent">
+                                <i class="el-icon-d-caret" aria-hidden="true"></i>
+                                {{item.title}}
+                            </span>
                         </li> 
                     </transition-group>
                 </draggable>
@@ -198,6 +205,12 @@ import draggable from 'vuedraggable'
 import { parseTime, ObjectMap, deepClone } from '@/utils'
 import { validateURL } from '@/utils/validate'
 import { getGridApi, saveDataApi } from '@/api/eeop';
+
+/* 阻止原生dragale打开新页面 */
+document.body.ondrop = function (event) {
+    event.preventDefault();
+    event.stopPropagation();
+}
 
 const defaultOptions = [
     { value: 1, label: '待上线'},
@@ -413,6 +426,10 @@ export default {
         }
     },
     methods: {
+        setSortFirst(index){
+            let tempSortObj = this.sort_tableData.splice(index,1);
+            this.sort_tableData.unshift(tempSortObj[0])
+        },
         /* 上传图片 */
         pictureUpload(file){
             if (['image/jpeg', 'image/jpg', 'image/png'].indexOf(file.type) == -1) {
@@ -637,6 +654,12 @@ export default {
     }
     .el-textarea__inner{
         padding-bottom: 25px;
+    }
+    .sortContent{
+        max-width: 600px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 </style>
 

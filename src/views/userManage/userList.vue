@@ -210,12 +210,12 @@ export default {
         },
         /* 密码重置 */
         resetUserPsw(index,row){
-            this.$confirm('此操作将重置该账号初始密码：1234567, 是否继续?', '提示', {
+            this.$confirm('此操作将重置该账号初始密码：123456, 是否继续?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
-                row.password = '1234567';
+                row.password = '123456';
                 this.tableData.splice(index, 1, row);
                 this.saveData(this.tableData, row.isAdmin == 1 ? 'toLogin' : '');
             }).catch(() => {})

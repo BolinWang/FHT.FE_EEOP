@@ -5,8 +5,7 @@
                 <el-select size="small" v-model="formData.cityId" 
                     @change=change
                     placeholder="城市加载中..." 
-                    class="item-select" style="width: 150px;"
-                    clearable>
+                    class="item-select" style="width: 150px;">
                     <el-option
                         v-for="item in cityOptions"
                         :key="item.value"
@@ -130,9 +129,16 @@
                     @start="isDragging=true" 
                     @end="isDragging=false"> 
                     <transition-group type="transition" :name="'flip-list'">
-                        <li class="list-group-item" v-for="(item,index) in sort_tableData" :key="item.sortNum"> 
-                            <i class="el-icon-d-caret" aria-hidden="true"></i>
-                            {{item.estateName}}
+                        <li class="list-group-item clearfix" v-for="(item,index) in sort_tableData" :key="item.sortNum">
+                            <el-button class="right" size="mini" 
+                                type="primary" icon="el-icon-setting"
+                                v-if="index != 0" @click="setSortFirst(index)">
+                                设置首位
+                            </el-button> 
+                            <span class="left sortContent">
+                                <i class="el-icon-d-caret" aria-hidden="true"></i>
+                                {{item.estateName}}
+                            </span>
                         </li> 
                     </transition-group>
                 </draggable>
@@ -150,6 +156,12 @@ import Preview from '@/components/Preview'
 import { parseTime, ObjectMap, deepClone } from '@/utils'
 import { getCityListApi, getGridApi, saveDataApi } from '@/api/houseManage'
 import noPic from '@/assets/noPic.jpg'
+
+/* 阻止原生dragale打开新页面 */
+document.body.ondrop = function (event) {
+    event.preventDefault();
+    event.stopPropagation();
+}
 
 export default {
     name: 'promotionDisplay',
@@ -233,6 +245,10 @@ export default {
         }
     },
     methods: {
+        setSortFirst(index){
+            let tempSortObj = this.sort_tableData.splice(index,1);
+            this.sort_tableData.unshift(tempSortObj[0])
+        },
         /* 获取城市列表 */
         getCityList(){
             getCityListApi({
@@ -377,6 +393,12 @@ export default {
     }
     .model-search .filter-item{
         margin-left: 10px;
+    }
+    .sortContent{
+        max-width: 600px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 </style>
 
