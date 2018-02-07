@@ -55,7 +55,7 @@
             <el-checkbox v-model="checked">立即下架</el-checkbox>
         </el-form-item>
         <el-form-item label="房型照片">
-            <Preview :pic-list="temp.picList" :delete-icon="`delete`" @emitPicList="emitPicList"></Preview>
+            <Preview :pic-list="temp.picList" :delete-icon="type == `published` ? `delete` : `` " @emitPicList="emitPicList"></Preview>
         </el-form-item>
         <el-form-item label="关联房间" style="margin-bottom: 0"></el-form-item>
         <div class="model-table">

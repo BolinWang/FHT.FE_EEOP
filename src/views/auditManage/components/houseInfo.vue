@@ -89,7 +89,7 @@
             <el-checkbox v-model="checked">立即下架</el-checkbox>
         </el-form-item>
         <el-form-item label="房间照片">
-            <Preview :pic-list="temp.picList" :delete-icon="`delete`" @emitPicList="emitPicList"></Preview>
+            <Preview :pic-list="temp.picList" :delete-icon="type == `published` ? `delete` : `` " @emitPicList="emitPicList"></Preview>
         </el-form-item>
     </el-form>
 </template>
@@ -177,6 +177,7 @@ export default {
         },
         reviewStatus(val){
             if (this.type == 'audit') {
+                this.remark = '';
                 this.$emit('saveReviewData',{
                     reviewStatus: val,
                     type: 'audit'

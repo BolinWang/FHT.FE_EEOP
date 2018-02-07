@@ -368,8 +368,10 @@ export default {
             if (val.reviewStatus) {
                 this.reviewData.reviewStatus = val.reviewStatus;
             }
-            if (val.remark && this.reviewData.reviewStatus == 3) {
+            if (this.reviewData.reviewStatus == 3) {
                 this.reviewData.reviewRemark = val.remark;
+            }else{
+                this.reviewData.reviewRemark = '';
             }
         },
         /* 保存 */

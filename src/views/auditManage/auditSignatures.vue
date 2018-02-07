@@ -93,9 +93,18 @@
                 :visible.sync="layer_showInfo" 
                 :width="data_detail.type | widthFilter"
                 @close="dialogClose">
-                <person-sign v-if="data_detail.type == 3" :data-sign="data_detail" @handleEmit="handleEmit"></person-sign>
-                <compony-sign v-else-if="data_detail.type == 2" :data-sign="data_detail" @handleEmit="handleEmit"></compony-sign>
-                <personto-compony-sign v-else :data-sign="data_detail" @handleEmit="handleEmit"></personto-compony-sign>
+                <person-sign v-if="data_detail.type == 3" 
+                    :data-sign="data_detail" 
+                    ref="signOfRef">
+                </person-sign>
+                <compony-sign v-else-if="data_detail.type == 2" 
+                    :data-sign="data_detail" 
+                    ref="signOfRef">    
+                </compony-sign>
+                <personto-compony-sign v-else 
+                    :data-sign="data_detail" 
+                    ref="signOfRef">
+                </personto-compony-sign>
                 <div slot="footer" class="dialog-footer">
                     <el-button v-if="data_detail.status == 1" @click="layer_showInfo = false" size="small">取 消</el-button>
                     <el-button v-else @click="layer_showInfo = false" size="small">关闭</el-button>
@@ -262,15 +271,9 @@ export default {
         dialogClose(){
             this.data_detail = {};
         },
-        handleEmit(val){
-            if(val.status){
-                this.saveAuditParam.status = val.status;
-            }
-            if (val.reject_remark && this.saveAuditParam.status == 3) {
-                this.saveAuditParam.reject_remark = val.reject_remark;
-            }
-        },
         saveAuditResult(){
+            this.saveAuditParam.status = this.$refs.signOfRef.status
+            this.saveAuditParam.reject_remark = this.$refs.signOfRef.reject_remark
             if (!this.saveAuditParam.status) {
                 this.$message.error('请选择审核结果');
                 return false;

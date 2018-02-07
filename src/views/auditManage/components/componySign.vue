@@ -38,7 +38,7 @@
             </el-input>
             <el-input style="display: inline-block; width:405px; padding-left: 10px;" 
                 v-if="status == 3" placeholder="请输入审核不通过原因" 
-                v-model="data_detail.rejectRemark">
+                v-model="reject_remark">
             </el-input>
         </el-form-item>
     </el-form>
@@ -76,33 +76,18 @@ export default {
     data() {
         return {
             data_detail: this.dataSign,
-            status: ''
+            status: '',
+            reject_remark: ''
         }
-    },
-    created(){
-
-    },
-    mounted() {
-        
-    },
-    methods: {
-    
     },
     watch:{
         dataSign:{
             handler(val){
                 this.data_detail = val;
                 this.status = '';
-                this.$emit('handleEmit',{
-                    reject_remark: val.rejectRemark
-                });
+                this.reject_remark = '';
             },
             deep:true
-        },
-        status(val){
-            this.$emit('handleEmit',{
-                status: val
-            });
         }
     }
 };

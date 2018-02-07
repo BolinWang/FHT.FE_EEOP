@@ -82,8 +82,7 @@
             </el-input>
             <el-input style="display: inline-block; width:405px; padding-left: 10px;" 
                 v-if="status == 3" placeholder="请输入审核不通过原因" 
-                :autofocus="autofocus"
-                v-model="data_detail.rejectRemark">
+                v-model="reject_remark">
             </el-input>
         </el-form-item>
     </el-form>
@@ -91,6 +90,7 @@
 <script>
 import Preview from '@/components/Preview'
 import { upgradeRealNameApi } from '@/api/auditCenter'
+import { deepClone } from '@/utils'
 
 export default {
     name: 'persontoComponySign',
@@ -100,7 +100,7 @@ export default {
             default: function(){
                 return {}
             }
-        },
+        }
     },
     filters: {
         statusFilter(status){
@@ -123,14 +123,8 @@ export default {
         return {
             data_detail: this.dataSign,
             status: '',
-            autofocus: false,
+            reject_remark: ''
         }
-    },
-    created(){
-
-    },
-    mounted() {
-        
     },
     methods: {
         upgradeRealName(){
@@ -144,7 +138,6 @@ export default {
                 this.data_detail.realNameAuth = response.data.data.result ? 1 : 2;
                 if ( this.data_detail.realNameAuth == 2) {
                     this.status = 3;
-                    this.autofocus = true;
                 }
             })
         }
@@ -154,18 +147,9 @@ export default {
             handler(val){
                 this.data_detail = val;
                 this.status = '';
-                this.autofocus = false;
-                this.$emit('handleEmit',{
-                    reject_remark: val.rejectRemark,
-                    realNameAuth: val.realNameAuth
-                });
+                this.reject_remark = '';
             },
             deep:true
-        },
-        status(val){
-            this.$emit('handleEmit',{
-                status: val
-            });
         }
     }
 };
