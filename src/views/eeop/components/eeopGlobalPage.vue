@@ -156,8 +156,12 @@
                         </el-upload>
                     </el-form-item>
                     <el-form-item label="简介" prop="introduction">
-                        <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" placeholder="请输入简介" v-model="temp.introduction">
+                        <el-input type="textarea" 
+                            :autosize="{ minRows: 2, maxRows: 4}" placeholder="请输入简介" 
+                            v-model="temp.introduction" :maxlength="50"
+                            style="position: relative;">
                         </el-input>
+                        <span class="textNumber">还可以输入{{textNumber}}字符</span>
                     </el-form-item>
                     </el-form>
                     <div slot="footer" class="dialog-footer">
@@ -391,7 +395,7 @@ export default {
         }
     },
     computed: {
-        tableStyle: function () {
+        tableStyle () {
             return {
                 width: '100%',
                 height: this.tableHeight + 'px'
@@ -403,6 +407,9 @@ export default {
                 group: 'description',
                 ghostClass: 'ghost'
             };
+        },
+        textNumber (){
+            return 50 - this.temp.introduction.length
         }
     },
     methods: {
@@ -496,9 +503,17 @@ export default {
         },
         /* 列表删除 */
         deleteRow(index,row){
-            row.isDelete = 1;
-            this.tableData.splice(index, 1, row);
-            this.saveData(this.tableData);
+            this.$confirm('是否删除?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                row.isDelete = 1;
+                this.tableData.splice(index, 1, row);
+                this.saveData(this.tableData);
+            }).catch(() => {
+                       
+            });
         },
         /* 新增 */
         createRow(){
@@ -611,6 +626,17 @@ export default {
     }
     .model-search .filter-item{
         margin-left: 10px;
+    }
+    .textNumber{
+        position: absolute; 
+        bottom: 5px; 
+        right: 10px; 
+        color: #666;
+        font-size: 12px;
+        line-height: 1.2;
+    }
+    .el-textarea__inner{
+        padding-bottom: 25px;
     }
 </style>
 

@@ -55,8 +55,16 @@
                     fit
                     show-overflow-tooltip>
                     <template slot-scope="scope">
+                        <el-popover v-if="item.type === 'status' && scope.row[item.prop] == 3" trigger="hover" placement="top">
+                            <p>不通过原因: {{ scope.row.rejectRemark }}</p>
+                            <div slot="reference">
+                                <el-tag :type="scope.row[item.prop] | statusFilter">
+                                    {{scope.row[item.prop] | statusStrFilter}}
+                                </el-tag>
+                            </div>
+                        </el-popover>
                         <el-tag 
-                            v-if="item.type === 'status'" 
+                            v-else-if="item.type === 'status'" 
                             :type="scope.row[item.prop] | statusFilter">
                             {{scope.row[item.prop] | statusStrFilter}}
                         </el-tag>

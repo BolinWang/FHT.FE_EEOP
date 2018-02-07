@@ -88,6 +88,7 @@
 <script>
 import Preview from '@/components/Preview'
 import { parseTime, ObjectMap, deepClone } from '@/utils'
+import noPic from '@/assets/noPic.jpg'
 
 export default {
     name: 'houseInfo',
@@ -141,9 +142,9 @@ export default {
                 this.checked = false;
                 this.deleteIds = [];
                 let picList = val.roomTypePicUrls || [];
-                this.temp.picList = picList.map((item) => {
+                this.temp.picList = picList.length > 0 ? picList.map((item) => {
                     return {src: item.picUrl, w: 800, h: 600, id: item.id}
-                });
+                }) : [{src:noPic, w: 800, h: 600, isnoPic: true}];
             },
             deep:true
         },
