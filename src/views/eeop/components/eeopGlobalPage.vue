@@ -139,6 +139,7 @@
                     <el-form-item v-if="eeopType == 'banner'" label="缩略图" prop="thumbnail">
                         <el-upload
                             :action="`${actionBaseUrl}/util/upload/uploadPicture`"
+                            :before-upload="pictureUpload"
                             :on-preview="picturePreview"
                             :on-remove="(file, fileList)=>{
                                 return pictureRemove(file, fileList, `thumbnail`)
@@ -432,9 +433,22 @@ export default {
         },
         /* 上传图片 */
         pictureUpload(file){
+            const isLt500K = file.size / 1024 / 1024 <= 0.5
+            const isLt1M = file.size / 1024 / 1024 <= 1
             if (['image/jpeg', 'image/jpg', 'image/png'].indexOf(file.type) == -1) {
                 this.$message.error('请上传jpg/png的图片');
                 return false;
+            }
+            if(this.eeopType == 'activety' || this.eeopType == 'banner'){
+                if(!isLt500K){
+                    this.$message.error('请上传500Kb大小以内的图片');
+                    return false;
+                }
+            }else{
+                if(!isLt1M){
+                    this.$message.error('请上传1Mb大小以内的图片');
+                    return false;
+                }
             }
         },
         pictureRemove(file, fileList, picType) {
@@ -555,18 +569,16 @@ export default {
                 this.thumFileList = [{name: '查看缩略图', url: row.thumbnail}];
             }
             this.temp = Object.assign({}, row);
+            this.temp.effectiveTime = new Date(this.temp.effectiveTime);
+            if(this.eeopType != 'interview'){
+                this.temp.ineffectiveTime = new Date(this.temp.ineffectiveTime);
+            }
             this.$nextTick(() => {
                 this.$refs['dataForm'].clearValidate()
             });
         },
         /* 创建、更新活动 */
         createAndUpdateData() {
-            if(this.dialogStatus == 'update'){
-                this.temp.effectiveTime = new Date(this.temp.effectiveTime);
-                if(this.eeopType != 'interview'){
-                    this.temp.ineffectiveTime = new Date(this.temp.ineffectiveTime);
-                }
-            }
             this.$refs['dataForm'].validate((valid) => {
                 if (valid) {
                     this.temp.effectiveTime = parseTime(this.temp.effectiveTime);
@@ -574,6 +586,8 @@ export default {
                         this.temp.ineffectiveTime = parseTime(this.temp.ineffectiveTime);
                         if (this.temp.effectiveTime >= this.temp.ineffectiveTime){
                             this.$message.error('上线时间必须小于下线时间');
+                            this.temp.effectiveTime = new Date(this.temp.effectiveTime);
+                            this.temp.ineffectiveTime = new Date(this.temp.ineffectiveTime);
                             return false
                         }
                     }

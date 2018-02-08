@@ -131,7 +131,6 @@ export default {
             cityOptions: [],
             regionOptions: [],
             subdistrictOptions: [],
-            cityOptionsClone: [],
             subdistrictOptionsClone: [],
             placeholder: '公寓',
             formData:{
@@ -194,7 +193,6 @@ export default {
                 let dataList = response.data.list;
                 this.cityOptions = dataList.cityInfoList;
                 this.subdistrictOptions = dataList.subdistrictList;
-                this.cityOptionsClone = deepClone(dataList.cityInfoList);
                 this.subdistrictOptionsClone = deepClone(dataList.subdistrictList);
             })
         },
@@ -248,6 +246,8 @@ export default {
                 subdistrictId: '',
                 roomCode: ''
             }
+            this.regionOptions = [];
+            this.subdistrictOptions = this.subdistrictOptionsClone
             this.pageItems = {
                 pageNo: 1,
                 pageSize: 20
@@ -257,7 +257,7 @@ export default {
         /* 列表渲染 */
         getGridData(params) {
             this.listLoading = true;
-            this.searchParams = deepClone(params);
+            this.searchParams = Object.assign(deepClone(params),deepClone(this.formData));
             this.searchParams.housingType = this.housingTypeClone
             marketReviewCheckListByPageApi(ObjectMap(this.searchParams)).then(response => {
                 this.tableData = response.data.list;

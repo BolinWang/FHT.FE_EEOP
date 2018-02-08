@@ -171,9 +171,6 @@ export default {
         	this.multipleSelection = val;
         },
         /* 查询列表 */
-        change(value) {
-            this.getGridData(this.pageItems);
-        },
         handleSizeChange(val) {
             this.pageItems.pageSize = val;
             this.getGridData(this.pageItems);
