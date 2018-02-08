@@ -34,12 +34,18 @@
             <el-tag v-else :type="data_detail.status | statusFilter">
                 {{data_detail.status | statusStrFilter}}
             </el-tag>
-            <el-input style="display: inline-block; width:465px;" v-if="data_detail.status == 3" v-model="data_detail.rejectRemark" :disabled="true">
+            <el-input 
+                v-if="data_detail.status == 3"
+                type="textarea" :rows="2"
+                v-model="data_detail.rejectRemark" :disabled="true">
             </el-input>
-            <el-input style="display: inline-block; width:405px; padding-left: 10px;" 
+            <el-input 
+                style="position: relative;"
+                type="textarea" :rows="2"
                 v-if="status == 3" placeholder="请输入审核不通过原因" 
                 v-model="reject_remark" :maxlength="50">
             </el-input>
+            <span v-if="status == 3" class="textNumber">还可以输入{{textNumber}}字符</span>
         </el-form-item>
     </el-form>
 </template>
@@ -73,6 +79,11 @@ export default {
     components:{
         Preview
     },
+    computed: {
+        textNumber (){
+            return (50 - this.reject_remark.length) < 0 ? 0 : (50 - this.reject_remark.length)
+        }
+    },
     data() {
         return {
             data_detail: this.dataSign,
@@ -95,5 +106,13 @@ export default {
 <style rel="stylesheet/scss" lang="scss">
     .el-tag {
         margin: 0 5px 5px 0;
+    }
+    .textNumber{
+        position: absolute; 
+        bottom: 5px; 
+        right: 10px; 
+        color: #666;
+        font-size: 12px;
+        line-height: 1.2;
     }
 </style>

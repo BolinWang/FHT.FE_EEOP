@@ -324,6 +324,9 @@ export default {
     .item-select{
         width: 150px;
     }
+    .el-popover{
+        max-width: 500px;
+    }
 </style>
 
 

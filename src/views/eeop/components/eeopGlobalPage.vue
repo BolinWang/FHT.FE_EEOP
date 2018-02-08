@@ -423,7 +423,7 @@ export default {
             };
         },
         textNumber (){
-            return 50 - this.temp.introduction.length
+            return (50 - this.temp.introduction.length) < 0 ? 0 : (50 - this.temp.introduction.length)
         }
     },
     methods: {
