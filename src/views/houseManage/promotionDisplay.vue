@@ -191,7 +191,7 @@ export default {
             cityOptions: [],
             colModels:[
                 { prop:'showStatus', label: '状态', width: 80, type: 'status'},
-                { prop:'province', label: '房源位置'},
+                { prop:'addressName', label: '房源位置'},
                 { prop:'estateName', label: '公寓'},
                 { prop:'gmtModified', label: '操作时间', width: 180}
             ],
@@ -279,23 +279,16 @@ export default {
             this.temp.longitude = deepCloneObj.longitude;
             this.temp.latitude = deepCloneObj.latitude;
             this.temp.bmapData = this.temp.longitude + ',' + this.temp.latitude;
+            this.temp.addressName = deepCloneObj.addressName;
+            this.temp.zoneName = deepCloneObj.zoneName;
+            this.temp.introduction = deepCloneObj.introduction;
             this.temp.picList = deepCloneObj.estatePictureList.length > 0 ? deepCloneObj.estatePictureList.map((item) => ({
                 src: item.smallImage, w: 800, h: 600})) :
              [{src:noPic, w: 800, h: 600, isnoPic:true}];
             this.layer_showInfo = true;
         },
         layerClose(){
-            this.temp = {
-                longitude:'',
-                latitude:'',
-                estateName:'',
-                contactNameInfo:'',
-                bmapData:'',
-                picList:[],
-                addressName:'',
-                zoneName:'',
-                introduction:''
-            };
+            this.temp = {};
         },
         /* 查询列表 */
         change(value) {
