@@ -76,7 +76,7 @@
             </el-tag>
             <el-select size="small" v-model="remark" v-if="reviewStatus == 3"
                 placeholder="请选择不通过原因" class="item-select" style="width: 180px; padding-left: 10px;"
-                clearable>
+                clearable :maxlength="50">
                 <el-option
                     v-for="item in remarkOptions"
                     :key="item.value"

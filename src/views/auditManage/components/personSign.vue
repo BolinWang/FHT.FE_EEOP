@@ -28,7 +28,9 @@
             </el-tag>
             <el-input v-if="data_detail.status == 3" style="display: inline-block; width:295px;" v-model="data_detail.rejectRemark" :disabled="true">
             </el-input>
-            <el-input style="display: inline-block; width:295px;" v-if="status == 3" placeholder="请输入审核不通过原因" v-model="reject_remark">
+            <el-input style="display: inline-block; width:295px;" 
+                v-if="status == 3" placeholder="请输入审核不通过原因" 
+                v-model="reject_remark" :maxlength="50">
             </el-input>
         </el-form-item>
     </el-form>

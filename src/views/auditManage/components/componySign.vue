@@ -38,7 +38,7 @@
             </el-input>
             <el-input style="display: inline-block; width:405px; padding-left: 10px;" 
                 v-if="status == 3" placeholder="请输入审核不通过原因" 
-                v-model="reject_remark">
+                v-model="reject_remark" :maxlength="50">
             </el-input>
         </el-form-item>
     </el-form>
