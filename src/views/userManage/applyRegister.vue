@@ -17,7 +17,7 @@
             </el-input>
             <el-button type="primary" size="small" icon="el-icon-search" @click.native="searchParam" v-waves class="filter-item">查询</el-button>
             <el-button plain size="small" icon="el-icon-remove-outline" @click.native="clearForm">清空</el-button>
-            <el-button class="right" type="primary" size="small" icon="el-icon-circle-plus-outline" @click.native="layer_showInfo = true">注册账号</el-button>
+            <el-button class="right" type="primary" size="small" icon="el-icon-circle-plus-outline" @click.native="handleApply">注册账号</el-button>
         </div>
         <div class="model-table" :style="tableStyle">
             <el-table 
@@ -192,6 +192,12 @@ export default {
         }
     },
     methods: {
+        handleApply(){
+            this.layer_showInfo = true;
+            if (this.$refs.ruleForm) {
+                this.$refs.ruleForm.clearValidate()
+            }
+        },
         /* 弹窗关闭时的回调 */
         dialogClose(){
             this.$refs.ruleForm.resetFields();

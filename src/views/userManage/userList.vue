@@ -1,7 +1,7 @@
 <template>
     <div class="app-container">
         <div class="model-search text-right">
-            <el-button type="primary" size="small" icon="el-icon-circle-plus-outline" v-waves @click.native="layer_showInfo = true">新增账号</el-button>
+            <el-button type="primary" size="small" icon="el-icon-circle-plus-outline" v-waves @click.native="handleAdd">新增账号</el-button>
         </div>
         <div class="model-table" :style="tableStyle">
             <el-table 
@@ -182,6 +182,12 @@ export default {
         }
     },
     methods: {
+        handleAdd(){
+            this.layer_showInfo = true;
+            if (this.$refs.ruleForm) {
+                this.$refs.ruleForm.clearValidate()
+            }
+        },
         /* 弹窗关闭时的回调 */
         dialogClose(){
             this.$refs.ruleForm.resetFields();
