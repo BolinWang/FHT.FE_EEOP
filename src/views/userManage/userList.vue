@@ -222,8 +222,7 @@ export default {
                 type: 'warning'
             }).then(() => {
                 row.password = '123456';
-                this.tableData.splice(index, 1, row);
-                this.saveData(this.tableData, row.isAdmin == 1 ? 'toLogin' : '');
+                this.saveData([row], row.isAdmin == 1 ? 'toLogin' : '');
             }).catch(() => {})
         },
         /* 删除 */

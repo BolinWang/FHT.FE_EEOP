@@ -102,19 +102,31 @@
                         <el-input v-model="temp.estateName" placeholder="请输入公寓名称" :maxlength="20"></el-input>
                     </el-form-item>
                     <el-form-item label="链接" prop="linkUrl">
-                        <el-input v-model="temp.linkUrl" placeholder="请输入有效链接"></el-input>
+                        <el-autocomplete
+                            ref="autofocusElm"
+                            style="width: 100%"
+                            v-model="temp.linkUrl"
+                            :fetch-suggestions="querySearch"
+                            placeholder="请输入有效链接">    
+                        </el-autocomplete>
                     </el-form-item>
                     <el-form-item label="上线时间" prop="effectiveTime">
                         <el-date-picker 
                             v-model="temp.effectiveTime" 
+                            :disabled="(temp[this.colModels[0].prop] && temp[this.colModels[0].prop] != 1) || nowOnline"
                             type="datetime" placeholder="选择上线时间">
                         </el-date-picker>
+                        <el-checkbox v-model="nowOnline" class="filter-item" 
+                            v-if="temp[this.colModels[0].prop] != 2">立即上线</el-checkbox>
                     </el-form-item>
                     <el-form-item v-if="eeopType != 'interview'" label="下线时间" prop="ineffectiveTime">
                         <el-date-picker 
                             v-model="temp.ineffectiveTime" 
+                            :disabled="temp[this.colModels[0].prop] && temp[this.colModels[0].prop] != 1"
                             type="datetime" placeholder="选择下线时间">
                         </el-date-picker>
+                        <el-checkbox v-model="nowOffline" class="filter-item" 
+                            v-if="temp[this.colModels[0].prop] == 1 || temp[this.colModels[0].prop] == 2 || nowOffline">立即下线</el-checkbox>
                     </el-form-item>
                     <el-form-item label="图片" prop="picUrl">
                         <el-upload
@@ -266,6 +278,15 @@ export default {
                 options: [],
                 value:''
             },
+            nowOnline: false,
+            nowOffline: false,
+            restaurants:[
+                { "value": "https://www.mdguanjia.com" },
+                { "value": "http://www.memorhome.com" },
+                { "value": "http://www.52mailin.com" },
+                { "value": "https://" },
+                { "value": "http://" }
+            ],
             actionBaseUrl: process.env.BASE_API,
             colModels:[
                 { prop:'status', label: '状态', width: 80, type: 'status'},
@@ -319,7 +340,7 @@ export default {
                     { required: true, message: '请输入公寓名称', trigger: 'blur' }
                 ],
                 linkUrl: [
-                    { required: true, trigger: 'blur', validator: validateUrl }
+                    { required: true, validator: validateUrl, trigger: 'change' }
                 ],
                 thumbnail: [
                     { required: true, message: '请上传缩略图', trigger: 'change' }
@@ -427,6 +448,11 @@ export default {
         }
     },
     methods: {
+        /* 快速输入建议 */
+        querySearch(queryString, cb) {
+            let restaurants = this.restaurants;
+            cb(restaurants);
+        },
         setSortFirst(index){
             let tempSortObj = this.sort_tableData.splice(index,1);
             this.sort_tableData.unshift(tempSortObj[0])
@@ -498,7 +524,10 @@ export default {
         dialogClose(){
             this.fileList = [];
             this.thumFileList = [];
+            this.nowOnline = false;
+            this.nowOffline = false;
             this.resetTemp();
+            this.$refs.dataForm.resetFields();
         },
         closeDialog(){
             this.layer_showImage = false;
@@ -591,14 +620,7 @@ export default {
                             return false
                         }
                     }
-                    let saveList = [];
-                    if (this.dialogStatus == 'update'){
-                        this.tableData.splice(this.editRowIndex,1,this.temp);
-                        saveList = this.tableData;
-                    }else{
-                        saveList = [this.temp]
-                    }
-                    this.saveData(saveList);
+                    this.saveData([this.temp]);
                 }
             })
         },
@@ -622,6 +644,13 @@ export default {
             let savePatams = deepClone(params);
             if (type == 'sort'){
                 savePatams.forEach((item,index) => item.sortNum = index * 1 + 1);
+            }else{
+                if (this.nowOnline){
+                    savePatams[0][this.colModels[0].prop] = 2;
+                }
+                if (this.nowOffline){
+                    savePatams[0][this.colModels[0].prop] = 3;
+                }
             }
             saveDataApi(savePatams,this.urlPathObj).then(response => {
                 this.layer_appsort = false;
@@ -645,6 +674,12 @@ export default {
             this.$nextTick(() =>{
                this.delayedDragging = false
             })
+        },
+        nowOnline(val){
+            
+        },
+        nowOffline(val){
+            
         }
     }
 };
@@ -655,7 +690,7 @@ export default {
         background: inherit;
         box-shadow: none;
     }
-    .model-search .filter-item{
+    .filter-item{
         margin-left: 10px;
     }
     .textNumber{

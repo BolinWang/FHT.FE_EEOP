@@ -53,7 +53,7 @@
                     :width="item.width"
                     key="index"
                     fit
-                    show-overflow-tooltip>
+                    :show-overflow-tooltip="!item.toolTip">
                     <template slot-scope="scope">
                         <el-popover v-if="item.type === 'status' && scope.row[item.prop] == 3" trigger="hover" placement="top">
                             <p>不通过原因: {{ scope.row.rejectRemark }}</p>
@@ -70,6 +70,9 @@
                         </el-tag>
                         <span v-else-if="item.type === 'formatType'">
                             {{(scope.row[item.prop]) | typeFilter}}
+                        </span>
+                        <span v-else-if="item.type === 'formatTime'">
+                            {{scope.row[item.prop] | formatTime(scope.row)}}
                         </span>
                         <span v-else>
                             {{scope.row[item.prop]}}
@@ -160,6 +163,9 @@ export default {
         widthFilter(type){
             const dialogWidth =  ['700px', '700px', '510px'];
             return dialogWidth[type - 1] || '800px'
+        },
+        formatTime(val,item){
+            return `${parseTime(val)} ${item.operator}`
         }
     },
     data() {
@@ -191,7 +197,7 @@ export default {
                 { prop:'organizationName', label: '申请组织'},
                 { prop:'type', label: '模块',  width: 100, type: 'formatType'},
                 { prop:'status', label: '审核状态', width: 150, type:'status'},
-                { prop:'gmtModified', label: '审核时间', width: 180}
+                { prop:'gmtModified', label: '审核时间', width: 140, type: 'formatTime', toolTip: true}
             ],
             tableHeight: 300,
             tableData: [],
