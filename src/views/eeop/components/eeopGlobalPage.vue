@@ -126,7 +126,7 @@
                             type="datetime" placeholder="选择下线时间">
                         </el-date-picker>
                         <el-checkbox v-model="nowOffline" class="filter-item" 
-                            v-if="temp[this.colModels[0].prop] == 1 || temp[this.colModels[0].prop] == 2 || nowOffline">立即下线</el-checkbox>
+                            v-if="temp[this.colModels[0].prop] == 2 || nowOffline">立即下线</el-checkbox>
                     </el-form-item>
                     <el-form-item label="图片" prop="picUrl">
                         <el-upload
