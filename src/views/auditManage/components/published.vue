@@ -57,10 +57,13 @@
 	                fit
 	                :show-overflow-tooltip="!item.toolTip">
 	                <template slot-scope="scope">
-                        <img class="image image-center" width="40" height="40"
-                            v-if="item.type === 'img'"
-                            v-lazy="scope.row[item.prop][0]"
-                            @click="showImage(scope.row[item.prop][0])" /> 
+                        <span v-if="item.type === 'img'">
+                            <img class="image image-center" width="40" height="40"
+                                v-if="scope.row[item.prop][0]"
+                                v-lazy="scope.row[item.prop][0]"
+                                @click="showImage(scope.row[item.prop][0])" /> 
+                            <span v-else></span>
+                        </span>
                         <span v-else-if="item.type === 'tags'" >
                             <el-tag style="margin: 0 5px 5px 0;"
                                 v-for="(tag,tagIndex) in scope.row.tags"

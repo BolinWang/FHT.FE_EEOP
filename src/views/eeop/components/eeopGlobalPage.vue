@@ -192,7 +192,7 @@
                     @start="isDragging=true" 
                     @end="isDragging=false"> 
                     <transition-group type="transition" :name="'flip-list'">
-                        <li class="list-group-item clearfix" v-for="(item,index) in sort_tableData" :key="item.sortNum">
+                        <li class="list-group-item clearfix" v-for="(item,index) in sort_tableData" :key="index">
                             <el-button class="right" size="mini" 
                                 type="primary" icon="el-icon-setting"
                                 v-if="index != 0" @click="setSortFirst(index)">
@@ -626,12 +626,14 @@ export default {
         },
         /* 列表排序 */
         sortApp(){
+            this.sort_tableData = [];
             getGridApi({
                 pageNo:1,
                 pageSize:9999,
                 status:2
             },this.urlPathObj).then(response => {
                 this.sort_tableData = response.data.content.sort((a,b) => a['sortNum'] * 1 - b['sortNum'] * 1);
+                console.log(this.sort_tableData)
                 if (this.sort_tableData.length == 0) {
                     this.$message.error('没有【已上线】的数据');
                     return false;

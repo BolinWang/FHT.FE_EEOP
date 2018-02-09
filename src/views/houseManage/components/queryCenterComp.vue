@@ -269,6 +269,7 @@ export default {
     watch: {
         housingType(val){
             this.housingTypeClone = val;
+            this.placeholder = val == 1 ? '公寓' : '小区'
             this.pageItems = {
                 pageNo: 1,
                 pageSize: 20

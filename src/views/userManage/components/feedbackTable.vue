@@ -22,10 +22,13 @@
 	                fit
 	                show-overflow-tooltip>
 	                <template slot-scope="scope">
-	                    <img class="image image-center" width="40" height="40"
-	                        v-if="item.type === 'img'"
-	                        v-lazy="scope.row[item.prop]"
-	                        @click="showImage(scope.row[item.prop])" /> 
+                        <span v-if="item.type === 'img'">
+    	                    <img class="image image-center" width="40" height="40"
+    	                        v-if="scope.row[item.prop]"
+    	                        v-lazy="scope.row[item.prop]"
+    	                        @click="showImage(scope.row[item.prop])" /> 
+                            <span v-else></span>
+                        </span>
 	                    <span v-else-if="item.type === 'formatType'">
 	                        {{scope.row[item.prop] | formatTypeFilter}}
 	                    </span>
