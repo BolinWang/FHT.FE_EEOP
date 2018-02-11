@@ -648,10 +648,12 @@ export default {
                 savePatams.forEach((item,index) => item.sortNum = index * 1 + 1);
             }else{
                 if (this.nowOnline){
-                    savePatams[0][this.colModels[0].prop] = 2;
+                    //savePatams[0][this.colModels[0].prop] = 2;
+                    savePatams[0].operateType = 1;
                 }
                 if (this.nowOffline){
-                    savePatams[0][this.colModels[0].prop] = 3;
+                    //savePatams[0][this.colModels[0].prop] = 3;
+                    savePatams[0].operateType = 2;
                 }
             }
             saveDataApi(savePatams,this.urlPathObj).then(response => {
