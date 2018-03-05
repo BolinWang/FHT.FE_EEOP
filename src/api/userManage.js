@@ -96,5 +96,92 @@ export function registeredUserApi(params={}) {
         }
     });
 }
+// C端租客查询
+export function customerListApi(params={}) {
+    return fetch({
+        url: '/market/customer/',
+        method: 'post',
+        data: {
+            method: 'customerList',
+            params
+        }
+    });
+}
+// 租房记录
+export function queryRentRecordApi(params={}) {
+    return fetch({
+        url: '/market/customer/',
+        method: 'post',
+        data: {
+            method: 'queryRentRecord',
+            params
+        }
+    });
+}
+// B端租客查询
+export function businessUserListApi(params={}) {
+    return fetch({
+        url: '/market/customer/',
+        method: 'post',
+        data: {
+            method: 'businessUserList',
+            params
+        }
+    });
+}
 
-
+// 查询组织列表
+export function initOrgListApi(params={}) {
+    return fetch({
+        url: '/market/organization/',
+        method: 'post',
+        data: {
+            method: 'list',
+            params
+        }
+    });
+}
+// 查询权限模板
+export function queryTemplateListApi(params={}) {
+    return fetch({
+        url: '/market/organization/',
+        method: 'post',
+        data: {
+            method: 'queryTemplateList',
+            params
+        }
+    });
+}
+// 组织启用/禁用/删除
+export function updateOrgStatusAndDeleteApi(params={}) {
+    return fetch({
+        url: '/market/organization/',
+        method: 'post',
+        data: {
+            method: 'updateOrgStatusAndDelete',
+            params
+        }
+    });
+}
+// 新增组织
+export function saveOrgApi(params={}) {
+    return fetch({
+        url: '/market/organization/',
+        method: 'post',
+        data: {
+            method: 'saveOrg',
+            params
+        }
+    });
+}
+// 编辑组织
+export function editOrgBasicInfoApi(params={}) {
+    return fetch({
+        url: '/market/organization/',
+        method: 'post',
+        data: {
+            method: 'editOrgBasicInfo',
+            params
+        }
+    });
+}
