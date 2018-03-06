@@ -1,8 +1,10 @@
 <template>
     <div class="app-container">
         <div class="model-search clearfix">
-            <el-select size="small" v-model="formData.type" 
-                placeholder="联系状态" class="item-select" style="width: 150px;"
+            <el-select size="small" v-model="formData.organizationType" 
+                placeholder="联系状态" class="item-select" 
+                style="width: 150px;"
+                @change="searchParam"
                 clearable>
                 <el-option
                     v-for="item in selectOptions"
@@ -71,13 +73,13 @@
             </el-pagination>
         </div>
 
-        <!-- 注册账号 -->
+        <!-- 新增编辑组织 -->
         <div class="dialog-info">
             <el-dialog 
-                title="新增组织" 
+                :title="overlayTitle" 
                 :visible.sync="layer_showInfo" width="800px"
                 @close="dialogClose">
-                <el-steps :active="active" finish-status="success" >
+                <el-steps :active="active" v-if="!isEdit" finish-status="success" >
                   <el-step title="基本设置"></el-step>
                   <el-step title="权限设置"></el-step>
                   <el-step title="账号设置"></el-step>
@@ -160,6 +162,13 @@
                             </el-upload>
                         </el-form-item>
                     </div>
+                    <el-switch
+                      v-model="financeTrusteeshipType"
+                      active-text="磐谷金融托底方"
+                        active-value=2
+                        inactive-value=1
+                      v-if="isEdit">
+                    </el-switch>
                 </el-form>
                 <div class="clearfix" v-show="active == 1 ? true : false">
                     <div 
@@ -175,22 +184,24 @@
                         <div class="dashed">{{item.remark}}</div>
                     </div>
                 </div>
-                <el-form size="small" v-show="active == 2 ? true : false" :rules="rules" label-width="110px">
+                <el-form size="small" v-show="active == 2 ? true : false" 
+                :rules="rules" :model="stepForm2" ref="stepForm2" label-width="110px">
                     <div class="clearfix" style="margin-top: 10px">
                         <el-col :span="9">
                             <el-form-item label="手机号码" prop="mobile">
-                                <el-input v-model="stepForm2.mobile"></el-input>
+                                <el-input v-model="stepForm2.mobile" :disabled="isEdit"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="9">
                             <el-form-item label="姓名" label-width="50px">
-                                <el-input v-model="stepForm2.name"></el-input>
+                                <el-input v-model="stepForm2.name" :disabled="isEdit"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="6">
                             <el-form-item label="性别" label-width="50px">
                                 <el-select size="small" 
                                     v-model="stepForm2.gender"
+                                    :disabled="isEdit"
                                     placeholder="性别" class="item-select">
                                     <el-option
                                         v-for="item in sexOptions"
@@ -205,7 +216,9 @@
                     <div class="clearfix">
                         <el-col :span="12">
                             <el-form-item label="证件类型">
-                                <el-select size="small" v-model="stepForm2.cardType"
+                                <el-select size="small" 
+                                    v-model="stepForm2.cardType"
+                                    :disabled="isEdit"
                                     placeholder="证件类型" class="item-select">
                                     <el-option
                                         v-for="item in cardOptions"
@@ -218,41 +231,51 @@
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="证件号码">
-                                <el-input v-model="stepForm2.cardNo"></el-input>
+                                <el-input :disabled="isEdit" v-model="stepForm2.cardNo"></el-input>
                             </el-form-item>
                         </el-col>
                     </div>
                     <div class="clearfix">
                         <el-col :span="12">
                             <el-form-item label="身份证地址">
-                                <area-select v-model="areaCode1"></area-select>
+                                <area-select :disabled="isEdit" v-model="areaCode1"></area-select>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label-width="10px">
-                                <el-input v-model="stepForm2.cardAddrDetail"></el-input>
+                                <el-input :disabled="isEdit" v-model="stepForm2.cardAddrDetail"></el-input>
                             </el-form-item>
                         </el-col>
                     </div>
                     <div class="clearfix">
                          <el-col :span="12">
                             <el-form-item label="现居住地址">
-                                <area-select v-model="areaCode2"></area-select>
+                                <area-select :disabled="isEdit" v-model="areaCode2"></area-select>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label-width="10px">
-                                <el-input v-model="stepForm2.addrDetail"></el-input>
+                                <el-input :disabled="isEdit" v-model="stepForm2.addrDetail"></el-input>
                             </el-form-item>
                         </el-col>
                     </div>
-                    
+                    <div class="clearfix" v-if="!isEdit">
+                        温馨提示：默认密码为123456，请提醒用户首次登陆后立即更改密码
+                    </div>
                 </el-form>
-                <div slot="footer" class="dialog-footer">
-                    <el-button type="primary" @click="changeStep(-1)" v-show="active > 0 && active < 3 ? true : false" size="small" >上一步</el-button>
-                    <el-button type="primary" @click="changeStep(1)" v-show="active < 2 ? true : false" size="small" >下一步</el-button>
-                    <el-button type="primary" @click="completeFn" v-show="active == 2 ? true : false" size="small" >完成</el-button>
-                    <el-button @click="layer_showInfo = false" size="small">取 消</el-button>
+                <div slot="footer" class="dialog-footer" v-if="rowType != 3">
+                    <div v-if="!isEdit">
+                        <el-button type="primary" @click="changeStep(-1)" v-show="active > 0 && active < 3" size="small" >上一步</el-button>
+                        <el-button type="primary" @click="changeStep(1)" v-show="active < 2" size="small" >下一步</el-button>
+                        <el-button type="primary" @click="completeFn" v-show="active == 2" size="small" >完成</el-button>
+                        <el-button @click="dialogClose;layer_showInfo=false" size="small">取 消</el-button>
+                    </div>
+                    <div v-else>
+                        <el-button type="primary" @click="editFn" size="small">确定</el-button>
+                         <el-button @click="dialogClose;layer_showInfo=false" size="small">取 消</el-button>
+                    </div>
+                    
+                    
                 </div>
             </el-dialog>
         </div>
@@ -274,7 +297,7 @@
 import waves from '@/directive/waves' // 水波纹指令
 import { parseTime, ObjectMap, deepClone } from '@/utils'
 import areaSelect from '@/components/AreaSelect'
-import { initOrgListApi, queryTemplateListApi, updateOrgStatusAndDeleteApi, saveOrgApi, editOrgBasicInfoApi } from '@/api/userManage'
+import { initOrgListApi, queryTemplateListApi, updateOrgStatusAndDeleteApi, saveOrgApi, editOrgBasicInfoApi, organizationInfoApi, realNameAuthApi } from '@/api/userManage'
 import { validateMobile } from '@/utils/validate'
 
 export default {
@@ -307,13 +330,6 @@ export default {
         }
     },
     data() {
-        const validateName = (rule, value, callback) => {
-            if (!value) {
-                callback(new Error('请输入姓名'));
-            } else {
-                callback();
-            }
-        };
         const validatePhone = (rule, value, callback) => {
             if (!validateMobile(value)) {
                 callback(new Error('请输入正确的手机号'));
@@ -337,7 +353,11 @@ export default {
                 ],
                 orgLegalPersonCardNo: [
                     { required: true, message: '请输入法人身份证号', trigger: 'blur' }
+                ],
+                mobile: [
+                    { validator: validatePhone, trigger: 'blur' }
                 ]
+                
             },
             selectOptions: [
                 {label: '系统', value: 1},
@@ -351,6 +371,7 @@ export default {
             cardOptions: [
                 {label: '身份证', value: 1},
             ],
+            financeTrusteeshipType: '',
             colModels:[
                 { prop:'organizationName', label: '组织名称', width: 150},
                 { prop:'displayName', label: '缩写名'},
@@ -370,6 +391,8 @@ export default {
                 orgAddrProvinceId: '',
                 orgAddrCityId: '',
                 orgAddrRegionId: '',
+                status: 1,
+                type:2,
                 picList: []
             },
             permTemplate: [],
@@ -398,9 +421,12 @@ export default {
             tableData: [],
             total: null,
             btnText: '',
+            rowType: '',
             uploadTips: '',
             fileList: [],
             layer_showImage: false,
+            isEdit: false,
+            overlayTitle: '新增组织',
             showPicUrl:'',
             pageItems: {
                 pageNo: 1,
@@ -410,20 +436,9 @@ export default {
             layer_showInfo: false,
             formData: {
                 searchField: '',
-                type: 2
+                organizationType: 2
             },
-            multipleSelection:[],
-            ruleForm: {
-                mobile: '',
-                name: ''
-            },
-            temp:{
-                picUrl: '',
-                linkUrl: '',
-                effectiveTime: '',
-                title: '',
-                introduction: ''
-            }
+            multipleSelection:[]
         }
     },
     created(){
@@ -448,9 +463,15 @@ export default {
             }
         }
     },
+    watch: {
+        isEdit(val) {
+            this.overlayTitle = val ? '编辑组织' : '新增组织';
+        }
+    },
     methods: {
         handleApply(){
             this.layer_showInfo = true;
+            this.isEdit = false;
             if (this.$refs.ruleForm) {
                 this.$refs.ruleForm.clearValidate()
             }
@@ -459,42 +480,187 @@ export default {
             })
         },
         changeStep(num) {
-            // this.$refs.stepForm1.validate((valid) => {
-            //   if (valid) {
-
-            //     console.log(this.areaCode)
-            //   } else {
-            //     console.log('error submit!!');
-            //     return false;
-            //   }
-            // });
-            // if (num == 0) {
-                if (this.areaCode.length > 0) {
-                    this.stepForm1.orgAddrProvinceId = this.areaCode[0];
-                    this.stepForm1.orgAddrCityId = this.areaCode[1];
-                    this.stepForm1.orgAddrRegionId = this.areaCode[2];
+            if (this.active == 0) {
+                this.$refs.stepForm1.validate((valid) => {
+                  if (valid) {
+                    [
+                        this.stepForm1.orgAddrProvinceId,
+                        this.stepForm1.orgAddrCityId,
+                        this.stepForm1.orgAddrRegionId
+                    ] = this.areaCode;
+                    this.fileList.map(val => {
+                        this.stepForm1.picList.push({'picUrl':val.url})
+                    });
+                    let realName = {
+                        'name': this.stepForm1.orgLegalPersonName,
+                        'cardNo': this.stepForm1.orgLegalPersonCardNo
+                    }
+                    realNameAuthApi(realName).then(response => {
+                        this.active += num;
+                    }).catch(response => {
+                        
+                    })
+                  } else {
+                    return false;
+                  }
+                });
+            } else if(this.active == 1) {
+                if (this.organizationPermTemplateId) {
+                    this.active += num;
+                } else {
+                    this.$message.error('请选择权限模板');
                 }
-                this.fileList.map(val => {
-                    this.stepForm1.picList.push(val.response.data[0])
-                })
-            // }
+                
+            } 
             
-            // console.log(this.fileList)
-            console.log(this.stepForm1)
-            // console.log(this.areaCode)
-            this.active += num;
+            
         },
         completeFn() {
+            this.$refs['stepForm2'].validate((valid) => {
+              if (valid) {
+                
+                [
+                    this.stepForm2.cardAddrProvinceId,
+                    this.stepForm2.cardAddrCityId,
+                    this.stepForm2.cardAddrRegionId
+                ] = this.areaCode1;
+
+                [
+                    this.stepForm2.addrProvinceId,
+                    this.stepForm2.addrCityId,
+                    this.stepForm2.addrRegionId
+                ] = this.areaCode2;
+                
+                let search = {
+                    organizationStepOneVO: this.stepForm1,
+                    organizationNewPermVO: {
+                        organizationPermTemplateId: this.organizationPermTemplateId
+                    },
+                    organizationNewUserVO: this.stepForm2               
+                }
+                saveOrgApi(JSON.stringify(search)).then(response => {
+                    this.layer_showInfo = false;
+                    this.getGridData(this.pageItems);
+                    this.resetFormData();
+
+                })
+              } else {
+                return false;
+              }
+            });
+            
+        },
+        editData(index,row) {
+
             let search = {
-                organizationStepOneVO: this.stepForm1,
-                organizationNewPermVO: {
-                    organizationPermTemplateId: this.organizationPermTemplateId
-                },
-                organizationNewUserVO: this.stepForm2               
+                organizationId: row.organizationId,
+                type: row.type
             }
-            saveOrgApi(JSON.stringify(search)).then(response => {
+            this.rowType = row.type;
+            organizationInfoApi(search).then(response => {
+                let result = response.data.result;
+                this.layer_showInfo = true;
+                this.isEdit = true;
+                
+                if (this.rowType != 3) {
+                    this.financeTrusteeshipType = result.financeTrusteeshipType;
+                    Object.keys(this.stepForm1).map(key => {
+                        this.stepForm1[key] = result[key] || '';
+                    });
+                    this.stepForm1.organizationId = row.organizationId;
+                    this.fileList = this.stepForm1.picList.map(key => {
+                        return {'name':'图片','url' : key.picUrl}
+                    });
+                    this.areaCode = [
+                        result.orgAddrProvinceId,
+                        result.orgAddrCityId,
+                        result.orgAddrRegionId
+                    ];
+                } else {
+                    Object.keys(this.stepForm2).map(key => {
+                        this.stepForm2[key] = result[key] || '';
+                    });
+                    this.stepForm2.organizationId = row.organizationId;
+                    this.areaCode1 = [
+                        result.cardAddrProvinceId,
+                        result.cardAddrCityId,
+                        result.cardAddrRegionId
+                    ];
+                    this.areaCode2 = [
+                        result.addrProvinceId,
+                        result.addrCityId,
+                        result.addrRegionId
+                    ];
+                    this.active = 2;
+                }
+                
                 
             })
+        },
+        editFn() {
+            this.$refs.stepForm1.validate((valid) => {
+              if (valid) {
+                [
+                    this.stepForm1.orgAddrProvinceId,
+                    this.stepForm1.orgAddrCityId,
+                    this.stepForm1.orgAddrRegionId
+                ] = this.areaCode;
+                this.stepForm1.picList = this.fileList.map(val => {
+                    return {'picUrl':val.url}
+                });
+
+                this.stepForm1.financeTrusteeshipType = this.financeTrusteeshipType;
+                editOrgBasicInfoApi(JSON.stringify(this.stepForm1)).then(response => {
+                    this.layer_showInfo = false;
+                    this.isEdit = false;
+                    this.getGridData(this.pageItems);
+                })
+              } else {
+                return false;
+              }
+            });
+            
+        },
+        resetFormData() {
+            this.stepForm1 = {
+                organizationName: '',
+                displayName: '',
+                orgLicence: '',
+                orgAddrDetail: '',
+                orgLegalPersonName: '',
+                orgLegalPersonCardNo: '',
+                orgContactName: '',
+                orgContactMobile : '',
+                orgAddrProvinceId: '',
+                orgAddrCityId: '',
+                orgAddrRegionId: '',
+                status: 1,
+                type:2,
+                picList: []
+            }
+            this.organizationPermTemplateId = '';
+            this.stepForm2 = {
+                name: '',
+                gender: '',
+                cardType: '',
+                cardNo: '',
+                mobile: '',
+                cardAddrProvinceId: '',
+                cardAddrCityId: '',
+                cardAddrRegionId: '',
+                cardAddrDetail: '',
+                addrProvinceId: '',
+                addrCityId: '',
+                addrRegionId: '',
+                addrDetail: ''
+            };
+            [
+                this.areaCode,
+                this.areaCode1,
+                this.areaCode2
+            ] = [[],[],[]]
+            
+            this.active = 0;
         },
         enableItems() {//启用
             if (this.multipleSelection.length == 0) {
@@ -512,17 +678,24 @@ export default {
                 }
             })
             if (flag) {
-                let search = {
-                    type: 1,
-                    organizationIds: organizationIds
-                }
-                updateOrgStatusAndDeleteApi(ObjectMap(search)).then(response => {
-                    this.$message({
-                        type: 'success',
-                        message: '启用成功!'
-                    });
-                    this.getGridData(this.pageItems);
+                this.$confirm('确定启用所选组织吗？', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    let search = {
+                        type: 1,
+                        organizationIds: organizationIds
+                    }
+                    updateOrgStatusAndDeleteApi(ObjectMap(search)).then(response => {
+                        this.$message({
+                            type: 'success',
+                            message: '启用成功!'
+                        });
+                        this.getGridData(this.pageItems);
+                    })
                 })
+                
             }
         },
         disableItems() {//禁用
@@ -541,32 +714,30 @@ export default {
                 }
             })
             if (flag) {
-                let search = {
-                    type: 2,
-                    organizationIds: organizationIds
-                }
-                updateOrgStatusAndDeleteApi(ObjectMap(search)).then(response => {
-                    this.$message({
-                        type: 'success',
-                        message: '禁用成功!'
-                    });
-                    this.getGridData(this.pageItems);
-                })
+                this.$confirm('确定禁用所选组织吗？', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    let search = {
+                        type: 2,
+                        organizationIds: organizationIds
+                    }
+                    updateOrgStatusAndDeleteApi(ObjectMap(search)).then(response => {
+                        this.$message({
+                            type: 'success',
+                            message: '禁用成功!'
+                        });
+                        this.getGridData(this.pageItems);
+                    })
+                });
+                
             }
         },
         handleSelectionChange(val) {
             this.multipleSelection = val;
         },
-        editData(index,row) {
-            let search = {
-
-            }
-            saveOrgApi(JSON.stringify(search)).then(response => {
-                
-            })
-        },
         delData(index,row) {
-            console.log(row)
             this.$confirm('此操作将永久删除该组织, 是否继续?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
@@ -609,14 +780,22 @@ export default {
         },
         pictureRemove(file, fileList) {
             this.showPicUrl = '';
-            this.fileList = fileList;
+            let imgList = []
+            this.fileList.map(key => {
+                if (key.url != file.url) {
+                    imgList.push(key);
+                }
+            })
+            this.fileList = deepClone(imgList);
+            
         },
         picturePreview(file) {
             this.showPicUrl = file.url;
             this.layer_showImage = true;
         },
         pictureSuccess(response, file, fileList){
-            this.fileList = fileList;            
+            this.fileList.push({'url':file.response.data[0]}) 
+      
         },
         pictureError(err,file){
             file = null;
@@ -629,7 +808,10 @@ export default {
         },
         /* 弹窗关闭时的回调 */
         dialogClose(){
-            this.$refs.stepForm1.resetFields();
+            // this.$refs.ruleForm.resetFields();
+            this.resetFormData();
+            this.active = 0;
+            this.fileList = [];
         },
         handleSizeChange(val) {
             this.pageItems.pageSize = val;
@@ -659,43 +841,9 @@ export default {
             }
             this.formData = {
                 searchField: '',
-                type: 2
+                organizationType: 2
             }
             this.getGridData(this.pageItems);
-        },
-        handleSaveData(){
-            this.$refs.ruleForm.validate(valid => {
-                if (valid) {
-                    registeredUserApi({
-                        mobile: this.ruleForm.mobile + '',
-                        name: this.ruleForm.name
-                    }).then(response => {
-                        this.layer_showInfo = false;
-                        this.getGridData(this.pageItems);
-                        this.$notify({
-                            title: '成功',
-                            message: '注册成功，初始密码为：123456',
-                            type: 'success',
-                            duration: 2000
-                        })
-                    })
-                } else {
-                    console.log('error submit!!');
-                    return false;
-                }
-            });
-        },
-        signContactor(index, row){
-            row.requestStatus = 2;
-            saveUserRequestApi([row]).then(response => {
-                this.getGridData(this.pageItems);
-                this.$notify({
-                    title: '成功',
-                    message: '标记成功',
-                    type: 'success',
-                    duration: 2000
-                })
-            })
         }
     }
 };

@@ -185,3 +185,25 @@ export function editOrgBasicInfoApi(params={}) {
         }
     });
 }
+// 查询组织信息
+export function organizationInfoApi(params={}) {
+    return fetch({
+        url: '/market/organization/',
+        method: 'post',
+        data: {
+            method: 'organizationInfo',
+            params
+        }
+    });
+}
+// 实名校验
+export function realNameAuthApi(params={}) {
+    return fetch({
+        url: '/market/organization/',
+        method: 'post',
+        data: {
+            method: 'realNameAuth',
+            params
+        }
+    });
+}

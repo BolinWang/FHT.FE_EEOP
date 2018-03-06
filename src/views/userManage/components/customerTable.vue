@@ -5,7 +5,7 @@
                 <el-select size="small" v-if="customerType == 1" 
                     v-model="formData.realNameType" 
                     placeholder="实名认证" class="item-select" style="width: 120px;"
-                    clearable filterable>
+                    clearable filterable @change="searchParam">
                     <el-option
                         v-for="(item,index) in attestation"
                         :key="index"
@@ -15,7 +15,7 @@
                 </el-select>
                 <el-select size="small" v-if="customerType == 1" 
                     v-model="formData.liveType" 
-                    placeholder="入住情况" class="item-select filter-item" style="width: 120px;"
+                    placeholder="入住情况" class="item-select filter-item" style="width: 120px;" @change="searchParam"
                     clearable filterable>
                     <el-option
                         v-for="(item,index) in checkIn"
@@ -25,7 +25,7 @@
                     </el-option>
                 </el-select>
                 <el-select size="small" v-if="customerType == 2" v-model="formData.type" 
-                    placeholder="全部组织" class="item-select" style="width: 180px;"
+                    placeholder="全部组织" @change="searchParam" class="item-select" style="width: 180px;"
                     clearable filterable>
                     <el-option
                         v-for="(item,index) in organization"
@@ -64,21 +64,26 @@
                             :type="(scope.row[item.prop] == '2' ? 'success' : 'info')">
                             {{(scope.row[item.prop]) | filterStr(item.filterType)}}
                         </el-tag>
+                        
                         <span v-else-if="item.filterType">
                             {{(scope.row[item.prop]) | filterStr(item.filterType)}}
                         </span>
+                        <el-tooltip v-else-if="item.prop == 'mobile' || item.prop == 'cardNo'"
+                            class="item" 
+                            effect="dark" 
+                            :content="scope.row[item.prop]" 
+                            placement="top-start">
+                            <span>{{scope.row[item.prop] | xing}}</span>
+                            
+                        </el-tooltip>
                         <span v-else>
                             {{scope.row[item.prop]}}
                         </span>
                     </template>
                 </el-table-column>
-                <el-table-column fixed="right" label="操作" width="220" v-if="customerType == 1">
+                <el-table-column fixed="right" label="操作" width="120" v-if="customerType == 1">
                     <template slot-scope="scope">
-                        <el-button-group>
-                            <el-button type="primary" icon="el-icon-tickets" size="small" @click.native="showRecord(scope.row)">租房记录</el-button>
-                            <el-button type="primary" icon="el-icon-info" size="small" @click.native="showDetail(scope.row)">查看详情</el-button>
-                        </el-button-group>
-                        
+                        <el-button type="primary" icon="el-icon-tickets" size="small" @click.native="showRecord(scope.row)">租房记录</el-button>                        
                     </template>
                 </el-table-column>
             </el-table>
@@ -125,84 +130,12 @@
                 </el-table-column>
             </el-table>
         </el-dialog>
-
-        <!-- 详细资料 -->
-        <el-dialog title="详细资料" :visible.sync="lookDetail" width="700px">
-            <el-form ref="form" :model="detailData" size="small" label-width="90px">
-                <div class="clearfix">
-                    <el-col :span="8">
-                        <el-form-item label="姓名">
-                            <el-input :disabled="true" :value="detailData.realName"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="8">
-                        <el-form-item label="手机号码">
-                            <el-input :disabled="true" :value="detailData.mobile"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="8">
-                        <el-form-item label="国籍">
-                            <el-input :disabled="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                </div>
-                <div class="clearfix">
-                    <el-col :span="8">
-                        <el-form-item label="省份">
-                            <el-input :disabled="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="8">
-                        <el-form-item label="市县">
-                            <el-input :disabled="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="8">
-                        <el-form-item label="地区">
-                            <el-input :disabled="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                </div>
-                <el-form-item label="详细地址">
-                    <el-input :disabled="true" ></el-input>
-                </el-form-item>
-                <div class="clearfix">
-                    <el-col :span="8">
-                        <el-form-item label="证件类型">
-                            <el-input :disabled="true" 
-                            :value="detailData.cardType | filterStr('cardType')">
-                                
-                            </el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="16">
-                        <el-form-item label="证件号码">
-                            <el-input :disabled="true" :value="detailData.cardNo"></el-input>
-                        </el-form-item>
-                    </el-col>
-                </div>
-                <div class="clearfix">
-                    <el-col :span="8">
-                        <el-form-item label="客户来源">
-                            <el-input :disabled="true" 
-                            :value="detailData.registerSource | filterStr('registerSource')"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="16">
-                        <el-form-item label="销售员">
-                            <el-input :disabled="true"></el-input>
-                        </el-form-item>
-                    </el-col>
-                </div>
-                
-            </el-form>
-        </el-dialog>
     </div>
 </template>
 <script>
 import waves from '@/directive/waves'
 import { customerListApi, businessUserListApi, queryRentRecordApi } from '@/api/userManage'
-import { ObjectMap, deepClone } from '@/utils'
+import { ObjectMap, deepClone, plusXing } from '@/utils'
 
 export default {
     name: 'queryCenterComp',
@@ -231,7 +164,7 @@ export default {
                 'authenticationSource': ['','系统','人工','系统'],
                 'registerSource': ['','PC','APP'],
                 'status': ['未入住','在住','申请换房','申请退房','已搬离'],
-                'isContracter': ['否','是'],
+                'isContracter': ['否','是','否'],
                 'housingType': ['','集中式','分散式']
             }
             if (!statusStrData[key]) {
@@ -239,6 +172,10 @@ export default {
             } 
             return statusStrData[key][status] 
                     || (key == 'authenticationSource' ? '其他' : '');             
+        },
+        xing(val) { 
+            let value = (val && val.length >= 7) ? plusXing(val,3,4) : val;          
+            return value;          
         }
     },
     data() {
@@ -275,7 +212,6 @@ export default {
                 { prop:'orgName', label: '归属组织'},
             ],
             rentRecord:false,
-            lookDetail:false,
             tableHeight: 300,
             tableData: [],
             overlayData: [],
@@ -370,7 +306,7 @@ export default {
             this.rentRecord = true;
             let search = {
                 pageNo: 1,
-                pageSize: 20,
+                pageSize: 9999,
                 customerId: row.customerId
             }
             this.listLoading = true;

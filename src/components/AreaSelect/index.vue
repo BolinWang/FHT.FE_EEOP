@@ -27,7 +27,7 @@
             },
             filterable: {
                 type: Boolean,
-                default: true
+                default: false
             },
             clearable: {
                 type: Boolean,
@@ -63,6 +63,11 @@
             if (Array.isArray(this.value)) {
                 this.selectedOptions = this.value.map(key => {return parseInt(key)});
             }            
+        },
+        watch:{
+            value(val) {
+                this.selectedOptions = val;
+            }
         }
     }
 </script>
