@@ -832,6 +832,10 @@ export default {
             })
         },
         searchParam(){
+            this.pageItems = {
+                pageNo: 1,
+                pageSize: 20
+            }
             this.getGridData(this.pageItems);
         },
         clearForm(){

@@ -284,10 +284,11 @@ export default {
         },
         searchParam(){
             let params = deepClone(this.formData)
-            this.getGridData(Object.assign({
+            this.pageItems = {
                 pageNo: 1,
                 pageSize: 20
-            },params));
+            };
+            this.getGridData(Object.assign(this.pageItems,params));
         },
         clearForm(){
             this.formData = {
