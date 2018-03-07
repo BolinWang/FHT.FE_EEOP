@@ -104,7 +104,7 @@
         <!-- 租房记录 -->
         <el-dialog 
             title="租房记录" 
-            width="1000px"
+            width="80%"
             @close="overlayData=[]" 
             :visible.sync="rentRecord">
             <el-table :data="overlayData" 
@@ -120,7 +120,13 @@
                     fit
                     show-overflow-tooltip>
                     <template slot-scope="scope">
-                        <span v-if="item.filterType">
+                        <el-tag 
+                            v-if="(item.filterType == 'isContracter' 
+                                    || item.prop == 'status')"
+                            :type="(scope.row[item.prop] == '1' ? 'success' : 'info')">
+                            {{(scope.row[item.prop]) | filterStr(item.filterType)}}
+                        </el-tag>
+                        <span v-else-if="item.filterType">
                             {{(scope.row[item.prop]) | filterStr(item.filterType)}}
                         </span>
                         <span v-else>
