@@ -310,11 +310,10 @@ export default {
                 pageSize: 9999,
                 customerId: row.customerId
             }
-            this.listLoading = true;
             queryRentRecordApi(ObjectMap(search)).then(response => {
                 this.overlayData = response.data.list;
                 this.overlayTotal = response.data.record;
-                this.listLoading = false;
+                
             })
         },
         showDetail(row) {

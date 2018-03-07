@@ -19,7 +19,7 @@
             </el-input>
             <el-button type="primary" size="small" icon="el-icon-search" @click.native="searchParam" v-waves class="filter-item">查询</el-button>
             <el-button plain size="small" icon="el-icon-remove-outline" @click.native="clearForm">清空</el-button>
-            <el-button class="right" type="danger" size="small" icon="el-icon-circle-close" @click.native="disableItems">禁用</el-button>
+            <el-button class="right" type="danger" size="small" icon="el-icon-circle-close" @click.native="disableItems">停用</el-button>
             <el-button class="right" type="success" size="small" icon="el-icon-circle-check" @click.native="enableItems">启用</el-button>
             <el-button class="right" type="primary" size="small" icon="el-icon-circle-plus-outline" @click.native="handleApply">新增组织</el-button>
         </div>
@@ -88,7 +88,9 @@
                     <div class="clearfix" style="margin-top: 10px">
                         <el-col :span="12">
                             <el-form-item label="企业名称" prop="organizationName">
-                                <el-input v-model="stepForm1.organizationName"></el-input>
+                                <el-input 
+                                v-model="stepForm1.organizationName"
+                                :disabled="isEdit"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
@@ -100,7 +102,9 @@
                     <div class="clearfix">
                         <el-col :span="24">
                             <el-form-item label="统一社会信用码" prop="orgLicence" label-width="140px">
-                                <el-input v-model="stepForm1.orgLicence"></el-input>
+                                <el-input 
+                                    v-model="stepForm1.orgLicence"
+                                    :disabled="isEdit"></el-input>
                             </el-form-item>
                         </el-col>
                     </div>
@@ -119,12 +123,16 @@
                     <div class="clearfix">
                         <el-col :span="12">
                             <el-form-item label="法人姓名" prop="orgLegalPersonName">
-                                <el-input v-model="stepForm1.orgLegalPersonName"></el-input>
+                                <el-input 
+                                    v-model="stepForm1.orgLegalPersonName"
+                                    :disabled="isEdit"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="法人身份证号" prop="orgLegalPersonCardNo">
-                                <el-input v-model="stepForm1.orgLegalPersonCardNo"></el-input>
+                                <el-input 
+                                    v-model="stepForm1.orgLegalPersonCardNo"
+                                    :disabled="isEdit"></el-input>
                             </el-form-item>
                         </el-col>
                     </div>
@@ -371,6 +379,7 @@ export default {
             cardOptions: [
                 {label: '身份证', value: 1},
             ],
+            listLoading: false,
             financeTrusteeshipType: '',
             colModels:[
                 { prop:'organizationName', label: '组织名称', width: 150},
@@ -665,6 +674,7 @@ export default {
         enableItems() {//启用
             if (this.multipleSelection.length == 0) {
                 this.$message.error('请选择要启用的组织');
+                return false;
             }
             let flag = true,
                 organizationIds = [];
@@ -700,21 +710,22 @@ export default {
         },
         disableItems() {//禁用
             if (this.multipleSelection.length == 0) {
-                this.$message.error('请选择要禁用的组织');
+                this.$message.error('请选择要停用的组织');
+                return false;
             }
             let flag = true,
                 organizationIds = [];
             this.multipleSelection.map(key => {                
                 if(key.status == 2) {
                     flag = false;
-                    this.$message.error('已禁用的组织不能再次启用');
+                    this.$message.error('已停用的组织不能再次启用');
                     return false;
                 } else {
                     organizationIds.push(key.organizationId);
                 }
             })
             if (flag) {
-                this.$confirm('确定禁用所选组织吗？', '提示', {
+                this.$confirm('确定停用所选组织吗？', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
@@ -726,7 +737,7 @@ export default {
                     updateOrgStatusAndDeleteApi(ObjectMap(search)).then(response => {
                         this.$message({
                             type: 'success',
-                            message: '禁用成功!'
+                            message: '停用成功!'
                         });
                         this.getGridData(this.pageItems);
                     })
@@ -808,7 +819,6 @@ export default {
         },
         /* 弹窗关闭时的回调 */
         dialogClose(){
-            // this.$refs.ruleForm.resetFields();
             this.resetFormData();
             this.active = 0;
             this.fileList = [];
@@ -826,9 +836,10 @@ export default {
             this.listLoading = true;
             this.searchParams = Object.assign(deepClone(params), deepClone(this.formData));
             initOrgListApi(ObjectMap(this.searchParams)).then(response => {
+                this.listLoading = false;
                 this.tableData = response.data.list;
                 this.total = response.data.record;
-                this.listLoading = false;
+                
             })
         },
         searchParam(){
