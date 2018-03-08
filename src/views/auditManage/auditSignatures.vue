@@ -165,6 +165,9 @@ export default {
             return dialogWidth[type - 1] || '800px'
         },
         formatTime(val,item){
+            if (item.status == 1) {
+                return '';
+            }
             return `${parseTime(val)} ${item.operator}`
         }
     },

@@ -34,7 +34,7 @@
                         :value="item.value">
                     </el-option>
                 </el-select>
-                <el-input size="small" v-model="formData.keyWord" placeholder="姓名/手机号码/证件号" class="filter-item" 
+                <el-input size="small" v-model.trim="formData.keyWord" placeholder="姓名/手机号码/证件号" class="filter-item" 
                     style="width:180px;"
                     @keydown.native.enter="searchParam">    
                 </el-input>

@@ -5,7 +5,7 @@
                 placeholder="联系状态" class="item-select" 
                 style="width: 150px;"
                 @change="searchParam"
-                clearable>
+                >
                 <el-option
                     v-for="item in selectOptions"
                     :key="item.value"
@@ -13,7 +13,7 @@
                     :value="item.value">
                 </el-option>
             </el-select>
-            <el-input size="small" v-model="formData.searchField" placeholder="组织名称/缩写名" class="filter-item" 
+            <el-input size="small" v-model.trim="formData.searchField" placeholder="组织名称/缩写名" class="filter-item" 
                 style="width:180px;"
                 @keydown.native.enter="searchParam">    
             </el-input>
@@ -89,13 +89,13 @@
                         <el-col :span="12">
                             <el-form-item label="企业名称" prop="organizationName">
                                 <el-input 
-                                v-model="stepForm1.organizationName"
+                                v-model.trim="stepForm1.organizationName"
                                 :disabled="isEdit"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="企业缩写名" prop="displayName">
-                                <el-input v-model="stepForm1.displayName"></el-input>
+                                <el-input v-model.trim="stepForm1.displayName"></el-input>
                             </el-form-item>
                         </el-col>
                     </div>
@@ -103,7 +103,7 @@
                         <el-col :span="24">
                             <el-form-item label="统一社会信用码" prop="orgLicence" label-width="140px">
                                 <el-input 
-                                    v-model="stepForm1.orgLicence"
+                                    v-model.trim="stepForm1.orgLicence"
                                     :disabled="isEdit"></el-input>
                             </el-form-item>
                         </el-col>
@@ -173,8 +173,9 @@
                     <el-switch
                       v-model="financeTrusteeshipType"
                       active-text="磐谷金融托底方"
-                        active-value=2
-                        inactive-value=1
+                        active-value="2"
+                        inactive-value="1"
+                        :disabled="financeEdit"
                       v-if="isEdit">
                     </el-switch>
                 </el-form>
@@ -363,7 +364,7 @@ export default {
                     { required: true, message: '请输入法人身份证号', trigger: 'blur' }
                 ],
                 mobile: [
-                    { validator: validatePhone, trigger: 'blur' }
+                    { validator: validatePhone, required: true,trigger: 'blur' }
                 ]
                 
             },
@@ -380,7 +381,8 @@ export default {
                 {label: '身份证', value: 1},
             ],
             listLoading: false,
-            financeTrusteeshipType: '',
+            financeEdit: false,
+            financeTrusteeshipType: "",
             colModels:[
                 { prop:'organizationName', label: '组织名称', width: 150},
                 { prop:'displayName', label: '缩写名'},
@@ -409,7 +411,7 @@ export default {
             stepForm2: {
                 name: '',
                 gender: '',
-                cardType: '',
+                cardType: 1,
                 cardNo: '',
                 mobile: '',
                 cardAddrProvinceId: '',
@@ -474,16 +476,24 @@ export default {
     },
     watch: {
         isEdit(val) {
-            this.overlayTitle = val ? '编辑组织' : '新增组织';
+            this.overlayTitle = val ? '基本资料' : '新增组织';
+        },
+        'formData.organizationType'(val) {
+            if (val == 3) {
+                if (this.colModels.length == 5) {
+                    this.colModels.splice(2,0,{ prop:'contractMobile', label: '联系电话'});
+                }
+            } else {
+                if (this.colModels.length == 6) {
+                    this.colModels.splice(2,1);
+                }
+            }
         }
     },
     methods: {
         handleApply(){
             this.layer_showInfo = true;
             this.isEdit = false;
-            if (this.$refs.ruleForm) {
-                this.$refs.ruleForm.clearValidate()
-            }
             queryTemplateListApi().then(response => {
                 this.permTemplate = response.data.result;
             })
@@ -497,9 +507,9 @@ export default {
                         this.stepForm1.orgAddrCityId,
                         this.stepForm1.orgAddrRegionId
                     ] = this.areaCode;
-                    this.fileList.map(val => {
-                        this.stepForm1.picList.push({'picUrl':val.url})
-                    });
+                    this.stepForm1.picList.map(val => {
+                        val.picUrl = val.url;
+                    })
                     let realName = {
                         'name': this.stepForm1.orgLegalPersonName,
                         'cardNo': this.stepForm1.orgLegalPersonCardNo
@@ -514,13 +524,16 @@ export default {
                   }
                 });
             } else if(this.active == 1) {
-                if (this.organizationPermTemplateId) {
-                    this.active += num;
-                } else {
+                if (num > 0 && !this.organizationPermTemplateId) {
                     this.$message.error('请选择权限模板');
+                    return false;
+                } else {
+                    this.active += num;
                 }
                 
-            } 
+            } else {
+                this.active += num;
+            }
             
             
         },
@@ -572,7 +585,8 @@ export default {
                 this.isEdit = true;
                 
                 if (this.rowType != 3) {
-                    this.financeTrusteeshipType = result.financeTrusteeshipType;
+                    this.financeTrusteeshipType = result.financeTrusteeshipType.toString();
+                    this.financeEdit = this.financeTrusteeshipType == '2' ? true : false; 
                     Object.keys(this.stepForm1).map(key => {
                         this.stepForm1[key] = result[key] || '';
                     });
@@ -580,6 +594,11 @@ export default {
                     this.fileList = this.stepForm1.picList.map(key => {
                         return {'name':'图片','url' : key.picUrl}
                     });
+                    if (this.stepForm1.picList.length == 10) {
+                        this.$nextTick(() =>{
+                            document.getElementsByClassName('el-upload--picture-card')[0].style.display = "none";
+                        })
+                    }
                     this.areaCode = [
                         result.orgAddrProvinceId,
                         result.orgAddrCityId,
@@ -607,27 +626,31 @@ export default {
             })
         },
         editFn() {
-            this.$refs.stepForm1.validate((valid) => {
-              if (valid) {
-                [
-                    this.stepForm1.orgAddrProvinceId,
-                    this.stepForm1.orgAddrCityId,
-                    this.stepForm1.orgAddrRegionId
-                ] = this.areaCode;
-                this.stepForm1.picList = this.fileList.map(val => {
-                    return {'picUrl':val.url}
-                });
+            
+            this.$refs.stepForm1.validateField('displayName',(valid) => {
+                if (!valid) {
+                    [
+                        this.stepForm1.orgAddrProvinceId,
+                        this.stepForm1.orgAddrCityId,
+                        this.stepForm1.orgAddrRegionId
+                    ] = this.areaCode;
+                    this.stepForm1.picList.map(val => {
+                        val.picUrl = val.picUrl || val.url;
+                    })
 
-                this.stepForm1.financeTrusteeshipType = this.financeTrusteeshipType;
-                editOrgBasicInfoApi(JSON.stringify(this.stepForm1)).then(response => {
-                    this.layer_showInfo = false;
-                    this.isEdit = false;
-                    this.getGridData(this.pageItems);
-                })
-              } else {
-                return false;
-              }
-            });
+                    this.stepForm1.financeTrusteeshipType = this.financeTrusteeshipType;
+                    editOrgBasicInfoApi(JSON.stringify(this.stepForm1)).then(response => {
+                        this.layer_showInfo = false;
+                        this.isEdit = false;
+                        this.getGridData(this.pageItems);
+                        this.$message.success('操作成功');
+                    })
+                } else {
+                    return false;
+                }
+            })
+               
+            
             
         },
         resetFormData() {
@@ -651,7 +674,7 @@ export default {
             this.stepForm2 = {
                 name: '',
                 gender: '',
-                cardType: '',
+                cardType: 1,
                 cardNo: '',
                 mobile: '',
                 cardAddrProvinceId: '',
@@ -681,7 +704,7 @@ export default {
             this.multipleSelection.map(key => {                
                 if(key.status == 1) {
                     flag = false;
-                    this.$message.error('已启用的组织不能再次启用');
+                    this.$message.error('已启用的组织不能再启用');
                     return false;
                 } else {
                     organizationIds.push(key.organizationId);
@@ -718,7 +741,7 @@ export default {
             this.multipleSelection.map(key => {                
                 if(key.status == 2) {
                     flag = false;
-                    this.$message.error('已停用的组织不能再次启用');
+                    this.$message.error('已停用的组织不能再停用');
                     return false;
                 } else {
                     organizationIds.push(key.organizationId);
@@ -791,13 +814,19 @@ export default {
         },
         pictureRemove(file, fileList) {
             this.showPicUrl = '';
-            let imgList = []
-            this.fileList.map(key => {
-                if (key.url != file.url) {
-                    imgList.push(key);
-                }
+            let imgList = [];
+
+            this.$nextTick(() =>{
+                document.getElementsByClassName('el-upload--picture-card')[0].style.display = "inline-block";
             })
-            this.fileList = deepClone(imgList);
+            
+            fileList.map(key => {
+                if (key.response) {
+                    key.url = key.response.data[0];
+                }
+                imgList.push(key);
+            })
+            this.stepForm1.picList = deepClone(imgList);
             
         },
         picturePreview(file) {
@@ -805,8 +834,12 @@ export default {
             this.layer_showImage = true;
         },
         pictureSuccess(response, file, fileList){
-            this.fileList.push({'url':file.response.data[0]}) 
-      
+            if (fileList.length >= 10) {
+                this.$nextTick(() =>{
+                    document.getElementsByClassName('el-upload--picture-card')[0].style.display = "none";
+                })
+            }
+            this.stepForm1.picList.push({'url':file.response.data[0]})
         },
         pictureError(err,file){
             file = null;
@@ -822,6 +855,9 @@ export default {
             this.resetFormData();
             this.active = 0;
             this.fileList = [];
+            this.financeEdit = false;
+            this.$refs.stepForm1.clearValidate();
+            this.$refs.stepForm2.clearValidate();
         },
         handleSizeChange(val) {
             this.pageItems.pageSize = val;
@@ -873,6 +909,22 @@ export default {
     .mtop {
         margin-top: 10px;
     }
+    ul.el-upload-list > li:first-child:before{
+    content: '封面';
+    position: absolute;
+    right: -20px;
+    top: -3px;
+    width: 65px;
+    height: 30px;
+    background: #13ce66;
+    text-align: center;
+    transform: rotate(45deg);
+    box-shadow: 0 1px 1px #13ce66;
+    font-size: 12px;
+    line-height: 36px;
+    color: #fff;
+    z-index: 1;
+}
 </style>
 
 
