@@ -104,7 +104,7 @@
         <!-- 租房记录 -->
         <el-dialog 
             title="租房记录" 
-            width="80%"
+            width="1000px"
             @close="overlayData=[]" 
             :visible.sync="rentRecord">
             <el-table :data="overlayData" 
