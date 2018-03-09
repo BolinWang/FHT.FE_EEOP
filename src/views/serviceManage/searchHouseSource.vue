@@ -103,12 +103,15 @@
                     <el-input v-model="renterInfo.userMobile" placeholder="请输入租客电话"></el-input>
                 </el-form-item>
                 <el-form-item prop="selectedServicer">
-                    <el-select v-model="renterInfo.selectedServicer" placeholder="请选择服务人员" @focus="getServicers()">
+                    <el-select v-model="renterInfo.selectedServicer.serverId" 
+                        placeholder="请选择服务人员" 
+                        @focus="getServicers"
+                        @change="changeServicer">
                         <el-option
                             v-for="(item,index) in serviceList"
                             :key="index"
                             :label="`${item.name} ${item.mobile}`"
-                            :value="{serverId: item.userId, serverName: item.name, serverMobile: item.mobile}">
+                            :value="item.userId">
                             <span class="left dropItem">【区域】{{ item.areaName }}</span>
                             <span class="left dropItem">【人员】{{ item.name }}</span>
                             <span class="left dropItem">{{ item.mobile }}</span>
@@ -516,6 +519,17 @@
                     this.serviceList = response.data
                 }); 
             },
+            changeServicer(val){
+                let filterData = this.serviceList.filter((item) => {
+                    return (item.userId == val)
+                })[0]
+                console.log(filterData)
+                this.renterInfo.selectedServicer = {
+                    serverId: val,
+                    serverName: filterData.name,
+                    serverMobile: filterData.mobile
+                }
+            },
             saveSendData(){
                 this.$refs.ruleForm.validate(valid => {
                     if (valid) {
@@ -535,7 +549,12 @@
                             rooms: this.multipleSelection
                         }
                         saveRenterInfoApi(saveData).then(response => {
-                            console.log(response)
+                            this.$notify({
+                                title: '成功',
+                                message: '短信发送成功',
+                                type: 'success',
+                                duration: 2000
+                            })
                         });
                     } else {
                         console.log('error submit!!');

@@ -96,9 +96,10 @@ export const asyncRouterMap = [
         redirect: '/serviceManage/searchHouseSource',
         name: '服务管理',
         icon: 'wechat',
+        meta: { role: ['admin', 'global', 'service'] },
         children: [
-            { path: 'searchHouseSource', component: _import('serviceManage/searchHouseSource'), name: '筛选房源分配', meta: { role: ['service'] }},
-            { path: 'lookRecord', component: _import('serviceManage/lookRecord'), name: '房源带看记录', meta: { role: ['service'] } },
+            { path: 'searchHouseSource', component: _import('serviceManage/searchHouseSource'), name: '筛选房源分配'},
+            { path: 'lookRecord', component: _import('serviceManage/lookRecord'), name: '房源带看记录'},
         ]
     },
     { path: '*', redirect: '/404', hidden: true }
