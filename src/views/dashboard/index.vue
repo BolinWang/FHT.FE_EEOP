@@ -12,7 +12,12 @@
         name: 'dashboard',
         filters:{
             rolesFilter(value){
-                return value == 'admin' ? '【超级管理员】' : '【普通用户】'
+                const valueMap = {
+                    'admin': '【超级管理员】',
+                    'global': '【普通用户】',
+                    'service': '【服务用户】'
+                }
+                return valueMap[value] || '【普通用户】'
             }
         },
         data() {

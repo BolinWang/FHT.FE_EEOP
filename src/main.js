@@ -37,7 +37,12 @@ router.beforeEach((to, from, next) => {
         } else {
             if (store.getters.roles.length === 0) {
                 store.dispatch('GetInfo').then(res => {
-                    const roles = res.data.isAdmin == 1 ? ['admin'] : ['other'];
+                    const rolesMap = {
+                        '1' : 'admin',
+                        '99' : 'service',
+                        '0' : 'global'
+                    }
+                    const roles = [(rolesMap[res.data.isAdmin.toString()] || 'global')];
                     store.dispatch('GenerateRoutes', { roles }).then(() => {
                         router.addRoutes(store.getters.addRouters);
                         next({ ...to });

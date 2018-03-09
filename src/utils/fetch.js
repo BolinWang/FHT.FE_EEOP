@@ -44,6 +44,9 @@ service.interceptors.response.use(
     response => {
         const res = response.data;
         if (res.code != 0) {
+            if (res.code == 1011 && res.message == '无数据') {
+                return response.data;
+            }
             Message({
                 message: res.message || '未知错误，请联系管理员',
                 type: 'error',

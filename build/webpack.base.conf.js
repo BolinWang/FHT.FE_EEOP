@@ -86,5 +86,6 @@ module.exports = {
         tls: 'empty',
         child_process: 'empty'
     },
-    plugins: [new BundleAnalyzerPlugin()]
+    // 需要查看打包资源可视化的开始该插件
+    // plugins: [new BundleAnalyzerPlugin()]
 }

@@ -41,6 +41,7 @@ export const asyncRouterMap = [
         redirect: 'noredirect',
         name: '运营管理',
         icon: 'dashboard',
+        meta: { role: ['admin', 'global'] },
         children: [
             { path: 'activityPage', component: _import('eeop/activety'), name: '精彩活动' },
             { path: 'interviewPage', component: _import('eeop/interview'), name: '麦友专访' },
@@ -54,6 +55,7 @@ export const asyncRouterMap = [
         redirect: 'noredirect',
         name: '房源管理',
         icon: 'table',
+        meta: { role: ['admin', 'global'] },
         children: [
             { path: 'displayPage', component: _import('houseManage/promotionDisplay'), name: '推广展示' },
             { path: 'queryCenterPage', component: _import('houseManage/queryCenter'), name: '查询中心' },
@@ -66,6 +68,7 @@ export const asyncRouterMap = [
         redirect: 'noredirect',
         name: '审核中心',
         icon: 'form',
+        meta: { role: ['admin', 'global'] },
         children: [
             { path: 'auditSignatures', component: _import('auditManage/auditSignatures'), name: '电子签章审核' },
             { path: 'auditPublishList', component: _import('auditManage/auditPublishList'), name: '房源发布审核' },
@@ -78,12 +81,24 @@ export const asyncRouterMap = [
         redirect: '/userManage/feedbackPage',
         name: '用户管理',
         icon: 'peoples',
+        meta: { role: ['admin', 'global'] },
         children: [
             { path: 'userListPage', component: _import('userManage/userList'), name: '账号管理', meta: { role: ['admin'] }},
             { path: 'feedbackPage', component: _import('userManage/feedback'), name: '意见反馈' },
             { path: 'applyRegister', component: _import('userManage/applyRegister'), name: '申请注册' },
             { path: 'initCustomerList', component: _import('userManage/initCustomerList'), name: '用户信息' },
             { path: 'initOrgList', component: _import('userManage/initOrgList'), name: '组织列表' }
+        ]
+    },
+    {
+        path: '/serviceManage',
+        component: Layout,
+        redirect: '/serviceManage/searchHouseSource',
+        name: '服务管理',
+        icon: 'wechat',
+        children: [
+            { path: 'searchHouseSource', component: _import('serviceManage/searchHouseSource'), name: '筛选房源分配', meta: { role: ['service'] }},
+            { path: 'lookRecord', component: _import('serviceManage/lookRecord'), name: '房源带看记录', meta: { role: ['service'] } },
         ]
     },
     { path: '*', redirect: '/404', hidden: true }

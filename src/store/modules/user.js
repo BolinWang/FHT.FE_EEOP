@@ -21,7 +21,12 @@ const user = {
             state.avatar = avatar;
         },
         SET_ROLES: (state, roles) => {
-            state.roles = roles == 1 ? 'admin' : 'other';
+            const rolesMap = {
+                '1' : 'admin',
+                '99' : 'service',
+                '0' : 'global'
+            }
+            state.roles = rolesMap[roles.toString()] || 'global';
         }
     },
 
