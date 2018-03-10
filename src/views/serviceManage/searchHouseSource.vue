@@ -149,10 +149,10 @@
                     show-overflow-tooltip>
                     <template slot-scope="scope">
                         <span v-if="item.type === 'img'">
-                            <img class="image image-center" width="40" height="40"
+                            <img class="preview-img image image-center" width="40" height="40"
                                 v-if="scope.row[item.prop]"
                                 v-lazy="scope.row[item.prop]"
-                                @click="handlePreview(scope.row[item.prop])" /> 
+                                @click="handlePreview(scope.row[item.targetProp])" /> 
                             <span v-else></span>
                         </span>
                         <span v-else-if="item.type == 'areaZone'">
@@ -172,17 +172,6 @@
                     </template>
                 </el-table-column>
             </el-table>
-        </div>
-        <!-- 查看图片 -->
-        <div class="dialog-image">
-            <el-dialog title="" width="100%" 
-                :show-close="false" 
-                :visible.sync="layer_showImage"
-                style="text-align: center;"
-                @click.native="layer_showImage = false"
-                @close="showPicUrl=''">
-                <img class="image" :src="showPicUrl" />
-            </el-dialog>
         </div>
     </div>
 </template>
@@ -245,7 +234,10 @@
             return {
                 formData: {
                     cityId: 330100,
-                    keyword: ''
+                    keyword: '',
+                    orgPaymentIds: [],
+                    tags: [],
+                    allPics: true
                 },
                 renterInfo: {
                     userMobile: '',
@@ -264,13 +256,11 @@
                 zoneList: [],
                 searchParams: {},
                 listLoading: false,
-                layer_showImage: false,
-                showPicUrl: '',
                 colModels:[
                     { prop:'areaZone', label: '区域板块', type: 'areaZone'},
                     { prop:'name', label: '小区/公寓-房间'},
                     { prop:'type', label: '房源类型', width: 100, type: 'type'},
-                    { prop:'imageUrl', label: '图片', type: 'img', width: 80},
+                    { prop:'imageUrl', label: '图片', type: 'img', width: 80, targetProp: 'imageUrls'},
                     { prop:'houseType', label: '室卫厅', width: 100},
                     { prop:'roomArea', label: '面积', width: 100},
                     { prop:'minRentPrice', label: '月租金', width: 100}
@@ -510,9 +500,14 @@
             handleSelectionChange(list){
                 this.multipleSelection = list;
             },
-            handlePreview(picUrl){
-                this.showPicUrl = picUrl;
-                this.layer_showImage = true;
+            handlePreview(picList = []){
+                if (!picList || picList.length == 0) {
+                    this.$message.error('暂无房源图片');
+                    return false;
+                }
+                this.$preview.open(0, picList.map((item,index) => {
+                    return ({id: index, src: item, w: 800, h: 600})
+                }))
             },
             getServicers(){
                 getServicersApi({}).then(response => {
@@ -523,7 +518,6 @@
                 let filterData = this.serviceList.filter((item) => {
                     return (item.userId == val)
                 })[0]
-                console.log(filterData)
                 this.renterInfo.selectedServicer = {
                     serverId: val,
                     serverName: filterData.name,
@@ -611,10 +605,6 @@
     }
     .active{
         color: #ff8448!important;
-    }
-    .dialog-image .el-dialog{
-        background: inherit;
-        box-shadow: none;
     }
     .dropItem{
         margin-right: 10px;
