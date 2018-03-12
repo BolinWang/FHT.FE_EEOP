@@ -386,6 +386,7 @@ export default {
             colModels:[
                 { prop:'organizationName', label: '组织名称', width: 150},
                 { prop:'displayName', label: '缩写名'},
+                { prop:'organizationId', label: '组织ID'},
                 { prop:'status', label: '状态', type:'status'},
                 { prop:'gmtCreate', label: '创建时间', type:'dateStr'},
                 { prop:'gmtModified', label: '修改时间', type:'dateStr'}
