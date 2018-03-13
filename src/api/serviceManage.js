@@ -27,7 +27,7 @@ export function getZoneListApi(params={}) {
 /* 获取房源数据列表 */
 export function getGridApi(params={}) {
     return fetch({
-        url: 'http://pre.mdguanjia.com/myhome/api/search',
+        url: 'https://api.mdguanjia.com/myhome/api/search',
         method: 'post',
         data: {
             method: 'searchByPage',
