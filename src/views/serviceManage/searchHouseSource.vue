@@ -235,8 +235,8 @@
                 formData: {
                     cityId: 330100,
                     keyword: '',
-                    orgOwnIds: [2,4],
-                    tags: ['fhd'],
+                    orgPaymentIds: [],
+                    tags: [],
                     allPics: true
                 },
                 renterInfo: {
