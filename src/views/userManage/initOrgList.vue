@@ -149,7 +149,7 @@
                         </el-col>
                         
                     </div>
-                    <div class="clearfix">
+                    <div :class="{clearfix: true,hideUpload: isHideUpload}">
                         <el-form-item label="营业执照">
                             <el-upload
                                 :action="`${actionBaseUrl}/util/upload/uploadPicture`"
@@ -368,6 +368,7 @@ export default {
                 ]
                 
             },
+            isHideUpload: false,//是否隐藏图片上传按钮
             selectOptions: [
                 {label: '系统', value: 1},
                 {label: '公司企业', value: 2},
@@ -495,6 +496,7 @@ export default {
         handleApply(){
             this.layer_showInfo = true;
             this.isEdit = false;
+            this.isHideUpload = false;
             queryTemplateListApi().then(response => {
                 this.permTemplate = response.data.result;
             })
@@ -596,9 +598,7 @@ export default {
                         return {'name':'图片','url' : key.picUrl}
                     });
                     if (this.stepForm1.picList.length == 10) {
-                        this.$nextTick(() =>{
-                            document.getElementsByClassName('el-upload--picture-card')[0].style.display = "none";
-                        })
+                        this.isHideUpload = true;
                     }
                     this.areaCode = [
                         result.orgAddrProvinceId,
@@ -816,10 +816,7 @@ export default {
         pictureRemove(file, fileList) {
             this.showPicUrl = '';
             let imgList = [];
-
-            this.$nextTick(() =>{
-                document.getElementsByClassName('el-upload--picture-card')[0].style.display = "inline-block";
-            })
+            this.isHideUpload = false;
             
             fileList.map(key => {
                 if (key.response) {
@@ -836,9 +833,7 @@ export default {
         },
         pictureSuccess(response, file, fileList){
             if (fileList.length >= 10) {
-                this.$nextTick(() =>{
-                    document.getElementsByClassName('el-upload--picture-card')[0].style.display = "none";
-                })
+                this.isHideUpload = true;
             }
             this.stepForm1.picList.push({'url':file.response.data[0]})
         },
@@ -910,22 +905,29 @@ export default {
     .mtop {
         margin-top: 10px;
     }
+    .dialog-image .el-dialog{
+        background: inherit;
+        box-shadow: none;
+    }
+    .hideUpload .el-upload--picture-card {
+        display:none;
+    }
     ul.el-upload-list > li:first-child:before{
-    content: '封面';
-    position: absolute;
-    right: -20px;
-    top: -3px;
-    width: 65px;
-    height: 30px;
-    background: #13ce66;
-    text-align: center;
-    transform: rotate(45deg);
-    box-shadow: 0 1px 1px #13ce66;
-    font-size: 12px;
-    line-height: 36px;
-    color: #fff;
-    z-index: 1;
-}
+        content: '封面';
+        position: absolute;
+        right: -20px;
+        top: -3px;
+        width: 65px;
+        height: 30px;
+        background: #13ce66;
+        text-align: center;
+        transform: rotate(45deg);
+        box-shadow: 0 1px 1px #13ce66;
+        font-size: 12px;
+        line-height: 36px;
+        color: #fff;
+        z-index: 1;
+    }
 </style>
 
 

@@ -70,13 +70,50 @@
                 :visible.sync="layer_showInfo" width="600px"
                 @close="dialogClose">
                 <el-form size="small" status-icon :model="dialogForm" :rules="rules" ref="dialogForm" label-width="110px">
-                    <el-form-item label="优惠券名称" >
-                        <el-input :disabled="isDisabled"></el-input>
+                    <el-form-item label="优惠券名称" prop="organizationName">
+                        <el-input v-model.trim="dialogForm.name" 
+                        :disabled="isDisabled"></el-input>
                     </el-form-item>
-                    <el-form-item label="优惠券类型" >
-                        <el-input :disabled="isDisabled"></el-input>
+                    <el-form-item label="优惠券类型" prop="organizationName">
+                        <el-radio v-model="dialogForm.radio" label="1">代金券</el-radio>
                     </el-form-item>
-                    
+                    <el-form-item label="券总数" prop="organizationName">
+                        <el-col :span="10">
+                         <el-input v-model.trim="dialogForm.name" :disabled="isDisabled">
+                             <template slot="append">张</template>
+                         </el-input>
+                        </el-col>
+                        <el-col :span="4">
+                            <div class="textRight">再增加</div>
+                        </el-col>
+                        <el-col :span="10">                        
+                         <el-input v-model.trim="dialogForm.name" :disabled="isDisabled">
+                             <template slot="append">张</template>
+                         </el-input>
+                        </el-col>
+                    </el-form-item>
+                    <el-form-item label="每人累计领取上限" prop="organizationName">
+                        <el-col :span="10">
+                            <el-select size="small" v-model="formData.type" 
+                                placeholder="状态" class="item-select" style="width: 120px;"
+                                clearable>
+                                <el-option
+                                    v-for="item in typeOptions"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </el-col>
+                        <el-col :span="4">
+                            <div class="textRight">每人</div>
+                        </el-col>
+                        <el-col :span="10">                        
+                         <el-input v-model.trim="dialogForm.name" :disabled="isDisabled">
+                             <template slot="append">张</template>
+                         </el-input>
+                        </el-col>
+                    </el-form-item>
                 </el-form>
                 <div slot="footer" class="dialog-footer">
                     <el-button @click="dialogClose;layer_showInfo=false" size="small">取 消</el-button>
@@ -152,7 +189,7 @@
                     pageSize: 20 
                 },
                 dialogForm: {
-
+                    radio: "1"
                 },
                 layer_showInfo: false,
                 listLoading: false,
@@ -246,5 +283,8 @@
 </script>
 
 <style rel="stylesheet/scss" lang="scss">
-    
+    .textRight {
+        text-align: right;
+        padding-right: 10px;
+    }
 </style>
