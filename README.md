@@ -1,5 +1,9 @@
 # 柏林
 
+
+# 项目结构
+
+```
 .
 ├── README.md
 ├── build
@@ -227,6 +231,7 @@
 └── tree.md
 
 46 directories, 178 files
+```
 
 
 - [测试/线上地址](http://www.mdguanjia.com/FHT_BOP/index.html)      
