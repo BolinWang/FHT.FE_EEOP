@@ -86,8 +86,8 @@ export const asyncRouterMap = [
             { path: 'userListPage', component: _import('userManage/userList'), name: '账号管理', meta: { role: ['admin'] }},
             { path: 'feedbackPage', component: _import('userManage/feedback'), name: '意见反馈' },
             { path: 'applyRegister', component: _import('userManage/applyRegister'), name: '申请注册' },
-            { path: 'initCustomerList', component: _import('userManage/initCustomerList'), name: '用户信息' },
-            { path: 'initOrgList', component: _import('userManage/initOrgList'), name: '组织列表' }
+            { path: 'initCustomerList', component: _import('userManage/initCustomerList'), name: '用户信息', hidden: true },
+            { path: 'initOrgList', component: _import('userManage/initOrgList'), name: '组织列表', hidden: true }
         ]
     },
     {
