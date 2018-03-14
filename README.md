@@ -234,8 +234,7 @@
 ```
 
 
-- [测试/线上地址](http://www.mdguanjia.com/FHT_BOP/index.html)      
-- 暂时测试/线上环境通过hosts文件配置，具体域名联系Bolin
+- [线上地址](https://api.mdguanjia.com)      
 
 ## 开发
 ```bash
