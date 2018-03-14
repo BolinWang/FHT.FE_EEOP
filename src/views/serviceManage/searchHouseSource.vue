@@ -233,7 +233,7 @@
             }
             return {
                 formData: {
-                    cityId: 330100,
+                    cityId: 310100,
                     keyword: '',
                     orgOwnIds: [2,4],
                     tags: ['fhd'],
