@@ -560,7 +560,7 @@
     }
 </script>
 
-<style rel="stylesheet/scss" lang="scss">
+<style rel="stylesheet/scss" lang="scss" scoped>
     dl,dt,dd{
         margin: 0;
         padding: 0;
