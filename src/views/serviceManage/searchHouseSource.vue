@@ -104,7 +104,7 @@
                 </el-form-item>
                 <el-form-item prop="selectedServicer">
                     <el-select v-model="renterInfo.selectedServicer.serverId" 
-                        placeholder="请选择服务人员" 
+                        placeholder="请选择城市管家" 
                         @focus="getServicers"
                         @change="changeServicer">
                         <el-option
@@ -113,7 +113,7 @@
                             :label="`${item.name} ${item.mobile}`"
                             :value="item.userId">
                             <span class="left dropItem">【区域】{{ item.areaName }}</span>
-                            <span class="left dropItem">【人员】{{ item.name }}</span>
+                            <span class="left dropItem">【管家】{{ item.name }}</span>
                             <span class="left dropItem">{{ item.mobile }}</span>
                             <span class="left dropItem">【待带看数】{{ item.unLookCount }}</span>
                             <el-tag size="mini" :type="item.serverStatus | statusFilter" class="left dropItem dropTag">
@@ -226,7 +226,7 @@
             };
             const validateServicer = (rule, value, callback) => {
                 if (!value || !value.serverId) {
-                    callback(new Error('请选择服务人员'));
+                    callback(new Error('请选择城市管家'));
                 } else {
                     callback();
                 }

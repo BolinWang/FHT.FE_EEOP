@@ -94,7 +94,7 @@ export const asyncRouterMap = [
         path: '/serviceManage',
         component: Layout,
         redirect: '/serviceManage/searchHouseSource',
-        name: '服务管理',
+        name: '管家看房',
         icon: 'wechat',
         meta: { role: ['admin', 'global', 'service'] },
         children: [

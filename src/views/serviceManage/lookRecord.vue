@@ -59,12 +59,14 @@
                 colModels:[
                     { prop:'userName', label: '租客姓名', width: 100},
                     { prop:'userMobile', label: '租客电话', width: 100},
-                    { prop:'bookingTime', label: '看房时间'},
+                    { prop:'bookingTime', label: '看房时间', width: 150},
                     { prop:'roomAddr', label: '小区/公寓-房间'},
-                    { prop:'serverName', label: '服务人员', width: 100},
-                    { prop:'serverMobile', label: '服务电话', width: 100},
-                    { prop:'lookHouseStatus', label: '看房进度', width: 100, type: 'status'},
-                    { prop:'lookHouseResult', label: '签约状况', width: 100, type: 'status'}
+                    { prop:'landlordName', label: '房东', width: 80},
+                    { prop:'landlordMobile', label: '房东电话', width: 100},
+                    { prop:'serverName', label: '城市管家', width: 80},
+                    { prop:'serverMobile', label: '管家电话', width: 100},
+                    { prop:'lookHouseStatus', label: '看房进度', width: 80, type: 'status'},
+                    { prop:'lookHouseResult', label: '签约状况', width: 80, type: 'status'}
                 ],
                 tableHeight: 300,
                 tableData: []
