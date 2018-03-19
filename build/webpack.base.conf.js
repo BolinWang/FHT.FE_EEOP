@@ -3,8 +3,6 @@ const utils = require('./utils')
 const config = require('../config')
 const vueLoaderConfig = require('./vue-loader.conf')
 
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-
 /* 转换绝对路径 */
 function resolve(dir) {
     return path.join(__dirname, '..', dir)
@@ -127,7 +125,5 @@ module.exports = {
         net: 'empty',
         tls: 'empty',
         child_process: 'empty'
-    },
-    // 需要查看打包资源可视化的开始该插件
-    // plugins: [new BundleAnalyzerPlugin()]
+    }
 }
