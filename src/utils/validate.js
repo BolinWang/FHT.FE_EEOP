@@ -30,12 +30,6 @@ export function validateUpperCase(str) {
 
 /* 大小写字母*/
 export function validatAlphabets(str) {
-<<<<<<< HEAD
-    const reg = /^[A-Za-z]+$/;
-    return reg.test(str);
-}
-=======
   const reg = /^[A-Za-z]+$/;
   return reg.test(str);
 }
->>>>>>> 6db8ac6669618c141804cf5aaffbb4fde36a6f82
