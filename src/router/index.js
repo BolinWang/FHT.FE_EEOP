@@ -102,17 +102,5 @@ export const asyncRouterMap = [
             { path: 'lookRecord', component: _import('serviceManage/lookRecord'), name: '房源带看记录'},
         ]
     },
-    // {
-    //     path: '/fulfillmentCenter',
-    //     component: Layout,
-    //     redirect: '/fulfillmentCenter/coupon',
-    //     name: '运营中心',
-    //     icon: 'activity',
-    //     meta: { role: ['admin', 'global'] },
-    //     children: [
-    //         { path: 'coupon', component: _import('fulfillmentCenter/coupon'), name: '优惠活动'},
-    //         { path: 'statisticsQuery', component: _import('fulfillmentCenter/statisticsQuery'), name: '统计查询'},
-    //     ]
-    // },
     { path: '*', redirect: '/404', hidden: true }
 ];

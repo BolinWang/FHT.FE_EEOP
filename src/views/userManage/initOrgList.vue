@@ -385,10 +385,10 @@ export default {
             financeEdit: false,
             financeTrusteeshipType: "",
             colModels:[
-                { prop:'organizationName', label: '组织名称', width: 150},
+                { prop:'organizationName', label: '组织名称'},
                 { prop:'displayName', label: '缩写名'},
-                { prop:'organizationId', label: '组织ID'},
-                { prop:'status', label: '状态', type:'status'},
+                { prop:'organizationId', label: '组织ID', width:120},
+                { prop:'status', label: '状态', type:'status', width:80},
                 { prop:'gmtCreate', label: '创建时间', type:'dateStr'},
                 { prop:'gmtModified', label: '修改时间', type:'dateStr'}
             ],

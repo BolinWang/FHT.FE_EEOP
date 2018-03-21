@@ -407,7 +407,7 @@ export default {
                 break;
             case 'banner':
                 this.$set(this.colModels[0], 'prop', 'focusPictureStatus');
-                this.uploadTips = '请上传1080 * 648的jpg/png图片，且不超过500kb';
+                this.uploadTips = '请上传1080 * 432的jpg/png图片，且不超过500kb';
                 /* api url */
                 this.urlPathObj = {
                     urlPath: 'focus',
