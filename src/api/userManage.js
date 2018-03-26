@@ -207,3 +207,15 @@ export function realNameAuthApi(params = {}) {
     }
   });
 }
+// 金融托底方
+export function checkCanBeFinanceTrusteeshipApi(params = {}) {
+  return fetch({
+    url: '/market/organization',
+    method: 'post',
+    interceptors: false,
+    data: {
+      method: 'checkCanBeFinanceTrusteeship',
+      params
+    }
+  });
+}

@@ -10,6 +10,8 @@ const service = axios.create({
   /*   timeout: 5000 // 请求超时时间*/
 });
 
+const whiteResponseList = ['checkCanBeFinanceTrusteeship'];
+
 // request拦截器
 service.interceptors.request.use(config => {
   const defaultConfig = {
@@ -43,37 +45,36 @@ service.interceptors.request.use(config => {
 service.interceptors.response.use(
   response => {
     const res = response.data;
-    if (res.code != 0) {
-      if (res.code == 1011) {
-        if (res.message == '无数据') {
-          return response.data;
-        } else if (res.message == '数据不存在') {
-          store.dispatch('FedLogOut').then(() => {
-            location.reload(); // 为了重新实例化vue-router对象 避免bug
-          });
-        }
-      }
-      Message({
-        message: res.message || '未知错误，请联系管理员',
-        type: 'error',
-        duration: 5 * 1000
-      });
-      // sessionId 失效
-      if (res.code == 1016) {
-        MessageBox.confirm(res.message + '，请重新登录', '提示', {
-          confirmButtonText: '重新登录',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          store.dispatch('FedLogOut').then(() => {
-            location.reload(); // 为了重新实例化vue-router对象 避免bug
-          });
-        })
-      }
-      return Promise.reject("error")
-    } else {
+    if (!response.config.interceptors || res.code == 0) {
       return response.data;
     }
+    if (res.code == 1011) {
+      if (res.message == '无数据') {
+        return response.data;
+      } else if (res.message == '数据不存在') {
+        store.dispatch('FedLogOut').then(() => {
+          location.reload(); // 为了重新实例化vue-router对象 避免bug
+        });
+      }
+    }
+    Message({
+      message: res.message || '未知错误，请联系管理员',
+      type: 'error',
+      duration: 5 * 1000
+    });
+    // sessionId 失效
+    if (res.code == 1016) {
+      MessageBox.confirm(res.message + '，请重新登录', '提示', {
+        confirmButtonText: '重新登录',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        store.dispatch('FedLogOut').then(() => {
+          location.reload(); // 为了重新实例化vue-router对象 避免bug
+        });
+      })
+    }
+    return Promise.reject("error")
   },
   error => {
     console.log('【response】' + error);
