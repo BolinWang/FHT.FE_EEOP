@@ -109,7 +109,17 @@
           </div>
           <div :class="{clearfix: true,hideUpload: isHideUpload}">
             <el-form-item label="营业执照">
-              <el-upload :action="`${actionBaseUrl}/util/upload/uploadPicture`" :before-upload="pictureUpload" :on-preview="picturePreview" :on-change="resetFile" :on-error="pictureError" :on-success="pictureSuccess" :file-list="fileList" :on-remove="pictureRemove" :limit="10" multiple :on-exceed="handleExceed" accept="image/jpg,image/jpeg,image/png" list-type="picture-card">
+              <el-upload
+                :action="`${actionBaseUrl}/util/upload/uploadPicture`"
+                :before-upload="pictureUpload"
+                :on-preview="picturePreview"
+                :on-change="resetFile"
+                :on-error="pictureError"
+                :on-success="pictureSuccess"
+                :file-list="fileList"
+                :on-remove="pictureRemove"
+                :limit="10" multiple :on-exceed="handleExceed"
+                accept="image/jpg,image/jpeg,image/png" list-type="picture-card">
                 <i class="el-icon-plus"></i>
                 <div slot="tip" class="el-upload__tip">单张不超过5M，最多上传10张</div>
               </el-upload>

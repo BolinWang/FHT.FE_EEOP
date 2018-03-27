@@ -181,6 +181,9 @@ a:hover {
 
 .el-dialog__body {
   padding: 20px;
+  .image{
+    max-width: 60%;
+  }
 }
 
 .el-dialog__title {

@@ -3,12 +3,12 @@
     <li class="preview-item" v-for="(item, index) in list" @mouseenter="handleMouseenter(item,index)" @mouseleave="handleMouseleave(item,index)">
       <img class="preview-img img-center" v-lazy="item.src" :key="index">
       <span class="preview-item-actions" :style="{opacity: item.opacityVal}">
-                <span class="preview-item__item-preview" @click="handlePreview(index)">
-                    <i class="el-icon-zoom-in"></i>
-                </span>
+        <span class="preview-item__item-preview" @click="handlePreview(index)">
+          <i class="el-icon-zoom-in"></i>
+        </span>
       <span v-if="deleteFlag == 'delete' && !item.isnoPic" class="preview-item__item-delete" @click="handleDelete(index,item)">
-                    <i class="el-icon-delete"></i>
-                </span>
+          <i class="el-icon-delete"></i>
+        </span>
       </span>
     </li>
   </ul>
@@ -84,6 +84,7 @@ export default {
     }
   }
 }
+
 </script>
 <style rel="stylesheet/scss" lang="scss">
 .pswp__caption__center {
@@ -149,4 +150,5 @@ export default {
     }
   }
 }
+
 </style>
