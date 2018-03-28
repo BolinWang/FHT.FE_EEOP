@@ -48,7 +48,7 @@
                   size="mini"
                   style="width:70px;">
                 </el-input>
-                 - 
+                 -
                 <el-input
                   v-model="rentPrice.maxPrice"
                   size="mini"
@@ -61,7 +61,7 @@
                   size="mini"
                   style="width:70px;">
                 </el-input>
-                 - 
+                 -
                 <el-input
                   v-model="roomArea.maxRoomArea"
                   size="mini"
@@ -111,7 +111,7 @@
               <img class="preview-img image image-center" width="40" height="40"
                 v-if="scope.row[item.prop]"
                 v-lazy="scope.row[item.prop]"
-                @click="handlePreview(scope.row[item.targetProp])" /> 
+                @click="handlePreview(scope.row[item.targetProp])" />
               <span v-else></span>
             </span>
             <span v-else-if="item.type == 'areaZone'">
@@ -191,7 +191,7 @@ export default {
       formData: {
         cityId: 310100,
         keyword: '',
-        orgOwnIds: [2, 4],
+        /*orgOwnIds: [2, 4],*/
         tags: ['fhd'],
         allPics: true
       },
