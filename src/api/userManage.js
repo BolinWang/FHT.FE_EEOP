@@ -219,3 +219,27 @@ export function checkCanBeFinanceTrusteeshipApi(params = {}) {
     }
   });
 }
+
+// 标记为飞虎队
+export function initFlyOrgApi(params = {}) {
+  return fetch({
+    url: '/market/apply',
+    method: 'post',
+    data: {
+      method: 'initFlyOrg',
+      params
+    }
+  });
+}
+
+// 银行卡绑定
+export function bindWithdrawCardApi(params = {}) {
+  return fetch({
+    url: '/market/apply',
+    method: 'post',
+    data: {
+      method: 'bindWithdrawCard',
+      params
+    }
+  });
+}

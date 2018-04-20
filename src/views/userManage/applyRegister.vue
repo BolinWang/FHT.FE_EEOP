@@ -10,6 +10,8 @@
       <el-button type="primary" size="small" icon="el-icon-search" @click.native="searchParam" v-waves class="filter-item">查询</el-button>
       <el-button plain size="small" icon="el-icon-remove-outline" @click.native="clearForm">清空</el-button>
       <el-button class="right" type="primary" size="small" icon="el-icon-circle-plus-outline" @click.native="handleApply">注册账号</el-button>
+      <el-button class="right" type="primary" size="small" @click.native="layer_sign = true">标记为飞虎队</el-button>
+      <el-button class="right" type="primary" size="small" @click.native="layer_card = true">银行卡绑定</el-button>
     </div>
     <div class="model-table" :style="tableStyle">
       <el-table :data="tableData" v-loading.body="listLoading" :max-height="tableHeight" size="small" fit stripe highlight-current-row>
@@ -54,12 +56,53 @@
         </div>
       </el-dialog>
     </div>
+     <!-- 标记为飞虎队 -->
+    <div class="dialog-info">
+      <el-dialog title="标记为飞虎队" :visible.sync="layer_sign" width="400px" @close="dialogSign">
+        <el-form :model="signForm" size="small" status-icon :rules="rules" ref="signForm" label-width="150px">
+          <el-form-item label="组织的主账号" prop="mobile">
+            <el-input v-model="signForm.mobile" placeholder="请输入手机号"></el-input>
+          </el-form-item>
+          <el-form-item label="设置出房服务费率" prop="spiltRate">
+            <el-input v-model="signForm.spiltRate" auto-complete="off">
+              <template slot="append">%</template>
+            </el-input>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="layer_sign = false" size="small">取 消</el-button>
+          <el-button type="primary" size="small" @click="signSaveData">确 定</el-button>
+        </div>
+      </el-dialog>
+    </div>
+     <!-- 银行卡绑定-->
+    <div class="dialog-info">
+      <el-dialog title="银行卡绑定" :visible.sync="layer_card" width="500px" @close="dialogCard">
+        <el-form :model="cardForm" size="small" status-icon :rules="rules" ref="cardForm" label-width="150px">
+          <el-form-item label="组织的主账号" prop="mobile">
+            <el-input v-model="cardForm.mobile" placeholder="请输入手机号"></el-input>
+          </el-form-item>
+          <el-form-item label="开户人姓名" prop="userName">
+            <el-input v-model="cardForm.userName" auto-complete="off">
+            </el-input>
+          </el-form-item>
+          <el-form-item label="银行卡号" prop="userCardNo">
+            <el-input v-model="cardForm.userCardNo" auto-complete="off">
+            </el-input>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="layer_card = false" size="small">取 消</el-button>
+          <el-button type="primary" size="small" @click="cardSaveData">确 定</el-button>
+        </div>
+      </el-dialog>
+    </div>
   </div>
 </template>
 <script>
 import waves from '@/directive/waves' // 水波纹指令
 import { parseTime, ObjectMap, deepClone } from '@/utils'
-import { queryUserRequestByPageApi, saveUserRequestApi, registeredUserApi } from '@/api/userManage'
+import { queryUserRequestByPageApi, saveUserRequestApi, registeredUserApi, initFlyOrgApi, bindWithdrawCardApi } from '@/api/userManage'
 import { validateMobile } from '@/utils/validate'
 
 export default {
@@ -95,6 +138,13 @@ export default {
         callback();
       }
     };
+    const validateSpiltRate = (rule, value, callback) => {
+      if(/^\d+(?:.\d{1,2})?$/.test(value) && value <= 100) {
+        callback();
+      } else {
+        callback(new Error('费率为0到100,最多保留2位小数'));
+      }
+    }
     return {
       selectOptions: [
         { label: '未联系', value: 1 },
@@ -119,6 +169,8 @@ export default {
       },
       pageSizeList: [10, 20, 30, 50],
       layer_showInfo: false,
+      layer_sign: false,
+      layer_card: false,
       formData: {
         requestStatus: '',
         mobile: ''
@@ -127,12 +179,30 @@ export default {
         mobile: '',
         name: ''
       },
+      signForm: {
+        mobile: '',
+        spiltRate: ''
+      },
+      cardForm: {
+        mobile: '',
+        userName: '',
+        userCardNo: ''
+      },
       rules: {
         mobile: [
           { required: true, trigger: 'blur', validator: validatePhone }
         ],
         name: [
           { required: true, trigger: 'blur', validator: validateName }
+        ],
+        spiltRate: [
+          { required: true, trigger: 'blur', validator: validateSpiltRate }
+        ],
+        userName: [
+          { required: true, trigger: 'blur', message: '请输入开户人姓名' }
+        ],
+        userCardNo: [
+          { required: true, trigger: 'blur', message: '请输入银行卡号' }
         ]
       }
     }
@@ -201,6 +271,47 @@ export default {
         mobile: ''
       }
       this.getGridData(this.pageItems);
+    },
+    signSaveData() {//标记为飞虎队
+      this.$refs.signForm.validate(valid => {
+        if (valid) {
+          initFlyOrgApi(deepClone(this.signForm)).then(response => {
+            this.$message.success('标记成功')
+            this.layer_sign = false;
+          }).catch()
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      });
+    },
+    dialogSign() {
+      this.signForm = {
+        mobile: '',
+        spiltRate: ''
+      }
+      this.$refs.signForm.clearValidate()
+    },
+    cardSaveData() {
+      this.$refs.cardForm.validate(valid => {
+        if (valid) {
+          bindWithdrawCardApi(deepClone(this.cardForm)).then(response => {
+            this.$message.success('银行卡绑定成功')
+            this.layer_card = false;
+          }).catch()
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      });
+    },
+    dialogCard() {
+      this.cardForm = {
+        mobile: '',
+        userName: '',
+        userCardNo: ''
+      }
+      this.$refs.cardForm.clearValidate()
     },
     handleSaveData() {
       this.$refs.ruleForm.validate(valid => {
