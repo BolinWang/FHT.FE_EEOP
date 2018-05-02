@@ -200,6 +200,7 @@ export default {
     getGridData(params) {
       this.listLoading = true;
       this.searchParams = Object.assign(deepClone(params), deepClone(this.formData));
+      this.searchParams.type = this.searchParams.type + ''
       signaturesListsApi(ObjectMap(this.searchParams)).then(response => {
         this.tableData = response.data.content;
         this.total = response.data.totalElements;

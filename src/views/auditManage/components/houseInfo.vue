@@ -62,7 +62,7 @@
       </el-col>
     </div>
     <el-form-item label="房间设施">
-      <el-tag v-for="(item,index) in temp.facilityItems" key="index">
+      <el-tag v-for="(item,index) in temp.roomFacilityItems" key="index">
         {{item}}
       </el-tag>
     </el-form-item>
