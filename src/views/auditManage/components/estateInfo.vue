@@ -31,17 +31,17 @@
       </el-input>
     </el-form-item>
     <el-form-item label="配套服务">
-      <el-tag v-for="(item,index) in temp.services" key="index">
+      <el-tag v-for="(item,index) in temp.services" :key="index">
         {{item}}
       </el-tag>
     </el-form-item>
     <el-form-item label="门店服务">
-      <el-tag v-for="(item,index) in temp.storeServices" key="index">
+      <el-tag v-for="(item,index) in temp.storeServices" :key="index">
         {{item}}
       </el-tag>
     </el-form-item>
     <el-form-item label="周边设施">
-      <el-tag v-for="(item,index) in temp.surroundings" key="index">
+      <el-tag v-for="(item,index) in temp.surroundings" :key="index">
         {{item}}
       </el-tag>
     </el-form-item>
@@ -61,7 +61,7 @@
     <div class="model-table">
       <el-table :data="temp.roomList" v-loading.body="listLoading" size="small" max-height="300" fit stripe highlight-current-row>
         <el-table-column type="index" width="60" align="center"></el-table-column>
-        <el-table-column v-for="(item,index) in colModels" :label="item.label" :width="item.width" key="index" fit show-overflow-tooltip>
+        <el-table-column v-for="(item,index) in colModels" :label="item.label" :width="item.width" :key="index" fit show-overflow-tooltip>
           <template slot-scope="scope">
             <span v-if="item.type === 'formatTime'">
                             {{scope.row[item.prop] | parseTime()}}

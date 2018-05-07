@@ -1,7 +1,10 @@
 <template>
   <ul class="previewItems">
-    <li class="preview-item" v-for="(item, index) in list" @mouseenter="handleMouseenter(item,index)" @mouseleave="handleMouseleave(item,index)">
+    <li class="preview-item" v-for="(item, index) in list" :key="index"
+      @mouseenter="handleMouseenter(item,index)"
+      @mouseleave="handleMouseleave(item,index)">
       <img class="preview-img img-center" v-lazy="item.src" :key="index">
+      <span class="preview-tags" v-if="item.picTags">{{item.picTags}}</span>
       <span class="preview-item-actions" :style="{opacity: item.opacityVal}">
         <span class="preview-item__item-preview" @click="handlePreview(index)">
           <i class="el-icon-zoom-in"></i>
@@ -121,6 +124,15 @@ export default {
     img {
       width: 100%;
       height: 100%;
+    }
+    .preview-tags {
+      position: absolute;
+      bottom: 0;
+      text-align: center;
+      width: 100%;
+      height: 30px;
+      background: rgba(0, 0, 0, 0.5);
+      color: #fff;
     }
     .preview-item-actions {
       position: absolute;

@@ -23,7 +23,7 @@
     <div class="model-table" :style="tableStyle">
       <el-table :data="tableData" v-loading.body="listLoading" :max-height="tableHeight" size="small" fit stripe highlight-current-row>
         <el-table-column type="index" width="60" align="center"></el-table-column>
-        <el-table-column v-for="(item,index) in colModels[type]" :label="item.label" :width="item.width" key="index" fit :show-overflow-tooltip="!item.toolTip">
+        <el-table-column v-for="(item,index) in colModels[type]" :label="item.label" :width="item.width" :key="index" fit :show-overflow-tooltip="!item.toolTip">
           <template slot-scope="scope">
             <span v-if="item.type === 'formatHouseResource'">
               {{scope.row[item.prop] | formatHouseResource(scope.row)}}

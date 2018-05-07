@@ -46,7 +46,7 @@
       </el-col>
     </div>
     <el-form-item label="公共设施" v-if="temp.houseRentType == 2">
-      <el-tag v-for="(item,index) in temp.facilityItems" key="index">
+      <el-tag v-for="(item,index) in temp.facilityItems" :key="index">
         {{item}}
       </el-tag>
     </el-form-item>
@@ -62,7 +62,7 @@
       </el-col>
     </div>
     <el-form-item label="房间设施">
-      <el-tag v-for="(item,index) in temp.roomFacilityItems" key="index">
+      <el-tag v-for="(item,index) in temp.roomFacilityItems" :key="index">
         {{item}}
       </el-tag>
     </el-form-item>
@@ -165,8 +165,8 @@ export default {
         this.temp.roomInfosFormat = val.roomInfos ? val.roomInfos[0] : '';
         let picList = val.picUrls || [];
         this.temp.picList = picList.length > 0 ? picList.map((item) => {
-          return { src: item.picUrl, w: 800, h: 600, id: item.id }
-        }) : [{ src: noPic, w: 800, h: 600, isnoPic: true }];
+          return { src: item.picUrl, w: 800, h: 600, id: item.id, picTag: item.picTag || '' }
+        }) : [{ src: noPic, w: 800, h: 600, isnoPic: true, picTag: '' }];
       },
       deep: true
     },
