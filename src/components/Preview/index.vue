@@ -4,7 +4,7 @@
       @mouseenter="handleMouseenter(item,index)"
       @mouseleave="handleMouseleave(item,index)">
       <img class="preview-img img-center" v-lazy="item.src" :key="index">
-      <span class="preview-tags" v-if="item.picTags">{{item.picTags}}</span>
+      <span class="preview-tags" v-if="item.picTag">{{item.picTag}}</span>
       <span class="preview-item-actions" :style="{opacity: item.opacityVal}">
         <span class="preview-item__item-preview" @click="handlePreview(index)">
           <i class="el-icon-zoom-in"></i>

@@ -145,7 +145,7 @@ export default {
     this.temp.roomInfosFormat = this.temp.roomInfos ? this.temp.roomInfos[0] : '';
     let picList = this.temp.picUrls || [];
     this.temp.picList = picList.map((item) => {
-      return { id: item.id, src: item.picUrl, w: 800, h: 600 }
+      return { id: item.id, src: item.picUrl, w: 800, h: 600, picTag: item.picTag || '' }
     });
   },
   methods: {
