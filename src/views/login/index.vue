@@ -1,7 +1,7 @@
 <template>
   <div class="login-container">
     <el-form autoComplete="on" :model="loginForm" :rules="loginRules" ref="loginForm" label-position="left" label-width="0px" class="card-box login-form">
-      <h3 class="title">运营管理平台</h3>
+      <h3 class="title">运营管理平台11</h3>
       <el-form-item prop="mobile">
         <span class="svg-container">
           <icon-svg icon-class="peoples"></icon-svg>
