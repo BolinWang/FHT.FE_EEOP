@@ -24,13 +24,21 @@
       <el-table :data="tableData" v-loading.body="listLoading" :max-height="tableHeight" size="small" fit stripe highlight-current-row>
         <el-table-column type="index" width="60" align="center">
         </el-table-column>
-        <el-table-column v-for="(item,index) in colModels" :label="item.label" :width="item.width" key="index" fit show-overflow-tooltip>
+        <el-table-column v-for="(item,index) in colModels" :label="item.label" :width="item.width" :key="index" fit show-overflow-tooltip>
           <template slot-scope="scope">
             <span v-if="item.type === 'formatAddress'">
               {{(scope.row[item.prop]) | formatAddress(scope.row)}}
             </span>
             <span v-else-if="item.type === 'formatContactName'">
               {{(scope.row[item.prop]) | formatContactName(scope.row)}}
+            </span>
+            <span v-else-if="item.type === 'tags'">
+              <el-tag style="margin: 0 5px 5px 0;"
+                v-for="(tag,tagIndex) in scope.row.tags"
+                :type="tag | filterTags"
+                :key="tagIndex">
+                {{tag}}
+              </el-tag>
             </span>
             <span v-else>
               {{scope.row[item.prop]}}
@@ -83,6 +91,15 @@ export default {
       }
       let contactGender = row.contactGender == 1 ? '先生' : '女士'
       return `${val} ${contactGender}`
+    },
+    filterTags(val) {
+      const filterObj = {
+        '整租': '',
+        '合租': 'info',
+        '金融': 'warning',
+        '飞虎队': 'success'
+      }
+      return filterObj[val] || ''
     }
   },
   data() {
@@ -104,6 +121,7 @@ export default {
         { prop: 'roomName', label: '公寓/小区-房间' },
         { prop: 'houseFinanceType', label: '房源类型', width: 120 },
         { prop: 'roomCode', label: '房源编码', width: 180 },
+        { prop: 'tags', label: '标签', type: 'tags', width: 200 },
         { prop: 'contactName', label: '联系人', width: 120, type: 'formatContactName' },
         { prop: 'contactMobile', label: '看房电话', width: 180 }
       ],

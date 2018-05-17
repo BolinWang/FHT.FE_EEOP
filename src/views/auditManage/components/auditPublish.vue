@@ -43,6 +43,14 @@
             <el-tag v-else-if="item.type === 'status'" :type="scope.row[item.prop] | statusFilter">
               {{scope.row[item.prop] | formatStatus}}
             </el-tag>
+            <span v-else-if="item.type === 'tags'">
+              <el-tag style="margin: 0 5px 5px 0;"
+                v-for="(tag,tagIndex) in scope.row.tags"
+                :type="tag | filterTags"
+                :key="tagIndex">
+                {{tag}}
+              </el-tag>
+            </span>
             <span v-else>
               {{scope.row[item.prop]}}
             </span>
@@ -113,6 +121,15 @@ export default {
       }
       return filterObj[val] || '普通'
     },
+    filterTags(val) {
+      const filterObj = {
+        '整租': '',
+        '合租': 'info',
+        '金融': 'warning',
+        '飞虎队': 'success'
+      }
+      return filterObj[val] || ''
+    },
     statusFilter(val) {
       const filterObj = {
         '1': 'info',
@@ -180,6 +197,7 @@ export default {
           { prop: 'houseResource', label: '房源位置', width: 150, type: 'formatHouseResource', toolTip: true },
           { prop: 'roomName', label: '小区-房间', width: 200, type: 'formatRoomName', toolTip: true },
           { prop: 'roomCode', label: '房源编号', width: 100 },
+          { prop: 'tags', label: '标签', type: 'tags', width: 200 },
           { prop: 'houseFinanceType', label: '房源类型', type: 'formatType' },
           { prop: 'publishTime', label: '提交时间', width: 140, type: 'formatTime', toolTip: true },
           { prop: 'reviewStatus', label: '审核状态', width: 110, type: 'status' },

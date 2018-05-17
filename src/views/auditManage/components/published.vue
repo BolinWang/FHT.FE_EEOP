@@ -23,20 +23,20 @@
     <div class="model-table" :style="tableStyle">
       <el-table :data="tableData" v-loading.body="listLoading" :max-height="tableHeight" size="small" fit stripe highlight-current-row>
         <el-table-column type="index" width="60" align="center"></el-table-column>
-        <el-table-column v-for="(item,index) in colModels" :label="item.label" :width="item.width" key="index" fit :show-overflow-tooltip="!item.toolTip">
+        <el-table-column v-for="(item,index) in colModels" :label="item.label" :width="item.width" :key="index" fit :show-overflow-tooltip="!item.toolTip">
           <template slot-scope="scope">
             <span v-if="item.type === 'img'">
               <img class="image image-center" width="40" height="40"
                 v-if="scope.row[item.prop][0]"
                 v-lazy="scope.row[item.prop][0]"
-                @click="showImage(scope.row[item.prop][0])" /> 
+                @click="showImage(scope.row[item.prop][0])" />
               <span v-else></span>
             </span>
             <span v-else-if="item.type === 'tags'">
                 <el-tag style="margin: 0 5px 5px 0;"
                   v-for="(tag,tagIndex) in scope.row.tags"
                   :type="tag | filterTags"
-                  key="tagIndex">
+                  :key="tagIndex">
                   {{tag}}
                 </el-tag>
             </span>
@@ -104,18 +104,12 @@ export default {
     waves
   },
   filters: {
-    formatTypeFilter(val) {
-      const filterObj = {
-        '1': '普通',
-        '2': '金融'
-      }
-      return filterObj[val] || '普通'
-    },
     filterTags(val) {
       const filterObj = {
         '整租': '',
         '合租': 'info',
-        '金融': 'warning'
+        '金融': 'warning',
+        '飞虎队': 'success'
       }
       return filterObj[val] || ''
     }

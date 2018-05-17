@@ -13,11 +13,19 @@
       <el-table :data="tableData" v-loading.body="listLoading" :max-height="tableHeight" size="small" fit stripe highlight-current-row>
         <el-table-column type="index" width="60" align="center">
         </el-table-column>
-        <el-table-column v-for="(item,index) in colModels" :label="item.label" :width="item.width" key="index" fit show-overflow-tooltip>
+        <el-table-column v-for="(item,index) in colModels" :label="item.label" :width="item.width" :key="index" fit show-overflow-tooltip>
           <template slot-scope="scope">
             <el-tag v-if="item.type === 'status'" :type="scope.row[item.prop] | statusFilter">
               {{scope.row[item.prop] | statusStrFilter}}
             </el-tag>
+            <span v-else-if="item.type === 'tags'">
+              <el-tag style="margin: 0 5px 5px 0;"
+                v-for="(tag,tagIndex) in scope.row.tags"
+                :type="tag | filterTags"
+                :key="tagIndex">
+                {{tag}}
+              </el-tag>
+            </span>
             <span v-else>
               {{scope.row[item.prop]}}
             </span>
@@ -142,6 +150,15 @@ export default {
     statusStrFilter(status) {
       const statusStrData = ['未申请', '已展示', '申请中'];
       return statusStrData[status - 1] || '未发布'
+    },
+    filterTags(val) {
+      const filterObj = {
+        '整租': '',
+        '合租': 'info',
+        '金融': 'warning',
+        '飞虎队': 'success'
+      }
+      return filterObj[val] || ''
     }
   },
   data() {
@@ -154,6 +171,7 @@ export default {
         { prop: 'showStatus', label: '状态', width: 80, type: 'status' },
         { prop: 'addressName', label: '房源位置' },
         { prop: 'estateName', label: '公寓' },
+        { prop: 'tags', label: '标签', type: 'tags', width: 200 },
         { prop: 'gmtModified', label: '操作时间', width: 180 }
       ],
       isShowSortApp: true,

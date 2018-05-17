@@ -22,7 +22,8 @@
       <el-table :data="tableData" v-loading.body="listLoading" :max-height="tableHeight" size="small" fit stripe highlight-current-row>
         <el-table-column type="index" width="60" align="center">
         </el-table-column>
-        <el-table-column v-for="(item,index) in colModels" :label="item.label" :width="item.width" key="index" fit :show-overflow-tooltip="!item.toolTip">
+        <el-table-column v-for="(item,index) in colModels" :key="index"
+          :label="item.label" :width="item.width" fit :show-overflow-tooltip="!item.toolTip">
           <template slot-scope="scope">
             <el-popover v-if="item.type === 'status' && scope.row[item.prop] == 3" trigger="hover" placement="top">
               <p>不通过原因: {{ scope.row.rejectRemark }}</p>

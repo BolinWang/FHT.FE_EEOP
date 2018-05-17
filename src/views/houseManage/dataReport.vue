@@ -21,13 +21,13 @@
             <el-table-column type="expand">
               <template slot-scope="props">
                 <el-form label-position="left" size="small" inline class="table-expand">
-                  <el-form-item v-for="(item,index) in expandCols" :label="item.label" key="index">
+                  <el-form-item v-for="(item,index) in expandCols" :label="item.label" :key="index">
                     <span>{{ props.row[item.prop] }}</span>
                   </el-form-item>
                 </el-form>
               </template>
             </el-table-column>
-            <el-table-column v-for="(item,index) in colModels" :label="item.label" :width="item.width" key="index" fit show-overflow-tooltip>
+            <el-table-column v-for="(item,index) in colModels" :label="item.label" :width="item.width" :key="index" fit show-overflow-tooltip>
               <template slot-scope="scope">
                 <span v-if="item.type == `formatAdmin`">
                   {{scope.row[item.prop] | formatAdminFilter}}
