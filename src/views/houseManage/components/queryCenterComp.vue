@@ -119,7 +119,6 @@ export default {
         { prop: 'organizationName', label: '组织' },
         { prop: 'address', label: '位置', type: 'formatAddress' },
         { prop: 'roomName', label: '公寓/小区-房间' },
-        { prop: 'houseFinanceType', label: '房源类型', width: 120 },
         { prop: 'roomCode', label: '房源编码', width: 180 },
         { prop: 'tags', label: '标签', type: 'tags', width: 200 },
         { prop: 'contactName', label: '联系人', width: 120, type: 'formatContactName' },
