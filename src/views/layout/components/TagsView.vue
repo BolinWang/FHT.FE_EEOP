@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-04-11 17:22:33
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-05-24 21:22:51
+ * @Last Modified time: 2018-05-24 21:33:06
  */
 
 <template>
@@ -110,7 +110,8 @@ export default {
     openMenu(tag, e) {
       this.visible = true
       this.selectedTag = tag
-      this.left = e.clientX
+      // 180为侧边栏宽度
+      this.left = e.clientX - 180
       this.top = e.clientY
     },
     closeMenu() {
