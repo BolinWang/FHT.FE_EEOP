@@ -88,7 +88,7 @@
   </el-form>
 </template>
 <script>
-import Preview from '@/components/Preview'
+import Preview from '@/components/Preview/Preview'
 import { ObjectMap, deepClone } from '@/utils'
 import noPic from '@/assets/noPic.jpg'
 

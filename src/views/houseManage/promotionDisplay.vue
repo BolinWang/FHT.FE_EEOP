@@ -121,7 +121,7 @@
 </template>
 <script>
 import draggable from 'vuedraggable'
-import Preview from '@/components/Preview'
+import Preview from '@/components/Preview/Preview'
 import { parseTime, ObjectMap, deepClone } from '@/utils'
 import { getCityListApi, getGridApi, saveDataApi } from '@/api/houseManage'
 import noPic from '@/assets/noPic.jpg'

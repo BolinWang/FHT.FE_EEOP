@@ -87,7 +87,7 @@
   </el-form>
 </template>
 <script>
-import Preview from '@/components/Preview'
+import Preview from '@/components/Preview/Preview'
 import { upgradeRealNameApi } from '@/api/auditCenter'
 import { deepClone } from '@/utils'
 

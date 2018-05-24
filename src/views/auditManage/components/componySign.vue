@@ -43,7 +43,7 @@
   </el-form>
 </template>
 <script>
-import Preview from '@/components/Preview'
+import Preview from '@/components/Preview/Preview'
 
 export default {
   name: 'componySign',
