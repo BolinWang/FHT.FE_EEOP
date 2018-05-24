@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-04-11 16:50:08
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-05-24 20:36:03
+ * @Last Modified time: 2018-05-24 20:56:01
  */
 
 <template>
@@ -126,6 +126,7 @@ export default {
       })
       const previewList = []
       for (let i = 0; i < this.list.length; i++) {
+        console.log(this.list)
         previewList.push(await imgloadAsync(this.list[i]))
       }
       this.$preview.open(index, previewList)

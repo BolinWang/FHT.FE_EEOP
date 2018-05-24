@@ -1,3 +1,10 @@
+/*
+ * @Author: FT.FE.Bolin
+ * @Date: 2018-05-24 20:44:16
+ * @Last Modified by: FT.FE.Bolin
+ * @Last Modified time: 2018-05-24 20:45:11
+ */
+
 <template>
   <div class="app-wrapper" :class="{hideSidebar:!sidebar.opened}">
     <div class="sidebar-wrapper">
@@ -10,7 +17,7 @@
   </div>
 </template>
 <script>
-import { Navbar, Sidebar, AppMain } from '@/views/layout';
+import { Navbar, Sidebar, AppMain } from '@/views/layout/components'
 
 export default {
   name: 'layout',
@@ -21,7 +28,7 @@ export default {
   },
   computed: {
     sidebar() {
-      return this.$store.state.app.sidebar;
+      return this.$store.state.app.sidebar
     }
   }
 }
