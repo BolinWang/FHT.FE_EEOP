@@ -1,8 +1,8 @@
 /*
- * @Author: FT.FE.Bolin 
- * @Date: 2018-04-11 17:22:27 
+ * @Author: FT.FE.Bolin
+ * @Date: 2018-04-11 17:22:27
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-04-11 19:06:19
+ * @Last Modified time: 2018-05-25 14:54:15
  */
 
 <template>
@@ -41,33 +41,65 @@
     </el-menu>
     <!-- 个人信息 -->
     <el-dialog title="个人信息" :visible.sync="layer_showUserInfo" width="600px" @close="dialogClose">
-      <el-form :model="ruleForm" status-icon ref="ruleForm" label-width="100px">
+      <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="100px">
         <el-form-item label="用户名" prop="name">
-          <el-input v-model="ruleForm.name" disabled></el-input>
+          <el-input v-model="ruleForm.name"></el-input>
+        </el-form-item>
+        <el-form-item label="密码" prop="password">
+          <el-input type="password" v-model="ruleForm.password" auto-complete="off"></el-input>
         </el-form-item>
       </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="layer_showUserInfo = false" size="small">取 消</el-button>
+        <el-button type="primary" size="small" @click="handelSaveUserInfo">确定并重新登录</el-button>
+      </div>
     </el-dialog>
   </div>
 </template>
 <script>
-import { mapGetters } from 'vuex'
-import Hamburger from '@/components/Hamburger'
+import { mapGetters } from 'vuex';
+import Hamburger from '@/components/Hamburger';
 import ThemePicker from '@/components/ThemePicker'
 import Screenfull from '@/components/Screenfull'
 import { default as TagsView } from './TagsView'
+import { saveSelfDetailApi } from '@/api/userManage'
+import { ObjectMap } from '@/utils'
 
 export default {
   components: {
+    TagsView,
     Hamburger,
     ThemePicker,
-    Screenfull,
-    TagsView
+    Screenfull
   },
   data() {
+    const validateName = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error('请输入用户名'));
+      } else {
+        callback();
+      }
+    };
+    const validatePass = (rule, value, callback) => {
+      if (value && value.length < 6) {
+        callback(new Error('密码不能小于6位'));
+      } else {
+        callback();
+      }
+    };
     return {
       layer_showUserInfo: false,
       ruleForm: {
-        name: this.$store.state.user.name
+        name: this.$store.state.user.name,
+        password: ''
+      },
+      rules: {
+        password: [
+          { trigger: 'blur', validator: validatePass }
+        ],
+        name: [
+          { required: true, trigger: 'blur', validator: validateName }
+        ]
       }
     }
   },
@@ -87,11 +119,26 @@ export default {
     },
     logout() {
       this.$store.dispatch('LogOut').then(() => {
-        location.reload() // 为了重新实例化vue-router对象 避免bug
+        location.reload(); // 为了重新实例化vue-router对象 避免bug
+      });
+    },
+    handelSaveUserInfo() {
+      this.$refs.ruleForm.validate(valid => {
+        if (valid) {
+          saveSelfDetailApi(ObjectMap(this.ruleForm)).then(response => {
+            this.layer_showUserInfo = false;
+            this.$store.dispatch('LogOut').then(() => {
+              location.reload(); // 为了重新实例化vue-router对象 避免bug
+            });
+          });
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
       })
     },
     dialogClose() {
-      this.$refs.ruleForm.resetFields()
+      this.$refs.ruleForm.resetFields();
     }
   }
 }
