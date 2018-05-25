@@ -170,27 +170,43 @@ export const asyncRouterMap = [
       }
     ]
   },
-  {
-    path: '/serviceManage',
-    component: Layout,
-    redirect: '/serviceManage/searchHouseSource',
-    name: '管家看房',
-    icon: 'wechat',
-    meta: {
-      role: ['admin', 'global', 'service']
-    },
-    children: [{
-        path: 'searchHouseSource',
-        component: _import('serviceManage/searchHouseSource'),
-        name: '筛选房源分配'
-      },
-      {
-        path: 'lookRecord',
-        component: _import('serviceManage/lookRecord'),
-        name: '房源带看记录'
-      },
-    ]
-  },
+  // {
+  //   path: '/serviceManage',
+  //   component: Layout,
+  //   redirect: '/serviceManage/searchHouseSource',
+  //   name: '管家看房',
+  //   icon: 'wechat',
+  //   meta: {
+  //     role: ['admin', 'global', 'service']
+  //   },
+  //   children: [{
+  //       path: 'searchHouseSource',
+  //       component: _import('serviceManage/searchHouseSource'),
+  //       name: '筛选房源分配'
+  //     },
+  //     {
+  //       path: 'lookRecord',
+  //       component: _import('serviceManage/lookRecord'),
+  //       name: '房源带看记录'
+  //     },
+  //   ]
+  // },
+  // {
+  //   path: '/fhdOrganization',
+  //   component: Layout,
+  //   redirect: 'noredirect',
+  //   noDropdown: true,
+  //   icon: 'star',
+  //   meta: {
+  //     role: ['admin', 'global', 'service']
+  //   },
+  //   children: [{
+  //       path: 'searchHouseSource',
+  //       component: _import('serviceManage/searchHouseSource'),
+  //       name: '飞虎队机构'
+  //     }
+  //   ]
+  // },
   // {
   //     path: '/fulfillmentCenter',
   //     component: Layout,
