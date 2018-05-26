@@ -24,7 +24,7 @@
       <el-table :data="tableData" v-loading.body="listLoading" :max-height="tableHeight" size="small" fit stripe highlight-current-row>
         <el-table-column type="index" width="60" align="center">
         </el-table-column>
-        <el-table-column v-for="(item,index) in colModels" :label="item.label" :width="item.width" key="index" fit show-overflow-tooltip>
+        <el-table-column v-for="(item,index) in colModels" :label="item.label" :width="item.width" :key="index" fit show-overflow-tooltip>
           <template slot-scope="scope">
             <el-tag v-if="item.filterType == 'authentication'" :type="(scope.row[item.prop] == '2' ? 'success' : 'info')">
               {{(scope.row[item.prop]) | filterStr(item.filterType)}}
@@ -55,7 +55,7 @@
     <el-dialog title="租房记录" width="1000px" @close="overlayData=[]" :visible.sync="rentRecord">
       <el-table :data="overlayData" size="small" v-loading.body="listLoading" max-height="500" fit stripe>
         <el-table-column type="index" width="60" align="center"></el-table-column>
-        <el-table-column v-for="(item,index) in overlayCol" :label="item.label" :width="item.width" key="index" fit show-overflow-tooltip>
+        <el-table-column v-for="(item,index) in overlayCol" :label="item.label" :width="item.width" :key="index" fit show-overflow-tooltip>
           <template slot-scope="scope">
             <el-tag v-if="(item.filterType == 'isContracter' || item.prop == 'status')" :type="(scope.row[item.prop] == '1' ? 'success' : 'info')">
               {{(scope.row[item.prop]) | filterStr(item.filterType)}}

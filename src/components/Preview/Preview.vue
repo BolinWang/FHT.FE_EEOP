@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-04-11 16:50:08
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-05-24 20:56:01
+ * @Last Modified time: 2018-05-26 16:08:08
  */
 
 <template>
@@ -64,6 +64,10 @@ export default {
       default() {
         return {}
       }
+    },
+    disabled: {
+      type: String,
+      default: 'disabled'
     }
   },
   computed: {
@@ -77,7 +81,8 @@ export default {
       return {
         animation: 150,
         group: 'description',
-        ghostClass: 'ghost'
+        ghostClass: 'ghost',
+        disabled: this.disabled
       }
     }
   },
