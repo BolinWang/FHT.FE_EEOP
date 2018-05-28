@@ -1,8 +1,8 @@
 /*
- * @Author: FT.FE.Bolin 
- * @Date: 2018-04-11 16:47:22 
+ * @Author: FT.FE.Bolin
+ * @Date: 2018-04-11 16:47:22
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-04-12 17:09:07
+ * @Last Modified time: 2018-05-27 11:41:52
  */
 <template>
   <div class="model-table-pagenation">
@@ -139,7 +139,7 @@
 <script>
   import Vue from 'vue'
   import props from './props'
-  import { fetch } from '@/utils/fetch'
+  import fetch from '@/utils/fetch'
   import { ObjectMap, deepClone } from '@/utils'
   export default {
     name: 'fht-table-pagination',
@@ -186,8 +186,11 @@
         this.pagination.pageNo = pageNo
         this.fetchHandler()
       },
-      searchHandler() {
+      searchHandler(options) {
         this.pagination.pageNo = 1
+        if (options && options.type === 'clear') {
+          this.searchParams = options.data
+        }
         this.fetchHandler()
       },
       fetchHandler() {
@@ -210,9 +213,13 @@
           this.loading = false
           return false
         }
-        fetch(url, {
-          method: dataMethod,
-          params
+        fetch({
+          url,
+          method: 'post',
+          data: {
+            method: dataMethod,
+            params
+          }
         }).then(response => {
           let result = response
           if (response && !(response instanceof Array)) {

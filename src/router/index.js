@@ -115,6 +115,10 @@ export const asyncRouterMap = [
       role: ['admin', 'global']
     },
     children: [{
+        path: 'auditFhd',
+        component: _import('auditManage/auditFhd'),
+        name: '飞虎队机构'
+      },{
         path: 'auditSignatures',
         component: _import('auditManage/auditSignatures'),
         name: '电子签章审核'
@@ -189,22 +193,6 @@ export const asyncRouterMap = [
   //       component: _import('serviceManage/lookRecord'),
   //       name: '房源带看记录'
   //     },
-  //   ]
-  // },
-  // {
-  //   path: '/fhdOrganization',
-  //   component: Layout,
-  //   redirect: 'noredirect',
-  //   noDropdown: true,
-  //   icon: 'star',
-  //   meta: {
-  //     role: ['admin', 'global', 'service']
-  //   },
-  //   children: [{
-  //       path: 'searchHouseSource',
-  //       component: _import('serviceManage/searchHouseSource'),
-  //       name: '飞虎队机构'
-  //     }
   //   ]
   // },
   // {
