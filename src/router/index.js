@@ -40,7 +40,7 @@ export const constantRouterMap = [{
 ]
 
 export default new Router({
-  mode: 'history', //需要服务器配置路由
+  // mode: 'history', //需要服务器配置路由
   scrollBehavior: () => ({
     y: 0
   }), //后退后页面位置
