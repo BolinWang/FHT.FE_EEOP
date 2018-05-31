@@ -40,7 +40,7 @@ export const constantRouterMap = [{
 ]
 
 export default new Router({
-  /*mode: 'history', //需要服务器配置路由 */
+  mode: 'history', //需要服务器配置路由
   scrollBehavior: () => ({
     y: 0
   }), //后退后页面位置
@@ -114,11 +114,13 @@ export const asyncRouterMap = [
     meta: {
       role: ['admin', 'global']
     },
-    children: [{
-        path: 'auditFhd',
-        component: _import('auditManage/auditFhd'),
-        name: '飞虎队机构'
-      },{
+    children: [
+    //  {
+    //     path: 'auditFhd',
+    //     component: _import('auditManage/auditFhd'),
+    //     name: '飞虎队机构'
+    //   },
+      {
         path: 'auditSignatures',
         component: _import('auditManage/auditSignatures'),
         name: '电子签章审核'

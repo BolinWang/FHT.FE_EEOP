@@ -201,3 +201,9 @@ a:hover {
   fill: currentColor;
   overflow: hidden;
 }
+
+// 上传input
+input[type='file']{
+  position:absolute;
+  clip:rect(0 0 0 0);
+}
