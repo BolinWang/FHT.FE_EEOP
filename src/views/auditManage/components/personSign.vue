@@ -16,7 +16,7 @@
       </el-col>
     </div>
     <el-form-item label="电子签名">
-      <Preview :pic-list="data_detail.picList"></Preview>
+      <div class="previewItems"><Preview :pic-list="data_detail.picList"></Preview></div>
     </el-form-item>
     <el-form-item label="审核结果">
       <el-radio-group v-if="data_detail.status == 1" v-model="status">

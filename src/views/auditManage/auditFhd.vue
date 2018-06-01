@@ -107,9 +107,9 @@
             <el-col :span="12">
               <el-form-item label="银行卡类型">
                 <el-select size="small" style="width:100%" v-model="cardForm.cardType" class="item-select">
-                  <el-option label="个人账户" value="1">
+                  <el-option label="个人账户" :value="1">
                   </el-option>
-                  <el-option label="对公账户" value="2">
+                  <el-option label="对公账户" :value="2">
                   </el-option>
                 </el-select>
               </el-form-item>
@@ -127,7 +127,7 @@
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="开户人身份证" label-width="110px" v-if="cardForm.cardType * 1 === 1">
+              <el-form-item label="开户人身份证" label-width="110px" v-if="cardForm.cardType === 1">
                 <el-input v-model="cardForm.userName"></el-input>
               </el-form-item>
               <el-form-item label="开户银行" v-else>
@@ -254,7 +254,7 @@ export default {
         mobile: '',
         userName: '',
         userCardNo: '',
-        cardType: '1'
+        cardType: 1
       },
       rules: {
         mobile: [
@@ -380,9 +380,7 @@ export default {
     },
     dialogCard() {
       this.cardForm = {
-        mobile: '',
-        userName: '',
-        userCardNo: ''
+        cardType: 1
       }
       this.$refs.cardForm.clearValidate()
     },

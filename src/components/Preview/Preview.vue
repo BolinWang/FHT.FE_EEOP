@@ -2,36 +2,34 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-04-11 16:50:08
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-05-26 16:08:08
+ * @Last Modified time: 2018-05-29 15:15:39
  */
 
 <template>
-  <div class="previewItems">
-    <draggable v-model="list" element="ul" class="list-group"
-      :options="dragOptions"
-      @start="startDrag"
-      @end="endDrag">
-      <transition-group type="transition" :name="'flip-list'">
-        <li class="preview-item clearfix" v-for="(item, index) in list"
-          :key="item.sortNum"
-          :style="itemStyle"
-          @mouseenter.stop="handleMouseenter(index)"
-          @mouseleave.stop="handleMouseleave(index)">
-          <img class="preview-img img-center" v-lazy="item.src">
-          <span class="preview-tags" v-if="item.picTag">{{item.picTag}}</span>
-          <span class="preview-item-actions" :style="{opacity: item.opacityVal}">
-            <span class="preview-item__item-preview" @click="handlePreview(index)">
-              <i class="el-icon-zoom-in"></i>
-            </span>
-            <span v-if="deleteFlag == 'delete' && !item.isnoPic" class="preview-item__item-delete"
-              @click="handleDelete(index,item)">
-              <i class="el-icon-delete"></i>
-            </span>
+  <draggable v-model="list" element="ul" class="list-group"
+    :options="dragOptions"
+    @start="startDrag"
+    @end="endDrag">
+    <transition-group type="transition" :name="'flip-list'">
+      <li class="preview-item clearfix" v-for="(item, index) in list"
+        :key="item.sortNum"
+        :style="itemStyle"
+        @mouseenter.stop="handleMouseenter(index)"
+        @mouseleave.stop="handleMouseleave(index)">
+        <img class="preview-img img-center" v-lazy="item.src">
+        <span class="preview-tags" v-if="item.picTag">{{item.picTag}}</span>
+        <span class="preview-item-actions" :style="{opacity: item.opacityVal}">
+          <span class="preview-item__item-preview" @click="handlePreview(index)">
+            <i class="el-icon-zoom-in"></i>
           </span>
-        </li>
-      </transition-group>
-    </draggable>
-  </div>
+          <span v-if="deleteFlag == 'delete' && !item.isnoPic" class="preview-item__item-delete"
+            @click="handleDelete(index,item)">
+            <i class="el-icon-delete"></i>
+          </span>
+        </span>
+      </li>
+    </transition-group>
+  </draggable>
 </template>
 <script>
 import { deepClone } from '@/utils'
@@ -131,7 +129,6 @@ export default {
       })
       const previewList = []
       for (let i = 0; i < this.list.length; i++) {
-        console.log(this.list)
         previewList.push(await imgloadAsync(this.list[i]))
       }
       this.$preview.open(index, previewList)
@@ -204,6 +201,11 @@ export default {
 .previewItems {
   margin: 0;
   vertical-align: top;
+  display: inline-block;
+  .list-group {
+    display: initial;
+    min-height: 0;
+  }
   .preview-item {
     overflow: hidden;
     background-color: #fff;

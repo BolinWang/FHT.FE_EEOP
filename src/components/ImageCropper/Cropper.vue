@@ -1,13 +1,14 @@
 /*
- * @Author: FT.FE.Bolin 
- * @Date: 2018-04-11 16:49:39 
+ * @Author: FT.FE.Bolin
+ * @Date: 2018-04-11 16:49:39
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-04-12 10:42:51
+ * @Last Modified time: 2018-05-30 09:59:06
  */
 
 <template>
   <div class="dialog-cropper">
-      <el-dialog title="图片裁剪" :visible.sync="layer_cropper" width="920px" @close="cropperClose">
+      <!-- append-to-body  嵌套内层dialog -->
+      <el-dialog title="图片裁剪" :visible.sync="layer_cropper" append-to-body width="920px" @close="cropperClose">
         <div class="cropper-wrapper">
           <div class="cropper-item"
             v-for="(item,index) in cropperImgs"
@@ -127,6 +128,7 @@ export default {
   methods: {
     cropperClose() {
       this.cropperImgs = []
+      this.cropperedImgs = []
       this.$emit('emitCropperList', [])
     },
     // 缩放图片
@@ -142,16 +144,20 @@ export default {
     },
     // 裁剪完成
     getCropData() {
+      let countIndex = 0
       this.cropperImgs.forEach((item, index) => {
         this.$refs['refCropper' + index][0].getCropData((data) => {
           this.cropperedImgs.push({
             src: data,
             title: item.imageName
           })
+          countIndex++
+          if (countIndex === this.cropperImgs.length) {
+            this.layer_cropper = false
+            this.$emit('emitCropperData', this.cropperedImgs)
+          }
         })
       })
-      this.layer_cropper = false
-      this.$emit('emitCropperData', this.cropperedImgs)
     },
     // 替换图片
     uploadImg(e, index) {

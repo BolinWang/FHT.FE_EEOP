@@ -12,7 +12,7 @@
       <el-table :data="tableData" v-loading.body="listLoading" :max-height="tableHeight" size="small" fit stripe highlight-current-row>
         <el-table-column type="index" width="60" align="center">
         </el-table-column>
-        <el-table-column v-for="(item,index) in colModels" :label="item.label" :width="item.width" key="index" fit show-overflow-tooltip>
+        <el-table-column v-for="(item,index) in colModels" :label="item.label" :width="item.width" :key="index" fit show-overflow-tooltip>
           <template slot-scope="scope">
             <img class="image image-center" width="40" height="40" v-if="item.type === 'img'" v-lazy="scope.row[item.prop]" @click="showImage(scope.row[item.prop])" />
             <el-tag v-else-if="item.type === 'status'" :type="scope.row[item.prop] | statusFilter">

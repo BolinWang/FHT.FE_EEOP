@@ -78,7 +78,7 @@
             </el-input>
           </el-form-item>
           <el-form-item label="公寓照片">
-            <Preview :pic-list="temp.picList"></Preview>
+            <div class="previewItems"><Preview :pic-list="temp.picList"></Preview></div>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
