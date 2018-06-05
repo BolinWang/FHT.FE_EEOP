@@ -346,7 +346,9 @@ export default {
         this.reviewData.desc = val.desc
       }
       if (this.reviewData.reviewStatus == 3) {
-        this.reviewData.reviewRemark = val.remark
+        if (this.reviewData.reviewRemark) {
+          this.reviewData.reviewRemark = val.remark
+        }
       } else {
         this.reviewData.reviewRemark = ''
       }
@@ -361,7 +363,6 @@ export default {
         this.$message.error('请选择审核不通过原因');
         return false;
       }
-      debugger
       saveReviewStatusApi(ObjectMap(this.reviewData)).then(response => {
         this.layer_showInfo = false;
         this.getGridData(this.pageItems);

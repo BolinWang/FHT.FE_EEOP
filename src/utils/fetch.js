@@ -47,7 +47,6 @@ service.interceptors.response.use(
     if (!response.config.interceptors || res.code == 0) {
       return response.data;
     }
-    debugger
     if (res.code == 1011) {
       if (res.message == '无数据') {
         return response.data;

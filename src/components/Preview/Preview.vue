@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-04-11 16:50:08
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-06-05 10:35:52
+ * @Last Modified time: 2018-06-05 14:19:24
  */
 
 <template>
@@ -93,7 +93,7 @@ export default {
     }
   },
   mounted() {
-    this.list = deepClone(this.picList)
+    this.list = this.picList.slice()
     this.deleteFlag = this.deleteIcon
     this.list.map((item, index) => {
       item.opacityVal = 0
@@ -160,7 +160,7 @@ export default {
   },
   watch: {
     picList(val) {
-      this.list = val || []
+      this.list = (val || []).slice()
       this.list.map((item, index) => {
         item.sortNum = index
       })
