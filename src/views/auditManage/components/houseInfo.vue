@@ -300,6 +300,7 @@ export default {
     desc(val) {
       this.$emit('saveReviewData', {
         desc: val,
+        remark: this.remark,
         type: 'audit'
       })
     },
