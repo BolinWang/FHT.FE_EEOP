@@ -51,7 +51,8 @@
       </el-tag>
     </el-form-item>
     <el-form-item label="房源描述">
-      <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" v-model="temp.houseDesc">
+      <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" v-model="desc"
+        :disabled="temp.reviewStatus !== 1 || type === `published`">
       </el-input>
     </el-form-item>
     <div class="clearfix" v-if="temp.houseRentType == 2">
@@ -101,12 +102,12 @@
     <el-form-item label="房间照片">
       <div class="previewItems">
         <Preview
-          :pic-list="temp.picList"
-          :delete-icon="`delete`"
+          :pic-list="picList"
+          :delete-icon="temp.reviewStatus === 1 ? `delete` : ``"
           :disabled="``"
           @emitDelete="emitDelete">
         </Preview>
-        <label class="el-upload el-upload--picture-card uploadImage" for="uploadImages">
+        <label v-if="temp.reviewStatus === 1" class="el-upload el-upload--picture-card uploadImage" for="uploadImages">
           <i class="el-icon-plus"></i>
           <input type="file" id="uploadImages" :accept="accept" multiple @change="uploadImg($event)">
         </label>
@@ -165,10 +166,11 @@ export default {
     return {
       temp: deepClone(this.tempData),
       cropperList: [],
+      picList: [],
       reviewStatus: '',
       checked: false,
       remark: '',
-      deleteIds: [],
+      desc: '',
       accept: 'image/png, image/jpeg, image/jpg',
       remarkOptions: [
         { label: '照片不符合上传规则', value: '照片不符合上传规则' },
@@ -183,19 +185,19 @@ export default {
   created() {
     this.temp.roomInfosFormat = this.temp.roomInfos ? this.temp.roomInfos[0] : ''
     this.temp.roomRentTypes = this.temp.roomRentTypes || []
+    this.desc = deepClone(this.temp).houseDesc
     let picList = this.temp.picUrls || []
-    this.temp.picList = picList.map((item) => {
-      return { src: item.picUrl, picTag: item.picTag || '' }
+    this.picList = picList.map((item) => {
+      return { id: item.id, src: item.picUrl, picTag: item.picTag || '' }
     })
   },
   methods: {
     emitPicList(val, id) {
-      this.temp.picList = val
-      this.deleteIds.push(id)
+      this.picList = val
     },
     // 删除图片
     emitDelete(val) {
-      this.temp.picList = val
+      this.picList = val
     },
     // 上传的图片列表
     emitCropperList(list = []) {
@@ -203,7 +205,7 @@ export default {
     },
     // 裁剪后图片列表
     emitCropperData(list = []) {
-      this.$set(this.temp,'picList',[...this.temp.picList,...list])
+      this.$set(this,'picList',[...this.picList,...list])
     },
     /* 选择图片 */
     async uploadImg(e) {
@@ -267,13 +269,13 @@ export default {
         this.temp = val
         this.reviewStatus = ''
         this.remark = ''
+        this.desc = deepClone(val).houseDesc
         this.checked = false
-        this.deleteIds = []
         this.temp.roomInfosFormat = val.roomInfos ? val.roomInfos[0] : ''
         this.temp.roomRentTypes = this.temp.roomRentTypes || []
         let picList = val.picUrls || []
-        this.temp.picList = picList.map((item) => {
-          return { src: item.picUrl, w: 800, h: 600, id: item.id, picTag: item.picTag || '' }
+        this.picList = picList.map((item) => {
+          return { src: item.picUrl, id: item.id, picTag: item.picTag || '' }
         })
       },
       deep: true
@@ -295,6 +297,18 @@ export default {
         });
       }
     },
+    desc(val) {
+      this.$emit('saveReviewData', {
+        desc: val,
+        type: 'audit'
+      })
+    },
+    picList(val) {
+      this.$emit('saveReviewData', {
+        picList: val,
+        type: 'audit'
+      })
+    },
     checked(val) {
       if (this.type == 'published') {
         this.$emit('saveReviewData', {
@@ -302,13 +316,6 @@ export default {
           type: 'pulished'
         });
       }
-    },
-    deleteIds(val) {
-      let deleteIds = Array.from(new Set(val)).join(',')
-      this.$emit('saveReviewData', {
-        ids: deleteIds,
-        type: 'pulished'
-      });
     }
   }
 };

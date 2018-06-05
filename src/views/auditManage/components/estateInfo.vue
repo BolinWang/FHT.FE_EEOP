@@ -27,7 +27,8 @@
       </el-col>
     </div>
     <el-form-item label="公寓简介">
-      <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" v-model="temp.introduction" :disabled="true">
+      <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" v-model="desc"
+        :disabled="temp.reviewStatus !== 1 || type === `published`">>
       </el-input>
     </el-form-item>
     <el-form-item label="配套服务">
@@ -57,12 +58,12 @@
     <el-form-item label="房型照片">
       <div class="previewItems">
         <Preview
-          :pic-list="temp.picList"
-          :delete-icon="`delete`"
+          :pic-list="picList"
+          :delete-icon="temp.reviewStatus === 1 ? `delete` : ``"
           :disabled="``"
           @emitDelete="emitDelete">
         </Preview>
-        <label class="el-upload el-upload--picture-card uploadImage" for="uploadImages">
+        <label v-if="temp.reviewStatus === 1" class="el-upload el-upload--picture-card uploadImage" for="uploadImages">
           <i class="el-icon-plus"></i>
           <input type="file" id="uploadImages" :accept="accept" multiple @change="uploadImg($event)">
         </label>
@@ -81,11 +82,11 @@
         <el-table-column v-for="(item,index) in colModels" :label="item.label" :width="item.width" :key="index" fit show-overflow-tooltip>
           <template slot-scope="scope">
             <span v-if="item.type === 'formatTime'">
-                            {{scope.row[item.prop] | parseTime()}}
-                        </span>
+              {{scope.row[item.prop] | parseTime()}}
+            </span>
             <span v-else>
-                            {{scope.row[item.prop]}}
-                        </span>
+              {{scope.row[item.prop]}}
+            </span>
           </template>
         </el-table-column>
       </el-table>
@@ -122,6 +123,8 @@ export default {
       listLoading: false,
       checked: false,
       cropperList: [],
+      desc: '',
+      picList: [],
       accept: 'image/png, image/jpeg, image/jpg',
       deleteIds: [],
       colModels: [
@@ -136,18 +139,18 @@ export default {
   },
   created() {
     let picList = this.temp.roomTypePicUrls || [];
-    this.temp.picList = picList.map((item) => {
-      return { id: item.id, src: item.picUrl, w: 800, h: 600 }
+    this.desc = deepClone(this.temp).introduction
+    this.picList = picList.map((item) => {
+      return { id: item.id, src: item.picUrl }
     });
   },
   methods: {
-    emitPicList(val, id) {
-      this.temp.picList = val
-      this.deleteIds.push(id)
+    emitPicList(val) {
+      this.picList = val
     },
     // 删除图片
     emitDelete(val) {
-      this.temp.picList = val
+      this.picList = val
     },
     // 上传的图片列表
     emitCropperList(list = []) {
@@ -155,7 +158,7 @@ export default {
     },
     // 裁剪后图片列表
     emitCropperData(list = []) {
-      this.$set(this.temp,'picList',[...this.temp.picList,...list])
+      this.$set(this,'picList',[...this.picList,...list])
     },
     /* 选择图片 */
     async uploadImg(e) {
@@ -219,9 +222,10 @@ export default {
         this.temp = val
         this.checked = false
         this.deleteIds = []
+        this.desc = deepClone(val).introduction
         let picList = val.roomTypePicUrls || []
-        this.temp.picList = picList.map((item) => {
-          return { src: item.picUrl, w: 800, h: 600, id: item.id }
+        this.picList = picList.map((item) => {
+          return { src: item.picUrl, id: item.id }
         })
       },
       deep: true
@@ -234,12 +238,17 @@ export default {
         });
       }
     },
-    deleteIds(val) {
-      let deleteIds = Array.from(new Set(val)).join(',')
+    desc(val) {
       this.$emit('saveReviewData', {
-        ids: deleteIds,
-        type: 'pulished'
-      });
+        desc: val,
+        type: 'audit'
+      })
+    },
+    picList(val) {
+      this.$emit('saveReviewData', {
+        picList: val,
+        type: 'audit'
+      })
     }
   }
 };

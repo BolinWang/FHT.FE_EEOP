@@ -331,12 +331,24 @@ export default {
     },
     saveReviewData(val) {
       if (val.reviewStatus) {
-        this.reviewData.reviewStatus = val.reviewStatus;
+        this.reviewData.reviewStatus = val.reviewStatus
+      }
+      if (val.picList) {
+        this.reviewData.imageFiles = val.picList.map(item => {
+          return {
+            id: item.id,
+            imageCode: item.src,
+            imageName: item.title || item.picTag
+          }
+        })
+      }
+      if (val.desc) {
+        this.reviewData.desc = val.desc
       }
       if (this.reviewData.reviewStatus == 3) {
-        this.reviewData.reviewRemark = val.remark;
+        this.reviewData.reviewRemark = val.remark
       } else {
-        this.reviewData.reviewRemark = '';
+        this.reviewData.reviewRemark = ''
       }
     },
     /* 保存 */
@@ -349,6 +361,7 @@ export default {
         this.$message.error('请选择审核不通过原因');
         return false;
       }
+      debugger
       saveReviewStatusApi(ObjectMap(this.reviewData)).then(response => {
         this.layer_showInfo = false;
         this.getGridData(this.pageItems);

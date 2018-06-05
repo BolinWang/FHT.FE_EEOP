@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-04-11 16:50:08
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-05-29 15:15:39
+ * @Last Modified time: 2018-06-05 10:35:52
  */
 
 <template>
@@ -164,6 +164,9 @@ export default {
       this.list.map((item, index) => {
         item.sortNum = index
       })
+    },
+    deleteIcon(val) {
+      this.deleteFlag = val
     },
     isDragging(newValue) {
       if (newValue) {
