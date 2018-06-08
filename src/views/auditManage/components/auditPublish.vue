@@ -346,7 +346,7 @@ export default {
         this.reviewData.desc = val.desc
       }
       if (this.reviewData.reviewStatus == 3) {
-        if (this.reviewData.reviewRemark) {
+        if (val.remark) {
           this.reviewData.reviewRemark = val.remark
         }
       } else {

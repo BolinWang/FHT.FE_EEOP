@@ -16,7 +16,7 @@ module.exports = {
         }
       }
     },
-    host: '192.168.5.163',
+    host: '0.0.0.0',
     port: 9528,
     autoOpenBrowser: true,
     errorOverlay: true,
