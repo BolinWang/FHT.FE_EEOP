@@ -1,8 +1,8 @@
 /*
  * @Author: FT.FE.Bolin
  * @Date: 2018-04-11 16:50:08
- * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-06-05 14:19:24
+ * @Last Modified by: mikey.zhaopeng
+ * @Last Modified time: 2018-06-08 20:33:06
  */
 
 <template>
@@ -22,7 +22,7 @@
           <span class="preview-item__item-preview" @click="handlePreview(index)">
             <i class="el-icon-zoom-in"></i>
           </span>
-          <span v-if="deleteFlag == 'delete' && !item.isnoPic" class="preview-item__item-delete"
+          <span v-if="deleteFlag == 'delete' && !item.isnoPic && item.type == 1" class="preview-item__item-delete"
             @click="handleDelete(index,item)">
             <i class="el-icon-delete"></i>
           </span>

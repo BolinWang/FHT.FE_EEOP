@@ -188,7 +188,7 @@ export default {
     this.desc = deepClone(this.temp).houseDesc
     let picList = this.temp.picUrls || []
     this.picList = picList.map((item) => {
-      return { id: item.id, src: item.picUrl, picTag: item.picTag || '' }
+      return { id: item.id, src: item.picUrl, picTag: item.picTag || '', type: item.picType }
     })
   },
   methods: {
@@ -205,6 +205,9 @@ export default {
     },
     // 裁剪后图片列表
     emitCropperData(list = []) {
+      list.forEach((v ,i) => {
+        v.type = 1
+      })
       this.$set(this,'picList',[...this.picList,...list])
     },
     /* 选择图片 */
@@ -225,6 +228,7 @@ export default {
             ? window.URL.createObjectURL(new Blob([e.target.result]))
             : e.target.result
           let imageName = ''
+          let type = 1
           if (!file.name) {
             imageName = ''
           } else {
@@ -234,7 +238,8 @@ export default {
           }
           resolve({
             img,
-            imageName
+            imageName,
+            type
           })
         }
         // 转化为base64
@@ -256,7 +261,8 @@ export default {
       this.cropperList = uploadList.map((item, kindex) => {
         return {
           img: item.img,
-          imageName: item.imageName
+          imageName: item.imageName,
+          type: item.type
         }
       })
       this.layer_cropper = true
@@ -275,7 +281,7 @@ export default {
         this.temp.roomRentTypes = this.temp.roomRentTypes || []
         let picList = val.picUrls || []
         this.picList = picList.map((item) => {
-          return { src: item.picUrl, id: item.id, picTag: item.picTag || '' }
+          return { src: item.picUrl, id: item.id, picTag: item.picTag || '', type: item.picType }
         })
       },
       deep: true
