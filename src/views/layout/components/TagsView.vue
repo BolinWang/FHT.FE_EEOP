@@ -2,13 +2,13 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-04-11 17:22:33
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-06-07 14:27:02
+ * @Last Modified time: 2018-06-11 14:23:48
  */
 
 <template>
   <div class="tags-view-container">
     <scroll-pane class='tags-view-wrapper' ref='scrollPane'>
-      <router-link ref='tag' class="tags-view-item" :class="isActive(tag)?'active--primary':''" v-for="tag in Array.from(visitedViews)"
+      <router-link ref='tag' class="tags-view-item" :class="isActive(tag) ? 'el-button--primary' : ''" v-for="tag in Array.from(visitedViews)"
         :to="tag.path" :key="tag.path" @contextmenu.prevent.native="openMenu(tag, $event)">
         {{tag.name}}
         <span class='el-icon-remove' @click.prevent.stop='closeSelectedTag(tag)'></span>
@@ -110,8 +110,7 @@ export default {
     openMenu(tag, e) {
       this.visible = true
       this.selectedTag = tag
-      // 180为侧边栏宽度
-      this.left = e.clientX - 180
+      this.left = e.clientX
       this.top = e.clientY
     },
     closeMenu() {
@@ -121,7 +120,7 @@ export default {
 }
 </script>
 
-<style rel="stylesheet/scss" lang="scss" scoped>
+<style rel="stylesheet/scss" lang="scss">
 .tags-view-container {
   width: calc(100% - 300px);
   display: inline-block;
@@ -129,41 +128,10 @@ export default {
     background: #fff;
     height: 49px;
     line-height: 49px;
-    .tags-view-item {
-      display: inline-block;
-      position: relative;
-      height: 26px;
-      line-height: 26px;
-      border: 1px solid #d8dce5;
-      color: #333;
-      background: #fff;
-      padding: 0 8px;
-      font-size: 12px;
-      margin-left: 5px;
-      border-radius: 4px;
-      &:first-child{
-        margin-left: 0
-      }
-      &.active--primary {
-        background-color: #409eff;
-        color: #fff;
-        border-color: #409eff;
-        &::before {
-          content: '';
-          background: #fff;
-          display: inline-block;
-          width: 8px;
-          height: 8px;
-          border-radius: 50%;
-          position: relative;
-          margin-right: 2px;
-        }
-      }
-    }
   }
   .contextmenu {
     margin: 0;
-    z-index: 99;
+    z-index: 2;
     position: absolute;
     list-style-type: none;
     padding: 5px 0;
@@ -174,11 +142,39 @@ export default {
       margin: 0;
       padding: 7px 16px;
       cursor: pointer;
-      line-height: 1.2;
       &:hover {
         background: #ecf5ff;
         color: #66b1ff;
       }
+    }
+  }
+}
+.tags-view-item {
+  display: inline-block;
+  position: relative;
+  height: 26px;
+  line-height: 26px;
+  border: 1px solid #d8dce5;
+  color: #333;
+  background: #fff;
+  padding: 0 8px;
+  font-size: 12px;
+  margin-left: 5px;
+  border-radius: 4px;
+  &:first-child{
+    margin-left: 0
+  }
+  &.el-button--primary {
+    font-weight: 700;
+    &::before {
+      content: '';
+      background: #fff;
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      position: relative;
+      margin-right: 2px;
     }
   }
 }
