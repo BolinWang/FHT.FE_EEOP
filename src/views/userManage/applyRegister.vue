@@ -68,6 +68,9 @@
               <template slot="append">%</template>
             </el-input>
           </el-form-item>
+          <el-form-item label="城市管家手机号" prop="managerMobile">
+            <el-input v-model="signForm.managerMobile" placeholder="请输入城市管家手机号"></el-input>
+          </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="layer_sign = false" size="small">取 消</el-button>
@@ -102,7 +105,10 @@
 <script>
 import waves from '@/directive/waves' // 水波纹指令
 import { parseTime, ObjectMap, deepClone } from '@/utils'
-import { queryUserRequestByPageApi, saveUserRequestApi, registeredUserApi, initFlyOrgApi, bindWithdrawCardApi } from '@/api/userManage'
+import {
+  queryUserRequestByPageApi, saveUserRequestApi, registeredUserApi,
+  initFlyOrgApi, addTempOrgApi, bindWithdrawCardApi
+} from '@/api/userManage'
 import { validateMobile } from '@/utils/validate'
 
 export default {
@@ -180,8 +186,7 @@ export default {
         name: ''
       },
       signForm: {
-        mobile: '',
-        spiltRate: ''
+
       },
       cardForm: {
         mobile: '',
@@ -190,6 +195,9 @@ export default {
       },
       rules: {
         mobile: [
+          { required: true, trigger: 'blur', validator: validatePhone }
+        ],
+        managerMobile: [
           { required: true, trigger: 'blur', validator: validatePhone }
         ],
         name: [
@@ -275,9 +283,19 @@ export default {
     signSaveData() {//标记为飞虎队
       this.$refs.signForm.validate(valid => {
         if (valid) {
-          initFlyOrgApi(deepClone(this.signForm)).then(response => {
-            this.$message.success('标记成功')
-            this.layer_sign = false;
+          initFlyOrgApi({
+            mobile: this.signForm.mobile,
+            spiltRate: this.signForm.spiltRate
+          }).then(response => {
+            addTempOrgApi({
+              orgId: response.data.orgId,
+              orgName: response.data.orgName,
+              orgMobile: this.signForm.mobile,
+              managerMobile: this.signForm.managerMobile
+            }).then(res => {
+              this.$message.success('标记成功')
+              this.layer_sign = false
+            })
           }).catch()
         } else {
           console.log('error submit!!');
