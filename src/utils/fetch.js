@@ -19,7 +19,7 @@ service.interceptors.request.use(config => {
     sign: '8F4C4A8E9D850EDD9692DE38723D0543'
   }
   if (config.method.toUpperCase() == 'POST') {
-    if (store.getters.sessionId) {
+    if (store.getters.sessionId && !config.noSessionId) {
       config.data['sessionId'] = getSessionId()
     }
     if (!config.noAssign) {
