@@ -23,7 +23,7 @@
           </dd>
         </dl>
         <div class="zoneItems">
-          <p style="display: inline-block; margin: 0" v-for="(value, key, index) in zoneList">
+          <p style="display: inline-block; margin: 0" v-for="(value, key, index) in zoneList" :key="index">
             {{key}}
             <span v-for="(item, k) in value" :class="{active: key == isAreaActive[1].value && k == isAreaActive[1].index}" :key="k" @click="selectAreaMethod(1,k,item.zoneId,key)">
               {{item.zoneName}}
@@ -105,7 +105,7 @@
       <el-table :data="tableData" v-loading.body="listLoading" :max-height="tableHeight" size="small" fit stripe highlight-current-row @selection-change="handleSelectionChange">
         <el-table-column type="index" width="60" align="center"></el-table-column>
         <el-table-column type="selection" width="40"></el-table-column>
-        <el-table-column v-for="(item,index) in colModels" :label="item.label" :width="item.width" key="index" fit show-overflow-tooltip>
+        <el-table-column v-for="(item,index) in colModels" :label="item.label" :width="item.width" :key="index" fit show-overflow-tooltip>
           <template slot-scope="scope">
             <span v-if="item.type === 'img'">
               <img class="preview-img image image-center" width="40" height="40"

@@ -6,6 +6,12 @@
 const version = require('element-ui/package.json').version
 // 默认color
 const ORIGINAL_THEME = '#409EFF'
+let coverTheme = localStorage.getItem('ORIGINAL_THEME')
+if (!coverTheme) {
+  coverTheme = '#409EEF'
+  localStorage.setItem('ORIGINAL_THEME', coverTheme)
+}
+
 
 export default {
   data() {
@@ -15,7 +21,7 @@ export default {
     }
   },
   created() {
-    this.theme = localStorage.getItem('ORIGINAL_THEME') || ORIGINAL_THEME;
+    this.theme = coverTheme || ORIGINAL_THEME;
   },
   watch: {
     theme(val, oldVal) {
@@ -56,10 +62,6 @@ export default {
         if (typeof innerText !== 'string') return
         style.innerText = this.updateStyle(innerText, originalCluster, themeCluster)
       })
-      this.$message({
-        message: '换肤成功',
-        type: 'success'
-      });
       localStorage.setItem('ORIGINAL_THEME', val);
     }
   },
