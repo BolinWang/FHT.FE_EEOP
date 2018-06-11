@@ -338,7 +338,8 @@ export default {
           return {
             id: item.id,
             imageCode: item.src,
-            imageName: item.title || item.picTag,
+            imageName: item.title || '',
+            picTag: item.picTag || '',
             picType: item.type
           }
         })
