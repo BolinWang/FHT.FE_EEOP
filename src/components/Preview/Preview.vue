@@ -1,8 +1,8 @@
 /*
  * @Author: FT.FE.Bolin
  * @Date: 2018-04-11 16:50:08
- * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-06-08 20:33:06
+ * @Last Modified by: FT.FE.Bolin
+ * @Last Modified time: 2018-06-11 14:14:30
  */
 
 <template>
@@ -98,6 +98,7 @@ export default {
     this.list.map((item, index) => {
       item.opacityVal = 0
       item.sortNum = index
+      item.type = item.type || 1
     })
   },
   methods: {
@@ -163,6 +164,7 @@ export default {
       this.list = (val || []).slice()
       this.list.map((item, index) => {
         item.sortNum = index
+        item.type = item.type || 1
       })
     },
     deleteIcon(val) {
