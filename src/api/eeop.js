@@ -80,7 +80,7 @@ export const infomationApi = {
   },
   add(params) {
     return fetch({
-      url: appIconApi.defaultOptions.requestUrl,
+      url: infomationApi.defaultOptions.requestUrl,
       method: 'post',
       data: {
         method: 'addNews',
@@ -90,7 +90,7 @@ export const infomationApi = {
   },
   edit(params) {
     return fetch({
-      url: appIconApi.defaultOptions.requestUrl,
+      url: infomationApi.defaultOptions.requestUrl,
       method: 'post',
       data: {
         method: 'editNews',
@@ -100,7 +100,7 @@ export const infomationApi = {
   },
   delete(params) {
     return fetch({
-      url: appIconApi.defaultOptions.requestUrl,
+      url: infomationApi.defaultOptions.requestUrl,
       method: 'post',
       data: {
         method: 'deleteNews',
@@ -110,7 +110,7 @@ export const infomationApi = {
   },
   list(params) {
     return fetch({
-      url: appIconApi.defaultOptions.requestUrl,
+      url: infomationApi.defaultOptions.requestUrl,
       method: 'post',
       data: {
         method: defaultOptions.method,

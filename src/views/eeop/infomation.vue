@@ -32,25 +32,33 @@
           <el-form-item label="标题" prop="title">
             <el-input v-model="temp.title" placeholder="请输入标题" :maxlength="20"></el-input>
           </el-form-item>
-          <el-form-item label="链接" prop="linkUrl">
-            <el-autocomplete style="width: 100%" v-model="temp.linkUrl" placeholder="请输入有效链接">
-            </el-autocomplete>
+          <el-form-item label="链接" prop="newsUrl">
+            <el-input style="width: 100%" v-model="temp.newsUrl" placeholder="请输入有效链接">
+            </el-input>
           </el-form-item>
           <el-form-item label="上线时间" prop="effectiveTime">
             <el-date-picker
               v-model="temp.effectiveTime"
               type="datetime"
-              placeholder="选择上线时间">
+              key="effectiveTime"
+              value-format="yyyy-MM-dd HH:mm:ss"
+              placeholder="选择上线时间"
+              :disabled="(temp.status && temp.status !== 1) || temp.nowOnline"
+              @change="startChange">
             </el-date-picker>
-            <el-checkbox v-model="nowOnline" class="filter-item">立即上线</el-checkbox>
+            <el-checkbox v-model="temp.nowOnline" class="filter-item" @change="changeOnline">立即上线</el-checkbox>
           </el-form-item>
           <el-form-item label="下线时间" prop="ineffectiveTime">
             <el-date-picker
               v-model="temp.ineffectiveTime"
               type="datetime"
-              placeholder="选择下线时间">
+              key="ineffectiveTime"
+              value-format="yyyy-MM-dd HH:mm:ss"
+              placeholder="选择下线时间"
+              :disabled=" (temp.status && temp.status !== 1) || temp.nowOffline"
+              @change="endChange">
             </el-date-picker>
-            <el-checkbox v-model="nowOffline" class="filter-item">立即下线</el-checkbox>
+            <el-checkbox v-model="temp.nowOffline" class="filter-item" @change="changeOffline">立即下线</el-checkbox>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -64,7 +72,8 @@
 <script>
 import waves from '@/directive/waves'
 import GridUnit from '@/components/GridUnit/grid'
-import { deepClone } from '@/utils'
+import { deepClone, parseTime } from '@/utils'
+import { validateURL } from '@/utils/validate'
 import { infomationApi } from '@/api/eeop'
 
 export default {
@@ -76,6 +85,13 @@ export default {
     GridUnit
   },
   data() {
+    const validateUrl = (rule, value, callback) => {
+      if (!validateURL(value)) {
+        callback(new Error('请输入合法的链接'))
+      } else {
+        callback()
+      }
+    }
     return {
       selectData: {
         options: [
@@ -86,19 +102,55 @@ export default {
         value: ''
       },
       colModels: [
-        { prop: 'status', label: '状态', width: 80, type: 'status' },
+        {
+          prop: 'newsStatus',
+          label: '状态',
+          width: 80,
+          type: 'status',
+          unitFilters: {
+            renderStatusType(status) {
+              const statusMap = {
+                '1': 'info',
+                '2': 'success',
+                '3': 'danger'
+              }
+              return statusMap[status] || 'info'
+            },
+            renderStatusValue(status) {
+              const statusStrData = ['待上线', '已上线', '已下线']
+              return statusStrData[status - 1] || '待上线'
+            }
+          }
+        },
         { prop: 'title', label: '标题' },
-        { prop: 'linkUrl', label: '链接', type: 'link' },
-        { prop: 'effectiveTime', label: '上线时间', width: 180, filter: 'formatTime' },
-        { prop: 'ineffectiveTime', label: '下线时间', width: 180, filter: 'formatTime' },
+        { prop: 'newsUrl', label: '链接', type: 'link' },
+        { prop: 'effectiveTime', label: '上线时间', width: 180, filter: 'parseTime' },
+        { prop: 'ineffectiveTime', label: '下线时间', width: 180, filter: 'parseTime' },
         { label: '操作', slotName: 'handle', width: 200 }
       ],
       tableHeight: 300,
       url: infomationApi.defaultOptions.requestUrl,
       method: infomationApi.defaultOptions.method,
-      temp: {},
+      temp: {
+        nowOnline: false,
+        nowOffline: false
+      },
       actionBaseUrl: process.env.BASE_API,
-      layer_showInfo: false
+      layer_showInfo: false,
+      rules: {
+        title: [
+          { required: true, message: '请输入标题', trigger: 'blur' }
+        ],
+        newsUrl: [
+          { required: true, validator: validateUrl, trigger: 'blur' }
+        ],
+        effectiveTime: [
+          { required: true, message: '请选择上线时间', trigger: 'change' }
+        ],
+        ineffectiveTime: [
+          { required: true, message: '请选择下线时间', trigger: 'change' }
+        ]
+      },
     }
   },
   mounted() {
@@ -129,30 +181,97 @@ export default {
     searchParam() {
       this.$refs.refGridUnit.searchHandler()
     },
-    handleDetail(row = {}) {
-      this.temp = deepClone(row)
-      this.layer_showInfo = true
+    /**
+     * 时间控件
+     */
+    startChange(val) {
+      this.temp.effectiveTime = val
     },
+    endChange(val) {
+      this.temp.ineffectiveTime = val
+    },
+    /**
+     * checkbox切换
+     */
+    changeOnline(val){
+      this.temp.effectiveTime = parseTime(new Date())
+      if (val){
+        this.temp.nowOffline = false
+      }
+    },
+    changeOffline(val){
+      this.temp.ineffectiveTime = parseTime(new Date())
+      if (val){
+        this.temp.nowOnline = false
+      }
+    },
+    /**
+     * 删除
+     */
     handleDelete(row) {
       this.$confirm('是否删除?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-
+        infomationApi.delete({
+          id: row.id
+        }).then(response => {
+          this.searchParam()
+          this.$notify({
+            title: '成功',
+            message: '操作成功',
+            type: 'success',
+            duration: 2000
+          })
+        })
       }).catch(() => {
 
       })
     },
+    /**
+     * 新增编辑
+     */
+    handleDetail(row = {}) {
+      const cloneRow = deepClone(row)
+      const {effectiveTime, ineffectiveTime} = cloneRow
+      this.temp = {
+        ...cloneRow,
+        effectiveTime: effectiveTime ? parseTime(effectiveTime) : '',
+        ineffectiveTime: ineffectiveTime ? parseTime(ineffectiveTime) : '',
+        nowOffline: false,
+        nowOnline: false
+      }
+      this.layer_showInfo = true
+    },
     saveData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-
+          if (this.temp.effectiveTime >= this.temp.ineffectiveTime) {
+            this.$message.error('上线时间必须小于下线时间')
+            return false
+          }
+          const saveApi = this.temp.id ? infomationApi.edit : infomationApi.add
+          const {id, title, newsUrl, effectiveTime, ineffectiveTime, } = this.temp
+          let status = this.temp.nowOnline ? 2 : (this.temp.nowOffline ? 3 : 1)
+          saveApi({id, title, newsUrl, effectiveTime, ineffectiveTime, status }).then(response => {
+            this.searchParam()
+            this.layer_showInfo = false
+            this.$notify({
+              title: '成功',
+              message: '操作成功',
+              type: 'success',
+              duration: 2000
+            })
+          })
         }
       })
     },
     dialogClose() {
-      this.temp = {}
+      this.temp = {
+        nowOffline: false,
+        nowOnline: false
+      }
       this.$refs.dataForm.resetFields()
       this.layer_showInfo = false
     }
