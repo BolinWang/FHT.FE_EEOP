@@ -1,8 +1,8 @@
 <template>
   <div class="app-container">
     <div class="model-search clearfix">
-      <el-select v-model="selectData.value" clearable size="small" placeholder="大麦状态" @change="searchParam()">
-        <el-option v-for="item in selectData.options" :key="item.value" :label="item.label" :value="item.value">
+      <el-select v-model="searchParams.status" clearable size="small" placeholder="大麦状态" @change="searchParam()">
+        <el-option v-for="item in selectData" :key="item.value" :label="item.label" :value="item.value">
         </el-option>
       </el-select>
       <el-button class="right" type="primary" icon="el-icon-plus" size="small" @click.native="handleDetail()">新增</el-button>
@@ -11,6 +11,7 @@
       ref="refGridUnit"
       :columns="colModels"
       :url="url"
+      :formOptions="searchParams"
       :dataMethod="method"
       :height="tableHeight">
       <template slot="handle" slot-scope="scope">
@@ -93,14 +94,14 @@ export default {
       }
     }
     return {
-      selectData: {
-        options: [
-          { value: 1, label: '待上线' },
-          { value: 2, label: '已上线' },
-          { value: 3, label: '已下线' }
-        ],
-        value: ''
+      searchParams: {
+        status: ''
       },
+      selectData: [
+        { value: 1, label: '待上线' },
+        { value: 2, label: '已上线' },
+        { value: 3, label: '已下线' }
+      ],
       colModels: [
         {
           prop: 'newsStatus',
@@ -126,7 +127,7 @@ export default {
         { prop: 'newsUrl', label: '链接', type: 'link' },
         { prop: 'effectiveTime', label: '上线时间', width: 180, filter: 'parseTime' },
         { prop: 'ineffectiveTime', label: '下线时间', width: 180, filter: 'parseTime' },
-        { label: '操作', slotName: 'handle', width: 200 }
+        { label: '操作', slotName: 'handle', width: 200, fixed: 'right', align: 'center' }
       ],
       tableHeight: 300,
       url: infomationApi.defaultOptions.requestUrl,
@@ -225,9 +226,7 @@ export default {
             duration: 2000
           })
         })
-      }).catch(() => {
-
-      })
+      }).catch(() => {})
     },
     /**
      * 新增编辑
@@ -268,12 +267,12 @@ export default {
       })
     },
     dialogClose() {
+      this.$refs.dataForm.resetFields()
+      this.layer_showInfo = false
       this.temp = {
         nowOffline: false,
         nowOnline: false
       }
-      this.$refs.dataForm.resetFields()
-      this.layer_showInfo = false
     }
   }
 }
