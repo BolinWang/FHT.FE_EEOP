@@ -120,3 +120,51 @@ export const infomationApi = {
   },
 }
 
+/* 热门推荐 */
+export const hotRecommendApi = {
+  defaultOptions: {
+    requestUrl: '/market/icon',
+    method: 'list'
+  },
+  add(params) {
+    return fetch({
+      url: hotRecommendApi.defaultOptions.requestUrl,
+      method: 'post',
+      data: {
+        method: 'add',
+        params
+      }
+    })
+  },
+  edit(params) {
+    return fetch({
+      url: hotRecommendApi.defaultOptions.requestUrl,
+      method: 'post',
+      data: {
+        method: 'edit',
+        params
+      }
+    })
+  },
+  delete(params) {
+    return fetch({
+      url: hotRecommendApi.defaultOptions.requestUrl,
+      method: 'post',
+      data: {
+        method: 'delete',
+        params
+      }
+    })
+  },
+  list(params) {
+    return fetch({
+      url: hotRecommendApi.defaultOptions.requestUrl,
+      method: 'post',
+      data: {
+        method: defaultOptions.method,
+        params
+      }
+    })
+  },
+}
+

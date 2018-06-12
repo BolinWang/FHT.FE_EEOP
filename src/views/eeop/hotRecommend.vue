@@ -48,7 +48,7 @@
 import waves from '@/directive/waves'
 import GridUnit from '@/components/GridUnit/grid'
 import { deepClone } from '@/utils'
-import { appIconApi } from '@/api/eeop'
+import { hotRecommendApi } from '@/api/eeop'
 
 export default {
   name: 'auditFhd',
@@ -74,8 +74,8 @@ export default {
         { prop: 'title', label: '操作时间', width: 150, fixed: 'right', filter: 'parseTime'}
       ],
       tableHeight: 300,
-      url: appIconApi.defaultOptions.requestUrl,
-      method: appIconApi.defaultOptions.method,
+      url: hotRecommendApi.defaultOptions.requestUrl,
+      method: hotRecommendApi.defaultOptions.method,
       rules: {
         title: [
           { required: true, message: '请输入标题', trigger: 'blur' }
@@ -129,7 +129,7 @@ export default {
     saveData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          const saveApi = this.temp.iconId ? appIconApi.edit : appIconApi.add
+          const saveApi = this.temp.iconId ? hotRecommendApi.edit : hotRecommendApi.add
           saveApi({
             iconId: this.temp.iconId,
             title: this.temp.title,
