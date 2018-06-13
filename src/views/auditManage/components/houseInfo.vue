@@ -316,7 +316,10 @@ export default {
         val.remark = val.reviewStatus === 2 ? '' : val.remark
         // 未审核数据
         if (this.type === 'audit' && this.temp.reviewStatus === 1) {
-          store.dispatch('UpdateHouseInfoData', val)
+          store.dispatch('UpdateInfoData', {
+            data: val,
+            housingType: 2
+          })
         }
       },
       deep: true

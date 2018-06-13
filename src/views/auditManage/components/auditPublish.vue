@@ -6,7 +6,7 @@
           <el-option v-for="item in cityOptions" :key="item.value" :label="item.label" :value="item.value">
           </el-option>
         </el-select>
-        <el-select v-if="type == 2" size="small" v-model="formData.reviewStatus" placeholder="审核状态" class="item-select filter-item" style="width: 150px;" clearable>
+        <el-select size="small" v-model="formData.reviewStatus" placeholder="审核状态" class="item-select filter-item" style="width: 150px;" clearable>
           <el-option v-for="item in auditOptions" :key="item.value" :label="item.label" :value="item.value">
           </el-option>
         </el-select>
@@ -78,12 +78,12 @@
       <el-dialog title="房源详情" @close="dialogClose" :visible.sync="layer_showInfo" width="800px">
         <house-info v-if="housingType == 2" :type="`audit`" :temp-data="temp">
         </house-info>
-        <estate-info v-if="housingType == 1" :type="`audit`" :temp-data="temp">
+        <estate-info v-if="housingType == 1" :type="`audit`" :temp-data="temp" @saveReviewData="saveReviewData">
         </estate-info>
         <div slot="footer" class="dialog-footer">
-          <el-button v-if="housingType == 1 || temp.reviewStatus != 1" @click="layer_showInfo = false" size="small">关 闭</el-button>
+          <el-button v-if="temp.reviewStatus != 1" @click="layer_showInfo = false" size="small">关 闭</el-button>
           <el-button v-else @click="layer_showInfo = false" size="small">取 消</el-button>
-          <el-button v-if="housingType == 2 && temp.reviewStatus == 1" type="primary" @click="saveData" size="small">确 定</el-button>
+          <el-button v-if="temp.reviewStatus == 1" type="primary" @click="saveData" size="small">确 定</el-button>
         </div>
       </el-dialog>
     </div>
@@ -209,7 +209,10 @@ export default {
           { prop: 'estateName', label: '精品公寓', type: 'formatEstateName', toolTip: true },
           { prop: 'styleName', label: '房间类型', width: 200 },
           { prop: 'roomCount', label: '数量(间)', width: 80 },
-          { prop: 'publishTime', label: '提交时间', width: 140, type: 'formatTime', toolTip: true }
+          { prop: 'publishTime', label: '提交时间', width: 140, type: 'formatTime', toolTip: true },
+          { prop: 'reviewStatus', label: '审核状态', width: 110, type: 'status' },
+          { prop: 'reviewTime', label: '操作时间', width: 140, type: 'formatTime', toolTip: true },
+          { prop: 'reviewRemark', label: '备注' }
         ]
       },
       tableHeight: 300,
@@ -228,9 +231,6 @@ export default {
   },
   created() {
     this.housingType = this.type;
-    if (this.housingType == 1) {
-      this.formData.reviewStatus = '';
-    }
     this.getCityList();
     this.getGridData(this.pageItems);
   },
@@ -330,10 +330,16 @@ export default {
         this.layer_showInfo = true;
       });
     },
+    saveReviewData(val) {
+      if (val.checked != undefined) {
+        this.reviewData.checked = val.checked
+      }
+    },
     /* 保存 */
     saveData() {
-      let reviewData = this.$store.getters.houseInfo
-      this.reviewData = {
+      const store_houseInfoData = this.$store.getters.houseInfoData
+      let reviewData = this.housingType === 2 ? store_houseInfoData.houseInfo : store_houseInfoData.estateInfo
+      this.reviewData = this.housingType === 2 ? {
         ...this.reviewData,
         ...reviewData,
         picList: undefined,
@@ -346,6 +352,11 @@ export default {
             picType: item.type
           }
         })
+      } : {
+        ...this.reviewData,
+        ...reviewData,
+        picList: undefined,
+        desc: undefined
       }
       if (!this.reviewData.reviewStatus) {
         this.$message.error('请选择审核结果');

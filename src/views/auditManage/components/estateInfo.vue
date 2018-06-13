@@ -27,7 +27,7 @@
       </el-col>
     </div>
     <el-form-item label="公寓简介">
-      <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" v-model="desc"
+      <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" v-model="estateInfoData.desc"
         :disabled="temp.reviewStatus !== 1 || type === `published`">>
       </el-input>
     </el-form-item>
@@ -52,21 +52,46 @@
         </el-input>
       </el-col>
     </el-form-item>
+    <el-form-item v-if="type == 'audit'" label="审核结果">
+      <el-radio-group v-model="estateInfoData.reviewStatus" v-if="!temp.reviewStatus || temp.reviewStatus === 1">
+        <el-radio :label="2">通过</el-radio>
+        <el-radio :label="3">不通过</el-radio>
+      </el-radio-group>
+      <el-tag v-else :type="temp.reviewStatus | statusFilter">
+        {{temp.reviewStatus | statusStrFilter}}
+      </el-tag>
+    </el-form-item>
+    <el-form-item v-if="type === 'audit' && estateInfoData.reviewStatus" label="请选择">
+      <el-select size="small" v-if="estateInfoData.reviewStatus === 3"
+        v-model="estateInfoData.remark"
+        placeholder="请选择不通过原因" class="item-select"
+        clearable style="width: 200px;">
+        <el-option v-for="item in remarkOptions" :key="item.value" :label="item.label" :value="item.value">
+        </el-option>
+      </el-select>
+      <el-select size="small" v-else-if="estateInfoData.reviewStatus === 2"
+         v-model="estateInfoData.accordPic"
+         placeholder="请选择是否符合图招" class="item-select"
+         clearable style="width: 200px;">
+        <el-option label="符合图招" :value="2"></el-option>
+        <el-option label="不符合图招" :value="1"></el-option>
+      </el-select>
+    </el-form-item>
     <el-form-item v-if="type == 'published'" label="操作">
       <el-checkbox v-model="checked">立即下架</el-checkbox>
     </el-form-item>
     <el-form-item label="房型照片">
       <div class="previewItems">
         <Preview
-          :pic-list="picList"
-          :delete-icon="temp.reviewStatus === 1 ? `delete` : ``"
+          :pic-list="estateInfoData.picList"
+          :delete-icon="``"
           :disabled="``"
           @emitDelete="emitDelete">
         </Preview>
-        <label v-if="temp.reviewStatus === 1" class="el-upload el-upload--picture-card uploadImage" for="uploadImages">
+        <!-- <label v-if="temp.reviewStatus === 1" class="el-upload el-upload--picture-card uploadImage" for="uploadImages">
           <i class="el-icon-plus"></i>
           <input type="file" id="uploadImages" :accept="accept" multiple @change="uploadImg($event)">
-        </label>
+        </label> -->
       </div>
       <!-- 图片裁剪 -->
       <ImageCropper
@@ -98,6 +123,7 @@ import Preview from '@/components/Preview/Preview'
 import ImageCropper from '@/components/ImageCropper/Cropper'
 import { parseTime, ObjectMap, deepClone } from '@/utils'
 import noPic from '@/assets/noPic.jpg'
+import store from '@/store'
 
 export default {
   name: 'houseInfo',
@@ -117,14 +143,37 @@ export default {
     Preview,
     ImageCropper
   },
+  filters: {
+    statusFilter(status) {
+      const statusMap = {
+        '1': 'info',
+        '2': 'success',
+        '3': 'danger'
+      }
+      return statusMap[status] || 'info'
+    },
+    statusStrFilter(status) {
+      const statusStrData = ['待审核', '审核通过', '审核不通过']
+      return statusStrData[status - 1] || '待审核'
+    }
+  },
   data() {
     return {
       temp: deepClone(this.tempData),
       listLoading: false,
+      estateInfoData: {
+        picList: [],
+        reviewStatus: '',
+        remark: ''
+      },
+      remarkOptions: [
+        { label: '照片不符合上传规则', value: '照片不符合上传规则' },
+        { label: '房源描述不符合规则', value: '房源描述不符合规则' },
+        { label: '电话信息错误', value: '电话信息错误' },
+        { label: '面积信息错误', value: '面积信息错误' }
+      ],
       checked: false,
       cropperList: [],
-      desc: '',
-      picList: [],
       accept: 'image/png, image/jpeg, image/jpg',
       deleteIds: [],
       colModels: [
@@ -138,19 +187,19 @@ export default {
     }
   },
   created() {
-    let picList = this.temp.roomTypePicUrls || [];
-    this.desc = deepClone(this.temp).introduction
-    this.picList = picList.map((item) => {
-      return { id: item.id, src: item.picUrl }
+    let picList = this.temp.roomTypePicUrls || []
+    this.estateInfoData.desc = deepClone(this.temp).introduction
+    this.estateInfoData.picList = picList.map((item) => {
+      return { id: item.id, src: item.picUrl, picTag: item.picTag || '', type: item.picType }
     });
   },
   methods: {
     emitPicList(val) {
-      this.picList = val
+      this.estateInfoData.picList = val
     },
     // 删除图片
     emitDelete(val) {
-      this.picList = val
+      this.estateInfoData.picList = val
     },
     // 上传的图片列表
     emitCropperList(list = []) {
@@ -158,7 +207,7 @@ export default {
     },
     // 裁剪后图片列表
     emitCropperData(list = []) {
-      this.$set(this,'picList',[...this.picList,...list])
+      this.$set(this.estateInfoData,'picList',[...this.picList,...list])
     },
     /* 选择图片 */
     async uploadImg(e) {
@@ -230,6 +279,19 @@ export default {
       },
       deep: true
     },
+    estateInfoData: {
+      handler(val) {
+        val.remark = val.reviewStatus === 2 ? '' : val.remark
+        // 未审核数据
+        if (this.type === 'audit' && this.temp.reviewStatus === 1) {
+          store.dispatch('UpdateInfoData', {
+            data: val,
+            housingType: 1
+          })
+        }
+      },
+      deep: true
+    },
     checked(val) {
       if (this.type == 'published') {
         this.$emit('saveReviewData', {
@@ -237,18 +299,6 @@ export default {
           type: 'pulished'
         });
       }
-    },
-    desc(val) {
-      this.$emit('saveReviewData', {
-        desc: val,
-        type: 'audit'
-      })
-    },
-    picList(val) {
-      this.$emit('saveReviewData', {
-        picList: val,
-        type: 'audit'
-      })
     }
   }
 };

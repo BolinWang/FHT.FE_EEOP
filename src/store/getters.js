@@ -7,6 +7,6 @@ const getters = {
   permission_routers: state => state.permission.routers,
   addRouters: state => state.permission.addRouters,
   visitedViews: state => state.tagsView.visitedViews,
-  houseInfo: state => state.houseInfo
+  houseInfoData: state => state.houseInfoData
 }
 export default getters
