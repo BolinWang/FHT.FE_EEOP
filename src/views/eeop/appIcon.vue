@@ -1,7 +1,13 @@
 <template>
   <div class="app-container">
     <div class="model-search clearfix">
-      <el-button type="primary" icon="el-icon-plus" size="small" @click.native="handleDetail()">新增</el-button>
+      <el-select v-model="cityId" size="small" filterable clearable placeholder="城市">
+        <el-option v-for="item in cityList" :key="item.cityId"
+          :label="item.cityName" :value="item.cityId">
+        </el-option>
+      </el-select>
+      <el-button class="right" type="primary" icon="el-icon-rank" size="small" @click.native="sortApp">APP展示排序</el-button>
+      <el-button style="margin-right: 10px;" class="right" type="primary" icon="el-icon-plus" size="small" @click.native="handleDetail()">新增</el-button>
     </div>
     <GridUnit
       ref="refGridUnit"
@@ -49,24 +55,50 @@
         </div>
       </el-dialog>
     </div>
+
+    <!-- 列表排序 -->
+    <div class="dialog-sort">
+      <el-dialog title="APP展示排序" :visible.sync="layer_appsort" width="800px">
+        <draggable class="list-group" element="ul" v-model="sort_tableData" :options="dragOptions" @start="isDragging=true" @end="isDragging=false">
+          <transition-group type="transition" :name="'flip-list'">
+            <li class="list-group-item clearfix" v-for="(item,index) in sort_tableData" :key="index">
+              <span class="left sortContent">
+                <i class="el-icon-d-caret" aria-hidden="true"></i>
+                {{item.title}}
+              </span>
+            </li>
+          </transition-group>
+        </draggable>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="layer_appsort = false" size="small">取 消</el-button>
+          <el-button type="primary" size="small">确 定</el-button>
+        </div>
+      </el-dialog>
+    </div>
   </div>
 </template>
 <script>
-import waves from '@/directive/waves'
+import draggable from 'vuedraggable'
 import GridUnit from '@/components/GridUnit/grid'
 import { deepClone } from '@/utils'
 import { appIconApi } from '@/api/eeop'
 
+/* 阻止原生dragale打开新页面 */
+document.body.ondrop = function(event) {
+  event.preventDefault();
+  event.stopPropagation();
+}
+
 export default {
   name: 'auditFhd',
-  directives: {
-    waves
-  },
   components: {
-    GridUnit
+    GridUnit,
+    draggable
   },
   data() {
     return {
+      cityId: '',
+      cityList: [],
       colModels: [
         { prop: 'title', label: '标题', minWidth: 300 },
         { prop: 'picUrl', label: '图片', width: 200, type: 'img' },
@@ -85,7 +117,11 @@ export default {
       },
       temp: {},
       actionBaseUrl: process.env.BASE_API,
-      layer_showInfo: false
+      layer_showInfo: false,
+      layer_appsort: false,
+      isDragging: false,
+      delayedDragging: false,
+      sort_tableData: []
     }
   },
   mounted() {
@@ -110,6 +146,13 @@ export default {
         width: '100%',
         height: this.tableHeight + 'px'
       }
+    },
+    dragOptions() {
+      return {
+        animation: 0,
+        group: 'description',
+        ghostClass: 'ghost'
+      }
     }
   },
   methods: {
@@ -117,7 +160,10 @@ export default {
       this.$refs.refGridUnit.searchHandler()
     },
     handleDetail(row = {}) {
-      this.temp = deepClone(row)
+      this.temp = {
+        ...deepClone(row),
+        picList: row.picUrl ? [{url: row.picUrl, name: '查看图片'}] : []
+      }
       this.temp.picList = row.picUrl ? [{
         url: row.picUrl,
         name: '查看图片'
@@ -204,19 +250,31 @@ export default {
     },
     pictureSuccess(response, file, fileList) {
       console.log('success')
-      fileList = response.data.map(item => {
+      let picList = response.data.map(item => {
         return {
           url: item,
           name: '查看图片'
         }
       })
-      this.$set(this.temp, 'picList', fileList)
+      this.$set(this.temp, 'picList', picList)
+      if (fileList.length > 1) {
+        fileList.splice(0,1)
+      }
     },
     pictureError(err, file) {
       file = null
     },
     resetFile(file) {
       file = null
+    },
+    /* 列表排序 */
+    sortApp() {
+      this.sort_tableData = this.$refs.refGridUnit.tableData.sort((a, b) => a['sortNum'] * 1 - b['sortNum'] * 1)
+      if (this.sort_tableData.length == 0) {
+        this.$message.error('没有可排序的数据')
+        return false
+      }
+      this.layer_appsort = true
     }
   }
 }
