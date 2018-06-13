@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import app from './modules/app'
 import user from './modules/user'
-import houseInfo from './modules/houseInfo'
+import houseInfoData from './modules/houseInfoData'
 import permission from './modules/permission'
 import tagsView from './modules/tagsView'
 import getters from './getters'
@@ -15,7 +15,7 @@ const store = new Vuex.Store({
     user,
     permission,
     tagsView,
-    houseInfo
+    houseInfoData
   },
   getters
 })
