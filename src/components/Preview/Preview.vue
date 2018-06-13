@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-04-11 16:50:08
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-06-11 14:14:30
+ * @Last Modified time: 2018-06-13 14:47:11
  */
 
 <template>
@@ -99,6 +99,7 @@ export default {
       item.opacityVal = 0
       item.sortNum = index
       item.type = item.type || 1
+      item.title = item.picTag || ''
     })
   },
   methods: {
