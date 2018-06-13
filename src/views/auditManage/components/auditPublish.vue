@@ -351,6 +351,10 @@ export default {
         this.$message.error('请选择审核结果');
         return false
       }
+      if (this.reviewData.reviewStatus === 2 && !this.reviewData.accordPic) {
+        this.$message.error('请选择是否符合图招')
+        return false
+      }
       if (this.reviewData.reviewStatus === 3 && !this.reviewData.reviewRemark) {
         this.$message.error('请选择审核不通过原因')
         return false
