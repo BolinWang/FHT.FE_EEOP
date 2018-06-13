@@ -77,21 +77,21 @@ export const asyncRouterMap = [
         component: _import('eeop/banner'),
         name: '首页焦点图'
       },
-      {
-        path: 'appIcon',
-        component: _import('eeop/appIcon'),
-        name: 'icon展示'
-      },
-      {
-        path: 'infomation',
-        component: _import('eeop/infomation'),
-        name: '大麦消息'
-      },
-      {
-        path: 'hotRecommend',
-        component: _import('eeop/hotRecommend'),
-        name: '热门推荐'
-      }
+      // {
+      //   path: 'appIcon',
+      //   component: _import('eeop/appIcon'),
+      //   name: 'icon展示'
+      // },
+      // {
+      //   path: 'infomation',
+      //   component: _import('eeop/infomation'),
+      //   name: '大麦消息'
+      // },
+      // {
+      //   path: 'hotRecommend',
+      //   component: _import('eeop/hotRecommend'),
+      //   name: '热门推荐'
+      // }
     ]
   },
   {
