@@ -109,7 +109,8 @@ export default {
         '整租': '',
         '合租': 'info',
         '金融': 'warning',
-        '飞虎队': 'success'
+        '飞虎队': 'success',
+        '图招': 'danger'
       }
       return filterObj[val] || ''
     }

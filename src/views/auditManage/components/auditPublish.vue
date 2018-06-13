@@ -56,7 +56,7 @@
             </span>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="100" fixed="right">
+        <el-table-column label="操作" width="100" fixed="right" align="center">
           <template slot-scope="scope">
             <el-button type="primary" icon="el-icon-view" size="small" @click="handleView(scope.$index,scope.row)">查看</el-button>
           </template>
@@ -76,9 +76,9 @@
     <!-- 房源信息 -->
     <div class="dialog-info">
       <el-dialog title="房源详情" @close="dialogClose" :visible.sync="layer_showInfo" width="800px">
-        <house-info v-if="housingType == 2" :type="`audit`" :temp-data="temp" @saveReviewData="saveReviewData">
+        <house-info v-if="housingType == 2" :type="`audit`" :temp-data="temp">
         </house-info>
-        <estate-info v-if="housingType == 1" :type="`audit`" :temp-data="temp" @saveReviewData="saveReviewData">
+        <estate-info v-if="housingType == 1" :type="`audit`" :temp-data="temp">
         </estate-info>
         <div slot="footer" class="dialog-footer">
           <el-button v-if="housingType == 1 || temp.reviewStatus != 1" @click="layer_showInfo = false" size="small">关 闭</el-button>
@@ -126,7 +126,8 @@ export default {
         '整租': '',
         '合租': 'info',
         '金融': 'warning',
-        '飞虎队': 'success'
+        '飞虎队': 'success',
+        '图招': 'danger'
       }
       return filterObj[val] || ''
     },
@@ -329,12 +330,14 @@ export default {
         this.layer_showInfo = true;
       });
     },
-    saveReviewData(val) {
-      if (val.reviewStatus) {
-        this.reviewData.reviewStatus = val.reviewStatus
-      }
-      if (val.picList) {
-        this.reviewData.imageFiles = val.picList.map(item => {
+    /* 保存 */
+    saveData() {
+      let reviewData = this.$store.getters.houseInfo
+      this.reviewData = {
+        ...this.reviewData,
+        ...reviewData,
+        picList: undefined,
+        imageFiles: reviewData.picList.map(item => {
           return {
             id: item.id,
             imageCode: item.src,
@@ -344,30 +347,17 @@ export default {
           }
         })
       }
-      if (val.desc) {
-        this.reviewData.desc = val.desc
-      }
-      if (this.reviewData.reviewStatus == 3) {
-        if (val.remark) {
-          this.reviewData.reviewRemark = val.remark
-        }
-      } else {
-        this.reviewData.reviewRemark = ''
-      }
-    },
-    /* 保存 */
-    saveData() {
       if (!this.reviewData.reviewStatus) {
         this.$message.error('请选择审核结果');
-        return false;
+        return false
       }
-      if (this.reviewData.reviewStatus == 3 && !this.reviewData.reviewRemark) {
-        this.$message.error('请选择审核不通过原因');
-        return false;
+      if (this.reviewData.reviewStatus === 3 && !this.reviewData.reviewRemark) {
+        this.$message.error('请选择审核不通过原因')
+        return false
       }
       saveReviewStatusApi(ObjectMap(this.reviewData)).then(response => {
-        this.layer_showInfo = false;
-        this.getGridData(this.pageItems);
+        this.layer_showInfo = false
+        this.getGridData(this.pageItems)
         this.$notify({
           title: '成功',
           message: '操作成功',
