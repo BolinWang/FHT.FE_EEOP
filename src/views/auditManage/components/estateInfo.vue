@@ -175,7 +175,6 @@ export default {
       checked: false,
       cropperList: [],
       accept: 'image/png, image/jpeg, image/jpg',
-      deleteIds: [],
       colModels: [
         { prop: 'roomNo', label: '房号' },
         { prop: 'roomInfo', label: '室卫厅' },
@@ -270,12 +269,15 @@ export default {
       handler(val) {
         this.temp = val
         this.checked = false
-        this.deleteIds = []
-        this.desc = deepClone(val).introduction
         let picList = val.roomTypePicUrls || []
-        this.picList = picList.map((item) => {
-          return { src: item.picUrl, id: item.id }
-        })
+        this.houseInfoData = {
+          reviewStatus: '',
+          remark: '',
+          desc: deepClone(val).introduction,
+          picList: picList.map((item) => {
+            return { src: item.picUrl, id: item.id, picTag: item.picTag || '', type: item.picType }
+          })
+        }
       },
       deep: true
     },
