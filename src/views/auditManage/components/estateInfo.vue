@@ -52,7 +52,7 @@
         </el-input>
       </el-col>
     </el-form-item>
-    <el-form-item v-if="type == 'audit'" label="审核结果">
+    <!-- <el-form-item v-if="type == 'audit'" label="审核结果">
       <el-radio-group v-model="estateInfoData.reviewStatus" v-if="!temp.reviewStatus || temp.reviewStatus === 1">
         <el-radio :label="2">通过</el-radio>
         <el-radio :label="3">不通过</el-radio>
@@ -76,7 +76,7 @@
         <el-option label="符合图招" :value="2"></el-option>
         <el-option label="不符合图招" :value="1"></el-option>
       </el-select>
-    </el-form-item>
+    </el-form-item> -->
     <el-form-item v-if="type == 'published'" label="操作">
       <el-checkbox v-model="checked">立即下架</el-checkbox>
     </el-form-item>

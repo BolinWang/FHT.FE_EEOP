@@ -209,10 +209,10 @@ export default {
           { prop: 'estateName', label: '精品公寓', type: 'formatEstateName', toolTip: true },
           { prop: 'styleName', label: '房间类型', width: 200 },
           { prop: 'roomCount', label: '数量(间)', width: 80 },
-          { prop: 'publishTime', label: '提交时间', width: 140, type: 'formatTime', toolTip: true },
-          { prop: 'reviewStatus', label: '审核状态', width: 110, type: 'status' },
-          { prop: 'reviewTime', label: '操作时间', width: 140, type: 'formatTime', toolTip: true },
-          { prop: 'reviewRemark', label: '备注' }
+          // { prop: 'publishTime', label: '提交时间', width: 140, type: 'formatTime', toolTip: true },
+          // { prop: 'reviewStatus', label: '审核状态', width: 110, type: 'status' },
+          // { prop: 'reviewTime', label: '操作时间', width: 140, type: 'formatTime', toolTip: true },
+          // { prop: 'reviewRemark', label: '备注' }
         ]
       },
       tableHeight: 300,
@@ -342,6 +342,8 @@ export default {
       this.reviewData = this.housingType === 2 ? {
         ...this.reviewData,
         ...reviewData,
+        reviewRemark: reviewData.remark,
+        remark: undefined,
         picList: undefined,
         imageFiles: reviewData.picList.map(item => {
           return {
@@ -355,6 +357,8 @@ export default {
       } : {
         ...this.reviewData,
         ...reviewData,
+        reviewRemark: reviewData.remark,
+        remark: undefined,
         picList: undefined,
         desc: undefined
       }
