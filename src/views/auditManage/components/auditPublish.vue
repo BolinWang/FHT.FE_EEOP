@@ -10,10 +10,6 @@
           <el-option v-for="item in auditOptions" :key="item.value" :label="item.label" :value="item.value">
           </el-option>
         </el-select>
-        <el-select v-if="type == 2" size="small" v-model="formData.houseFinanceType" placeholder="房源类型" class="item-select filter-item" style="width: 150px;" clearable>
-          <el-option v-for="item in houseFinanceOptions" :key="item.value" :label="item.label" :value="item.value">
-          </el-option>
-        </el-select>
         <el-input size="small" v-model="formData.keyword" :placeholder="placeholder[2 - type]" class="filter-item" style="width:180px;" @keydown.native.enter="searchParam">
         </el-input>
         <el-button type="primary" size="small" icon="el-icon-search" @click.native="searchParam" v-waves class="filter-item">查询</el-button>
@@ -91,7 +87,10 @@
 </template>
 <script>
 import { parseTime, ObjectMap, deepClone } from '@/utils'
-import { queryReviewCheckListByPageApi, saveReviewStatusApi, queryReviewCheckRoomDetailApi } from '@/api/auditCenter'
+import {
+  queryReviewCheckListByPageApi, queryReviewCheckRoomDetailApi,
+  saveReviewStatusApi, saveEstatePublishStatusApi
+} from '@/api/auditCenter'
 import { getCityListApi } from '@/api/houseManage'
 import waves from '@/directive/waves' // 水波纹指令
 import houseInfo from '@/views/auditManage/components/houseInfo'
@@ -170,7 +169,6 @@ export default {
       formData: {
         cityId: '',
         reviewStatus: 1,
-        houseFinanceType: '',
         publishStatus: '',
         keyword: ''
       },
@@ -206,13 +204,14 @@ export default {
         ],
         '1': [
           { prop: 'province', label: '房源位置', width: 150, type: 'formatHouseResource', toolTip: true },
-          { prop: 'estateName', label: '精品公寓', type: 'formatEstateName', toolTip: true },
-          { prop: 'styleName', label: '房间类型', width: 200 },
+          { prop: 'estateName', label: '精品公寓', type: 'formatEstateName', toolTip: true, width: 300 },
+          { prop: 'styleName', label: '房间类型' },
           { prop: 'roomCount', label: '数量(间)', width: 80 },
-          // { prop: 'publishTime', label: '提交时间', width: 140, type: 'formatTime', toolTip: true },
-          // { prop: 'reviewStatus', label: '审核状态', width: 110, type: 'status' },
-          // { prop: 'reviewTime', label: '操作时间', width: 140, type: 'formatTime', toolTip: true },
-          // { prop: 'reviewRemark', label: '备注' }
+          { prop: 'tags', label: '标签', type: 'tags'},
+          { prop: 'publishTime', label: '提交时间', width: 140, type: 'formatTime', toolTip: true },
+          { prop: 'reviewStatus', label: '审核状态', width: 110, type: 'status' },
+          { prop: 'reviewTime', label: '操作时间', width: 140, type: 'formatTime', toolTip: true },
+          { prop: 'reviewRemark', label: '备注' }
         ]
       },
       tableHeight: 300,
@@ -293,7 +292,6 @@ export default {
       this.formData = {
         cityId: '',
         reviewStatus: '',
-        houseFinanceType: '',
         publishStatus: '',
         keyword: ''
       };
@@ -312,12 +310,17 @@ export default {
     },
     /* 查看详情 */
     handleView(index, row) {
-      this.reviewData = {
+      this.reviewData = this.housingType === 2 ? {
         reviewCheckId: row.reviewCheckId
-      };
+      } : {
+        estateId: row.estateId,
+        estateTypeId: row.estateTypeId,
+        groupCode: row.groupCode
+      }
       let params = this.housingType == 1 ? {
         estateId: row.estateId,
         estateTypeId: row.estateTypeId,
+        groupCode: row.groupCode,
         publisherId: row.publisherId,
         publishTime: parseTime(row.publishTime)
       } : {
@@ -374,7 +377,8 @@ export default {
         this.$message.error('请选择审核不通过原因')
         return false
       }
-      saveReviewStatusApi(ObjectMap(this.reviewData)).then(response => {
+      const saveRequestApi = this.housingType === 2 ? saveReviewStatusApi : saveEstatePublishStatusApi
+      saveRequestApi(ObjectMap(this.reviewData)).then(response => {
         this.layer_showInfo = false
         this.getGridData(this.pageItems)
         this.$notify({

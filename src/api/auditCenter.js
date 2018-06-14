@@ -12,13 +12,29 @@ export function queryReviewCheckListByPageApi(params = {}) {
   })
 }
 
-/* 房源审核结果编辑 */
+/**
+ * 房源神审核编辑
+ * @description 分散式
+ * @function saveReviewStatusApi
+ * @description 集中式
+ * @function saveEstatePublishStatusApi
+ */
 export function saveReviewStatusApi(params) {
   return fetch({
     url: '/market/review/',
     method: 'post',
     data: {
       method: 'saveReviewStatus',
+      params
+    }
+  })
+}
+export function saveEstatePublishStatusApi(params) {
+  return fetch({
+    url: '/market/review/',
+    method: 'post',
+    data: {
+      method: 'saveEstatePublishStatus',
       params
     }
   })
