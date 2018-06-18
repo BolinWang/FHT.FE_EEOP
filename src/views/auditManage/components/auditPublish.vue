@@ -204,10 +204,10 @@ export default {
         ],
         '1': [
           { prop: 'province', label: '房源位置', width: 150, type: 'formatHouseResource', toolTip: true },
-          { prop: 'estateName', label: '精品公寓', type: 'formatEstateName', toolTip: true, width: 300 },
+          { prop: 'estateName', label: '精品公寓', type: 'formatEstateName', toolTip: true, width: 200 },
           { prop: 'styleName', label: '房间类型' },
           { prop: 'roomCount', label: '数量(间)', width: 80 },
-          { prop: 'tags', label: '标签', type: 'tags'},
+          { prop: 'tags', label: '标签', type: 'tags', width: 200},
           { prop: 'publishTime', label: '提交时间', width: 140, type: 'formatTime', toolTip: true },
           { prop: 'reviewStatus', label: '审核状态', width: 110, type: 'status' },
           { prop: 'reviewTime', label: '操作时间', width: 140, type: 'formatTime', toolTip: true },
