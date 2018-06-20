@@ -70,6 +70,36 @@ export const appIconApi = {
       }
     })
   },
+  cityList(params = {}) {
+    return fetch({
+      url: appIconApi.defaultOptions.requestUrl,
+      method: 'post',
+      data: {
+        method: 'cityList',
+        params
+      }
+    })
+  },
+  configList(params = {}) {
+    return fetch({
+      url: appIconApi.defaultOptions.requestUrl,
+      method: 'post',
+      data: {
+        method: 'codeList',
+        params
+      }
+    })
+  },
+  saveSort(params = {}) {
+    return fetch({
+      url: appIconApi.defaultOptions.requestUrl,
+      method: 'post',
+      data: {
+        method: 'saveSort',
+        params
+      }
+    })
+  }
 }
 
 /* 大麦消息 */
@@ -117,7 +147,7 @@ export const infomationApi = {
         params
       }
     })
-  },
+  }
 }
 
 /* 热门推荐 */

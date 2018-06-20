@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div class="model-search clearfix">
-      <el-select v-model="cityId" size="small" filterable clearable placeholder="城市">
+      <el-select v-model="searchParams.cityId" size="small" filterable clearable placeholder="城市" @change="searchParam()">
         <el-option v-for="item in cityList" :key="item.cityId"
           :label="item.cityName" :value="item.cityId">
         </el-option>
@@ -13,6 +13,7 @@
       ref="refGridUnit"
       :columns="colModels"
       :showPagination="false"
+      :formOptions="searchParams"
       :url="url"
       :listField="`data`"
       :dataMethod="method"
@@ -48,6 +49,22 @@
               <div slot="tip" class="el-upload__tip">请上传480 * 240的jpg/png图片，且不超过500kb</div>
             </el-upload>
           </el-form-item>
+          <el-form-item label="跳转语义" prop="configId">
+            <el-select v-model="temp.configId" size="small" clearable filterable placeholder="请选择">
+              <el-option v-for="item in configList" :key="item.configId"
+                :label="item.description" :value="item.configId">
+                <span style="float: left">{{ item.description }}</span>
+                <span style="float: right; color: #8492a6; font-size: 13px">{{ item.code }}</span>
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="投放城市">
+            <el-select v-model="temp.cityId" size="small" clearable filterable placeholder="全部城市">
+              <el-option v-for="item in cityList" :key="item.cityId"
+                :label="item.cityName" :value="item.cityId">
+              </el-option>
+            </el-select>
+          </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="layer_showInfo = false" size="small">取 消</el-button>
@@ -71,7 +88,7 @@
         </draggable>
         <div slot="footer" class="dialog-footer">
           <el-button @click="layer_appsort = false" size="small">取 消</el-button>
-          <el-button type="primary" size="small">确 定</el-button>
+          <el-button type="primary" size="small" @click="saveSort()">确 定</el-button>
         </div>
       </el-dialog>
     </div>
@@ -80,7 +97,7 @@
 <script>
 import draggable from 'vuedraggable'
 import GridUnit from '@/components/GridUnit/grid'
-import { deepClone } from '@/utils'
+import { deepClone, ObjectMap } from '@/utils'
 import { appIconApi } from '@/api/eeop'
 
 /* 阻止原生dragale打开新页面 */
@@ -90,15 +107,18 @@ document.body.ondrop = function(event) {
 }
 
 export default {
-  name: 'auditFhd',
+  name: 'appIcon',
   components: {
     GridUnit,
     draggable
   },
   data() {
     return {
-      cityId: '',
+      searchParams: {
+        cityId: ''
+      },
       cityList: [],
+      configList: [],
       colModels: [
         { prop: 'title', label: '标题', minWidth: 300 },
         { prop: 'picUrl', label: '图片', width: 200, type: 'img' },
@@ -113,6 +133,9 @@ export default {
         ],
         picList: [
           { required: true, message: '请上传图片', trigger: 'change' }
+        ],
+        configId: [
+          { required: true, message: '请选择跳转语义', trigger: 'change' }
         ]
       },
       temp: {},
@@ -123,6 +146,11 @@ export default {
       delayedDragging: false,
       sort_tableData: []
     }
+  },
+  created () {
+    appIconApi.cityList().then(response => {
+      this.cityList = response.data
+    })
   },
   mounted() {
     /* 表格高度控制 */
@@ -162,13 +190,17 @@ export default {
     handleDetail(row = {}) {
       this.temp = {
         ...deepClone(row),
+        cityId: row.cityId || this.searchParams.cityId,
         picList: row.picUrl ? [{url: row.picUrl, name: '查看图片'}] : []
       }
       this.temp.picList = row.picUrl ? [{
         url: row.picUrl,
         name: '查看图片'
       }] : []
-      this.layer_showInfo = true
+      appIconApi.configList().then(response => {
+        this.configList = response.data || []
+        this.layer_showInfo = true
+      })
     },
     handleDelete(row) {
       this.$confirm('是否删除?', '提示', {
@@ -195,11 +227,14 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           const saveApi = this.temp.iconId ? appIconApi.edit : appIconApi.add
-          saveApi({
-            iconId: this.temp.iconId,
-            title: this.temp.title,
+          let { configId, iconId, title, cityId } = this.temp
+          saveApi(ObjectMap({
+            configId,
+            iconId,
+            title,
+            cityId,
             picUrl: this.temp.picList.length > 0 ? this.temp.picList[0].url : ''
-          }).then(response => {
+          })).then(response => {
             this.searchParam()
             this.layer_showInfo = false
             this.$notify({
@@ -210,6 +245,19 @@ export default {
             })
           })
         }
+      })
+    },
+    saveSort() {
+      this.sort_tableData.forEach((item, index) => item.sortNum = index * 1 + 1)
+      appIconApi.saveSort(this.sort_tableData).then(response => {
+        this.layer_appsort = false
+        this.searchParam()
+        this.$notify({
+          title: '成功',
+          message: '操作成功',
+          type: 'success',
+          duration: 2000
+        })
       })
     },
     dialogClose() {

@@ -1,7 +1,14 @@
 <template>
   <div class="app-container">
     <div class="model-search clearfix">
-      <el-select v-model="searchParams.status" clearable size="small" placeholder="大麦状态" @change="searchParam()">
+      <el-select v-model="searchParams.cityId" size="small" filterable clearable placeholder="城市" @change="searchParam()">
+        <el-option v-for="item in cityList" :key="item.cityId"
+          :label="item.cityName" :value="item.cityId">
+        </el-option>
+      </el-select>
+      <el-select v-model="searchParams.status" clearable size="small"
+        placeholder="大麦状态" @change="searchParam()"
+        style="margin-left: 10px;">
         <el-option v-for="item in selectData" :key="item.value" :label="item.label" :value="item.value">
         </el-option>
       </el-select>
@@ -61,6 +68,13 @@
             </el-date-picker>
             <el-checkbox v-model="temp.nowOffline" class="filter-item" @change="changeOffline">立即下线</el-checkbox>
           </el-form-item>
+          <el-form-item label="投放城市">
+            <el-select v-model="temp.cityId" size="small" clearable filterable placeholder="全部城市">
+              <el-option v-for="item in cityList" :key="item.cityId"
+                :label="item.cityName" :value="item.cityId">
+              </el-option>
+            </el-select>
+          </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="layer_showInfo = false" size="small">取 消</el-button>
@@ -73,12 +87,12 @@
 <script>
 import waves from '@/directive/waves'
 import GridUnit from '@/components/GridUnit/grid'
-import { deepClone, parseTime } from '@/utils'
+import { deepClone, parseTime, ObjectMap } from '@/utils'
 import { validateURL } from '@/utils/validate'
-import { infomationApi } from '@/api/eeop'
+import { infomationApi, appIconApi } from '@/api/eeop'
 
 export default {
-  name: 'auditFhd',
+  name: 'infomation',
   directives: {
     waves
   },
@@ -95,8 +109,10 @@ export default {
     }
     return {
       searchParams: {
-        status: ''
+        status: '',
+        cityId: ''
       },
+      cityList: [],
       selectData: [
         { value: 1, label: '待上线' },
         { value: 2, label: '已上线' },
@@ -123,6 +139,7 @@ export default {
             }
           }
         },
+        { prop: 'cityName', label: '城市' },
         { prop: 'title', label: '标题' },
         { prop: 'newsUrl', label: '链接', type: 'link' },
         { prop: 'effectiveTime', label: '上线时间', width: 180, filter: 'parseTime' },
@@ -153,6 +170,11 @@ export default {
         ]
       },
     }
+  },
+  created () {
+    appIconApi.cityList().then(response => {
+      this.cityList = response.data
+    })
   },
   mounted() {
     /* 表格高度控制 */
@@ -239,7 +261,8 @@ export default {
         effectiveTime: effectiveTime ? parseTime(effectiveTime) : '',
         ineffectiveTime: ineffectiveTime ? parseTime(ineffectiveTime) : '',
         nowOffline: false,
-        nowOnline: false
+        nowOnline: false,
+        cityId: cloneRow.cityId || this.searchParams.cityId
       }
       this.layer_showInfo = true
     },
@@ -251,9 +274,9 @@ export default {
             return false
           }
           const saveApi = this.temp.id ? infomationApi.edit : infomationApi.add
-          const {id, title, newsUrl, effectiveTime, ineffectiveTime, } = this.temp
+          const {id, title, newsUrl, effectiveTime, ineffectiveTime, cityId } = this.temp
           let status = this.temp.nowOnline ? 2 : (this.temp.nowOffline ? 3 : 1)
-          saveApi({id, title, newsUrl, effectiveTime, ineffectiveTime, status }).then(response => {
+          saveApi({id, title, newsUrl, effectiveTime, ineffectiveTime, cityId, status }).then(response => {
             this.searchParam()
             this.layer_showInfo = false
             this.$notify({
