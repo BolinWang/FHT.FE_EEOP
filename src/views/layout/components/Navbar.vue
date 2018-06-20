@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-04-11 17:22:27
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-05-25 14:54:15
+ * @Last Modified time: 2018-06-20 16:50:23
  */
 
 <template>
@@ -193,6 +193,12 @@ export default {
       .user-name {
         position: relative;
         top: -5px;
+        display: inline-block;
+        max-width: 80px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        line-height: 100%;
       }
       .user-avatar {
         width: 40px;

@@ -7,8 +7,8 @@
         </el-option>
       </el-select>
       <el-select size="small" v-model="searchParams.status" filterable clearable placeholder="搜索词状态" class="item-select filter-item">
-        <el-option label="未推荐" value="1"></el-option>
-        <el-option label="已推荐" value="2"></el-option>
+        <el-option label="未推荐" :value="0"></el-option>
+        <el-option label="已推荐" :value="1"></el-option>
       </el-select>
       <el-input size="small" v-model="searchParams.keyword" clearable placeholder="搜索词" class="filter-item" style="width:180px;"></el-input>
       <el-button size="small" type="primary" icon="el-icon-search" @click="searchParam" class="filter-item">查询</el-button>
@@ -18,13 +18,13 @@
     <GridUnit
       ref="refGridUnit"
       :columns="colModels"
+      :formOptions="searchParams"
       :showPagination="false"
       :url="url"
-      :listField="`data`"
       :dataMethod="method"
       :height="tableHeight">
       <template slot="handle" slot-scope="scope">
-        <el-button v-if="scope.row.status === 2" type="primary" icon="el-icon-setting" size="small"
+        <el-button v-if="scope.row.status === 0" type="primary" icon="el-icon-setting" size="small"
           @click="handleSetting(scope.row)">
           设为推荐词
         </el-button>
@@ -46,8 +46,8 @@
               v-model="temp.data">
             </el-input>
           </el-form-item>
-          <el-form-item label="投放城市">
-            <el-select v-model="temp.cityId" size="small" clearable filterable placeholder="全部城市">
+          <el-form-item label="投放城市" prop="cityId">
+            <el-select v-model="temp.cityId" size="small" clearable filterable placeholder="请选择城市">
               <el-option v-for="item in cityList" :key="item.cityId"
                 :label="item.cityName" :value="item.cityId">
               </el-option>
@@ -65,7 +65,7 @@
 <script>
 import waves from '@/directive/waves'
 import GridUnit from '@/components/GridUnit/grid'
-import { deepClone } from '@/utils'
+import { deepClone, cleanArray } from '@/utils'
 import { hotRecommendApi, appIconApi } from '@/api/eeop'
 
 export default {
@@ -83,14 +83,17 @@ export default {
         keyword: '',
         cityId: ''
       },
-      temp: {},
       cityList: [],
       colModels: [
-        { prop: 'title', label: '搜索词TOP' },
-        { prop: 'title', label: '搜索次数', sortable: true, align: 'right' },
-        { prop: 'title', label: '搜索结果数', sortable: true, align: 'right' },
-        { label: '操作', slotName: 'handle', width: 150, fixed: 'right', align: 'center' },
-        { prop: 'title', label: '操作时间', width: 150, fixed: 'right', filter: 'parseTime'}
+        { prop: 'keyword', label: '搜索词TOP' },
+        { prop: 'searchTimes', label: '搜索次数', sortable: true, align: 'right', render(row) {
+          return row.searchTimes || 0
+        }},
+        { prop: 'resultAmount', label: '搜索结果数', sortable: true, align: 'right', render(row) {
+          return row.resultAmount || 0
+        }},
+        { prop: 'gmtModified', label: '操作时间', width: 150, filter: 'parseTime'},
+        { label: '操作', slotName: 'handle', width: 150, align: 'center' }
       ],
       tableHeight: 300,
       url: hotRecommendApi.defaultOptions.requestUrl,
@@ -98,10 +101,12 @@ export default {
       rules: {
         data: [
           { required: true, message: '请输入搜索词', trigger: 'blur' }
+        ],
+        cityId: [
+          { required: true, message: '请选择城市', trigger: 'change' }
         ]
       },
       temp: {},
-      actionBaseUrl: process.env.BASE_API,
       layer_showInfo: false
     }
   },
@@ -149,20 +154,35 @@ export default {
       this.layer_showInfo = true
     },
     handleSetting(row) {
-
+      hotRecommendApi.set({
+        id: row.id,
+        status: 1 - row.status
+      }).then(response => {
+        this.searchParam()
+        this.$notify({
+          title: '成功',
+          message: '操作成功',
+          type: 'success',
+          duration: 2000
+        })
+      })
     },
     saveData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          let multiVals = this.temp.data.split(/[\n|\r\n|\r]/gi).join(',')
-          console.log(multiVals)
-          this.searchParam()
-          this.layer_showInfo = false
-          this.$notify({
-            title: '成功',
-            message: '等待接口',
-            type: 'success',
-            duration: 2000
+          let keywords = this.temp.data.split(/[\n|\r\n|\r]/gi)
+          hotRecommendApi.add({
+            cityId: this.temp.cityId,
+            keywords: cleanArray(keywords)
+          }).then(response => {
+            this.layer_showInfo = false
+            this.searchParam()
+            this.$notify({
+              title: '成功',
+              message: '操作成功',
+              type: 'success',
+              duration: 2000
+            })
           })
         }
       })

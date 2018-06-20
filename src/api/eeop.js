@@ -153,7 +153,7 @@ export const infomationApi = {
 /* 热门推荐 */
 export const hotRecommendApi = {
   defaultOptions: {
-    requestUrl: '/market/icon',
+    requestUrl: '/market/hotKeyword',
     method: 'list'
   },
   add(params) {
@@ -166,22 +166,12 @@ export const hotRecommendApi = {
       }
     })
   },
-  edit(params) {
+  set(params) {
     return fetch({
       url: hotRecommendApi.defaultOptions.requestUrl,
       method: 'post',
       data: {
-        method: 'edit',
-        params
-      }
-    })
-  },
-  delete(params) {
-    return fetch({
-      url: hotRecommendApi.defaultOptions.requestUrl,
-      method: 'post',
-      data: {
-        method: 'delete',
+        method: 'recommendAndCancel',
         params
       }
     })
