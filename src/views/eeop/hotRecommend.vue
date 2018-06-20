@@ -1,27 +1,19 @@
 <template>
   <div class="app-container">
-    <el-form :inline="true" :model="searchParams" size="small">
-      <el-form-item>
-        <el-select v-model="searchParams.cityId" size="small" filterable clearable placeholder="城市">
-          <el-option v-for="item in cityList" :key="item.cityId"
-            :label="item.cityName" :value="item.cityId">
-          </el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item>
-        <el-select v-model="searchParams.status" filterable clearable placeholder="搜索词状态">
-          <el-option label="未推荐" value="1"></el-option>
-          <el-option label="已推荐" value="2"></el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item>
-        <el-input v-model="searchParams.keyword" clearable placeholder="搜索词"></el-input>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" icon="el-icon-search" @click="searchParam">查询</el-button>
-        <el-button icon="el-icon-remove-outline" @click="searchParam('clear')">清空</el-button>
-      </el-form-item>
-      <el-button class="right" type="primary" size="small" icon="el-icon-plus" @click="handleAdd">新增搜索词</el-button>
+    <el-form class="model-search clearfix" :inline="true" size="small">
+      <el-select size="small" v-model="searchParams.cityId" filterable clearable placeholder="城市" class="item-select">
+        <el-option v-for="item in cityList" :key="item.cityId"
+          :label="item.cityName" :value="item.cityId">
+        </el-option>
+      </el-select>
+      <el-select size="small" v-model="searchParams.status" filterable clearable placeholder="搜索词状态" class="item-select filter-item">
+        <el-option label="未推荐" value="1"></el-option>
+        <el-option label="已推荐" value="2"></el-option>
+      </el-select>
+      <el-input size="small" v-model="searchParams.keyword" clearable placeholder="搜索词" class="filter-item" style="width:180px;"></el-input>
+      <el-button size="small" type="primary" icon="el-icon-search" @click="searchParam" class="filter-item">查询</el-button>
+      <el-button size="small" icon="el-icon-remove-outline" @click="searchParam('clear')" class="filter-item">清空</el-button>
+      <el-button size="small" class="right" type="primary" icon="el-icon-plus" @click="handleAdd">新增搜索词</el-button>
     </el-form>
     <GridUnit
       ref="refGridUnit"
@@ -188,6 +180,6 @@ export default {
   z-index: 9999999;
 }
 .model-table {
-  margin: 0;
+  margin-bottom: 0;
 }
 </style>
