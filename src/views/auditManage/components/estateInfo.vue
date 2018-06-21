@@ -76,6 +76,20 @@
         <el-option label="符合图招" :value="2"></el-option>
         <el-option label="不符合图招" :value="1"></el-option>
       </el-select>
+      <el-select v-if="estateInfoData.reviewStatus === 2 && estateInfoData.accordPic === 1"
+        size="small" style="width: 450px; margin-left: 10px;" v-model="estateInfoData.discrepancyReason"
+        multiple
+        filterable
+        allow-create
+        default-first-option
+        placeholder="请选择不符合图招原因">
+        <el-option
+          v-for="item in discrepancyReasonList"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value">
+        </el-option>
+      </el-select>
     </el-form-item>
     <el-form-item v-if="type == 'published'" label="操作">
       <el-checkbox v-model="checked">立即下架</el-checkbox>
@@ -164,13 +178,22 @@ export default {
       estateInfoData: {
         picList: [],
         reviewStatus: '',
-        remark: ''
+        remark: '',
+        accordPic: '',
+        discrepancyReason: []
       },
       remarkOptions: [
         { label: '照片不符合上传规则', value: '照片不符合上传规则' },
         { label: '房源描述不符合规则', value: '房源描述不符合规则' },
         { label: '电话信息错误', value: '电话信息错误' },
         { label: '面积信息错误', value: '面积信息错误' }
+      ],
+      discrepancyReasonList: [
+        { label: '缺少小区环境图', value: '缺少小区环境图' },
+        { label: '缺少公区图片（阳台/客厅/（过道）/厨房/卫生间 至少2种类型）', value: '缺少公区图片（阳台/客厅/（过道）/厨房/卫生间 至少2种类型）' },
+        { label: '缺少房间图片', value: '缺少房间图片' },
+        { label: '电器/物品有损坏', value: '电器/物品有损坏' },
+        { label: '环境脏乱差', value: '环境脏乱差' }
       ],
       checked: false,
       cropperList: [],
@@ -197,6 +220,14 @@ export default {
     }
   },
   methods: {
+    reviewStatusChange(val) {
+      if (val === 3) {
+        this.houseInfoData.accordPic = ''
+        this.houseInfoData.discrepancyReason = []
+      } else {
+        this.houseInfoData.remark = ''
+      }
+    },
     emitPicList(val) {
       this.estateInfoData.picList = val
     },

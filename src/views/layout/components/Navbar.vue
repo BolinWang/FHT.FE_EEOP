@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-04-11 17:22:27
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-05-25 14:54:15
+ * @Last Modified time: 2018-06-21 15:24:20
  */
 
 <template>
@@ -11,6 +11,11 @@
       <hamburger class="hamburger-container" :toggleClick="toggleSideBar" :isActive="sidebar.opened"></hamburger>
       <tags-view></tags-view>
       <div class="right-menu">
+        <!-- <div class="notification right-menu-item">
+          <el-badge :value="200" :max="10" class="item">
+            <icon-svg icon-class="wechat" />
+          </el-badge>
+        </div> -->
         <el-tooltip effect="dark" content="全屏" placement="bottom">
           <screenfull class="screenfull right-menu-item"></screenfull>
         </el-tooltip>
@@ -20,8 +25,8 @@
         <el-dropdown class="avatar-container right-menu-item" trigger="click">
           <div class="avatar-wrapper">
             <img class="user-avatar" :src="avatar">
-            <span class="user-name">{{name}}</span>
-            <i class="el-icon-caret-bottom"></i>
+            <!-- <span class="user-name">{{name}}</span> -->
+            <!-- <i class="el-icon-caret-bottom"></i> -->
           </div>
           <el-dropdown-menu class="user-dropdown" slot="dropdown">
             <el-dropdown-item>
@@ -170,7 +175,7 @@ export default {
     }
     .right-menu-item {
       display: inline-block;
-      margin: 0 5px;
+      margin: 0 2px;
     }
     .screenfull {
       height: 40px;
@@ -182,9 +187,19 @@ export default {
     .theme-switch {
       vertical-align: 16px;
     }
+    .notification {
+      height: 40px;
+      line-height: 40px;
+      vertical-align: 3px;
+      margin-right: 20px;
+      .svg-icon {
+        font-size: 35px;
+        color: #5a5e66;
+      }
+    }
     .avatar-container {
       height: 50px;
-      margin-right: 30px;
+      margin-right: 10px;
       .avatar-wrapper {
         cursor: pointer;
         margin-top: 5px;
@@ -193,6 +208,12 @@ export default {
       .user-name {
         position: relative;
         top: -5px;
+        display: inline-block;
+        max-width: 80px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        line-height: 100%;
       }
       .user-avatar {
         width: 40px;

@@ -16,7 +16,7 @@ module.exports = {
         }
       }
     },
-    host: '0.0.0.0',
+    host: 'localhost',
     port: 9528,
     autoOpenBrowser: true,
     errorOverlay: true,

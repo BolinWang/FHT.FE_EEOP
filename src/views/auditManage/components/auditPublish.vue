@@ -19,7 +19,9 @@
     <div class="model-table" :style="tableStyle">
       <el-table :data="tableData" v-loading.body="listLoading" :max-height="tableHeight" size="small" fit stripe highlight-current-row>
         <el-table-column type="index" width="60" align="center"></el-table-column>
-        <el-table-column v-for="(item,index) in colModels[type]" :label="item.label" :width="item.width" :key="index" fit :show-overflow-tooltip="!item.toolTip">
+        <el-table-column v-for="(item,index) in colModels[type]"
+          :label="item.label" :width="item.width" :min-width="item.minWidth || 60"
+          :key="index" fit :show-overflow-tooltip="!item.toolTip">
           <template slot-scope="scope">
             <span v-if="item.type === 'formatHouseResource'">
               {{scope.row[item.prop] | formatHouseResource(scope.row)}}
@@ -35,6 +37,9 @@
             </span>
             <span v-else-if="item.type === 'formatEstateName'">
               {{scope.row[item.prop] | formatEstateName(scope.row)}}
+            </span>
+            <span v-else-if="item.type === 'remark'">
+              {{scope.row[item.prop] | formatRemark(scope.row)}}
             </span>
             <el-tag v-else-if="item.type === 'status'" :type="scope.row[item.prop] | statusFilter">
               {{scope.row[item.prop] | formatStatus}}
@@ -162,6 +167,12 @@ export default {
     },
     formatEstateName(val, item) {
       return `【${val}】${item.subdistrictAddress}`
+    },
+    formatRemark(val, item) {
+      if (item.reviewStatus === 2) {
+        return item.discrepancyReason || ''
+      }
+      return val || ''
     }
   },
   data() {
@@ -195,23 +206,23 @@ export default {
           { prop: 'reviewCheckId', label: '审核号', width: 60 },
           { prop: 'houseResource', label: '房源位置', width: 150, type: 'formatHouseResource', toolTip: true },
           { prop: 'roomName', label: '小区-房间', width: 200, type: 'formatRoomName', toolTip: true },
-          { prop: 'roomCode', label: '房源编号', width: 100 },
+          { prop: 'roomCode', label: '房源编号', width: 90 },
           { prop: 'tags', label: '标签', type: 'tags', width: 200 },
-          { prop: 'publishTime', label: '提交时间', width: 140, type: 'formatTime', toolTip: true },
           { prop: 'reviewStatus', label: '审核状态', width: 110, type: 'status' },
-          { prop: 'reviewTime', label: '操作时间', width: 140, type: 'formatTime', toolTip: true },
-          { prop: 'reviewRemark', label: '备注' }
+          { prop: 'reviewRemark', label: '不符合原因', minWidth: 150, type: 'remark'},
+          { prop: 'publishTime', label: '提交时间', width: 140, type: 'formatTime', toolTip: true },
+          { prop: 'reviewTime', label: '操作时间', width: 140, type: 'formatTime', toolTip: true }
         ],
         '1': [
           { prop: 'province', label: '房源位置', width: 150, type: 'formatHouseResource', toolTip: true },
           { prop: 'estateName', label: '精品公寓', type: 'formatEstateName', toolTip: true, width: 200 },
-          { prop: 'styleName', label: '房间类型' },
+          { prop: 'styleName', label: '房间类型', width: 100 },
           { prop: 'roomCount', label: '数量(间)', width: 80 },
           { prop: 'tags', label: '标签', type: 'tags', width: 200},
-          { prop: 'publishTime', label: '提交时间', width: 140, type: 'formatTime', toolTip: true },
           { prop: 'reviewStatus', label: '审核状态', width: 110, type: 'status' },
-          { prop: 'reviewTime', label: '操作时间', width: 140, type: 'formatTime', toolTip: true },
-          { prop: 'reviewRemark', label: '备注' }
+          { prop: 'reviewRemark', label: '不符合原因', minWidth: 150, type: 'remark' },
+          { prop: 'publishTime', label: '提交时间', width: 140, type: 'formatTime', toolTip: true },
+          { prop: 'reviewTime', label: '操作时间', width: 140, type: 'formatTime', toolTip: true }
         ]
       },
       tableHeight: 300,
@@ -348,6 +359,7 @@ export default {
         reviewRemark: reviewData.remark,
         remark: undefined,
         picList: undefined,
+        discrepancyReason: reviewData.discrepancyReason.join('、'),
         imageFiles: reviewData.picList.map(item => {
           return {
             id: item.id,
@@ -363,7 +375,8 @@ export default {
         reviewRemark: reviewData.remark,
         remark: undefined,
         picList: undefined,
-        desc: undefined
+        desc: undefined,
+        discrepancyReason: reviewData.discrepancyReason.join('、'),
       }
       if (!this.reviewData.reviewStatus) {
         this.$message.error('请选择审核结果');
