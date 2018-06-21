@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-05-24 20:44:16
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-05-24 20:45:11
+ * @Last Modified time: 2018-06-21 13:54:47
  */
 
 <template>
@@ -63,7 +63,7 @@ export default {
     top: 0;
     bottom: 0;
     left: 0;
-    z-index: 1001;
+    z-index: 1900;
     overflow: hidden;
     transition: all .28s ease-out;
   }
