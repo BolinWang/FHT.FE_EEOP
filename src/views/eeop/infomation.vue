@@ -276,7 +276,7 @@ export default {
           const saveApi = this.temp.id ? infomationApi.edit : infomationApi.add
           const {id, title, newsUrl, effectiveTime, ineffectiveTime, cityId } = this.temp
           let status = this.temp.nowOnline ? 2 : (this.temp.nowOffline ? 3 : 1)
-          saveApi({id, title, newsUrl, effectiveTime, ineffectiveTime, cityId, status }).then(response => {
+          saveApi(ObjectMap({id, title, newsUrl, effectiveTime, ineffectiveTime, cityId, status })).then(response => {
             this.searchParam()
             this.layer_showInfo = false
             this.$notify({

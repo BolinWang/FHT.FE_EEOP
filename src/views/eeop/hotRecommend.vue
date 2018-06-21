@@ -65,7 +65,7 @@
 <script>
 import waves from '@/directive/waves'
 import GridUnit from '@/components/GridUnit/grid'
-import { deepClone, cleanArray } from '@/utils'
+import { deepClone, cleanArray, ObjectMap } from '@/utils'
 import { hotRecommendApi, appIconApi } from '@/api/eeop'
 
 export default {
@@ -171,10 +171,10 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           let keywords = this.temp.data.split(/[\n|\r\n|\r]/gi)
-          hotRecommendApi.add({
+          hotRecommendApi.add(ObjectMap({
             cityId: this.temp.cityId,
             keywords: cleanArray(keywords)
-          }).then(response => {
+          })).then(response => {
             this.layer_showInfo = false
             this.searchParam()
             this.$notify({
