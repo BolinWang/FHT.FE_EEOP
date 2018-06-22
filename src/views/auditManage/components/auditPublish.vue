@@ -353,6 +353,7 @@ export default {
     saveData() {
       const store_houseInfoData = this.$store.getters.houseInfoData
       let reviewData = this.housingType === 2 ? store_houseInfoData.houseInfo : store_houseInfoData.estateInfo
+      reviewData.discrepancyReason = reviewData.discrepancyReason || []
       this.reviewData = this.housingType === 2 ? {
         ...this.reviewData,
         ...reviewData,

@@ -116,7 +116,8 @@
         filterable
         allow-create
         default-first-option
-        placeholder="请选择不符合图招原因">
+        placeholder="请选择不符合图招原因"
+        @focus="focusSelectInput">
         <el-option
           v-for="item in discrepancyReasonList"
           :key="item.value"
@@ -230,6 +231,8 @@ export default {
     this.houseInfoData = {
       reviewStatus: '',
       remark: '',
+      accordPic: '',
+      discrepancyReason: [],
       desc: deepClone(this.temp).houseDesc,
       picList: picList.map((item) => {
         return { src: item.picUrl, id: item.id, picTag: item.picTag || '', type: item.picType }
@@ -237,6 +240,9 @@ export default {
     }
   },
   methods: {
+    focusSelectInput(e) {
+      e.target.maxLength = 50
+    },
     reviewStatusChange(val) {
       if (val === 3) {
         this.houseInfoData.accordPic = ''
@@ -332,6 +338,8 @@ export default {
           reviewStatus: '',
           remark: '',
           desc: deepClone(val).houseDesc,
+          accordPic: '',
+          discrepancyReason: [],
           picList: picList.map((item) => {
             return { src: item.picUrl, id: item.id, picTag: item.picTag || '', type: item.picType }
           })

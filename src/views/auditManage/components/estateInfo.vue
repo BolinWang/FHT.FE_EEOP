@@ -53,7 +53,7 @@
       </el-col>
     </el-form-item>
     <el-form-item v-if="type == 'audit'" label="审核结果">
-      <el-radio-group v-model="estateInfoData.reviewStatus" v-if="!temp.reviewStatus || temp.reviewStatus === 1">
+      <el-radio-group v-model="estateInfoData.reviewStatus" v-if="!temp.reviewStatus || temp.reviewStatus === 1" @change="reviewStatusChange">
         <el-radio :label="2">通过</el-radio>
         <el-radio :label="3">不通过</el-radio>
       </el-radio-group>
@@ -82,7 +82,8 @@
         filterable
         allow-create
         default-first-option
-        placeholder="请选择不符合图招原因">
+        placeholder="请选择不符合图招原因"
+        @focus="focusSelectInput">
         <el-option
           v-for="item in discrepancyReasonList"
           :key="item.value"
@@ -214,18 +215,23 @@ export default {
       reviewStatus: '',
       remark: '',
       desc: deepClone(this.temp).introduction,
+      accordPic: '',
+      discrepancyReason: [],
       picList: picList.map((item) => {
         return { id: item.id, src: item.picUrl, picTag: item.picTag || '', type: item.picType }
       })
     }
   },
   methods: {
+    focusSelectInput(e) {
+      e.target.maxLength = 50
+    },
     reviewStatusChange(val) {
       if (val === 3) {
-        this.houseInfoData.accordPic = ''
-        this.houseInfoData.discrepancyReason = []
+        this.estateInfoData.accordPic = ''
+        this.estateInfoData.discrepancyReason = []
       } else {
-        this.houseInfoData.remark = ''
+        this.estateInfoData.remark = ''
       }
     },
     emitPicList(val) {
@@ -309,6 +315,8 @@ export default {
           reviewStatus: '',
           remark: '',
           desc: deepClone(val).introduction,
+          accordPic: '',
+          discrepancyReason: [],
           picList: picList.map((item) => {
             return { src: item.picUrl, id: item.id, picTag: item.picTag || '', type: item.picType }
           })
