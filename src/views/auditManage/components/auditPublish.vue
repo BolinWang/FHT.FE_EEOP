@@ -390,6 +390,10 @@ export default {
         this.$message.error('请选择审核不通过原因')
         return false
       }
+      if (this.reviewData.reviewStatus === 2 && this.reviewData.accordPic !== 2 && !this.reviewData.discrepancyReason) {
+        this.$message.error('请选择不符合图招原因')
+        return false
+      }
       const saveRequestApi = this.housingType === 2 ? saveReviewStatusApi : saveEstatePublishStatusApi
       saveRequestApi(ObjectMap(this.reviewData)).then(response => {
         this.layer_showInfo = false
