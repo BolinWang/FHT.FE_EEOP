@@ -5,14 +5,16 @@ const houseInfoData = {
       remark: '',
       desc: '',
       reviewStatus: '',
-      accordPic: ''
+      accordPic: '',
+      discrepancyReason: []
     },
     estateInfo: {
       picList: [],
       remark: '',
       desc: '',
       reviewStatus: '',
-      accordPic: ''
+      accordPic: '',
+      discrepancyReason: []
     }
   },
 

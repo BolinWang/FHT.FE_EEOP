@@ -87,7 +87,7 @@
       </el-collapse-item>
     </el-collapse>
     <el-form-item v-if="type == 'audit'" label="审核结果">
-      <el-radio-group v-model="houseInfoData.reviewStatus" v-if="temp.reviewStatus == 1">
+      <el-radio-group v-model="houseInfoData.reviewStatus" v-if="temp.reviewStatus == 1" @change="reviewStatusChange">
         <el-radio :label="2">通过</el-radio>
         <el-radio :label="3">不通过</el-radio>
       </el-radio-group>
@@ -106,9 +106,24 @@
       <el-select size="small" v-else-if="houseInfoData.reviewStatus === 2"
          v-model="houseInfoData.accordPic"
          placeholder="请选择是否符合图招" class="item-select"
-         clearable style="width: 200px;">
+         clearable style="width: 200px; vertical-align: top;">
         <el-option label="符合图招" :value="2"></el-option>
         <el-option label="不符合图招" :value="1"></el-option>
+      </el-select>
+      <el-select v-if="houseInfoData.reviewStatus === 2 && houseInfoData.accordPic === 1"
+        size="small" style="width: 450px; margin-left: 10px;" v-model="houseInfoData.discrepancyReason"
+        multiple
+        filterable
+        allow-create
+        default-first-option
+        placeholder="请选择不符合图招原因"
+        @focus="focusSelectInput">
+        <el-option
+          v-for="item in discrepancyReasonList"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value">
+        </el-option>
       </el-select>
     </el-form-item>
     <el-form-item v-if="type == 'published'" label="操作">
@@ -186,7 +201,9 @@ export default {
         picList: [],
         reviewStatus: '',
         remark: '',
-        desc: ''
+        desc: '',
+        accordPic: '',
+        discrepancyReason: []
       },
       checked: false,
       accept: 'image/png, image/jpeg, image/jpg',
@@ -196,6 +213,13 @@ export default {
         { label: '交租方式不符合规则', value: '交租方式不符合规则' },
         { label: '电话信息错误', value: '电话信息错误' },
         { label: '面积信息错误', value: '面积信息错误' }
+      ],
+      discrepancyReasonList: [
+        { label: '缺少小区环境图', value: '缺少小区环境图' },
+        { label: '缺少公区图片（阳台/客厅/（过道）/厨房/卫生间 至少2种类型）', value: '缺少公区图片（阳台/客厅/（过道）/厨房/卫生间 至少2种类型）' },
+        { label: '缺少房间图片', value: '缺少房间图片' },
+        { label: '电器/物品有损坏', value: '电器/物品有损坏' },
+        { label: '环境脏乱差', value: '环境脏乱差' }
       ],
       layer_cropper: false
     }
@@ -207,6 +231,8 @@ export default {
     this.houseInfoData = {
       reviewStatus: '',
       remark: '',
+      accordPic: '',
+      discrepancyReason: [],
       desc: deepClone(this.temp).houseDesc,
       picList: picList.map((item) => {
         return { src: item.picUrl, id: item.id, picTag: item.picTag || '', type: item.picType }
@@ -214,6 +240,17 @@ export default {
     }
   },
   methods: {
+    focusSelectInput(e) {
+      e.target.maxLength = 50
+    },
+    reviewStatusChange(val) {
+      if (val === 3) {
+        this.houseInfoData.accordPic = ''
+        this.houseInfoData.discrepancyReason = []
+      } else {
+        this.houseInfoData.remark = ''
+      }
+    },
     emitPicList(val, id) {
       this.houseInfoData.picList = val
     },
@@ -301,6 +338,8 @@ export default {
           reviewStatus: '',
           remark: '',
           desc: deepClone(val).houseDesc,
+          accordPic: '',
+          discrepancyReason: [],
           picList: picList.map((item) => {
             return { src: item.picUrl, id: item.id, picTag: item.picTag || '', type: item.picType }
           })
