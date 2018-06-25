@@ -18,9 +18,11 @@ export default {
     auditPublish
   },
   data() {
+    const routerType = this.$route.query.type || 0
+    const tabMapOptions = ['分散式', '集中式']
     return {
-      tabMapOptions: ['分散式', '集中式'],
-      activeName: '分散式'
+      tabMapOptions,
+      activeName: tabMapOptions[routerType]
     }
   },
   methods: {

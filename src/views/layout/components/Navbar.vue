@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-04-11 17:22:27
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-06-21 15:24:20
+ * @Last Modified time: 2018-06-25 15:05:25
  */
 
 <template>
@@ -11,11 +11,6 @@
       <hamburger class="hamburger-container" :toggleClick="toggleSideBar" :isActive="sidebar.opened"></hamburger>
       <tags-view></tags-view>
       <div class="right-menu">
-        <!-- <div class="notification right-menu-item">
-          <el-badge :value="200" :max="10" class="item">
-            <icon-svg icon-class="wechat" />
-          </el-badge>
-        </div> -->
         <el-tooltip effect="dark" content="全屏" placement="bottom">
           <screenfull class="screenfull right-menu-item"></screenfull>
         </el-tooltip>
@@ -40,6 +35,25 @@
             <el-dropdown-item divided>
               <span @click="logout" style="display:block;">退出</span>
             </el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+        <el-dropdown trigger="click" style="line-height: initial">
+          <div class="notification right-menu-item" :class="{hasInfos: infosNum > 0}">
+            <el-badge :value="infosNum" :max="10" class="item">
+              <icon-svg icon-class="infos" />
+            </el-badge>
+          </div>
+          <el-dropdown-menu slot="dropdown">
+            <div class="routerToItems" v-if="infosNum > 0">
+              <el-dropdown-item class="clearfix flex" @click.native="routerTo(0)">
+                <span>您有<i class="red">3</i>条[分散式]房源信息待审核</span>
+                <el-button type="text">前往审核</el-button>
+              </el-dropdown-item>
+              <el-dropdown-item class="clearfix flex" @click.native="routerTo(1)">
+                <span>您有<i class="red">4</i>条[集中式]房源信息待审核</span>
+                <el-button type="text">前往审核</el-button>
+              </el-dropdown-item>
+            </div>
           </el-dropdown-menu>
         </el-dropdown>
       </div>
@@ -105,7 +119,8 @@ export default {
         name: [
           { required: true, trigger: 'blur', validator: validateName }
         ]
-      }
+      },
+      infosNum: '0'
     }
   },
   created() {
@@ -119,6 +134,12 @@ export default {
     ])
   },
   methods: {
+    routerTo(type) {
+      this.$router.push({
+        path: '/auditManage/auditPublishList',
+        query: { type: type }
+      })
+    },
     toggleSideBar() {
       this.$store.dispatch('ToggleSideBar')
     },
@@ -188,18 +209,24 @@ export default {
       vertical-align: 16px;
     }
     .notification {
+      cursor: pointer;
       height: 40px;
       line-height: 40px;
-      vertical-align: 3px;
-      margin-right: 20px;
+      vertical-align: 10px;
+      margin-right: 30px;
       .svg-icon {
-        font-size: 35px;
-        color: #5a5e66;
+        font-size: 30px;
+        color: #bababa;
+      }
+    }
+    .hasInfos {
+      .svg-icon {
+        color: #f56c6c;
       }
     }
     .avatar-container {
       height: 50px;
-      margin-right: 10px;
+      // margin-right: 10px;
       .avatar-wrapper {
         cursor: pointer;
         margin-top: 5px;
