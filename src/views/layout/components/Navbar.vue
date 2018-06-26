@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-04-11 17:22:27
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-06-25 19:17:11
+ * @Last Modified time: 2018-06-26 15:22:27
  */
 
 <template>
@@ -38,7 +38,12 @@
           </el-dropdown-menu>
         </el-dropdown>
         <el-dropdown trigger="click" style="line-height: initial">
-          <div class="notification right-menu-item animated swing" :class="{hasInfos: messageData.total > 0, infinite: messageData.total > 0}">
+          <div class="notification right-menu-item animated"
+            :class="{
+              hasInfos: messageData.total > 0,
+              infinite: messageData.total > 0,
+              swing: messageData.total > 0
+            }">
             <el-badge :value="messageData.total || '0'" :max="10" class="item">
               <icon-svg icon-class="infos" />
             </el-badge>
@@ -52,6 +57,11 @@
               <el-dropdown-item class="clearfix flex" @click.native="routerTo(1)" v-if="messageData.concentrate > 0">
                 <span class="infos__item">您有<i class="red">{{messageData.concentrate || '0'}}</i>条[集中式]房源信息待审核</span>
                 <el-button type="text">前往审核</el-button>
+              </el-dropdown-item>
+            </div>
+            <div class="routerToItems" v-else>
+              <el-dropdown-item class="clearfix flex">
+                <span>还没有消息哦(￣▽￣)</span>
               </el-dropdown-item>
             </div>
           </el-dropdown-menu>
