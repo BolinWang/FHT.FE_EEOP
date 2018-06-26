@@ -254,3 +254,15 @@ export function bindWithdrawCardApi(params = {}) {
     }
   });
 }
+
+// 获取消息数
+export function queryMessageQuantityApi(params = {}) {
+  return fetch({
+    url: '/market/message',
+    method: 'post',
+    data: {
+      method: 'queryMessageQuantity',
+      params
+    }
+  })
+}

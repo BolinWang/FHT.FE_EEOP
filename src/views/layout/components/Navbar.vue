@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-04-11 17:22:27
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-06-25 15:05:25
+ * @Last Modified time: 2018-06-25 19:17:11
  */
 
 <template>
@@ -38,19 +38,19 @@
           </el-dropdown-menu>
         </el-dropdown>
         <el-dropdown trigger="click" style="line-height: initial">
-          <div class="notification right-menu-item" :class="{hasInfos: infosNum > 0}">
-            <el-badge :value="infosNum" :max="10" class="item">
+          <div class="notification right-menu-item animated swing" :class="{hasInfos: messageData.total > 0, infinite: messageData.total > 0}">
+            <el-badge :value="messageData.total || '0'" :max="10" class="item">
               <icon-svg icon-class="infos" />
             </el-badge>
           </div>
           <el-dropdown-menu slot="dropdown">
-            <div class="routerToItems" v-if="infosNum > 0">
-              <el-dropdown-item class="clearfix flex" @click.native="routerTo(0)">
-                <span>您有<i class="red">3</i>条[分散式]房源信息待审核</span>
+            <div class="routerToItems" v-if="messageData.total > 0">
+              <el-dropdown-item class="clearfix flex" @click.native="routerTo(0)" v-if="messageData.distribute > 0">
+                <span class="infos__item">您有<i class="red">{{messageData.distribute || '0'}}</i>条[分散式]房源信息待审核</span>
                 <el-button type="text">前往审核</el-button>
               </el-dropdown-item>
-              <el-dropdown-item class="clearfix flex" @click.native="routerTo(1)">
-                <span>您有<i class="red">4</i>条[集中式]房源信息待审核</span>
+              <el-dropdown-item class="clearfix flex" @click.native="routerTo(1)" v-if="messageData.concentrate > 0">
+                <span class="infos__item">您有<i class="red">{{messageData.concentrate || '0'}}</i>条[集中式]房源信息待审核</span>
                 <el-button type="text">前往审核</el-button>
               </el-dropdown-item>
             </div>
@@ -81,7 +81,7 @@ import Hamburger from '@/components/Hamburger';
 import ThemePicker from '@/components/ThemePicker'
 import Screenfull from '@/components/Screenfull'
 import { default as TagsView } from './TagsView'
-import { saveSelfDetailApi } from '@/api/userManage'
+import { saveSelfDetailApi, queryMessageQuantityApi } from '@/api/userManage'
 import { ObjectMap } from '@/utils'
 
 export default {
@@ -98,14 +98,14 @@ export default {
       } else {
         callback();
       }
-    };
+    }
     const validatePass = (rule, value, callback) => {
       if (value && value.length < 6) {
         callback(new Error('密码不能小于6位'));
       } else {
         callback();
       }
-    };
+    }
     return {
       layer_showUserInfo: false,
       ruleForm: {
@@ -120,20 +120,42 @@ export default {
           { required: true, trigger: 'blur', validator: validateName }
         ]
       },
-      infosNum: '0'
+      intervalId: null
     }
   },
   created() {
-
+    clearInterval(this.intervalId)
+    this.getMessageInfos()
+  },
+  destroyed () {
+    clearInterval(this.intervalId)
   },
   computed: {
     ...mapGetters([
       'sidebar',
       'avatar',
-      'name'
+      'name',
+      'messageData'
     ])
   },
   methods: {
+    // 一分钟查询一次消息
+    getMessageInfos() {
+      let _this = this
+      _this.intervalId = setInterval(() => {
+        _this.getMessageQuantity()
+      }, 60000)
+      _this.getMessageQuantity()
+    },
+    getMessageQuantity() {
+      queryMessageQuantityApi().then(response => {
+        const responseData = response.data
+        const stateMessageData = this.$store.state.app.messageData
+        if (JSON.stringify(stateMessageData) != JSON.stringify(responseData)) {
+          this.$store.dispatch('UpdateMessageData', response.data || {})
+        }
+      })
+    },
     routerTo(type) {
       this.$router.push({
         path: '/auditManage/auditPublishList',
@@ -145,8 +167,8 @@ export default {
     },
     logout() {
       this.$store.dispatch('LogOut').then(() => {
-        location.reload(); // 为了重新实例化vue-router对象 避免bug
-      });
+        location.reload() // 为了重新实例化vue-router对象 避免bug
+      })
     },
     handelSaveUserInfo() {
       this.$refs.ruleForm.validate(valid => {
@@ -154,22 +176,29 @@ export default {
           saveSelfDetailApi(ObjectMap(this.ruleForm)).then(response => {
             this.layer_showUserInfo = false;
             this.$store.dispatch('LogOut').then(() => {
-              location.reload(); // 为了重新实例化vue-router对象 避免bug
-            });
-          });
+              location.reload() // 为了重新实例化vue-router对象 避免bug
+            })
+          })
         } else {
-          console.log('error submit!!');
-          return false;
+          console.log('error submit!!')
+          return false
         }
       })
     },
     dialogClose() {
-      this.$refs.ruleForm.resetFields();
+      this.$refs.ruleForm.resetFields()
     }
   }
 }
 </script>
 <style rel="stylesheet/scss" lang="scss" scoped>
+.infos__item {
+  display: inline-block;
+  width: 220px;
+  .red {
+    color: red;
+  }
+}
 .navbar {
   height: 50px;
   line-height: 50px;

@@ -97,6 +97,7 @@ import {
   saveReviewStatusApi, saveEstatePublishStatusApi
 } from '@/api/auditCenter'
 import { getCityListApi } from '@/api/houseManage'
+import { queryMessageQuantityApi } from '@/api/userManage'
 import waves from '@/directive/waves' // 水波纹指令
 import houseInfo from '@/views/auditManage/components/houseInfo'
 import estateInfo from '@/views/auditManage/components/estateInfo'
@@ -399,13 +400,24 @@ export default {
       saveRequestApi(ObjectMap(this.reviewData)).then(response => {
         this.layer_showInfo = false
         this.getGridData(this.pageItems)
+        this.getMessageQuantity()
         this.$notify({
           title: '成功',
           message: '操作成功',
           type: 'success',
           duration: 2000
         })
-      });
+      })
+    },
+    // 更新消息队列
+    getMessageQuantity() {
+      queryMessageQuantityApi().then(response => {
+        const responseData = response.data
+        const stateMessageData = this.$store.state.app.messageData
+        if (JSON.stringify(stateMessageData) != JSON.stringify(responseData)) {
+          this.$store.dispatch('UpdateMessageData', response.data || {})
+        }
+      })
     }
   }
 };
