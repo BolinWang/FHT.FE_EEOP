@@ -53,7 +53,7 @@ export const asyncRouterMap = [
     component: Layout,
     redirect: 'noredirect',
     name: '运营管理',
-    icon: 'dashboard',
+    icon: 'icon_eeop',
     meta: {
       role: ['admin', 'global']
     },
@@ -99,7 +99,7 @@ export const asyncRouterMap = [
     component: Layout,
     redirect: 'noredirect',
     name: '房源管理',
-    icon: 'table',
+    icon: 'icon_house',
     meta: {
       role: ['admin', 'global']
     },
@@ -125,7 +125,7 @@ export const asyncRouterMap = [
     component: Layout,
     redirect: 'noredirect',
     name: '审核中心',
-    icon: 'form',
+    icon: 'icon_audit',
     meta: {
       role: ['admin', 'global']
     },
@@ -157,7 +157,7 @@ export const asyncRouterMap = [
     component: Layout,
     redirect: '/userManage/feedbackPage',
     name: '用户管理',
-    icon: 'peoples',
+    icon: 'icon_user',
     meta: {
       role: ['admin', 'global']
     },

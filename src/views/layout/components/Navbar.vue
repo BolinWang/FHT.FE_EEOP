@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-04-11 17:22:27
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-06-21 15:24:20
+ * @Last Modified time: 2018-06-26 15:22:27
  */
 
 <template>
@@ -11,11 +11,6 @@
       <hamburger class="hamburger-container" :toggleClick="toggleSideBar" :isActive="sidebar.opened"></hamburger>
       <tags-view></tags-view>
       <div class="right-menu">
-        <!-- <div class="notification right-menu-item">
-          <el-badge :value="200" :max="10" class="item">
-            <icon-svg icon-class="wechat" />
-          </el-badge>
-        </div> -->
         <el-tooltip effect="dark" content="全屏" placement="bottom">
           <screenfull class="screenfull right-menu-item"></screenfull>
         </el-tooltip>
@@ -40,6 +35,35 @@
             <el-dropdown-item divided>
               <span @click="logout" style="display:block;">退出</span>
             </el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+        <el-dropdown trigger="click" style="line-height: initial">
+          <div class="notification right-menu-item animated"
+            :class="{
+              hasInfos: messageData.total > 0,
+              infinite: messageData.total > 0,
+              swing: messageData.total > 0
+            }">
+            <el-badge :value="messageData.total || '0'" :max="10" class="item">
+              <icon-svg icon-class="infos" />
+            </el-badge>
+          </div>
+          <el-dropdown-menu slot="dropdown">
+            <div class="routerToItems" v-if="messageData.total > 0">
+              <el-dropdown-item class="clearfix flex" @click.native="routerTo(0)" v-if="messageData.distribute > 0">
+                <span class="infos__item">您有<i class="red">{{messageData.distribute || '0'}}</i>条[分散式]房源信息待审核</span>
+                <el-button type="text">前往审核</el-button>
+              </el-dropdown-item>
+              <el-dropdown-item class="clearfix flex" @click.native="routerTo(1)" v-if="messageData.concentrate > 0">
+                <span class="infos__item">您有<i class="red">{{messageData.concentrate || '0'}}</i>条[集中式]房源信息待审核</span>
+                <el-button type="text">前往审核</el-button>
+              </el-dropdown-item>
+            </div>
+            <div class="routerToItems" v-else>
+              <el-dropdown-item class="clearfix flex">
+                <span>还没有消息哦(￣▽￣)</span>
+              </el-dropdown-item>
+            </div>
           </el-dropdown-menu>
         </el-dropdown>
       </div>
@@ -67,7 +91,7 @@ import Hamburger from '@/components/Hamburger';
 import ThemePicker from '@/components/ThemePicker'
 import Screenfull from '@/components/Screenfull'
 import { default as TagsView } from './TagsView'
-import { saveSelfDetailApi } from '@/api/userManage'
+import { saveSelfDetailApi, queryMessageQuantityApi } from '@/api/userManage'
 import { ObjectMap } from '@/utils'
 
 export default {
@@ -84,14 +108,14 @@ export default {
       } else {
         callback();
       }
-    };
+    }
     const validatePass = (rule, value, callback) => {
       if (value && value.length < 6) {
         callback(new Error('密码不能小于6位'));
       } else {
         callback();
       }
-    };
+    }
     return {
       layer_showUserInfo: false,
       ruleForm: {
@@ -105,27 +129,56 @@ export default {
         name: [
           { required: true, trigger: 'blur', validator: validateName }
         ]
-      }
+      },
+      intervalId: null
     }
   },
   created() {
-
+    clearInterval(this.intervalId)
+    this.getMessageInfos()
+  },
+  destroyed () {
+    clearInterval(this.intervalId)
   },
   computed: {
     ...mapGetters([
       'sidebar',
       'avatar',
-      'name'
+      'name',
+      'messageData'
     ])
   },
   methods: {
+    // 一分钟查询一次消息
+    getMessageInfos() {
+      let _this = this
+      _this.intervalId = setInterval(() => {
+        _this.getMessageQuantity()
+      }, 60000)
+      _this.getMessageQuantity()
+    },
+    getMessageQuantity() {
+      queryMessageQuantityApi().then(response => {
+        const responseData = response.data
+        const stateMessageData = this.$store.state.app.messageData
+        if (JSON.stringify(stateMessageData) != JSON.stringify(responseData)) {
+          this.$store.dispatch('UpdateMessageData', response.data || {})
+        }
+      })
+    },
+    routerTo(type) {
+      this.$router.push({
+        path: '/auditManage/auditPublishList',
+        query: { type: type }
+      })
+    },
     toggleSideBar() {
       this.$store.dispatch('ToggleSideBar')
     },
     logout() {
       this.$store.dispatch('LogOut').then(() => {
-        location.reload(); // 为了重新实例化vue-router对象 避免bug
-      });
+        location.reload() // 为了重新实例化vue-router对象 避免bug
+      })
     },
     handelSaveUserInfo() {
       this.$refs.ruleForm.validate(valid => {
@@ -133,22 +186,29 @@ export default {
           saveSelfDetailApi(ObjectMap(this.ruleForm)).then(response => {
             this.layer_showUserInfo = false;
             this.$store.dispatch('LogOut').then(() => {
-              location.reload(); // 为了重新实例化vue-router对象 避免bug
-            });
-          });
+              location.reload() // 为了重新实例化vue-router对象 避免bug
+            })
+          })
         } else {
-          console.log('error submit!!');
-          return false;
+          console.log('error submit!!')
+          return false
         }
       })
     },
     dialogClose() {
-      this.$refs.ruleForm.resetFields();
+      this.$refs.ruleForm.resetFields()
     }
   }
 }
 </script>
 <style rel="stylesheet/scss" lang="scss" scoped>
+.infos__item {
+  display: inline-block;
+  width: 220px;
+  .red {
+    color: red;
+  }
+}
 .navbar {
   height: 50px;
   line-height: 50px;
@@ -188,18 +248,24 @@ export default {
       vertical-align: 16px;
     }
     .notification {
+      cursor: pointer;
       height: 40px;
       line-height: 40px;
-      vertical-align: 3px;
-      margin-right: 20px;
+      vertical-align: 10px;
+      margin-right: 30px;
       .svg-icon {
-        font-size: 35px;
-        color: #5a5e66;
+        font-size: 30px;
+        color: #bababa;
+      }
+    }
+    .hasInfos {
+      .svg-icon {
+        color: #f56c6c;
       }
     }
     .avatar-container {
       height: 50px;
-      margin-right: 10px;
+      // margin-right: 10px;
       .avatar-wrapper {
         cursor: pointer;
         margin-top: 5px;

@@ -233,7 +233,7 @@ export function initFlyOrgApi(params = {}) {
 }
 export function addTempOrgApi(params = {}) {
   return fetch({
-    url: `${process.env.FLY_API}/api/manager/addTempOrg`,
+    url: `${process.env.FLY_API}/api/user/addTempOrg`,
     method: 'post',
     noAssign: true,
     noSessionId: true,
@@ -253,4 +253,16 @@ export function bindWithdrawCardApi(params = {}) {
       params
     }
   });
+}
+
+// 获取消息数
+export function queryMessageQuantityApi(params = {}) {
+  return fetch({
+    url: '/market/message',
+    method: 'post',
+    data: {
+      method: 'queryMessageQuantity',
+      params
+    }
+  })
 }

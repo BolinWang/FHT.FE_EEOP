@@ -68,8 +68,8 @@
               <template slot="append">%</template>
             </el-input>
           </el-form-item>
-          <el-form-item label="城市管家手机号" prop="managerMobile">
-            <el-input v-model="signForm.managerMobile" placeholder="请输入城市管家手机号"></el-input>
+          <el-form-item label="城市管家姓名" prop="managerMobile">
+            <el-input v-model="signForm.managerMobile" placeholder="请输入城市管家姓名"></el-input>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -198,7 +198,7 @@ export default {
           { required: true, trigger: 'blur', validator: validatePhone }
         ],
         managerMobile: [
-          { required: true, trigger: 'blur', validator: validatePhone }
+          { required: true, trigger: 'blur', message: '请输入城市管家姓名' }
         ],
         name: [
           { required: true, trigger: 'blur', validator: validateName }
