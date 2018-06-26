@@ -233,7 +233,7 @@ export function initFlyOrgApi(params = {}) {
 }
 export function addTempOrgApi(params = {}) {
   return fetch({
-    url: `${process.env.FLY_API}/api/manager/addTempOrg`,
+    url: `${process.env.FLY_API}/api/user/addTempOrg`,
     method: 'post',
     noAssign: true,
     noSessionId: true,
