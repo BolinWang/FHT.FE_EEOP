@@ -249,7 +249,10 @@ export default {
     },
     saveSort() {
       this.sort_tableData.forEach((item, index) => item.sortNum = index * 1 + 1)
-      appIconApi.saveSort(this.sort_tableData).then(response => {
+      appIconApi.saveSort(ObjectMap({
+        cityId: this.searchParams.cityId,
+        list: this.sort_tableData
+      })).then(response => {
         this.layer_appsort = false
         this.searchParam()
         this.$notify({
