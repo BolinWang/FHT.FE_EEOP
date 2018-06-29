@@ -10,10 +10,10 @@
           <el-option v-for="(item,index) in regionOptions" :key="index" :label="item.areaName" :value="item.areaId">
           </el-option>
         </el-select>
-        <el-select size="small" v-model="formData.subdistrictId" :placeholder="placeholder" class="item-select filter-item" style="width: 180px;" clearable filterable>
+        <!-- <el-select size="small" v-model="formData.subdistrictId" :placeholder="placeholder" class="item-select filter-item" style="width: 180px;" clearable filterable>
           <el-option v-for="(item,index) in subdistrictOptions" :key="index" :label="housingTypeClone == 1 ? item.estateName : item.subdistrictName" :value="housingTypeClone == 1 ? item.estateId : item.subdistrictId">
           </el-option>
-        </el-select>
+        </el-select> -->
         <el-input size="small" v-model="formData.roomCode" placeholder="输入房源编码查询" class="filter-item" style="width:180px;" @keydown.native.enter="searchParam">
         </el-input>
         <el-button type="primary" size="small" icon="el-icon-search" @click.native="searchParam" v-waves class="filter-item">查询</el-button>
@@ -166,10 +166,10 @@ export default {
       marketCityAndSubdistrictListApi({
         housingType: this.housingType
       }).then(response => {
-        let dataList = response.data.list;
-        this.cityOptions = dataList.cityInfoList;
-        this.subdistrictOptions = dataList.subdistrictList;
-        this.subdistrictOptionsClone = deepClone(dataList.subdistrictList);
+        let dataList = response.data.list
+        this.cityOptions = dataList.cityInfoList
+        this.subdistrictOptions = dataList.subdistrictList || []
+        this.subdistrictOptionsClone = deepClone(dataList.subdistrictList || [])
       })
     },
     handleSizeChange(val) {
