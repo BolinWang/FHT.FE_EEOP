@@ -77,13 +77,13 @@
         :url="'/market/customer/'"
         :dataMethod="'deviceList'">
         <template slot="manageLimit" slot-scope="scope">
-          <span v-if="scope.row.deviceType !== '门禁'">/</span>
+          <span v-if="scope.row.deviceType === '门禁'">/</span>
           <el-tag v-else :type="scope.row.landlordStatus === 1 ? 'success' : 'info'">
               {{scope.row.landlordStatus === 1 ? '可用' : '不可用'}}
           </el-tag>
         </template>
         <template slot="rentLimit" slot-scope="scope">
-          <span v-if="scope.row.deviceType !== '门禁'">/</span>
+          <span v-if="scope.row.deviceType === '门禁'">/</span>
           <el-tag v-else :type="scope.row.lodgerStatus === 1 ? 'success' : 'info'">
               {{scope.row.lodgerStatus === 1 ? '可用' : '不可用'}}
           </el-tag>
