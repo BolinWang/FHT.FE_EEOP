@@ -1,8 +1,8 @@
 /*
  * @Author: FT.FE.Bolin
  * @Date: 2018-04-11 16:47:22
- * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-06-21 13:54:05
+ * @Last Modified by: chudequan
+ * @Last Modified time: 2018-07-09 20:28:37
  */
 <template>
   <div class="model-table-pagenation">
@@ -30,6 +30,7 @@
         :show-summary="showSummary"
         :sum-text="sumText"
         :summary-method="summaryMethod"
+        :cell-class-name="cellClassName"
         style="width: 100%;"
         @select="(selection, row) => emitEventHandler('select', selection, row)"
         @select-all="selection => emitEventHandler('select-all', selection)"

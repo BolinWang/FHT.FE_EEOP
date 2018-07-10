@@ -1,11 +1,11 @@
 /*
  * @Author: FT.FE.Bolin
  * @Date: 2018-04-11 16:49:14
- * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-04-12 10:38:46
+ * @Last Modified by: chudequan
+ * @Last Modified time: 2018-07-09 20:32:05
  */
 
-let props = {
+const props = {
   // Element UI table配置
   height: [String, Number],
   maxHeight: [String, Number],
@@ -42,6 +42,7 @@ let props = {
   showSummary: Boolean,
   sumText: String,
   summaryMethod: Function,
+  cellClassName: [String, Function],
   // 自定义配置
 
   // axios url
