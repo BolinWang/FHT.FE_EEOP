@@ -66,7 +66,7 @@
       </GridUnit>
     </el-dialog>
     <!-- 智能设备 -->
-    <el-dialog title="智能设备" width="1000px" :visible.sync="deviceInfo">
+    <el-dialog title="智能设备" width="1100px" :visible.sync="deviceInfo">
       <GridUnit
         v-if="deviceInfo"
         ref="deviceTable"
@@ -76,16 +76,25 @@
         :showPagination="false"
         :url="'/market/customer/'"
         :dataMethod="'deviceList'">
+        <template slot="deviceCurrentStatus" slot-scope="scope">
+          <el-tag v-if="scope.row.deviceType === '门锁'" :type="scope.row.deviceCurrentStatus === 1 ? 'success' : 'info'">
+              {{scope.row.deviceCurrentStatus === 1 ? '正常' : '低电量'}}
+          </el-tag>
+          <el-tag v-else-if="scope.row.deviceType === '电表'" :type="scope.row.deviceCurrentStatus === 1 ? 'success' : 'info'">
+              {{scope.row.deviceCurrentStatus === 1 ? '通电' : '断电'}}
+          </el-tag>
+          <span v-else>/</span>
+        </template>
         <template slot="manageLimit" slot-scope="scope">
-          <span v-if="scope.row.deviceType === '门禁'">/</span>
+          <span v-if="scope.row.deviceType !== '门锁'">/</span>
           <el-tag v-else :type="scope.row.landlordStatus === 1 ? 'success' : 'info'">
-              {{scope.row.landlordStatus === 1 ? '可用' : '不可用'}}
+              {{scope.row.landlordStatus === 1 ? '启用' : '停用'}}
           </el-tag>
         </template>
         <template slot="rentLimit" slot-scope="scope">
-          <span v-if="scope.row.deviceType === '门禁'">/</span>
+          <span v-if="scope.row.deviceType !== '门锁'">/</span>
           <el-tag v-else :type="scope.row.lodgerStatus === 1 ? 'success' : 'info'">
-              {{scope.row.lodgerStatus === 1 ? '可用' : '不可用'}}
+              {{scope.row.lodgerStatus === 1 ? '启用' : '停用'}}
           </el-tag>
         </template>
         <template slot="checkPassword" slot-scope="scope">
@@ -228,28 +237,37 @@ export default {
         { prop: 'productBrandName', label: '设备品牌' },
         { prop: 'productType', label: '设备型号' },
         {
-          prop: 'deviceCurrentStatus',
-          label: '设备状态',
+          prop: 'deviceStatus',
+          label: '管理状态',
           type: 'status',
+          align: 'center',
           unitFilters: {
             renderStatusType(status) {
               return status == 1 ? 'success' : (status == 2 ? 'danger' : 'info')
             },
             renderStatusValue(status) {
-              const statusStrData = ['等待安装', '正常', '停用']
+              const statusStrData = ['等待安装', '启用', '停用']
               return statusStrData[status] || '待上线'
             }
           }
         },
         {
+          prop: 'deviceCurrentStatus',
+          label: '设备状态',
+          slotName: 'deviceCurrentStatus',
+          align: 'center'
+        },
+        {
           prop: 'landlordStatus',
           label: '管家权限',
-          slotName: 'manageLimit'
+          slotName: 'manageLimit',
+          align: 'center'
         },
         {
           prop: 'lodgerStatus',
           label: '租客权限',
-          slotName: 'rentLimit'
+          slotName: 'rentLimit',
+          align: 'center'
         },
         {
           prop: 'devicePwdStatus',
