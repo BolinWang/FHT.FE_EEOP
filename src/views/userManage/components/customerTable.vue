@@ -76,14 +76,19 @@
         :showPagination="false"
         :url="'/market/customer/'"
         :dataMethod="'deviceList'">
-        <template slot="deviceCurrentStatus" slot-scope="scope">
-          <el-tag v-if="scope.row.deviceType === '门锁'" :type="scope.row.deviceCurrentStatus === 1 ? 'success' : 'info'">
-              {{scope.row.deviceCurrentStatus === 1 ? '正常' : '低电量'}}
-          </el-tag>
-          <el-tag v-else-if="scope.row.deviceType === '电表'" :type="scope.row.deviceCurrentStatus === 1 ? 'success' : 'info'">
-              {{scope.row.deviceCurrentStatus === 1 ? '通电' : '断电'}}
+        <template slot="deviceStatus" slot-scope="scope">
+          <el-tag v-if="scope.row.deviceType === '电表'" :type="scope.row.deviceCurrentStatus === 1 ? 'success' : 'info'">
+              {{scope.row.deviceCurrentStatus === 0 ? '等待安装' : (scope.row.deviceCurrentStatus === 1 ? '启用' : '停用')}}
           </el-tag>
           <span v-else>/</span>
+        </template>
+        <template slot="deviceCurrentStatus" slot-scope="scope">
+          <el-tag v-if="scope.row.deviceType === '电表'" :type="scope.row.deviceCurrentStatus === 1 ? 'success' : 'info'">
+              {{scope.row.deviceCurrentStatus === 1 ? '通电' : '断电'}}
+          </el-tag>
+          <el-tag v-else :type="scope.row.deviceCurrentStatus === 1 ? 'success' : 'info'">
+              {{scope.row.deviceCurrentStatus === 1 ? '启用' : '停用'}}
+          </el-tag>
         </template>
         <template slot="manageLimit" slot-scope="scope">
           <span v-if="scope.row.deviceType !== '门锁'">/</span>
@@ -239,17 +244,8 @@ export default {
         {
           prop: 'deviceStatus',
           label: '管理状态',
-          type: 'status',
           align: 'center',
-          unitFilters: {
-            renderStatusType(status) {
-              return status == 1 ? 'success' : (status == 2 ? 'danger' : 'info')
-            },
-            renderStatusValue(status) {
-              const statusStrData = ['等待安装', '启用', '停用']
-              return statusStrData[status] || '待上线'
-            }
-          }
+          slotName: 'deviceStatus',
         },
         {
           prop: 'deviceCurrentStatus',
