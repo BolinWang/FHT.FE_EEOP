@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-04-11 16:49:14
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-04-12 10:38:46
+ * @Last Modified time: 2018-07-11 17:13:40
  */
 
 let props = {
@@ -85,6 +85,11 @@ let props = {
   showExpand: {
     type: Boolean,
     default: false
+  },
+  // expandType
+  expandType: {
+    type: String,
+    default: ''
   },
   // 获取列表数据  需要与后台约定数据格式
   listField: {
