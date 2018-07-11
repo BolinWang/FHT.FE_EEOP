@@ -1,8 +1,8 @@
 /*
  * @Author: FT.FE.Bolin
  * @Date: 2018-04-11 16:47:22
- * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-07-11 17:49:29
+ * @Last Modified by: chudequan
+ * @Last Modified time: 2018-07-09 20:28:37
  */
 <template>
   <div class="model-table-pagenation">
@@ -30,6 +30,7 @@
         :show-summary="showSummary"
         :sum-text="sumText"
         :summary-method="summaryMethod"
+        :cell-class-name="cellClassName"
         style="width: 100%;"
         @select="(selection, row) => emitEventHandler('select', selection, row)"
         @select-all="selection => emitEventHandler('select-all', selection)"
@@ -50,8 +51,7 @@
         <el-table-column v-if="showRowIndex" type="index" width="40" align="center"></el-table-column>
         <el-table-column v-if="showExpand" type="expand" width="40">
           <template slot-scope="scope">
-            <slot name="expandTable"></slot>
-            <el-form v-if="expandType !== `table`" label-position="left" size="small" inline class="table-expand">
+            <el-form label-position="left" size="small" inline class="table-expand">
               <el-form-item v-for="(item, index) in expandColums" :label="item.label" :key="index">
                 <span>{{ scope.row[item.prop] }}</span>
               </el-form-item>
@@ -297,12 +297,6 @@
 <style rel="stylesheet/scss" lang="scss">
   .model-table {
     border: 1px solid #e6ebf5;
-    .expandHeader {
-      background-color: #f5f7fa;
-    }
-    .el-table__expanded-cell {
-      padding: 10px 50px !important;
-    }
   }
 
   .model-pagenation {
@@ -327,6 +321,6 @@
   .table-expand .el-form-item {
     margin-right: 0;
     margin-bottom: 0;
-    width: 30%;
+    width: 33%;
   }
 </style>

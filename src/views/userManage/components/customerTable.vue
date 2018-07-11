@@ -40,9 +40,10 @@
             </span>
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" width="120" v-if="customerType == 1">
+        <el-table-column fixed="right" label="操作" width="230" v-if="customerType == 1">
           <template slot-scope="scope">
             <el-button type="primary" icon="el-icon-tickets" size="small" @click.native="showRecord(scope.row)">租房记录</el-button>
+            <el-button type="primary" icon="el-icon-tickets" size="small" plain @click.native="showDevice(scope.row)">智能设备</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -52,29 +53,68 @@
       </el-pagination>
     </div>
     <!-- 租房记录 -->
-    <el-dialog title="租房记录" width="1000px" @close="overlayData=[]" :visible.sync="rentRecord">
-      <el-table :data="overlayData" size="small" v-loading.body="listLoading" max-height="500" fit stripe>
-        <el-table-column type="index" width="60" align="center"></el-table-column>
-        <el-table-column v-for="(item,index) in overlayCol" :label="item.label" :width="item.width" :key="index" fit show-overflow-tooltip>
-          <template slot-scope="scope">
-            <el-tag v-if="(item.filterType == 'isContracter' || item.prop == 'status')" :type="(scope.row[item.prop] == '1' ? 'success' : 'info')">
-              {{(scope.row[item.prop]) | filterStr(item.filterType)}}
-            </el-tag>
-            <span v-else-if="item.filterType">
-              {{(scope.row[item.prop]) | filterStr(item.filterType)}}
-            </span>
-            <span v-else>
-              {{scope.row[item.prop]}}
-            </span>
-          </template>
-        </el-table-column>
-      </el-table>
+    <el-dialog title="租房记录" width="1000px" :visible.sync="rentRecord">
+      <GridUnit
+        v-if="rentRecord"
+        ref="refGridUnit"
+        :columns="overlayCol"
+        :formOptions="rentParams"
+        :listField="'data.list'"
+        :showPagination="false"
+        :url="'/market/customer/'"
+        :dataMethod="'queryRentRecord'">
+      </GridUnit>
+    </el-dialog>
+    <!-- 智能设备 -->
+    <el-dialog title="智能设备" width="1100px" :visible.sync="deviceInfo">
+      <GridUnit
+        v-if="deviceInfo"
+        ref="deviceTable"
+        :columns="deviceCol"
+        :formOptions="deviceParams"
+        :listField="'data.list'"
+        :showPagination="false"
+        :url="'/market/customer/'"
+        :dataMethod="'deviceList'">
+        <template slot="deviceStatus" slot-scope="scope">
+          <el-tag v-if="scope.row.deviceType === '电表'" :type="scope.row.deviceCurrentStatus === 1 ? 'success' : 'info'">
+              {{scope.row.deviceCurrentStatus === 0 ? '等待安装' : (scope.row.deviceCurrentStatus === 1 ? '启用' : '停用')}}
+          </el-tag>
+          <span v-else>/</span>
+        </template>
+        <template slot="deviceCurrentStatus" slot-scope="scope">
+          <el-tag v-if="scope.row.deviceType === '电表'" :type="scope.row.deviceCurrentStatus === 1 ? 'success' : 'info'">
+              {{scope.row.deviceCurrentStatus === 1 ? '通电' : '断电'}}
+          </el-tag>
+          <el-tag v-else :type="scope.row.deviceCurrentStatus === 1 ? 'success' : 'info'">
+              {{scope.row.deviceCurrentStatus === 1 ? '启用' : '停用'}}
+          </el-tag>
+        </template>
+        <template slot="manageLimit" slot-scope="scope">
+          <span v-if="scope.row.deviceType !== '门锁'">/</span>
+          <el-tag v-else :type="scope.row.landlordStatus === 1 ? 'success' : 'info'">
+              {{scope.row.landlordStatus === 1 ? '启用' : '停用'}}
+          </el-tag>
+        </template>
+        <template slot="rentLimit" slot-scope="scope">
+          <span v-if="scope.row.deviceType !== '门锁'">/</span>
+          <el-tag v-else :type="scope.row.lodgerStatus === 1 ? 'success' : 'info'">
+              {{scope.row.lodgerStatus === 1 ? '启用' : '停用'}}
+          </el-tag>
+        </template>
+        <template slot="checkPassword" slot-scope="scope">
+          <el-button type="text" v-if="scope.row.devicePwdStatus == 1 && devicePWDList[scope.$index] === undefined" @click="getDevivePWD(scope.row, scope.$index)">查看</el-button>
+          <span v-else-if="devicePWDList[scope.$index]">{{devicePWDList[scope.$index]}}</span>
+          <span v-else></span>
+        </template>
+      </GridUnit>
     </el-dialog>
   </div>
 </template>
 <script>
 import waves from '@/directive/waves'
-import { customerListApi, businessUserListApi, queryRentRecordApi } from '@/api/userManage'
+import GridUnit from '@/components/GridUnit/grid'
+import { customerListApi, businessUserListApi, queryRentRecordApi, deviceListApi, devicePasswordApi } from '@/api/userManage'
 import { ObjectMap, deepClone, plusXing } from '@/utils'
 
 export default {
@@ -84,6 +124,9 @@ export default {
       type: Number,
       default: 1
     }
+  },
+  components: {
+    GridUnit
   },
   directives: {
     waves
@@ -105,7 +148,9 @@ export default {
         'registerSource': ['', 'PC', 'APP'],
         'status': ['未入住', '在住', '申请换房', '申请退房', '已搬离'],
         'isContracter': ['否', '是', '否'],
-        'housingType': ['', '集中式', '分散式']
+        'housingType': ['', '集中式', '分散式'],
+        'deviceStatus': ['等待安装', '正常', '停用'],
+        'deviceLimit': ['可用', '不可用']
       }
       if (!statusStrData[key]) {
         return '';
@@ -144,19 +189,97 @@ export default {
       overlayCol: [
         { prop: 'subdistrictAddress', label: '位置' },
         { prop: 'subdistrictName', label: '小区/公寓' },
-        { prop: 'status', label: '入住状态', filterType: 'status', width: 80 },
-        { prop: 'isContracter', label: '签约人', filterType: 'isContracter', width: 80 },
+        {
+          prop: 'status',
+          label: '入住状态',
+          filterType: 'status',
+          width: 80,
+          type: 'status',
+          unitFilters: {
+            renderStatusType(status) {
+              return status == 1 ? 'success' : 'info'
+            },
+            renderStatusValue(status) {
+              const statusStrData = ['未入住', '在住', '申请换房', '申请退房', '已搬离']
+              return statusStrData[status] || '待上线'
+            }
+          }
+        },
+        {
+          prop: 'isContracter',
+          label: '签约人',
+          filterType: 'isContracter',
+          width: 80,
+          type: 'status',
+          unitFilters: {
+            renderStatusType(status) {
+              return status == 1 ? 'success' : 'info'
+            },
+            renderStatusValue(status) {
+              const statusStrData = ['否', '是']
+              return statusStrData[status] || '待上线'
+            }
+          }
+        },
         { prop: 'startDate', label: '入住时间' },
         { prop: 'endDate', label: '离开时间' },
-        { prop: 'housingType', label: '房源类型', filterType: 'housingType', width: 80 },
+        { prop: 'rentTypeName', label: '租赁方式' },
+        {
+          prop: 'housingType',
+          label: '房源类型',
+          filterType: 'housingType',
+          width: 80,
+          render(row) {
+            return row.housingType == 1 ? '集中式' : '分散式'
+          }
+        },
         { prop: 'orgName', label: '归属组织' },
       ],
+      deviceCol: [
+        { prop: 'fangyuanName', label: '房源信息' },
+        { prop: 'roomCode', label: '房源编码' },
+        { prop: 'deviceType', label: '设备类型' },
+        { prop: 'productBrandName', label: '设备品牌' },
+        { prop: 'productType', label: '设备型号' },
+        {
+          prop: 'deviceStatus',
+          label: '管理状态',
+          align: 'center',
+          slotName: 'deviceStatus',
+        },
+        {
+          prop: 'deviceCurrentStatus',
+          label: '设备状态',
+          slotName: 'deviceCurrentStatus',
+          align: 'center'
+        },
+        {
+          prop: 'landlordStatus',
+          label: '管家权限',
+          slotName: 'manageLimit',
+          align: 'center'
+        },
+        {
+          prop: 'lodgerStatus',
+          label: '租客权限',
+          slotName: 'rentLimit',
+          align: 'center'
+        },
+        {
+          prop: 'devicePwdStatus',
+          label: '查看离线密码',
+          slotName: 'checkPassword',
+          align: 'center'
+        }
+      ],
       rentRecord: false,
+      deviceInfo: false,
       tableHeight: 300,
       tableData: [],
-      overlayData: [],
       customerTypeClone: this.customerType,
       searchParams: {},
+      rentParams: {},
+      deviceParams: {},
       detailData: {},
       total: null,
       pageItems: {
@@ -164,7 +287,8 @@ export default {
         pageSize: 20
       },
       pageSizeList: [10, 20, 30, 50],
-      listLoading: false
+      listLoading: false,
+      devicePWDList: {}
     }
   },
   created() {
@@ -213,6 +337,13 @@ export default {
       }
     }
   },
+  watch: {
+    deviceInfo(val) {
+      if (!val) {
+        this.devicePWDList = {}
+      }
+    }
+  },
   methods: {
     handleSizeChange(val) {
       this.pageItems.pageSize = val;
@@ -243,18 +374,21 @@ export default {
       };
       this.searchParam();
     },
+    /* 租房记录 */
     showRecord(row) {
       this.rentRecord = true;
-      let search = {
+      this.rentParams = {
         pageNo: 1,
         pageSize: 9999,
         customerId: row.customerId
       }
-      queryRentRecordApi(ObjectMap(search)).then(response => {
-        this.overlayData = response.data.list;
-        this.overlayTotal = response.data.record;
-
-      })
+    },
+    /* 智能设备 */
+    showDevice(row) {
+      this.deviceInfo = true
+      this.deviceParams = {
+        customerId: row.customerId
+      }
     },
     showDetail(row) {
       this.lookDetail = true;
@@ -269,6 +403,14 @@ export default {
         this.tableData = response.data.list;
         this.total = response.data.record;
         this.listLoading = false;
+      })
+    },
+    /* 查看智能设备密码 */
+    getDevivePWD (row, i) {
+      devicePasswordApi({
+        deviceId: row.deviceId
+      }).then((res) => {
+        this.$set(this.devicePWDList, i, res.data || '')
       })
     }
   }

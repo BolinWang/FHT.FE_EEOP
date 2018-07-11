@@ -21,7 +21,7 @@ export function saveDataApi(params = {}) {
       method: 'saveUser',
       params
     }
-  });
+  })
 }
 
 /* 修改个人信息 */
@@ -33,7 +33,7 @@ export function saveSelfDetailApi(params = {}) {
       method: 'saveSelfDetail',
       params
     }
-  });
+  })
 }
 
 /* 意见反馈获取列表数据 */
@@ -45,7 +45,7 @@ export function queryFeedbackByPageApi(params = {}) {
       method: 'queryFeedbackByPage',
       params
     }
-  });
+  })
 }
 
 /* 意见反馈删除 */
@@ -116,7 +116,29 @@ export function queryRentRecordApi(params = {}) {
       method: 'queryRentRecord',
       params
     }
-  });
+  })
+}
+// 智能设备
+export function deviceListApi(params = {}) {
+  return fetch({
+    url: '/market/customer/',
+    method: 'post',
+    data: {
+      method: 'deviceList',
+      params
+    }
+  })
+}
+// 离线密码
+export function devicePasswordApi(params = {}) {
+  return fetch({
+    url: '/market/customer/',
+    method: 'post',
+    data: {
+      method: 'getDevicePassword',
+      params
+    }
+  })
 }
 // B端租客查询
 export function businessUserListApi(params = {}) {
