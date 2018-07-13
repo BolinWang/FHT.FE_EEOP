@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-07-11 13:49:21
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-07-12 16:31:20
+ * @Last Modified time: 2018-07-12 17:55:59
  */
 
  <template>
@@ -31,8 +31,8 @@
             <el-input size="small" v-model="searchParams.organizationName" clearable placeholder="组织名称" style="width:150px;"></el-input>
             <el-input size="small" v-model="searchParams.mobile" clearable placeholder="手机号/姓名" class="filter-item" style="width:150px;"></el-input>
             <el-input size="small" v-model="searchParams.mobile" clearable placeholder="公寓/小区-房间" class="filter-item" style="width:150px;"></el-input>
-            <el-button size="small" type="success" icon="el-icon-upload" class="filter-item">发布</el-button>
-            <el-button size="small" type="danger" icon="el-icon-remove" class="filter-item">撤销</el-button>
+            <el-button size="small" type="success" icon="el-icon-upload" class="filter-item" @click="syncItems('on')">发布</el-button>
+            <el-button size="small" type="danger" icon="el-icon-remove" class="filter-item" @click="syncItems('off')">撤销</el-button>
           </div>
         </el-form>
         <GridUnit
@@ -41,9 +41,10 @@
           :formOptions="searchParams"
           :url="url"
           :showSelection="true"
-          :pageSizes="[500, 1000, 2000, 3000, 5000]"
+          :pageSizes="[100, 200, 300, 500]"
           :dataMethod="method"
-          :height="tableHeight">
+          :height="tableHeight"
+          @selection-change="handleSelectionChange">
         </GridUnit>
       </el-tab-pane>
     </el-tabs>
@@ -67,6 +68,7 @@ export default {
         organizationName: '',
         mobile: ''
       },
+      selectedItems: [],
       colModels: [
         { prop: 'status', label: '组织名称' },
         { prop: 'status', label: '姓名', width: 100 },
@@ -118,6 +120,32 @@ export default {
         this.searchParams = {}
       }
       this.$refs.refGridUnit[0].searchHandler()
+    },
+    // 选择列表
+    handleSelectionChange(list) {
+      this.selectedItems = list
+    },
+    // 发布、撤销
+    syncItems(type = 'on') {
+      const typeTitle = {
+        'on': {
+          title: '发布'
+        },
+        'off': {
+          title: '撤销'
+        }
+      }
+      if (this.selectedItems.length === 0) {
+        this.$message.error(`请选择需要${typeTitle[type].title}的房源`)
+        return false
+      }
+      const unfilterItem = this.selectedItems.filter((item) => {
+        return item.status === type
+      })
+      if (unfilterItem.length === 0) {
+        this.$message.error(`已${typeTitle[type].title}的房源不能再${typeTitle[type].title}`)
+        return false
+      }
     }
   }
 }

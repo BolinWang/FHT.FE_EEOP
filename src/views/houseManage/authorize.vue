@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-07-11 13:49:21
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-07-12 16:21:23
+ * @Last Modified time: 2018-07-13 14:46:31
  */
 
 <template>
@@ -26,31 +26,31 @@
       :dataMethod="method"
       :height="tableHeight"
       :showExpand="true"
-      :expandColums="colModels">
-      <template slot="expandTable" slot-scope="scope">
-        <el-table :data="[{
-          organizationName: '柏林',
-          status: 1
-        }]" style="width: 100%"
+      :expandColums="colModels"
+      @expand-change="getExpandData">
+      <template slot="expandTable" slot-scope="table_scope">
+        <el-table
+          :data="rowData.childrenData || []" style="width: 100%"
           :max-height="300"
           size="small"
           :header-row-class-name="`expandHeader`">
           <el-table-column v-for="(column, index) in expand_colModels" :label="column.label" :key="index" :prop="column.prop">
-            <template slot-scope="scope">
+            <template slot-scope="expand_scope">
               <span v-if="column.slotName">
-                <el-button v-if="scope.row.status === 0" @click="handleSetting(scope.row)" type="text" size="small">申请开通</el-button>
-                <el-button v-else type="text" disabled size="small">已开通</el-button>
+                <el-tag v-if="rowData.idlefishStatus !== `已开通`" type="warning" size="small">请先开通主账号</el-tag>
+                <el-button v-else-if="expand_scope.row.idlefishStatus !== `已开通`" @click="handleSetting(expand_scope.row, 0)" type="text" size="small">申请开通</el-button>
+                <el-tag v-else type="success" size="small">已开通</el-tag>
               </span>
               <span v-else>
-                {{ column.render ? column.render(scope.row) : scope.row[column.prop] }}
+                {{ column.render ? column.render(expand_scope.row) : expand_scope.row[column.prop] }}
               </span>
             </template>
           </el-table-column>
         </el-table>
       </template>
       <template slot="handle" slot-scope="scope">
-        <el-button v-if="scope.row.status === 0" @click="handleSetting(scope.row)" type="text" size="small">申请开通</el-button>
-        <el-button v-else type="text" disabled size="small">已开通</el-button>
+        <el-button v-if="scope.row.idlefishStatus !== `已开通`" @click="handleSetting(scope.row, 1)" type="text" size="small">申请开通</el-button>
+        <el-tag v-else type="success" size="small">已开通</el-tag>
       </template>
     </GridUnit>
     <!-- 申请开通 -->
@@ -62,8 +62,8 @@
         </el-steps>
         <div class="text-center" style="display: flex; justify-content: center;" v-if="active_step === 0">
           <el-form size="small" status-icon :rules="rules" ref="dataForm" :model="temp" style="width: 400px;">
-            <el-form-item prop="name">
-              <el-input placeholder="请输入闲鱼昵称" v-model="temp.name" clearable size="small">
+            <el-form-item prop="account">
+              <el-input placeholder="请输入闲鱼昵称" v-model="temp.account" clearable size="small">
                 <template slot="prepend">闲鱼昵称</template>
               </el-input>
             </el-form-item>
@@ -71,7 +71,7 @@
         </div>
         <div class="text-center" v-else style="display: flex; justify-content: center;">
           <el-card :body-style="{ padding: '0px' }" style="width: 500px;">
-            <img src="../../assets/banner.jpg" style="display: block; width: 100%;">
+            <img :src="picUrl" style="display: block; width: 100%;">
             <div style="padding: 14px;">
               <span>请用闲鱼APP进行扫码授权</span>
             </div>
@@ -88,8 +88,10 @@
 </template>
 <script>
 import GridUnit from '@/components/GridUnit/grid'
-import { deepClone, cleanArray, ObjectMap } from '@/utils'
-import { hotRecommendApi, appIconApi } from '@/api/eeop'
+import { deepClone, ObjectMap } from '@/utils'
+import { hotRecommendApi } from '@/api/eeop'
+import { authorizeApi } from '@/api/houseManage'
+import defaultPicUrl from '@/assets/banner.jpg'
 
 export default {
   name: 'authorize',
@@ -103,35 +105,52 @@ export default {
         organizationName: '',
         mobile: ''
       },
+      picUrl: defaultPicUrl,
       colModels: [
         { prop: 'organizationName', label: '组织名称' },
-        { prop: 'status', label: '组织状态' },
-        { prop: 'status', label: '姓名' },
-        { prop: 'status', label: '手机号' },
-        { prop: 'status', label: '用户类型' },
-        { prop: 'status', label: '闲鱼账号' },
-        { label: '操作', slotName: 'handle', width: 150 },
-        { prop: 'status', label: '闲鱼昵称' }
+        {
+          prop: 'status',
+          label: '组织状态',
+          type: 'status',
+          unitFilters: {
+            renderStatusType(status) {
+              const statusMap = {
+                '启用': 'success',
+                '停用': 'danger'
+              }
+              return statusMap[status] || 'info'
+            },
+            renderStatusValue(status) {
+              return status || '未知'
+            }
+          }
+        },
+        { prop: 'name', label: '姓名' },
+        { prop: 'mobile', label: '手机号' },
+        { prop: 'userType', label: '用户类型' },
+        { prop: 'idlefishStatus', label: '闲鱼账号', slotName: 'handle', width: 150 },
+        { prop: 'idlefishAccount', label: '闲鱼昵称' }
       ],
+      childrenData: [],
       expand_colModels: [
-        { prop: 'status', label: '姓名' },
-        { prop: 'status', label: '手机号' },
-        { prop: 'status', label: '用户类型' },
-        { prop: 'status', label: '闲鱼账号' },
-        { label: '操作', slotName: 'handle', width: 150 },
-        { prop: 'status', label: '闲鱼昵称' }
+        { prop: 'name', label: '姓名' },
+        { prop: 'mobile', label: '手机号' },
+        { prop: 'userType', label: '用户类型' },
+        { prop: 'idlefishStatus', label: '闲鱼账号', slotName: 'handle', width: 150 },
+        { prop: 'idlefishAccount', label: '闲鱼昵称' }
       ],
       tableHeight: 300,
       url: hotRecommendApi.defaultOptions.requestUrl,
       method: hotRecommendApi.defaultOptions.method,
       rules: {
-        name: [
+        account: [
           { required: true, message: '请填写闲鱼昵称', trigger: 'blur' }
         ]
       },
       temp: {
-        name: ''
+        account: ''
       },
+      rowData: {},
       active_step: 0,
       layer_showApply: false
     }
@@ -171,23 +190,61 @@ export default {
       }
       this.$refs.refGridUnit.searchHandler()
     },
+    // 获取展开行数据 children
+    getExpandData(row, expandedRows) {
+      this.rowData = deepClone(row)
+      this.rowData.childrenData = [
+        {
+          name:'子账号',
+          mobile:'12345678902',
+          userType:'普通用户',
+          idlefishStatus:'已开通',
+          idlefishAccount:'aaaa'
+        }
+      ]
+    },
     // 申请开通
-    handleSetting(row) {
+    handleSetting(row, type) {
+      this.temp = {
+        ...row,
+        account: '',
+        type
+      }
       this.layer_showApply = true
     },
     // 下一步
     nextStep() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
+          // TODO调用绑定接口
+          let bindParams = {
+            platform: 'idlefish',
+            userid: this.temp.userid,
+            account: this.temp.account,
+            type: this.temp.type,
+            mobile: this.temp.mobile,
+            brand: this.temp.name
+          }
           this.active_step = 1
+          return false
+          authorizeApi.bind(ObjectMap(bindParams)).then(response => {
+            authorizeApi.picture({
+              platform: 'idlefish',
+              saasId: 0
+            }).then(response => {
+              this.picUrl = response.picUrl
+              this.active_step = 1
+            })
+          })
         }
       })
     },
     // 确认授权
     saveApplyInfo() {
       return false
-      hotRecommendApi.add(ObjectMap({
-
+      authorizeApi.status(ObjectMap({
+        platform: 'idlefish',
+        userid: this.temp.userid,
       })).then(response => {
         this.layer_showApply = false
         this.searchParam()
@@ -200,7 +257,9 @@ export default {
       })
     },
     dialogClose() {
-      this.temp = {}
+      this.temp = {
+        account: ''
+      }
       this.active_step = 0
       if (this.$refs.dataForm) {
         this.$refs.dataForm.resetFields()

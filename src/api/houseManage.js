@@ -1,4 +1,4 @@
-import fetch from '@/utils/fetch';
+import fetch from '@/utils/fetch'
 
 /* 查询已有公寓城市列表 */
 export function getCityListApi(params = {}) {
@@ -9,7 +9,7 @@ export function getCityListApi(params = {}) {
       method: 'hasCityList',
       params
     }
-  });
+  })
 }
 
 /* 获取表格数据 */
@@ -21,7 +21,7 @@ export function getGridApi(params) {
       method: 'queryEstateListByPage',
       params
     }
-  });
+  })
 }
 
 /* 下架、排序 */
@@ -33,7 +33,7 @@ export function saveDataApi(params) {
       method: 'saveEstate',
       params
     }
-  });
+  })
 }
 
 /* 房源数据报表列表 */
@@ -45,7 +45,7 @@ export function marketOrgHouseReportListApi(params) {
       method: 'marketOrgHouseReportList',
       params
     }
-  });
+  })
 }
 
 /* 查询中心 城市公寓列表 */
@@ -57,7 +57,7 @@ export function marketCityAndSubdistrictListApi(params) {
       method: 'marketCityAndSubdistrictList',
       params
     }
-  });
+  })
 }
 
 /* 查询中心 房源列表 */
@@ -69,5 +69,85 @@ export function marketReviewCheckListByPageApi(params) {
       method: 'marketReviewCheckListByPage',
       params
     }
-  });
+  })
+}
+
+/* OTA账号绑定授权 */
+export const authorizeApi = {
+  list(params) {
+    return fetch({
+      url: '/market/ota/list',
+      method: 'post',
+      data: {
+        params
+      }
+    })
+  },
+  bind(params) {
+    return fetch({
+      url: '/market/ota/account/binding',
+      method: 'post',
+      data: {
+        params
+      }
+    })
+  },
+  status(params) {
+    return fetch({
+      url: '/market/account/binding/status',
+      method: 'post',
+      data: {
+        params
+      }
+    })
+  },
+  picture(params) {
+    return fetch({
+      url: '/market/account/acquire/picture',
+      method: 'post',
+      data: {
+        params
+      }
+    })
+  }
+}
+
+/* 合作账号绑定授权 */
+export const houseAsyncApi = {
+  list(params) {
+    return fetch({
+      url: '/market/rooms',
+      method: 'post',
+      data: {
+        params
+      }
+    })
+  },
+  bind(params) {
+    return fetch({
+      url: '/market/ota/account/binding',
+      method: 'post',
+      data: {
+        params
+      }
+    })
+  },
+  publish(params) {
+    return fetch({
+      url: '/market/rooms/publish',
+      method: 'post',
+      data: {
+        params
+      }
+    })
+  },
+  offshlef(params) {
+    return fetch({
+      url: '/market/rooms/offshlef',
+      method: 'post',
+      data: {
+        params
+      }
+    })
+  }
 }
