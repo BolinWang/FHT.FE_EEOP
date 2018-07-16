@@ -56,7 +56,7 @@
     </GridUnit>
     <!-- 申请开通 -->
     <div class="dialog_apply">
-      <el-dialog title="申请开通" :visible.sync="layer_showApply" @close="dialogClose">
+      <el-dialog :title="dialogTitle" :visible.sync="layer_showApply" @close="dialogClose">
         <el-steps :active="active_step" align-center finish-status="success" style="margin-bottom: 30px;">
           <el-step title="填写闲鱼昵称" description="打开闲鱼APP，点击【我的】，用户名即为闲鱼昵称，闲鱼昵称需要进行实名认证才可同步房源（闲鱼APP-我的-头像-实名认证）"></el-step>
           <el-step title="扫码授权" description="打开闲鱼APP进行扫码授权"></el-step>
@@ -153,6 +153,7 @@ export default {
       },
       rowData: {},
       active_step: 0,
+      dialogTitle: '',
       layer_showApply: false
     }
   },
@@ -206,6 +207,7 @@ export default {
     },
     // 申请开通
     handleSetting(row, type, bindType) {
+      this.dialogTitle = bindType ? '账号换绑' : '申请开通'
       this.temp = {
         ...row,
         account: '',
