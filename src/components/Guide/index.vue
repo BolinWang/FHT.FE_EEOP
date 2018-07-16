@@ -39,6 +39,6 @@ export default {
   cursor: pointer;
   color: #f56c6c;
   font-size: 40px;
-  vertical-align: 6px;
+  vertical-align: 5px;
 }
 </style>

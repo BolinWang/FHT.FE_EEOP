@@ -42,10 +42,23 @@
           :formOptions="searchParams"
           :url="url"
           :showSelection="true"
-          :pageSizes="[100, 200, 300, 500]"
+          :pageSizes="[50, 100, 200, 500]"
           :dataMethod="method"
           :height="tableHeight"
           @selection-change="handleSelectionChange">
+          <template slot="slot_popover" slot-scope="scope">
+            <el-popover v-if="scope.row.idlefishStatus === `发布失败`" trigger="hover" placement="top">
+              <p>发布失败原因: {{ scope.row.failReason }}</p>
+              <div slot="reference">
+                <el-tag :type="scope.row.idlefishStatus | renderStatusType">
+                  {{scope.row.idlefishStatus | renderStatusValue}}
+                </el-tag>
+              </div>
+            </el-popover>
+            <el-tag v-else :type="scope.row.idlefishStatus | renderStatusType">
+              {{scope.row.idlefishStatus | renderStatusValue}}
+            </el-tag>
+          </template>
         </GridUnit>
     </el-tabs>
   </div>
@@ -59,6 +72,21 @@ export default {
   name: 'houseSync',
   components: {
     GridUnit
+  },
+  filters: {
+    renderStatusType(status) {
+      const statusMap = {
+        '已发布': 'success',
+        '发布中': 'primary',
+        '发布失败': 'danger',
+        '下架中': 'warning',
+        '未发布': 'info'
+      }
+      return statusMap[status] || 'info'
+    },
+    renderStatusValue(status) {
+      return status || '未知'
+    }
   },
   data() {
     return {
@@ -122,28 +150,7 @@ export default {
             }
           }
         },
-        {
-          prop: 'idlefishStatus',
-          label: '闲鱼租房',
-          width: 100,
-          type: 'status',
-          fixed: 'right',
-          unitFilters: {
-            renderStatusType(status) {
-              const statusMap = {
-                '已发布': 'success',
-                '发布中': 'primary',
-                '发布失败': 'danger',
-                '下架中': 'warning',
-                '未发布': 'info'
-              }
-              return statusMap[status] || 'info'
-            },
-            renderStatusValue(status) {
-              return status || '未知'
-            }
-          }
-        },
+        { prop: 'idlefishStatus', label: '闲鱼租房', width: 100, slotName: 'slot_popover', fixed: 'right' },
         { prop: 'operation', label: '操作记录', width: 180, fixed: 'right' }
       ],
       tableHeight: 300,

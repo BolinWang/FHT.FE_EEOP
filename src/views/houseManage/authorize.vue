@@ -38,8 +38,8 @@
             <template slot-scope="expand_scope">
               <span v-if="column.slotName">
                 <el-tag v-if="rowData.idlefishStatus !== `已开通`" type="warning" size="small">请先开通主账号</el-tag>
-                <el-button v-else-if="expand_scope.row.idlefishStatus !== `已开通`" @click="handleSetting(expand_scope.row, 0)" type="text" size="small">申请开通</el-button>
-                <el-tag v-else type="success" size="small">已开通</el-tag>
+                <el-button v-if="rowData.idlefishStatus === `已开通`" @click="handleSetting(rowData, 0, 'change')" type="text" size="small">账号换绑</el-button>
+                <el-tag v-if="rowData.idlefishStatus === `已开通`" type="success" size="small">已开通</el-tag>
               </span>
               <span v-else>
                 {{ column.render ? column.render(expand_scope.row) : expand_scope.row[column.prop] }}
@@ -50,7 +50,8 @@
       </template>
       <template slot="handle" slot-scope="scope">
         <el-button v-if="scope.row.idlefishStatus !== `已开通`" @click="handleSetting(scope.row, 1)" type="text" size="small">申请开通</el-button>
-        <el-tag v-else type="success" size="small">已开通</el-tag>
+        <!-- <el-button v-if="scope.row.idlefishStatus === `已开通`" @click="handleSetting(scope.row, 1, 'change')" type="text" size="small">账号换绑</el-button> -->
+        <el-tag v-if="scope.row.idlefishStatus === `已开通`" type="success" size="small">已开通</el-tag>
       </template>
     </GridUnit>
     <!-- 申请开通 -->
@@ -204,11 +205,12 @@ export default {
       ]
     },
     // 申请开通
-    handleSetting(row, type) {
+    handleSetting(row, type, bindType) {
       this.temp = {
         ...row,
         account: '',
-        type
+        type,
+        bindType
       }
       this.layer_showApply = true
     },
@@ -227,7 +229,8 @@ export default {
           }
           this.active_step = 1
           return false
-          authorizeApi.bind(ObjectMap(bindParams)).then(response => {
+          const bindApi = this.temp.bindType ? authorizeApi.switch : authorizeApi.bind
+          bindApi(ObjectMap(bindParams)).then(response => {
             authorizeApi.picture({
               platform: 'idlefish',
               saasId: 0

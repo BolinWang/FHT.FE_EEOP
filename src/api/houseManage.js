@@ -132,6 +132,15 @@ export const houseAsyncApi = {
       }
     })
   },
+  switch(params) {
+    return fetch({
+      url: '/market/ota/account/switch',
+      method: 'post',
+      data: {
+        params
+      }
+    })
+  },
   publish(params) {
     return fetch({
       url: '/market/rooms/publish',
