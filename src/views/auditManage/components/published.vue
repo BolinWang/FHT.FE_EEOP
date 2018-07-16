@@ -14,7 +14,11 @@
           <el-option v-for="item in houseRentTypeOptions" :key="item.value" :label="item.label" :value="item.value">
           </el-option>
         </el-select>
-        <el-input size="small" v-model="formData.keyword" :placeholder="placeholder[2 - type]" class="filter-item" style="width:180px;" @keydown.native.enter="searchParam">
+        <el-input v-if="type === 1" size="small" v-model="formData.keyword" placeholder="精品公寓名称" class="filter-item" style="width:180px;" @keydown.native.enter="searchParam">
+        </el-input>
+        <el-input v-if="type === 2" size="small" v-model="formData.subdistrictName" placeholder="小区地址" class="filter-item" style="width:180px;" @keydown.native.enter="searchParam">
+        </el-input>
+        <el-input v-if="type === 2" size="small" v-model="formData.roomCode" placeholder="房源编码" class="filter-item" style="width:150px;" @keydown.native.enter="searchParam">
         </el-input>
         <el-button type="primary" size="small" icon="el-icon-search" @click.native="searchParam" v-waves class="filter-item">查询</el-button>
         <el-button plain size="small" icon="el-icon-remove-outline" @click.native="clearForm">清空</el-button>
@@ -121,12 +125,10 @@ export default {
         cityId: '',
         houseFinanceType: '',
         houseRentType: '',
-        keyword: ''
+        keyword: '',
+        subdistrictName: '',
+        roomCode: ''
       },
-      placeholder: [
-        '房源编号/小区名称',
-        '精品公寓名称'
-      ],
       cityOptions: [],
       houseRentTypeOptions: [
         { label: '整租', value: 1 },
@@ -233,6 +235,8 @@ export default {
         cityId: '',
         reviewStatus: '',
         houseFinanceType: '',
+        subdistrictName: '',
+        roomCode: '',
         keyword: ''
       };
       this.pageItems = {
