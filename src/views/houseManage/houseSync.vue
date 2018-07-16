@@ -2,35 +2,36 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-07-11 13:49:21
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-07-12 17:55:59
+ * @Last Modified time: 2018-07-13 16:39:57
  */
 
  <template>
   <div class="app-container">
-    <el-tabs v-model="activeName" type="border-card">
+    <el-tabs v-model="activeName" type="border-card" @tab-click="handleClickTab">
       <el-tab-pane v-for="(item,index) in tabMapOptions" :label="item" :key='index' :name="item">
-        <el-form class="model-search clearfix" :inline="true" size="small">
+      </el-tab-pane>
+      <el-form class="model-search clearfix" :inline="true" size="small">
           <div>
-            <el-select size="small" v-model="searchParams.type" filterable clearable placeholder="房间状态" class="item-select">
+            <el-select size="small" v-model="searchParams.houseStatus" filterable clearable placeholder="房间状态" class="item-select">
               <el-option label="已出租" :value="1"></el-option>
-              <el-option label="未出租" :value="2"></el-option>
+              <el-option label="未出租" :value="0"></el-option>
             </el-select>
-            <el-select size="small" v-model="searchParams.type" filterable clearable placeholder="房间类型" class="item-select filter-item">
-              <el-option label="普通" :value="1"></el-option>
-              <el-option label="金融" :value="2"></el-option>
-              <el-option label="飞虎队" :value="3"></el-option>
+            <el-select size="small" v-model="searchParams.houseType" filterable clearable placeholder="房间类型" class="item-select filter-item">
+              <el-option label="普通" :value="0"></el-option>
+              <el-option label="金融" :value="1"></el-option>
+              <el-option label="飞虎队" :value="2"></el-option>
             </el-select>
-            <el-select size="small" v-model="searchParams.type" filterable clearable placeholder="发布状态" class="item-select filter-item">
-              <el-option label="已发布" :value="2"></el-option>
-              <el-option label="未发布" :value="3"></el-option>
+            <el-select size="small" v-model="searchParams.publishStatus" filterable clearable placeholder="发布状态" class="item-select filter-item">
+              <el-option label="已发布" :value="0"></el-option>
+              <el-option label="未发布" :value="1"></el-option>
             </el-select>
             <el-button size="small" type="primary" icon="el-icon-search" @click="searchParam" class="filter-item">查询</el-button>
             <el-button size="small" icon="el-icon-remove-outline" @click="searchParam('clear')" class="filter-item">清空</el-button>
           </div>
           <div style="margin-top: 10px;">
             <el-input size="small" v-model="searchParams.organizationName" clearable placeholder="组织名称" style="width:150px;"></el-input>
-            <el-input size="small" v-model="searchParams.mobile" clearable placeholder="手机号/姓名" class="filter-item" style="width:150px;"></el-input>
-            <el-input size="small" v-model="searchParams.mobile" clearable placeholder="公寓/小区-房间" class="filter-item" style="width:150px;"></el-input>
+            <el-input size="small" v-model="searchParams.name" clearable placeholder="姓名" class="filter-item" style="width:150px;"></el-input>
+            <el-input size="small" v-model="searchParams.keywords" clearable placeholder="公寓/小区-房间" class="filter-item" style="width:150px;"></el-input>
             <el-button size="small" type="success" icon="el-icon-upload" class="filter-item" @click="syncItems('on')">发布</el-button>
             <el-button size="small" type="danger" icon="el-icon-remove" class="filter-item" @click="syncItems('off')">撤销</el-button>
           </div>
@@ -46,7 +47,6 @@
           :height="tableHeight"
           @selection-change="handleSelectionChange">
         </GridUnit>
-      </el-tab-pane>
     </el-tabs>
   </div>
 </template>
@@ -54,6 +54,7 @@
 import GridUnit from '@/components/GridUnit/grid'
 import { deepClone, cleanArray, ObjectMap } from '@/utils'
 import { hotRecommendApi, appIconApi } from '@/api/eeop'
+import { houseAsyncApi } from '@/api/houseManage'
 export default {
   name: 'houseSync',
   components: {
@@ -64,25 +65,86 @@ export default {
       tabMapOptions: ['整租','合租', '集中式'],
       activeName: '整租',
       searchParams: {
-        type: 2,
+        houseRentType: 1,
+        houseStatus: 0,
+        houseType: '',
+        publishStatus: '',
         organizationName: '',
-        mobile: ''
+        keywords: '',
+        name: ''
       },
       selectedItems: [],
       colModels: [
-        { prop: 'status', label: '组织名称' },
-        { prop: 'status', label: '姓名', width: 100 },
-        { prop: 'status', label: '手机号', width: 150 },
-        { prop: 'status', label: '用户类型', width: 100 },
-        { prop: 'status', label: '房源位置', width: 200 },
-        { prop: 'status', label: '公寓/小区-房间', width: 200 },
-        { prop: 'status', label: '房源类型', width: 150 },
-        { prop: 'status', label: '房间状态', width: 100 },
-        { prop: 'status', label: '房源编码', width: 100 },
-        { prop: 'status', label: '房价(元/月)', width: 100, align: 'right' },
-        { prop: 'status', label: '麦邻租房', width: 100 },
-        { prop: 'status', label: '闲鱼租房', width: 100 },
-        { prop: 'status', label: '操作记录', width: 180 }
+        { prop: 'organizationName', label: '组织名称' },
+        { prop: 'name', label: '姓名', width: 100 },
+        { prop: 'mobile', label: '手机号', width: 150 },
+        { prop: 'userType', label: '用户类型', width: 100 },
+        { prop: 'address', label: '房源位置', width: 200 },
+        { prop: 'roomName', label: '公寓/小区-房间', width: 200 },
+        { prop: 'houseType', label: '房源类型', width: 150 },
+        { prop: 'roomCode', label: '房源编码', width: 100 },
+        { prop: 'rent', label: '房价(元/月)', width: 100, align: 'right' },
+        {
+          prop: 'roomStatus',
+          label: '房间状态',
+          width: 100,
+          type: 'status',
+          fixed: 'right',
+          unitFilters: {
+            renderStatusType(status) {
+              const statusMap = {
+                '已出租': 'success',
+                '未出租': 'info'
+              }
+              return statusMap[status] || 'info'
+            },
+            renderStatusValue(status) {
+              return status || '未知'
+            }
+          }
+        },
+        {
+          prop: 'publishStatus',
+          label: '麦邻租房',
+          width: 100,
+          type: 'status',
+          fixed: 'right',
+          unitFilters: {
+            renderStatusType(status) {
+              const statusMap = {
+                '已发布': 'success',
+                '未发布': 'info'
+              }
+              return statusMap[status] || 'info'
+            },
+            renderStatusValue(status) {
+              return status || '未知'
+            }
+          }
+        },
+        {
+          prop: 'idlefishStatus',
+          label: '闲鱼租房',
+          width: 100,
+          type: 'status',
+          fixed: 'right',
+          unitFilters: {
+            renderStatusType(status) {
+              const statusMap = {
+                '已发布': 'success',
+                '发布中': 'primary',
+                '发布失败': 'danger',
+                '下架中': 'warning',
+                '未发布': 'info'
+              }
+              return statusMap[status] || 'info'
+            },
+            renderStatusValue(status) {
+              return status || '未知'
+            }
+          }
+        },
+        { prop: 'operation', label: '操作记录', width: 180, fixed: 'right' }
       ],
       tableHeight: 300,
       url: hotRecommendApi.defaultOptions.requestUrl,
@@ -117,35 +179,74 @@ export default {
     // 查询
     searchParam(type) {
       if (type === 'clear') {
-        this.searchParams = {}
+        this.searchParams = {
+          houseStatus: 0,
+          houseType: '',
+          publishStatus: '',
+          organizationName: '',
+          keywords: '',
+          name: ''
+        }
       }
-      this.$refs.refGridUnit[0].searchHandler()
+      this.searchParams.houseRentType = this.activeName === '整租' ? 1 : (this.activeName === '合租' ? 2 : 0)
+      // 解决watch执行顺序
+      this.$nextTick(() => {
+        this.$refs.refGridUnit.searchHandler()
+      })
+    },
+    // tabs切换
+    handleClickTab(tab) {
+      this.searchParam('clear')
     },
     // 选择列表
     handleSelectionChange(list) {
       this.selectedItems = list
     },
-    // 发布、撤销
+    // 选择数据
     syncItems(type = 'on') {
-      const typeTitle = {
+      const typeConfig = {
         'on': {
-          title: '发布'
+          title: '发布',
+          api: houseAsyncApi.publish
         },
         'off': {
-          title: '撤销'
+          title: '撤销',
+          api: houseAsyncApi.offshlef
         }
       }
       if (this.selectedItems.length === 0) {
-        this.$message.error(`请选择需要${typeTitle[type].title}的房源`)
+        this.$message.error(`请选择需要${typeConfig[type].title}的房源`)
         return false
       }
-      const unfilterItem = this.selectedItems.filter((item) => {
-        return item.status === type
+      const unfilterItem = this.selectedItems.filter(item => item.idlefishStatus === type)
+      if (unfilterItem.length !== 0) {
+        this.$message.error(`已${typeConfig[type].title}的房源不能再${typeConfig[type].title}`)
+        return false
+      }
+      this.$confirm(`已选择${this.selectedItems.length}个房源，确定${typeConfig[type].title}吗？`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.gotoHouseAsync(typeConfig[type].api)
+      }).catch(() => {})
+    },
+    // 发布、撤销
+    gotoHouseAsync(api) {
+      return false
+      let roomCodes = this.selectedItems.filter(item => item.roomCode)
+      api({
+        platform: 'idlefish',
+        roomCodes
+      }).then(response => {
+        this.searchParam()
+        this.$notify({
+          title: '成功',
+          message: '申请发布成功',
+          type: 'success',
+          duration: 2000
+        })
       })
-      if (unfilterItem.length === 0) {
-        this.$message.error(`已${typeTitle[type].title}的房源不能再${typeTitle[type].title}`)
-        return false
-      }
     }
   }
 }
