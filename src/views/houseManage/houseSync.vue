@@ -30,7 +30,7 @@
           </div>
           <div style="margin-top: 10px;">
             <el-input size="small" v-model="searchParams.organizationName" clearable placeholder="组织名称" style="width:150px;"></el-input>
-            <el-input size="small" v-model="searchParams.name" clearable placeholder="姓名" class="filter-item" style="width:150px;"></el-input>
+            <el-input size="small" v-model="searchParams.mobileOrName" clearable placeholder="手机号/姓名" class="filter-item" style="width:150px;"></el-input>
             <el-input size="small" v-model="searchParams.keywords" clearable placeholder="公寓/小区-房间" class="filter-item" style="width:150px;"></el-input>
             <el-button size="small" type="success" icon="el-icon-upload" class="filter-item" @click="syncItems('on')">发布</el-button>
             <el-button size="small" type="danger" icon="el-icon-remove" class="filter-item" @click="syncItems('off')">撤销</el-button>
@@ -99,7 +99,7 @@ export default {
         publishStatus: '',
         organizationName: '',
         keywords: '',
-        name: ''
+        mobileOrName: ''
       },
       selectedItems: [],
       colModels: [
@@ -192,7 +192,7 @@ export default {
           publishStatus: '',
           organizationName: '',
           keywords: '',
-          name: ''
+          mobileOrName: ''
         }
       }
       this.searchParams.houseRentType = this.activeName === '整租' ? 1 : (this.activeName === '合租' ? 2 : 0)
