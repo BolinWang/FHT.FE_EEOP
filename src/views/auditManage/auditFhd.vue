@@ -12,7 +12,7 @@
         </el-select>
         <el-input size="small" v-model="formData.name" placeholder="请输入机构名称" class="filter-item" style="width:180px;" @keydown.native.enter="searchParam">
         </el-input>
-        <el-input size="small" v-model="formData.name" placeholder="请输入城市管家" class="filter-item" style="width:180px;" @keydown.native.enter="searchParam">
+        <el-input size="small" v-model="formData.createManagerName" placeholder="请输入城市管家" class="filter-item" style="width:180px;" @keydown.native.enter="searchParam">
         </el-input>
         <el-button type="primary" size="small" icon="el-icon-search" @click.native="searchParam" v-waves class="filter-item">查询</el-button>
         <el-button plain size="small" icon="el-icon-remove-outline" @click.native="clearForm">清空</el-button>
@@ -67,9 +67,12 @@
             <el-input v-model="signForm.mobile" placeholder="请输入手机号"></el-input>
           </el-form-item>
           <el-form-item label="设置出房服务费率" prop="spiltRate">
-            <el-input v-model="signForm.spiltRate" auto-complete="off">
+            <el-input v-model="signForm.spiltRate">
               <template slot="append">%</template>
             </el-input>
+          </el-form-item>
+          <el-form-item label="房源体量" prop="volumn">
+            <el-input v-model="signForm.volumn" placeholder="0 / 正整数，可不填"></el-input>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -81,7 +84,12 @@
     <!-- 银行卡绑定-->
     <div class="dialog-info">
       <el-dialog title="银行卡绑定" :visible.sync="layer_card" width="600px" @close="dialogCard">
-        <el-form :model="cardForm" size="mini" auto-complete="off" status-icon :rules="rules" ref="cardForm" label-width="100px">
+        <div v-if="inputMobie" class="text-center">
+          <el-input placeholder="请输入主账号手机号" v-model="cardForm.mobile" size="small"  style="width: 300px;">
+            <template slot="prepend">组织主账号</template>
+          </el-input>
+        </div>
+        <el-form v-else :model="cardForm" size="mini" status-icon :rules="rules" ref="cardForm" label-width="100px">
           <div class="clearfix">
             <el-col :span="12">
               <el-form-item label="姓名">
@@ -116,19 +124,19 @@
             </el-col>
             <el-col :span="12">
               <el-form-item label="开户人姓名">
-                <el-input v-model="cardForm.userName"></el-input>
+                <el-input v-model="cardForm.name"></el-input>
               </el-form-item>
             </el-col>
           </div>
           <div class="clearfix">
             <el-col :span="12">
               <el-form-item label="银行卡号">
-                <el-input v-model="cardForm.userCardNo"></el-input>
+                <el-input v-model="cardForm.cardNo"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="12">
               <el-form-item label="开户人身份证" label-width="110px" v-if="cardForm.cardType === 1">
-                <el-input v-model="cardForm.userName"></el-input>
+                <el-input v-model="cardForm.accountIdNo"></el-input>
               </el-form-item>
               <el-form-item label="开户银行" v-else>
                 <el-select size="small" style="width:100%" placeholder="请选择" v-model="cardForm.bankName" class="item-select">
@@ -140,8 +148,9 @@
           </div>
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <el-button @click="layer_card = false" size="small">取 消</el-button>
-          <el-button type="primary" size="small" @click="cardSaveData">确 定</el-button>
+          <el-button v-if="inputMobie" type="primary" @click="nextStep" size="small">下一步</el-button>
+          <el-button v-if="!inputMobie" @click="layer_card = false" size="small">取 消</el-button>
+          <el-button v-if="!inputMobie" type="primary" size="small" @click="cardSaveData">确 定</el-button>
         </div>
       </el-dialog>
     </div>
@@ -150,10 +159,9 @@
 <script>
 import waves from '@/directive/waves'
 import GridUnit from '@/components/GridUnit/grid'
-import { parseTime, ObjectMap, deepClone, } from '@/utils'
-import { signaturesHandleApi, signaturesListsApi } from '@/api/auditCenter'
-import { initFlyOrgApi, bindWithdrawCardApi } from '@/api/userManage'
-import { validateMobile } from '@/utils/validate'
+import { parseTime, ObjectMap, deepClone } from '@/utils'
+import { fhdAuditApi } from '@/api/auditCenter'
+import { validateMobile, validateIntAndZero } from '@/utils/validate'
 
 export default {
   name: 'auditFhd',
@@ -170,48 +178,56 @@ export default {
     },
     renderStatusType(status) {
       const statusMap = {
-        '1': 'info',
-        '2': 'success',
-        '3': 'danger'
+        '0': 'info',
+        '1': 'success',
+        '2': 'danger'
       }
-      return statusMap[status] || 'success'
+      return statusMap[status] || 'info'
     },
     renderStatusValue(status) {
       const statusStrData = ['待审核', '审核通过', '审核不通过']
-      return statusStrData[status - 1] || '待审核'
+      return statusStrData[status] || '待审核'
     }
   },
   data() {
     const validateName = (rule, value, callback) => {
       if (!value) {
-        callback(new Error('请输入姓名'));
+        callback(new Error('请输入姓名'))
       } else {
-        callback();
+        callback()
       }
-    };
+    }
     const validatePhone = (rule, value, callback) => {
       if (!validateMobile(value)) {
-        callback(new Error('请输入正确的手机号'));
+        callback(new Error('请输入正确的手机号'))
       } else {
-        callback();
+        callback()
       }
-    };
+    }
     const validateSpiltRate = (rule, value, callback) => {
       if(/^\d+(?:.\d{1,2})?$/.test(value) && value <= 100) {
-        callback();
+        callback()
       } else {
-        callback(new Error('费率为0到100,最多保留2位小数'));
+        callback(new Error('费率为0到100,最多保留2位小数'))
+      }
+    }
+    const validateVolunm = (rule, value, callback) => {
+      if (!validateIntAndZero(value)) {
+        callback(new Error('请输入0或正整数'))
+      } else {
+        callback()
       }
     }
     return {
+      inputMobie: true,
       typeOptions: [
         { value: 1, label: '个人' },
         { value: 2, label: '企业' }
       ],
       auditOptions: [
-        { value: 1, label: '未审核' },
-        { value: 3, label: '审核不通过' },
-        { value: 2, label: '审核通过' }
+        { value: 0, label: '未审核' },
+        { value: 1, label: '审核通过' },
+        { value: 2, label: '审核不通过' }
       ],
       bankList: {
         "01000000": "邮储银行",
@@ -244,10 +260,12 @@ export default {
       formData: {
         name: '',
         type: '',
-        status: ''
+        createManagerName: '',
+        status: 0
       },
       signForm: {
         mobile: '',
+        volumn: '',
         spiltRate: ''
       },
       cardForm: {
@@ -266,6 +284,9 @@ export default {
         spiltRate: [
           { required: true, trigger: 'blur', validator: validateSpiltRate }
         ],
+        volumn: [
+          { trigger: 'blur', validator: validateVolunm }
+        ],
         userName: [
           { required: true, trigger: 'blur', message: '请输入开户人姓名' }
         ],
@@ -278,7 +299,7 @@ export default {
       dateTime: [],
       colModels: [
         { prop: 'id', label: '审核号', width: 80 },
-        { prop: 'gmtCreate', label: '申请时间', width: 180 },
+        { prop: 'gmtCreate', label: '申请时间', width: 180, filter: 'parseTime' },
         { prop: 'name', label: '机构名称' },
         { prop: 'type', label: '机构类型', width: 100,
           render(row) {
@@ -286,15 +307,15 @@ export default {
             return typeData[row.type - 1] || ''
           }
         },
-        { prop: 'name', label: '城市管家' },
-        { slotName: 'slot_status', label: '审核状态', width: 150 },
-        { prop: 'gmtModified', label: '审核时间', width: 140, type: 'formatTime', toolTip: true },
-        { label: '操作', slotName: 'handle', fixed: 'right', width: 95 }
+        { prop: 'createManagerName', label: '城市管家' },
+        { slotName: 'slot_status', label: '审核状态', width: 100 },
+        { prop: 'gmtModified', label: '审核时间', width: 180, filter: 'parseTime' },
+        { label: '操作', slotName: 'handle', fixed: 'right', width: 100, align: 'center' }
       ],
       tableHeight: 300,
       data_detail: {},
-      url: '/market/audit/',
-      method: 'list',
+      url: fhdAuditApi.defaultOptions.requestUrl,
+      method: fhdAuditApi.defaultOptions.method,
       layer_showInfo: false,
       layer_sign: false,
       layer_card: false
@@ -325,6 +346,7 @@ export default {
     }
   },
   methods: {
+    // 查询
     searchParam() {
       this.$refs.refGridUnit.searchHandler()
     },
@@ -335,69 +357,79 @@ export default {
         data: {}
       })
     },
+    // 查看详情
     showDetail(index, row) {
-      this.data_detail = deepClone(row)
-      this.layer_showInfo = true
+      fhdAuditApi.detail({
+        id: row.id
+      }).then(response => {
+        this.data_detail = response.data
+        this.layer_showInfo = true
+      }).catch()
     },
     dialogClose() {
       this.data_detail = {}
     },
+    // 审核
     saveAuditResult() {
 
     },
-    signSaveData() {//标记为飞虎队
+    // 标记为飞虎队
+    signSaveData() {
       this.$refs.signForm.validate(valid => {
         if (valid) {
-          initFlyOrgApi(deepClone(this.signForm)).then(response => {
+          fhdAuditApi.markFhd(deepClone(this.signForm)).then(response => {
             this.$message.success('标记成功')
-            this.layer_sign = false;
+            this.layer_sign = false
           }).catch()
         } else {
-          console.log('error submit!!');
-          return false;
+          console.log('error submit!!')
+          return false
         }
-      });
+      })
     },
     dialogSign() {
       this.signForm = {
         mobile: '',
-        spiltRate: ''
+        spiltRate: '',
+        volumn: ''
       }
       this.$refs.signForm.clearValidate()
+    },
+    // 绑定银行卡
+    nextStep() {
+      if (!validateMobile(this.cardForm.mobile)) {
+        this.$message.error('请输入正确的手机号')
+        return false
+      }
+      fhdAuditApi.queryByMobile({
+        mobile: this.cardForm.mobile
+      }).then(response => {
+        this.inputMobie = false
+      }).catch()
     },
     cardSaveData() {
       this.$refs.cardForm.validate(valid => {
         if (valid) {
-          bindWithdrawCardApi(deepClone(this.cardForm)).then(response => {
+          fhdAuditApi.updateBankCard(deepClone(this.cardForm)).then(response => {
             this.$message.success('银行卡绑定成功')
-            this.layer_card = false;
+            this.layer_card = false
           }).catch()
         } else {
-          console.log('error submit!!');
-          return false;
+          console.log('error submit!!')
+          return false
         }
-      });
+      })
     },
     dialogCard() {
       this.cardForm = {
         cardType: 1
       }
-      this.$refs.cardForm.clearValidate()
-    },
-    signContactor(index, row) {
-      row.requestStatus = 2;
-      saveUserRequestApi([row]).then(response => {
-        this.getGridData(this.pageItems);
-        this.$notify({
-          title: '成功',
-          message: '标记成功',
-          type: 'success',
-          duration: 2000
-        })
-      })
+      if (!this.inputMobie) {
+        this.$refs.cardForm.clearValidate()
+      }
     }
   }
-};
+}
 </script>
 <style rel="stylesheet/scss" lang="scss">
 .model-search .filter-item {

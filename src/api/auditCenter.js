@@ -135,3 +135,81 @@ export function batchRemoveRoomPictureApi(params) {
     }
   })
 }
+
+/* 飞虎队机构 */
+export const fhdAuditApi = {
+  defaultOptions: {
+    requestUrl: '/market/audit',
+    method: 'auditRecordList'
+  },
+  detail(params) {
+    return fetch({
+      url: fhdAuditApi.defaultOptions.requestUrl,
+      method: 'post',
+      data: {
+        method: 'queryAuditRecordDetail',
+        params
+      }
+    })
+  },
+  personal(params) {
+    return fetch({
+      url: fhdAuditApi.defaultOptions.requestUrl,
+      method: 'post',
+      data: {
+        method: 'auditPersonal',
+        params
+      }
+    })
+  },
+  business(params) {
+    return fetch({
+      url: fhdAuditApi.defaultOptions.requestUrl,
+      method: 'post',
+      data: {
+        method: 'auditBusiness',
+        params
+      }
+    })
+  },
+  markFhd(params) {
+    return fetch({
+      url: fhdAuditApi.defaultOptions.requestUrl,
+      method: 'post',
+      data: {
+        method: 'markFlying',
+        params
+      }
+    })
+  },
+  queryByMobile(params) {
+    return fetch({
+      url: fhdAuditApi.defaultOptions.requestUrl,
+      method: 'post',
+      data: {
+        method: 'queryByMobile',
+        params
+      }
+    })
+  },
+  updateBankCard(params) {
+    return fetch({
+      url: fhdAuditApi.defaultOptions.requestUrl,
+      method: 'post',
+      data: {
+        method: 'updateBankCard',
+        params
+      }
+    })
+  },
+  list(params) {
+    return fetch({
+      url: fhdAuditApi.defaultOptions.requestUrl,
+      method: 'post',
+      data: {
+        method: defaultOptions.method,
+        params
+      }
+    })
+  },
+}
