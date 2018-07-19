@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-07-11 13:49:21
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-07-13 16:39:57
+ * @Last Modified time: 2018-07-19 18:39:30
  */
 
  <template>
@@ -11,62 +11,62 @@
       <el-tab-pane v-for="(item,index) in tabMapOptions" :label="item" :key='index' :name="item">
       </el-tab-pane>
       <el-form class="model-search clearfix" :inline="true" size="small">
-          <div>
-            <el-select size="small" v-model="searchParams.houseStatus" filterable clearable placeholder="房间状态" class="item-select">
-              <el-option label="已出租" :value="1"></el-option>
-              <el-option label="未出租" :value="0"></el-option>
-            </el-select>
-            <el-select size="small" v-model="searchParams.houseType" filterable clearable placeholder="房间类型" class="item-select filter-item">
-              <el-option label="普通" :value="0"></el-option>
-              <el-option label="金融" :value="1"></el-option>
-              <el-option label="飞虎队" :value="2"></el-option>
-            </el-select>
-            <el-select size="small" v-model="searchParams.publishStatus" filterable clearable placeholder="发布状态" class="item-select filter-item">
-              <el-option label="已发布" :value="0"></el-option>
-              <el-option label="未发布" :value="1"></el-option>
-            </el-select>
-            <el-button size="small" type="primary" icon="el-icon-search" @click="searchParam" class="filter-item">查询</el-button>
-            <el-button size="small" icon="el-icon-remove-outline" @click="searchParam('clear')" class="filter-item">清空</el-button>
-          </div>
-          <div style="margin-top: 10px;">
-            <el-input size="small" v-model="searchParams.organizationName" clearable placeholder="组织名称" style="width:150px;"></el-input>
-            <el-input size="small" v-model="searchParams.mobileOrName" clearable placeholder="手机号/姓名" class="filter-item" style="width:150px;"></el-input>
-            <el-input size="small" v-model="searchParams.keywords" clearable placeholder="公寓/小区-房间" class="filter-item" style="width:150px;"></el-input>
-            <el-button size="small" type="success" icon="el-icon-upload" class="filter-item" @click="syncItems('on')">发布</el-button>
-            <el-button size="small" type="danger" icon="el-icon-remove" class="filter-item" @click="syncItems('off')">撤销</el-button>
-          </div>
-        </el-form>
-        <GridUnit
-          ref="refGridUnit"
-          :columns="colModels"
-          :formOptions="searchParams"
-          :url="url"
-          :showSelection="true"
-          :pageSizes="[50, 100, 200, 500]"
-          :dataMethod="method"
-          :height="tableHeight"
-          @selection-change="handleSelectionChange">
-          <template slot="slot_popover" slot-scope="scope">
-            <el-popover v-if="scope.row.idlefishStatus === `发布失败`" trigger="hover" placement="top">
-              <p>发布失败原因: {{ scope.row.failReason }}</p>
-              <div slot="reference">
-                <el-tag :type="scope.row.idlefishStatus | renderStatusType">
-                  {{scope.row.idlefishStatus | renderStatusValue}}
-                </el-tag>
-              </div>
-            </el-popover>
-            <el-tag v-else :type="scope.row.idlefishStatus | renderStatusType">
-              {{scope.row.idlefishStatus | renderStatusValue}}
-            </el-tag>
-          </template>
-        </GridUnit>
+        <div>
+          <el-select size="small" v-model="searchParams.houseStatus" filterable clearable placeholder="房间状态" class="item-select">
+            <el-option label="已出租" :value="1"></el-option>
+            <el-option label="未出租" :value="0"></el-option>
+          </el-select>
+          <el-select size="small" v-model="searchParams.houseType" filterable clearable placeholder="房间类型" class="item-select filter-item">
+            <el-option label="普通" :value="0"></el-option>
+            <el-option label="金融" :value="1"></el-option>
+            <el-option label="飞虎队" :value="2"></el-option>
+          </el-select>
+          <el-select size="small" v-model="searchParams.publishStatus" filterable clearable placeholder="麦邻发布状态" class="item-select filter-item">
+            <el-option label="未发布" :value="0"></el-option>
+            <el-option label="已发布" :value="1"></el-option>
+          </el-select>
+          <el-button size="small" type="primary" icon="el-icon-search" @click="searchParam" class="filter-item">查询</el-button>
+          <el-button size="small" icon="el-icon-remove-outline" @click="searchParam('clear')" class="filter-item">清空</el-button>
+        </div>
+        <div style="margin-top: 10px;">
+          <el-input size="small" v-model="searchParams.organizationName" clearable placeholder="组织名称" style="width:150px;"></el-input>
+          <el-input size="small" v-model="searchParams.mobileOrName" clearable placeholder="手机号/姓名" class="filter-item" style="width:150px;"></el-input>
+          <el-input size="small" v-model="searchParams.keywords" clearable placeholder="公寓/小区-房间" class="filter-item" style="width:150px;"></el-input>
+          <el-button size="small" type="success" icon="el-icon-upload" class="filter-item" @click="syncItems('on')">发布</el-button>
+          <el-button size="small" type="danger" icon="el-icon-remove" class="filter-item" @click="syncItems('off')">撤销</el-button>
+        </div>
+      </el-form>
+      <GridUnit
+        ref="refGridUnit"
+        :columns="colModels"
+        :formOptions="searchParams"
+        :url="url"
+        :listField="`data`"
+        :showSelection="true"
+        :pageSizes="[50, 100, 200, 500]"
+        :dataMethod="method"
+        :height="tableHeight"
+        @selection-change="handleSelectionChange">
+        <template slot="slot_popover" slot-scope="scope">
+          <el-popover v-if="scope.row.idlefishStatus === `发布失败`" trigger="hover" placement="top">
+            <p>发布失败原因: {{ scope.row.failReason }}</p>
+            <div slot="reference">
+              <el-tag :type="scope.row.idlefishStatus | renderStatusType">
+                {{scope.row.idlefishStatus | renderStatusValue}}
+              </el-tag>
+            </div>
+          </el-popover>
+          <el-tag v-else :type="scope.row.idlefishStatus | renderStatusType">
+            {{scope.row.idlefishStatus | renderStatusValue}}
+          </el-tag>
+        </template>
+      </GridUnit>
     </el-tabs>
   </div>
 </template>
 <script>
 import GridUnit from '@/components/GridUnit/grid'
 import { deepClone, cleanArray, ObjectMap } from '@/utils'
-import { hotRecommendApi, appIconApi } from '@/api/eeop'
 import { houseAsyncApi } from '@/api/houseManage'
 export default {
   name: 'houseSync',
@@ -154,8 +154,8 @@ export default {
         { prop: 'operation', label: '操作记录', width: 180, fixed: 'right' }
       ],
       tableHeight: 300,
-      url: hotRecommendApi.defaultOptions.requestUrl,
-      method: hotRecommendApi.defaultOptions.method
+      url: houseAsyncApi.defaultOptions.requestUrl,
+      method: houseAsyncApi.defaultOptions.method
     }
   },
   mounted() {
@@ -187,7 +187,7 @@ export default {
     searchParam(type) {
       if (type === 'clear') {
         this.searchParams = {
-          houseStatus: 0,
+          houseStatus: '',
           houseType: '',
           publishStatus: '',
           organizationName: '',
@@ -225,6 +225,11 @@ export default {
         this.$message.error(`请选择需要${typeConfig[type].title}的房源`)
         return false
       }
+      const pendingRomms = this.selectedItems.filter(item => item.idlefishStatus === '发布中')
+      if (pendingRomms.length > 0) {
+        this.$message.error(`发布中的房源不能进行${typeConfig[type].title}`)
+        return false
+      }
       const unfilterItem = this.selectedItems.filter(item => item.idlefishStatus === type)
       if (unfilterItem.length !== 0) {
         this.$message.error(`已${typeConfig[type].title}的房源不能再${typeConfig[type].title}`)
@@ -240,19 +245,18 @@ export default {
     },
     // 发布、撤销
     gotoHouseAsync(api) {
-      return false
-      let roomCodes = this.selectedItems.filter(item => item.roomCode)
+      let roomCodes = this.selectedItems.map(item => item.roomCode)
       api({
-        platform: 'idlefish',
+        platform: ['idlefish'],
         roomCodes
       }).then(response => {
-        this.searchParam()
         this.$notify({
           title: '成功',
-          message: '申请发布成功',
+          message: '操作成功',
           type: 'success',
           duration: 2000
         })
+        this.searchParam()
       })
     }
   }

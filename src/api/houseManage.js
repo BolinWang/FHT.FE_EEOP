@@ -74,38 +74,46 @@ export function marketReviewCheckListByPageApi(params) {
 
 /* OTA账号绑定授权 */
 export const authorizeApi = {
+  defaultOptions: {
+    requestUrl: '/market/account',
+    method: 'list'
+  },
   list(params) {
     return fetch({
-      url: '/market/ota/list',
+      url: authorizeApi.defaultOptions.requestUrl,
       method: 'post',
       data: {
+        method: authorizeApi.defaultOptions.method,
         params
       }
     })
   },
   bind(params) {
     return fetch({
-      url: '/market/ota/account/binding',
+      url: '/market/account',
       method: 'post',
       data: {
+        method: 'binding',
         params
       }
     })
   },
   status(params) {
     return fetch({
-      url: '/market/account/binding/status',
+      url: '/market/account',
       method: 'post',
       data: {
+        method: 'binding/status',
         params
       }
     })
   },
   picture(params) {
     return fetch({
-      url: '/market/account/acquire/picture',
+      url: '/market/account',
       method: 'post',
       data: {
+        method: 'acquire/picture',
         params
       }
     })
@@ -114,47 +122,46 @@ export const authorizeApi = {
 
 /* 合作账号绑定授权 */
 export const houseAsyncApi = {
+  defaultOptions: {
+    requestUrl: '/market/rooms',
+    method: 'list'
+  },
   list(params) {
     return fetch({
-      url: '/market/rooms',
+      url: houseAsyncApi.defaultOptions.requestUrl,
       method: 'post',
       data: {
+        method: houseAsyncApi.defaultOptions.method,
         params
       }
     })
   },
   bind(params) {
     return fetch({
-      url: '/market/ota/account/binding',
+      url: '/market/account',
       method: 'post',
       data: {
-        params
-      }
-    })
-  },
-  switch(params) {
-    return fetch({
-      url: '/market/ota/account/switch',
-      method: 'post',
-      data: {
+        method: 'binding',
         params
       }
     })
   },
   publish(params) {
     return fetch({
-      url: '/market/rooms/publish',
+      url: '/market/rooms',
       method: 'post',
       data: {
+        method: 'publish',
         params
       }
     })
   },
   offshlef(params) {
     return fetch({
-      url: '/market/rooms/offshlef',
+      url: '/market/rooms',
       method: 'post',
       data: {
+        method: 'offshelf',
         params
       }
     })

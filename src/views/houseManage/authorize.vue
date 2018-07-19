@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-07-11 13:49:21
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-07-13 14:46:31
+ * @Last Modified time: 2018-07-19 18:37:09
  */
 
 <template>
@@ -23,6 +23,7 @@
       :columns="colModels"
       :formOptions="searchParams"
       :url="url"
+      :listField="`data`"
       :dataMethod="method"
       :height="tableHeight"
       :showExpand="true"
@@ -30,7 +31,7 @@
       @expand-change="getExpandData">
       <template slot="expandTable" slot-scope="table_scope">
         <el-table
-          :data="rowData.childrenData || []" style="width: 100%"
+          :data="rowData.children || []" style="width: 100%"
           :max-height="300"
           size="small"
           :header-row-class-name="`expandHeader`">
@@ -38,8 +39,11 @@
             <template slot-scope="expand_scope">
               <span v-if="column.slotName">
                 <el-tag v-if="rowData.idlefishStatus !== `已开通`" type="warning" size="small">请先开通主账号</el-tag>
-                <el-button v-if="rowData.idlefishStatus === `已开通`" @click="handleSetting(rowData, 0, 'change')" type="text" size="small">账号换绑</el-button>
-                <el-tag v-if="rowData.idlefishStatus === `已开通`" type="success" size="small">已开通</el-tag>
+                <div v-else>
+                  <el-tag v-if="expand_scope.row.idlefishStatus === `已开通`" type="success" size="small">已开通</el-tag>
+                  <el-button v-if="expand_scope.row.idlefishStatus === `已开通`" @click="handleSetting(expand_scope.row, 1, 'change')" type="text" size="small">账号换绑</el-button>
+                  <el-button v-else @click="handleSetting(expand_scope.row, 1)" type="text" size="small">开通账号</el-button>
+                </div>
               </span>
               <span v-else>
                 {{ column.render ? column.render(expand_scope.row) : expand_scope.row[column.prop] }}
@@ -49,7 +53,7 @@
         </el-table>
       </template>
       <template slot="handle" slot-scope="scope">
-        <el-button v-if="scope.row.idlefishStatus !== `已开通`" @click="handleSetting(scope.row, 1)" type="text" size="small">申请开通</el-button>
+        <el-button v-if="scope.row.idlefishStatus !== `已开通`" @click="handleSetting(scope.row, 0)" type="text" size="small">申请开通</el-button>
         <!-- <el-button v-if="scope.row.idlefishStatus === `已开通`" @click="handleSetting(scope.row, 1, 'change')" type="text" size="small">账号换绑</el-button> -->
         <el-tag v-if="scope.row.idlefishStatus === `已开通`" type="success" size="small">已开通</el-tag>
       </template>
@@ -71,7 +75,7 @@
           </el-form>
         </div>
         <div class="text-center" v-else style="display: flex; justify-content: center;">
-          <el-card :body-style="{ padding: '0px' }" style="width: 500px;">
+          <el-card :body-style="{ padding: '0px' }" style="max-width: 500px;">
             <img :src="picUrl" style="display: block; width: 100%;">
             <div style="padding: 14px;">
               <span>请用闲鱼APP进行扫码授权</span>
@@ -90,7 +94,6 @@
 <script>
 import GridUnit from '@/components/GridUnit/grid'
 import { deepClone, ObjectMap } from '@/utils'
-import { hotRecommendApi } from '@/api/eeop'
 import { authorizeApi } from '@/api/houseManage'
 import defaultPicUrl from '@/assets/banner.jpg'
 
@@ -129,20 +132,19 @@ export default {
         { prop: 'name', label: '姓名' },
         { prop: 'mobile', label: '手机号' },
         { prop: 'userType', label: '用户类型' },
-        { prop: 'idlefishStatus', label: '闲鱼账号', slotName: 'handle', width: 150 },
+        { prop: 'idlefishStatus', label: '闲鱼账号', slotName: 'handle', width: 150, align: 'center' },
         { prop: 'idlefishAccount', label: '闲鱼昵称' }
       ],
-      childrenData: [],
       expand_colModels: [
         { prop: 'name', label: '姓名' },
         { prop: 'mobile', label: '手机号' },
         { prop: 'userType', label: '用户类型' },
-        { prop: 'idlefishStatus', label: '闲鱼账号', slotName: 'handle', width: 150 },
+        { prop: 'idlefishStatus', label: '闲鱼账号', slotName: 'handle', width: 150, align: 'center' },
         { prop: 'idlefishAccount', label: '闲鱼昵称' }
       ],
       tableHeight: 300,
-      url: hotRecommendApi.defaultOptions.requestUrl,
-      method: hotRecommendApi.defaultOptions.method,
+      url: authorizeApi.defaultOptions.requestUrl,
+      method: authorizeApi.defaultOptions.method,
       rules: {
         account: [
           { required: true, message: '请填写闲鱼昵称', trigger: 'blur' }
@@ -195,15 +197,6 @@ export default {
     // 获取展开行数据 children
     getExpandData(row, expandedRows) {
       this.rowData = deepClone(row)
-      this.rowData.childrenData = [
-        {
-          name:'子账号',
-          mobile:'12345678902',
-          userType:'普通用户',
-          idlefishStatus:'已开通',
-          idlefishAccount:'aaaa'
-        }
-      ]
     },
     // 申请开通
     handleSetting(row, type, bindType) {
@@ -220,24 +213,20 @@ export default {
     nextStep() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          // TODO调用绑定接口
           let bindParams = {
             platform: 'idlefish',
-            userid: this.temp.userid,
+            userid: this.temp.userId,
             account: this.temp.account,
             type: this.temp.type,
             mobile: this.temp.mobile,
             brand: this.temp.name
           }
-          this.active_step = 1
-          return false
-          const bindApi = this.temp.bindType ? authorizeApi.switch : authorizeApi.bind
-          bindApi(ObjectMap(bindParams)).then(response => {
+          authorizeApi.bind(ObjectMap(bindParams)).then(response => {
             authorizeApi.picture({
               platform: 'idlefish',
               saasId: 0
             }).then(response => {
-              this.picUrl = response.picUrl
+              this.picUrl = response.data.picUrl
               this.active_step = 1
             })
           })
@@ -246,10 +235,9 @@ export default {
     },
     // 确认授权
     saveApplyInfo() {
-      return false
       authorizeApi.status(ObjectMap({
         platform: 'idlefish',
-        userid: this.temp.userid,
+        userid: this.temp.userId
       })).then(response => {
         this.layer_showApply = false
         this.searchParam()
