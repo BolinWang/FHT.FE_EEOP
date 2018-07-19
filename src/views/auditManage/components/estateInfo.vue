@@ -346,7 +346,7 @@ export default {
       }
     }
   }
-};
+}
 </script>
 <style rel="stylesheet/scss" lang="scss">
 .el-tag {

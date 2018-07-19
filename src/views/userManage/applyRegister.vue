@@ -10,8 +10,8 @@
       <el-button type="primary" size="small" icon="el-icon-search" @click.native="searchParam" v-waves class="filter-item">查询</el-button>
       <el-button plain size="small" icon="el-icon-remove-outline" @click.native="clearForm">清空</el-button>
       <el-button class="right" type="primary" size="small" icon="el-icon-circle-plus-outline" @click.native="handleApply">注册账号</el-button>
-      <el-button class="right" type="primary" size="small" @click.native="layer_sign = true">标记为飞虎队</el-button>
-      <el-button class="right" type="primary" size="small" @click.native="layer_card = true">银行卡绑定</el-button>
+      <!-- <el-button class="right" type="primary" size="small" @click.native="layer_sign = true">标记为飞虎队</el-button>
+      <el-button class="right" type="primary" size="small" @click.native="layer_card = true">银行卡绑定</el-button> -->
     </div>
     <div class="model-table" :style="tableStyle">
       <el-table :data="tableData" v-loading.body="listLoading" :max-height="tableHeight" size="small" fit stripe highlight-current-row>
@@ -57,7 +57,7 @@
       </el-dialog>
     </div>
      <!-- 标记为飞虎队 -->
-    <div class="dialog-info">
+    <!-- <div class="dialog-info">
       <el-dialog title="标记为飞虎队" :visible.sync="layer_sign" width="400px" @close="dialogSign">
         <el-form :model="signForm" size="small" status-icon :rules="rules" ref="signForm" label-width="150px">
           <el-form-item label="组织的主账号" prop="mobile">
@@ -77,9 +77,9 @@
           <el-button type="primary" size="small" @click="signSaveData">确 定</el-button>
         </div>
       </el-dialog>
-    </div>
+    </div> -->
      <!-- 银行卡绑定-->
-    <div class="dialog-info">
+    <!-- <div class="dialog-info">
       <el-dialog title="银行卡绑定" :visible.sync="layer_card" width="500px" @close="dialogCard">
         <el-form :model="cardForm" size="small" status-icon :rules="rules" ref="cardForm" label-width="150px">
           <el-form-item label="组织的主账号" prop="mobile">
@@ -99,7 +99,7 @@
           <el-button type="primary" size="small" @click="cardSaveData">确 定</el-button>
         </div>
       </el-dialog>
-    </div>
+    </div> -->
   </div>
 </template>
 <script>

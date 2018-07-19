@@ -28,8 +28,8 @@
       :dataMethod="method"
       :height="tableHeight">
       <template slot="slot_status" slot-scope="scope">
-        <el-popover v-if="scope.row.status == 3" trigger="hover" placement="top">
-          <p>不通过原因: {{ scope.row.rejectRemark }}</p>
+        <el-popover v-if="scope.row.status == 2" trigger="hover" placement="top">
+          <p>不通过原因: {{ scope.row.auditReason }}</p>
           <div slot="reference">
             <el-tag :type="scope.row.status | renderStatusType">
               {{scope.row.status | renderStatusValue}}
@@ -49,12 +49,19 @@
     </GridUnit>
     <!-- 查看审核 -->
     <div class="dialog-info">
-      <el-dialog :model="data_detail" :title="data_detail.type | typeFilter" :visible.sync="layer_showInfo" @close="dialogClose">
-
+      <el-dialog :model="data_detail"
+        :title="data_detail.type | typeFilter"
+        :visible.sync="layer_showInfo"
+        @close="dialogClose"
+        width="600px">
+        <fhd-person v-if="data_detail.type === 1" :temp-data="data_detail">
+        </fhd-person>
+        <fhd-business v-else :temp-data="data_detail">
+        </fhd-business>
         <div slot="footer" class="dialog-footer">
-          <el-button v-if="data_detail.status == 1" @click="layer_showInfo = false" size="small">取 消</el-button>
+          <el-button v-if="data_detail.status === 0" @click="layer_showInfo = false" size="small">取 消</el-button>
           <el-button v-else @click="layer_showInfo = false" size="small">关闭</el-button>
-          <el-button v-if="data_detail.status == 1" type="primary" size="small" @click.native="saveAuditResult">确 定</el-button>
+          <el-button v-if="data_detail.status === 0" type="primary" size="small" @click.native="saveAuditResult">确 定</el-button>
         </div>
       </el-dialog>
     </div>
@@ -109,7 +116,9 @@
                 </el-input>
               </el-form-item>
             </el-col>
-            <el-tag type="success" style="margin-left: 10px;">已实名</el-tag>
+            <el-tag style="margin-left: 10px;" :type="cardForm.status | statusFilter">
+              {{cardForm.status | statusStrFilter}}
+            </el-tag>
           </div>
           <div class="clearfix">
             <el-col :span="12">
@@ -162,6 +171,8 @@ import GridUnit from '@/components/GridUnit/grid'
 import { parseTime, ObjectMap, deepClone } from '@/utils'
 import { fhdAuditApi } from '@/api/auditCenter'
 import { validateMobile, validateIntAndZero } from '@/utils/validate'
+import fhdPerson from '@/views/auditManage/components/fhdPerson'
+import fhdBusiness from '@/views/auditManage/components/fhdBusiness'
 
 export default {
   name: 'auditFhd',
@@ -169,12 +180,14 @@ export default {
     waves
   },
   components: {
-    GridUnit
+    GridUnit,
+    fhdPerson,
+    fhdBusiness
   },
   filters: {
     typeFilter(type) {
       const typeData = ['个人', '企业']
-      return typeData[type - 1] || ''
+      return `飞虎队${typeData[type - 1]}机构` || ''
     },
     renderStatusType(status) {
       const statusMap = {
@@ -187,6 +200,17 @@ export default {
     renderStatusValue(status) {
       const statusStrData = ['待审核', '审核通过', '审核不通过']
       return statusStrData[status] || '待审核'
+    },
+    statusFilter(status) {
+      const statusMap = {
+        '0': 'info',
+        '1': 'success'
+      }
+      return statusMap[status] || 'info'
+    },
+    statusStrFilter(status) {
+      const statusStrData = ['未实名', '已实名']
+      return statusStrData[status] || '未实名'
     }
   },
   data() {
@@ -219,7 +243,7 @@ export default {
       }
     }
     return {
-      inputMobie: true,
+      inputMobie: true,  // 是否是第一步输入主账号手机号
       typeOptions: [
         { value: 1, label: '个人' },
         { value: 2, label: '企业' }
@@ -263,15 +287,8 @@ export default {
         createManagerName: '',
         status: 0
       },
-      signForm: {
-        mobile: '',
-        volumn: '',
-        spiltRate: ''
-      },
+      signForm: {},
       cardForm: {
-        mobile: '',
-        userName: '',
-        userCardNo: '',
         cardType: 1
       },
       rules: {
@@ -308,8 +325,15 @@ export default {
           }
         },
         { prop: 'createManagerName', label: '城市管家' },
-        { slotName: 'slot_status', label: '审核状态', width: 100 },
-        { prop: 'gmtModified', label: '审核时间', width: 180, filter: 'parseTime' },
+        { slotName: 'slot_status', label: '审核状态', width: 120 },
+        {
+          prop: 'gmtModified', label: '审核时间', width: 140,
+          showOverflowTooltip: true,
+          render(row) {
+            let filterTime = parseTime(row.gmtModified)
+            return `${filterTime} ${row.auditName || ''}`
+          }
+        },
         { label: '操作', slotName: 'handle', fixed: 'right', width: 100, align: 'center' }
       ],
       tableHeight: 300,
@@ -371,13 +395,28 @@ export default {
     },
     // 审核
     saveAuditResult() {
-
+      let typeMap = ['personal', 'business'][this.data_detail.type - 1]
+      const saveAuditApi = fhdAuditApi[typeMap]
+      const store_fhdData = this.$store.getters.fhdAuditData[typeMap]
+      if (!store_fhdData.status) {
+        this.$message.error('请选择审核结果')
+        return false
+      }
+      if (store_fhdData.status === 2 && !store_fhdData.reason) {
+        this.$message.error('请填写审核不通过原因，最多30个字符')
+        return false
+      }
+      saveAuditApi(store_fhdData).then(response => {
+        this.$message.success('操作成功')
+        this.searchParam()
+        this.layer_showInfo = false
+      }).catch()
     },
     // 标记为飞虎队
     signSaveData() {
       this.$refs.signForm.validate(valid => {
         if (valid) {
-          fhdAuditApi.markFhd(deepClone(this.signForm)).then(response => {
+          fhdAuditApi.markFhd(this.signForm).then(response => {
             this.$message.success('标记成功')
             this.layer_sign = false
           }).catch()
@@ -388,11 +427,7 @@ export default {
       })
     },
     dialogSign() {
-      this.signForm = {
-        mobile: '',
-        spiltRate: '',
-        volumn: ''
-      }
+      this.signForm = {}
       this.$refs.signForm.clearValidate()
     },
     // 绑定银行卡
@@ -404,13 +439,14 @@ export default {
       fhdAuditApi.queryByMobile({
         mobile: this.cardForm.mobile
       }).then(response => {
+        this.cardForm = response.data
         this.inputMobie = false
       }).catch()
     },
     cardSaveData() {
       this.$refs.cardForm.validate(valid => {
         if (valid) {
-          fhdAuditApi.updateBankCard(deepClone(this.cardForm)).then(response => {
+          fhdAuditApi.updateBankCard(this.cardForm).then(response => {
             this.$message.success('银行卡绑定成功')
             this.layer_card = false
           }).catch()

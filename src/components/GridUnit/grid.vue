@@ -1,8 +1,8 @@
 /*
  * @Author: FT.FE.Bolin
  * @Date: 2018-04-11 16:47:22
- * @Last Modified by: chudequan
- * @Last Modified time: 2018-07-09 20:28:37
+ * @Last Modified by: FT.FE.Bolin
+ * @Last Modified time: 2018-07-19 16:29:50
  */
 <template>
   <div class="model-table-pagenation">
@@ -72,7 +72,7 @@
           :sort-method="column.method"
           :resizable="column.resizable"
           :formatter="column.formatter"
-          :show-overflow-tooltip="column.showOverflowTooltip || true"
+          :show-overflow-tooltip="!column.showOverflowTooltip"
           :align="column.align || `left`"
           :header-align="column.headerAlign || column.align"
           :class-name="column.className"
