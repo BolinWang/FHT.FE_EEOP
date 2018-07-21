@@ -69,14 +69,28 @@
     <!-- 标记为飞虎队 -->
     <div class="dialog-info">
       <el-dialog title="标记为飞虎队" :visible.sync="layer_sign" width="400px" @close="dialogSign">
-        <el-form :model="signForm" size="mini" status-icon :rules="rules" ref="signForm" label-width="150px">
+        <el-form :model="signForm" size="small" status-icon :rules="rules" ref="signForm" label-width="150px">
           <el-form-item label="组织的主账号" prop="mobile">
             <el-input v-model="signForm.mobile" placeholder="请输入手机号"></el-input>
           </el-form-item>
           <el-form-item label="设置出房服务费率" prop="spiltRate">
-            <el-input v-model="signForm.spiltRate">
+            <el-input v-model="signForm.spiltRate" placeholder="0-100，最多两位小数">
               <template slot="append">%</template>
             </el-input>
+          </el-form-item>
+          <el-form-item label="城市管家" prop="managerMobile">
+            <el-select
+              v-model="signForm.managerMobile"
+              filterable remote
+              placeholder="请输入姓名，选择城市管家"
+              :remote-method="remoteMethod"
+              :loading="loading"
+              style="width: 100%">
+              <el-option v-for="item in managerList" :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
           </el-form-item>
           <el-form-item label="房源体量" prop="volumn">
             <el-input v-model="signForm.volumn" placeholder="0 / 正整数，可不填"></el-input>
@@ -232,7 +246,7 @@ export default {
       if(/^\d+(?:.\d{1,2})?$/.test(value) && value <= 100) {
         callback()
       } else {
-        callback(new Error('费率为0到100,最多保留2位小数'))
+        callback(new Error('费率为0到100,最多2位小数'))
       }
     }
     const validateVolunm = (rule, value, callback) => {
@@ -244,6 +258,8 @@ export default {
     }
     return {
       inputMobie: true,  // 是否是第一步输入主账号手机号
+      managerList: [], // 城市管家列表
+      loading: false,
       typeOptions: [
         { value: 1, label: '个人' },
         { value: 2, label: '企业' }
@@ -309,6 +325,9 @@ export default {
         ],
         userCardNo: [
           { required: true, trigger: 'blur', message: '请输入银行卡号' }
+        ],
+        managerMobile: [
+          { required: true, trigger: 'blur', message: '请选择城市管家' }
         ]
       },
       searchParams: {},
@@ -462,6 +481,24 @@ export default {
       }
       if (!this.inputMobie) {
         this.$refs.cardForm.clearValidate()
+      }
+    },
+    remoteMethod(query) {
+      if (query) {
+        this.loading = true
+        setTimeout(() => {
+          this.loading = false
+          this.managerList = ['王玲波','爸爸','哈哈','呵呵','admin','好的','张','李','陈'].map(item => {
+            return {
+              value: item,
+              label: item
+            }
+          }).filter(item => {
+            return item.label.toLowerCase().indexOf(query.toLowerCase()) > -1
+          })
+        }, 200)
+      } else {
+        this.managerList = []
       }
     }
   }
