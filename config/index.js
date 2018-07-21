@@ -1,6 +1,6 @@
 let path = require('path')
 let proxyIPs = {
-  XUQIANG: 'http://192.168.5.189:1234/', // 许强
+  XUQIANG: 'http://192.168.5.162:1234/', // 许强
   WANLI: 'http://192.168.1.121:1234/', // 万里小哥哥
   HONGDENG: 'http://192.168.5.241:1234/' // 水滴灯小哥哥
 }

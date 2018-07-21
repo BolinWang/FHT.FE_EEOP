@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-07-11 13:49:21
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-07-19 18:39:30
+ * @Last Modified time: 2018-07-21 10:19:15
  */
 
  <template>
@@ -41,7 +41,6 @@
         :columns="colModels"
         :formOptions="searchParams"
         :url="url"
-        :listField="`data`"
         :showSelection="true"
         :pageSizes="[50, 100, 200, 500]"
         :dataMethod="method"

@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-07-11 13:49:21
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-07-19 18:37:09
+ * @Last Modified time: 2018-07-21 13:44:27
  */
 
 <template>
@@ -23,13 +23,15 @@
       :columns="colModels"
       :formOptions="searchParams"
       :url="url"
-      :listField="`data`"
       :dataMethod="method"
       :height="tableHeight"
       :showExpand="true"
       :expandColums="colModels"
       @expand-change="getExpandData">
       <template slot="expandTable" slot-scope="table_scope">
+        <!-- <div class="noChildren align-center" v-if="!rowData.children || rowData.children.length === 0">
+          没有子账号呀
+        </div> -->
         <el-table
           :data="rowData.children || []" style="width: 100%"
           :max-height="300"
