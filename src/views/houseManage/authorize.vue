@@ -2,13 +2,13 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-07-11 13:49:21
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-07-21 13:44:27
+ * @Last Modified time: 2018-07-23 10:47:04
  */
 
 <template>
   <div class="app-container">
     <el-form class="model-search clearfix" :inline="true" size="small">
-      <el-select size="small" v-model="searchParams.type" filterable clearable placeholder="组织类型" class="item-select">
+      <el-select size="small" v-model="searchParams.type" filterable placeholder="组织类型" class="item-select">
         <el-option label="公司企业" :value="2"></el-option>
         <el-option label="个人" :value="3"></el-option>
         <el-option label="系统" :value="1"></el-option>
@@ -192,9 +192,13 @@ export default {
     // 查询
     searchParam(type) {
       if (type === 'clear') {
-        this.searchParams = {}
+        this.searchParams = {
+          type: 2
+        }
       }
-      this.$refs.refGridUnit.searchHandler()
+      this.$nextTick(() => {
+        this.$refs.refGridUnit.searchHandler()
+      })
     },
     // 获取展开行数据 children
     getExpandData(row, expandedRows) {
