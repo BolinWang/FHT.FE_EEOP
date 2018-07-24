@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-07-11 13:49:21
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-07-21 10:19:15
+ * @Last Modified time: 2018-07-24 16:41:29
  */
 
  <template>
@@ -24,6 +24,7 @@
           <el-select size="small" v-model="searchParams.publishStatus" filterable clearable placeholder="麦邻发布状态" class="item-select filter-item">
             <el-option label="未发布" :value="0"></el-option>
             <el-option label="已发布" :value="1"></el-option>
+            <el-option label="申请中" :value="2"></el-option>
           </el-select>
           <el-button size="small" type="primary" icon="el-icon-search" @click="searchParam" class="filter-item">查询</el-button>
           <el-button size="small" icon="el-icon-remove-outline" @click="searchParam('clear')" class="filter-item">清空</el-button>

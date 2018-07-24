@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-07-11 13:49:21
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-07-23 10:47:04
+ * @Last Modified time: 2018-07-24 16:32:38
  */
 
 <template>
@@ -42,8 +42,13 @@
               <span v-if="column.slotName">
                 <el-tag v-if="rowData.idlefishStatus !== `已开通`" type="warning" size="small">请先开通主账号</el-tag>
                 <div v-else>
-                  <el-tag v-if="expand_scope.row.idlefishStatus === `已开通`" type="success" size="small">已开通</el-tag>
-                  <el-button v-if="expand_scope.row.idlefishStatus === `已开通`" @click="handleSetting(expand_scope.row, 1, 'change')" type="text" size="small">账号换绑</el-button>
+                  <div v-if="expand_scope.row.idlefishStatus === `已开通`">
+                    <el-tag type="success" size="small">已开通</el-tag>
+                    <el-button @click="handleSetting(expand_scope.row, 1, 'change')" type="text" size="small">账号换绑</el-button>
+                  </div>
+                  <div v-else-if="expand_scope.row.idlefishStatus === `解绑中`">
+                    <el-tag type="info" size="small">解绑中</el-tag>
+                  </div>
                   <el-button v-else @click="handleSetting(expand_scope.row, 1)" type="text" size="small">开通账号</el-button>
                 </div>
               </span>
