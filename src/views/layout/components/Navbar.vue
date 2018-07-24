@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-04-11 17:22:27
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-06-26 15:22:27
+ * @Last Modified time: 2018-07-24 11:37:57
  */
 
 <template>
@@ -50,12 +50,16 @@
           </div>
           <el-dropdown-menu slot="dropdown">
             <div class="routerToItems" v-if="messageData.total > 0">
-              <el-dropdown-item class="clearfix flex" @click.native="routerTo(0)" v-if="messageData.distribute > 0">
+              <el-dropdown-item class="clearfix flex" @click.native="routerTo('/auditManage/auditPublishList', 0)" v-if="messageData.distribute > 0">
                 <span class="infos__item">您有<i class="red">{{messageData.distribute || '0'}}</i>条[分散式]房源信息待审核</span>
                 <el-button type="text">前往审核</el-button>
               </el-dropdown-item>
-              <el-dropdown-item class="clearfix flex" @click.native="routerTo(1)" v-if="messageData.concentrate > 0">
+              <el-dropdown-item class="clearfix flex" @click.native="routerTo('/auditManage/auditPublishList', 1)" v-if="messageData.concentrate > 0">
                 <span class="infos__item">您有<i class="red">{{messageData.concentrate || '0'}}</i>条[集中式]房源信息待审核</span>
+                <el-button type="text">前往审核</el-button>
+              </el-dropdown-item>
+              <el-dropdown-item class="clearfix flex" @click.native="routerTo('/auditManage/auditFhd')" v-if="messageData.register > 0">
+                <span class="infos__item">您有<i class="red">{{messageData.register || '0'}}</i>条飞虎队机构申请待审核</span>
                 <el-button type="text">前往审核</el-button>
               </el-dropdown-item>
             </div>
@@ -166,9 +170,9 @@ export default {
         }
       })
     },
-    routerTo(type) {
+    routerTo(path, type) {
       this.$router.push({
-        path: '/auditManage/auditPublishList',
+        path,
         query: { type: type }
       })
     },

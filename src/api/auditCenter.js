@@ -212,4 +212,14 @@ export const fhdAuditApi = {
       }
     })
   },
+  queryCityManager(params) {
+    return fetch({
+      url: fhdAuditApi.defaultOptions.requestUrl,
+      method: 'post',
+      data: {
+        method: 'queryCityManager',
+        params
+      }
+    })
+  }
 }

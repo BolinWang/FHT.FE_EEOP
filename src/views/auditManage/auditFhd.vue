@@ -16,7 +16,7 @@
         </el-input>
         <el-button type="primary" size="small" icon="el-icon-search" @click.native="searchParam" v-waves class="filter-item">查询</el-button>
         <el-button plain size="small" icon="el-icon-remove-outline" @click.native="clearForm">清空</el-button>
-        <el-button class="right" type="primary" size="small" @click.native="layer_sign = true">标记为飞虎队</el-button>
+        <el-button class="right" type="primary" size="small" @click.native="markFlying()">标记为飞虎队</el-button>
         <el-button class="right" type="primary" size="small" @click.native="layer_card = true">银行卡绑定</el-button>
       </el-form>
     </div>
@@ -73,22 +73,24 @@
           <el-form-item label="组织的主账号" prop="mobile">
             <el-input v-model="signForm.mobile" placeholder="请输入手机号"></el-input>
           </el-form-item>
-          <el-form-item label="设置出房服务费率" prop="spiltRate">
-            <el-input v-model="signForm.spiltRate" placeholder="0-100，最多两位小数">
+          <el-form-item label="设置出房服务费率" prop="splitFee">
+            <el-input v-model="signForm.splitFee" placeholder="0-100，最多两位小数">
               <template slot="append">%</template>
             </el-input>
           </el-form-item>
-          <el-form-item label="城市管家" prop="managerMobile">
+          <el-form-item label="城市管家" prop="id">
             <el-select
-              v-model="signForm.managerMobile"
+              v-model="signForm.id"
               filterable remote
               placeholder="请输入姓名，选择城市管家"
               :remote-method="remoteMethod"
               :loading="loading"
               style="width: 100%">
-              <el-option v-for="item in managerList" :key="item.value"
-                :label="item.label"
-                :value="item.value">
+              <el-option v-for="item in filterManagerList" :key="item.id"
+                :label="item.name"
+                :value="item.id">
+                <span style="float: left">{{ item.name }}</span>
+                <span style="float: right; color: #8492a6; font-size: 13px">{{ item.mobile }}</span>
               </el-option>
             </el-select>
           </el-form-item>
@@ -110,11 +112,11 @@
             <template slot="prepend">组织主账号</template>
           </el-input>
         </div>
-        <el-form v-else :model="cardForm" size="mini" status-icon :rules="rules" ref="cardForm" label-width="100px">
+        <el-form v-else :model="cardForm" size="small" status-icon :rules="rules" ref="cardForm" label-width="100px">
           <div class="clearfix">
             <el-col :span="12">
               <el-form-item label="姓名">
-                <el-input v-model="cardForm.userName" disabled></el-input>
+                <el-input v-model="cardForm.name" disabled></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="12">
@@ -126,12 +128,12 @@
           <div class="clearfix">
             <el-col :span="12">
               <el-form-item label="身份证号">
-                <el-input v-model="cardForm.cardNo" disabled>
+                <el-input v-model="cardForm.idCardNo" disabled>
                 </el-input>
               </el-form-item>
             </el-col>
-            <el-tag style="margin-left: 10px;" :type="cardForm.status | statusFilter">
-              {{cardForm.status | statusStrFilter}}
+            <el-tag style="margin-left: 10px;" :type="cardForm.isRealName | statusFilter">
+              {{cardForm.isRealName | statusStrFilter}}
             </el-tag>
           </div>
           <div class="clearfix">
@@ -217,8 +219,8 @@ export default {
     },
     statusFilter(status) {
       const statusMap = {
-        '0': 'info',
-        '1': 'success'
+        false: 'info',
+        true: 'success'
       }
       return statusMap[status] || 'info'
     },
@@ -258,6 +260,7 @@ export default {
     }
     return {
       inputMobie: true,  // 是否是第一步输入主账号手机号
+      filterManagerList: [],
       managerList: [], // 城市管家列表
       loading: false,
       typeOptions: [
@@ -314,7 +317,7 @@ export default {
         name: [
           { required: true, trigger: 'blur', validator: validateName }
         ],
-        spiltRate: [
+        splitFee: [
           { required: true, trigger: 'blur', validator: validateSpiltRate }
         ],
         volumn: [
@@ -326,7 +329,7 @@ export default {
         userCardNo: [
           { required: true, trigger: 'blur', message: '请输入银行卡号' }
         ],
-        managerMobile: [
+        id: [
           { required: true, trigger: 'blur', message: '请选择城市管家' }
         ]
       },
@@ -432,6 +435,12 @@ export default {
       }).catch()
     },
     // 标记为飞虎队
+    markFlying() {
+      fhdAuditApi.queryCityManager(this.signForm).then(response => {
+        this.managerList = response.data
+        this.layer_sign = true
+      }).catch()
+    },
     signSaveData() {
       this.$refs.signForm.validate(valid => {
         if (valid) {
@@ -458,7 +467,10 @@ export default {
       fhdAuditApi.queryByMobile({
         mobile: this.cardForm.mobile
       }).then(response => {
-        this.cardForm = response.data
+        this.cardForm = {
+          ...response.data,
+          cardType: 1
+        }
         this.inputMobie = false
       }).catch()
     },
@@ -482,23 +494,19 @@ export default {
       if (!this.inputMobie) {
         this.$refs.cardForm.clearValidate()
       }
+      this.inputMobie = true
     },
     remoteMethod(query) {
       if (query) {
         this.loading = true
         setTimeout(() => {
           this.loading = false
-          this.managerList = ['王玲波','爸爸','哈哈','呵呵','admin','好的','张','李','陈'].map(item => {
-            return {
-              value: item,
-              label: item
-            }
-          }).filter(item => {
-            return item.label.toLowerCase().indexOf(query.toLowerCase()) > -1
+          this.filterManagerList = this.managerList.filter(item => {
+            return item.name.toLowerCase().indexOf(query.toLowerCase()) > -1
           })
         }, 200)
       } else {
-        this.managerList = []
+        this.filterManagerList = []
       }
     }
   }
