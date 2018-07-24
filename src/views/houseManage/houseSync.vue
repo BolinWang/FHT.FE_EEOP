@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-07-11 13:49:21
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-07-24 16:41:29
+ * @Last Modified time: 2018-07-24 16:52:32
  */
 
  <template>
@@ -141,7 +141,8 @@ export default {
             renderStatusType(status) {
               const statusMap = {
                 '已发布': 'success',
-                '未发布': 'info'
+                '未发布': 'info',
+                '申请中': 'primary'
               }
               return statusMap[status] || 'info'
             },
