@@ -154,6 +154,9 @@ export default {
   },
   filters: {
     picListFilter(list = []) {
+      if (!list) {
+        return []
+      }
       return list.map((src) => {
         return {src}
       })
