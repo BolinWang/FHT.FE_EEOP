@@ -458,7 +458,9 @@ export default {
       })
     },
     dialogSign() {
-      this.signForm = {}
+      this.signForm = {
+        splitFee: '35'
+      }
       this.$refs.signForm.clearValidate()
     },
     // 绑定银行卡

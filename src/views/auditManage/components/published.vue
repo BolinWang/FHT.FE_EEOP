@@ -31,7 +31,7 @@
           <template slot-scope="scope">
             <span v-if="item.type === 'img'">
               <img class="image image-center" width="40" height="40"
-                v-if="scope.row[item.prop][0]"
+                v-if="scope.row[item.prop] && scope.row[item.prop][0]"
                 v-lazy="scope.row[item.prop][0]"
                 @click="showImage(scope.row[item.prop][0])" />
               <span v-else></span>
