@@ -106,7 +106,7 @@
     </div>
     <!-- 银行卡绑定-->
     <div class="dialog-info">
-      <el-dialog title="银行卡绑定" :visible.sync="layer_card" width="600px" @close="dialogCard">
+      <el-dialog title="银行卡绑定" :visible.sync="layer_card" width="700px" @close="dialogCard">
         <div v-if="inputMobie" class="text-center">
           <el-input placeholder="请输入主账号手机号" v-model="cardForm.mobile" size="small"  style="width: 300px;">
             <template slot="prepend">组织主账号</template>
@@ -116,19 +116,19 @@
           <div class="clearfix">
             <el-col :span="12">
               <el-form-item label="姓名">
-                <el-input v-model="cardForm.name" disabled></el-input>
+                <el-input :value="cardForm.name" disabled></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="12">
               <el-form-item label="手机号码">
-                <el-input v-model="cardForm.mobile" disabled></el-input>
+                <el-input :value="cardForm.mobile" disabled></el-input>
               </el-form-item>
             </el-col>
           </div>
           <div class="clearfix">
             <el-col :span="12">
               <el-form-item label="身份证号">
-                <el-input v-model="cardForm.idCardNo" disabled>
+                <el-input :value="cardForm.idNo | filterNum" disabled>
                 </el-input>
               </el-form-item>
             </el-col>
@@ -139,17 +139,17 @@
           <div class="clearfix">
             <el-col :span="12">
               <el-form-item label="银行卡类型">
-                <el-select size="small" style="width:100%" v-model="cardForm.cardType" class="item-select">
+                <el-select size="small" style="width:100%" v-model="cardForm.cardType" class="item-select" @change="changeType">
                   <el-option label="个人账户" :value="1">
                   </el-option>
-                  <el-option label="对公账户" :value="2">
+                  <el-option label="对公账户" :value="3">
                   </el-option>
                 </el-select>
               </el-form-item>
             </el-col>
             <el-col :span="12">
               <el-form-item label="开户人姓名">
-                <el-input v-model="cardForm.name"></el-input>
+                <el-input v-model="cardForm.accountName"></el-input>
               </el-form-item>
             </el-col>
           </div>
@@ -164,8 +164,8 @@
                 <el-input v-model="cardForm.accountIdNo"></el-input>
               </el-form-item>
               <el-form-item label="开户银行" v-else>
-                <el-select size="small" style="width:100%" placeholder="请选择" v-model="cardForm.bankName" class="item-select">
-                  <el-option v-for="(item, index) in bankList" :key="index" :label="item" :value="index">
+                <el-select size="small" style="width:100%" placeholder="请选择" v-model="cardForm.bankCode" class="item-select" @change="changeBank">
+                  <el-option v-for="(item, index) in bankList" :key="index" :label="item.name" :value="item.value">
                   </el-option>
                 </el-select>
               </el-form-item>
@@ -201,6 +201,12 @@ export default {
     fhdBusiness
   },
   filters: {
+    filterNum(val) {
+      if (!val) {
+        return ''
+      }
+      return val.replace(/\s/g,'').replace(/\D/g,'').replace(/(\d{4})(?=\d)/g,"$1 ")
+    },
     typeFilter(type) {
       const typeData = ['个人', '企业']
       return `飞虎队${typeData[type - 1]}机构` || ''
@@ -218,15 +224,10 @@ export default {
       return statusStrData[status] || '待审核'
     },
     statusFilter(status) {
-      const statusMap = {
-        false: 'info',
-        true: 'success'
-      }
-      return statusMap[status] || 'info'
+      return status ? 'success' : 'info'
     },
     statusStrFilter(status) {
-      const statusStrData = ['未实名', '已实名']
-      return statusStrData[status] || '未实名'
+      return status ? '已实名' : '未实名'
     }
   },
   data() {
@@ -272,41 +273,43 @@ export default {
         { value: 1, label: '审核通过' },
         { value: 2, label: '审核不通过' }
       ],
-      bankList: {
-        "01000000": "邮储银行",
-        "01020000": "工商银行",
-        "01030000": "农业银行",
-        "01040000": "中国银行",
-        "01050000": "建设银行",
-        "03010000": "交通银行",
-        "03020000": "中信银行",
-        "03030000": "光大银行",
-        "03040000": "华夏银行",
-        "03050000": "民生银行",
-        "03060000": "广发银行",
-        "03070000": "平安银行",
-        "03080000": "招商银行",
-        "03090000": "兴业银行",
-        "03100000": "浦发银行",
-        "03160000": "浙商银行",
-        "04012900": "上海银行",
-        "04031000": "北京银行",
-        "04083320": "宁波银行",
-        "04233310": "杭州银行",
-        "04256020": "东莞银行",
-        "04375850": "珠海华润",
-        "04791920": "包商银行",
-        "05083000": "江苏银行",
-        "64135810": "广州银行",
-        "64895910": "广东南粤"
-      },
+      bankList: [
+        { value: "01000000", name: "邮储银行" },
+        { value: "01020000", name: "工商银行" },
+        { value: "01030000", name: "农业银行" },
+        { value: "01040000", name: "中国银行" },
+        { value: "01050000", name: "建设银行" },
+        { value: "03010000", name: "交通银行" },
+        { value: "03020000", name: "中信银行" },
+        { value: "03030000", name: "光大银行" },
+        { value: "03040000", name: "华夏银行" },
+        { value: "03050000", name: "民生银行" },
+        { value: "03060000", name: "广发银行" },
+        { value: "03070000", name: "平安银行" },
+        { value: "03080000", name: "招商银行" },
+        { value: "03090000", name: "兴业银行" },
+        { value: "03100000", name: "浦发银行" },
+        { value: "03160000", name: "浙商银行" },
+        { value: "04012900", name: "上海银行" },
+        { value: "04031000", name: "北京银行" },
+        { value: "04083320", name: "宁波银行" },
+        { value: "04233310", name: "杭州银行" },
+        { value: "04256020", name: "东莞银行" },
+        { value: "04375850", name: "珠海华润" },
+        { value: "04791920", name: "包商银行" },
+        { value: "05083000", name: "江苏银行" },
+        { value: "64135810", name: "广州银行" },
+        { value: "64895910", name: "广东南粤" }
+      ],
       formData: {
         name: '',
         type: '',
         createManagerName: '',
         status: 0
       },
-      signForm: {},
+      signForm: {
+        splitFee: '35'
+      },
       cardForm: {
         cardType: 1
       },
@@ -459,6 +462,20 @@ export default {
       this.$refs.signForm.clearValidate()
     },
     // 绑定银行卡
+    changeType(value) {
+      if (value === 1) {
+        this.$set(this.cardForm, 'bankName', '')
+        this.$set(this.cardForm, 'bankCode', '')
+      } else {
+        this.$set(this.cardForm, 'accountIdNo', '')
+      }
+    },
+    changeBank(value) {
+      let selectedItem = this.bankList.filter((item) => {
+        return item.value === value
+      })
+      this.$set(this.cardForm, 'bankName', selectedItem[0].name)
+    },
     nextStep() {
       if (!validateMobile(this.cardForm.mobile)) {
         this.$message.error('请输入正确的手机号')
