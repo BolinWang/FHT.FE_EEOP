@@ -31,7 +31,7 @@
     <div class="clearfix">
       <el-col :span="13">
         <el-form-item label="房源体量">
-          <el-input v-model="temp.volunm" :disabled="true">
+          <el-input v-model="temp.volumn" :disabled="true">
           </el-input>
         </el-form-item>
       </el-col>

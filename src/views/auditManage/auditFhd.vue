@@ -252,7 +252,7 @@ export default {
         callback(new Error('费率为0到100,最多2位小数'))
       }
     }
-    const validateVolunm = (rule, value, callback) => {
+    const validateVolumn = (rule, value, callback) => {
       if (!validateIntAndZero(value)) {
         callback(new Error('请输入0或正整数'))
       } else {
@@ -324,7 +324,7 @@ export default {
           { required: true, trigger: 'blur', validator: validateSpiltRate }
         ],
         volumn: [
-          { trigger: 'blur', validator: validateVolunm }
+          { trigger: 'blur', validator: validateVolumn }
         ],
         userName: [
           { required: true, trigger: 'blur', message: '请输入开户人姓名' }

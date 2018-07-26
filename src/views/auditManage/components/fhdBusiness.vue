@@ -50,7 +50,7 @@
       <el-col :span="1">&nbsp;&nbsp;</el-col>
       <el-col :span="10">
         <el-form-item label="房源体量">
-          <el-input :value="temp.volunm" :disabled="true">
+          <el-input :value="temp.volumn" :disabled="true">
           </el-input>
         </el-form-item>
       </el-col>
