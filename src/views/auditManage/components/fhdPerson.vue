@@ -131,6 +131,9 @@ export default {
       })
     },
     filterNum(val) {
+      if (!val) {
+        return ''
+      }
       return val.replace(/\s/g,'').replace(/\D/g,'').replace(/(\d{4})(?=\d)/g,"$1 ")
     },
     sexFilter(type) {
