@@ -16,36 +16,36 @@ const _import = require('./_import_' + process.env.NODE_ENV)
 Vue.use(Router)
 
 export const constantRouterMap = [{
-    path: '/login',
-    component: _import('login/index'),
-    hidden: true
-  },
-  {
-    path: '/404',
-    component: _import('404'),
-    hidden: true
-  },
-  {
-    path: '/',
-    component: Layout,
-    redirect: '/dashboard',
-    name: 'Home',
-    hidden: true,
-    children: [{
-      path: 'dashboard',
-      name: '首页',
-      component: _import('dashboard/index')
-    }]
-  }
+  path: '/login',
+  component: _import('login/index'),
+  hidden: true
+},
+{
+  path: '/404',
+  component: _import('404'),
+  hidden: true
+},
+{
+  path: '/',
+  component: Layout,
+  redirect: '/dashboard',
+  name: 'Home',
+  hidden: true,
+  children: [{
+    path: 'dashboard',
+    name: '首页',
+    component: _import('dashboard/index')
+  }]
+}
 ]
 
 export default new Router({
   // mode: 'history', //需要服务器配置路由
   scrollBehavior: () => ({
     y: 0
-  }), //后退后页面位置
+  }), // 后退后页面位置
   routes: constantRouterMap
-});
+})
 
 export const asyncRouterMap = [
   {
@@ -58,40 +58,40 @@ export const asyncRouterMap = [
       role: ['admin', 'global']
     },
     children: [{
-        path: 'activityPage',
-        component: _import('eeop/activety'),
-        name: '精彩活动'
-      },
-      {
-        path: 'interviewPage',
-        component: _import('eeop/interview'),
-        name: '麦友专访'
-      },
-      {
-        path: 'advertisPage',
-        component: _import('eeop/advertis'),
-        name: '推广广告页'
-      },
-      {
-        path: 'bannerPage',
-        component: _import('eeop/banner'),
-        name: '首页焦点图'
-      },
-      {
-        path: 'appIcon',
-        component: _import('eeop/appIcon'),
-        name: 'icon展示'
-      },
-      {
-        path: 'infomation',
-        component: _import('eeop/infomation'),
-        name: '大麦消息'
-      },
-      {
-        path: 'hotRecommend',
-        component: _import('eeop/hotRecommend'),
-        name: '热门推荐'
-      }
+      path: 'activityPage',
+      component: _import('eeop/activety'),
+      name: '精彩活动'
+    },
+    {
+      path: 'interviewPage',
+      component: _import('eeop/interview'),
+      name: '麦友专访'
+    },
+    {
+      path: 'advertisPage',
+      component: _import('eeop/advertis'),
+      name: '推广广告页'
+    },
+    {
+      path: 'bannerPage',
+      component: _import('eeop/banner'),
+      name: '首页焦点图'
+    },
+    {
+      path: 'appIcon',
+      component: _import('eeop/appIcon'),
+      name: 'icon展示'
+    },
+    {
+      path: 'infomation',
+      component: _import('eeop/infomation'),
+      name: '大麦消息'
+    },
+    {
+      path: 'hotRecommend',
+      component: _import('eeop/hotRecommend'),
+      name: '热门推荐'
+    }
     ]
   },
   {
@@ -104,20 +104,25 @@ export const asyncRouterMap = [
       role: ['admin', 'global']
     },
     children: [{
-        path: 'displayPage',
-        component: _import('houseManage/promotionDisplay'),
-        name: '推广展示'
-      },
-      {
-        path: 'queryCenterPage',
-        component: _import('houseManage/queryCenter'),
-        name: '查询中心'
-      },
-      {
-        path: 'dataReportPage',
-        component: _import('houseManage/dataReport'),
-        name: '房源报表'
-      }
+      path: 'displayPage',
+      component: _import('houseManage/promotionDisplay'),
+      name: '推广展示'
+    },
+    {
+      path: 'queryCenterPage',
+      component: _import('houseManage/queryCenter'),
+      name: '查询中心'
+    },
+    {
+      path: 'dataReportPage',
+      component: _import('houseManage/dataReport'),
+      name: '房源报表'
+    },
+    {
+      path: 'estatePage',
+      component: _import('houseManage/estate'),
+      name: '集中式房源'
+    }
     ]
   },
   {
@@ -162,33 +167,33 @@ export const asyncRouterMap = [
       role: ['admin', 'global']
     },
     children: [{
-        path: 'userListPage',
-        component: _import('userManage/userList'),
-        name: '账号管理',
-        meta: {
-          role: ['admin']
-        }
-      },
-      {
-        path: 'feedbackPage',
-        component: _import('userManage/feedback'),
-        name: '意见反馈'
-      },
-      {
-        path: 'applyRegister',
-        component: _import('userManage/applyRegister'),
-        name: '申请注册'
-      },
-      {
-        path: 'initCustomerList',
-        component: _import('userManage/initCustomerList'),
-        name: '用户信息'
-      },
-      {
-        path: 'initOrgList',
-        component: _import('userManage/initOrgList'),
-        name: '组织列表'
+      path: 'userListPage',
+      component: _import('userManage/userList'),
+      name: '账号管理',
+      meta: {
+        role: ['admin']
       }
+    },
+    {
+      path: 'feedbackPage',
+      component: _import('userManage/feedback'),
+      name: '意见反馈'
+    },
+    {
+      path: 'applyRegister',
+      component: _import('userManage/applyRegister'),
+      name: '申请注册'
+    },
+    {
+      path: 'initCustomerList',
+      component: _import('userManage/initCustomerList'),
+      name: '用户信息'
+    },
+    {
+      path: 'initOrgList',
+      component: _import('userManage/initOrgList'),
+      name: '组织列表'
+    }
     ]
   },
   // {

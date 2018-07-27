@@ -328,7 +328,7 @@ export default {
     },
     /* 百度地图 */
     openBMap() {
-      window.setTimeout(() => {
+      this.$nextTick(() => {
         let map = new BMap.Map("addressMap");
         if (this.temp.bmapData) {
           let point = new BMap.Point(this.temp.longitude * 1 || 0, this.temp.latitude * 1 || 0);
@@ -343,7 +343,7 @@ export default {
           map.clearOverlays();
           map.addOverlay(new BMap.Marker(new BMap.Point(e.point.lng, e.point.lat)));
         });
-      }, 1000);
+      })
     }
   },
   watch: {
