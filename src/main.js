@@ -13,7 +13,9 @@ import * as filters from './filters'
 import VuePreview from '@/components/Preview/plugins'
 import VueLazyload from 'vue-lazyload'
 import lazyLoadPic from '@/assets/lazyLoad@3x.png'
-
+// if (process.env.NODE_ENV === "development") {
+//   require("@/mock")
+// }
 Vue.config.productionTip = false
 
 Vue.use(ElementUI)

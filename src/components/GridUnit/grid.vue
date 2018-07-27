@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-04-11 16:47:22
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-07-19 16:29:50
+ * @Last Modified time: 2018-07-12 16:32:35
  */
 <template>
   <div class="model-table-pagenation">
@@ -51,11 +51,8 @@
         <el-table-column v-if="showRowIndex" type="index" width="40" align="center"></el-table-column>
         <el-table-column v-if="showExpand" type="expand" width="40">
           <template slot-scope="scope">
-            <el-form label-position="left" size="small" inline class="table-expand">
-              <el-form-item v-for="(item, index) in expandColums" :label="item.label" :key="index">
-                <span>{{ scope.row[item.prop] }}</span>
-              </el-form-item>
-            </el-form>
+            <slot name="expandTable"></slot>
+            <slot name="expandForm"></slot>
           </template>
         </el-table-column>
         <el-table-column v-if="showSelection" type="selection" width="40"></el-table-column>
@@ -72,7 +69,7 @@
           :sort-method="column.method"
           :resizable="column.resizable"
           :formatter="column.formatter"
-          :show-overflow-tooltip="!column.showOverflowTooltip"
+          :show-overflow-tooltip="column.showOverflowTooltip || true"
           :align="column.align || `left`"
           :header-align="column.headerAlign || column.align"
           :class-name="column.className"
@@ -151,7 +148,7 @@
         Vue,
         pagination: {
           pageNo: 1,
-          pageSize: 20
+          pageSize: this.pageSizes ? this.pageSizes[0] : 20
         },
         total: 0,
         loading: false,
@@ -297,6 +294,13 @@
 <style rel="stylesheet/scss" lang="scss">
   .model-table {
     border: 1px solid #e6ebf5;
+    .expandHeader {
+      background-color: #f5f7fa !important;
+    }
+    .el-table__expanded-cell .el-table {
+      border: 1px solid #e6ebf5;
+      border-bottom: 0;
+    }
   }
 
   .model-pagenation {

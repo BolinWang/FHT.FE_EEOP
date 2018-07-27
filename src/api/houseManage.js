@@ -1,4 +1,4 @@
-import fetch from '@/utils/fetch';
+import fetch from '@/utils/fetch'
 
 /* 查询已有公寓城市列表 */
 export function getCityListApi(params = {}) {
@@ -9,7 +9,7 @@ export function getCityListApi(params = {}) {
       method: 'hasCityList',
       params
     }
-  });
+  })
 }
 
 /* 获取表格数据 */
@@ -21,7 +21,7 @@ export function getGridApi(params) {
       method: 'queryEstateListByPage',
       params
     }
-  });
+  })
 }
 
 /* 下架、排序 */
@@ -33,7 +33,7 @@ export function saveDataApi(params) {
       method: 'saveEstate',
       params
     }
-  });
+  })
 }
 
 /* 房源数据报表列表 */
@@ -45,7 +45,7 @@ export function marketOrgHouseReportListApi(params) {
       method: 'marketOrgHouseReportList',
       params
     }
-  });
+  })
 }
 
 /* 查询中心 城市公寓列表 */
@@ -57,7 +57,7 @@ export function marketCityAndSubdistrictListApi(params) {
       method: 'marketCityAndSubdistrictList',
       params
     }
-  });
+  })
 }
 
 /* 查询中心 房源列表 */
@@ -69,5 +69,101 @@ export function marketReviewCheckListByPageApi(params) {
       method: 'marketReviewCheckListByPage',
       params
     }
-  });
+  })
+}
+
+/* OTA账号绑定授权 */
+export const authorizeApi = {
+  defaultOptions: {
+    requestUrl: '/market/account',
+    method: 'list'
+  },
+  list(params) {
+    return fetch({
+      url: authorizeApi.defaultOptions.requestUrl,
+      method: 'post',
+      data: {
+        method: authorizeApi.defaultOptions.method,
+        params
+      }
+    })
+  },
+  bind(params) {
+    return fetch({
+      url: '/market/account',
+      method: 'post',
+      data: {
+        method: 'binding',
+        params
+      }
+    })
+  },
+  status(params) {
+    return fetch({
+      url: '/market/account',
+      method: 'post',
+      data: {
+        method: 'binding/status',
+        params
+      }
+    })
+  },
+  picture(params) {
+    return fetch({
+      url: '/market/account',
+      method: 'post',
+      data: {
+        method: 'acquire/picture',
+        params
+      }
+    })
+  }
+}
+
+/* 合作账号绑定授权 */
+export const houseAsyncApi = {
+  defaultOptions: {
+    requestUrl: '/market/rooms',
+    method: 'list'
+  },
+  list(params) {
+    return fetch({
+      url: houseAsyncApi.defaultOptions.requestUrl,
+      method: 'post',
+      data: {
+        method: houseAsyncApi.defaultOptions.method,
+        params
+      }
+    })
+  },
+  bind(params) {
+    return fetch({
+      url: '/market/account',
+      method: 'post',
+      data: {
+        method: 'binding',
+        params
+      }
+    })
+  },
+  publish(params) {
+    return fetch({
+      url: '/market/rooms',
+      method: 'post',
+      data: {
+        method: 'publish',
+        params
+      }
+    })
+  },
+  offshlef(params) {
+    return fetch({
+      url: '/market/rooms',
+      method: 'post',
+      data: {
+        method: 'offshelf',
+        params
+      }
+    })
+  }
 }

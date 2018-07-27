@@ -104,6 +104,14 @@ export const asyncRouterMap = [
       role: ['admin', 'global']
     },
     children: [{
+        path: 'authorize',
+        component: _import('houseManage/authorize'),
+        name: '合作账号授权'
+      },{
+        path: 'houseSync',
+        component: _import('houseManage/houseSync'),
+        name: '合作房源同步'
+      },{
         path: 'displayPage',
         component: _import('houseManage/promotionDisplay'),
         name: '推广展示'
