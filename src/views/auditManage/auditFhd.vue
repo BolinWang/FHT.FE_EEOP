@@ -433,12 +433,12 @@ export default {
       }
       saveAuditApi(store_fhdData).then(response => {
         if(response.message !== '操作成功') {
-          this.$alert('审核结果变更为【不通过】', response.message, {
+          this.layer_showInfo = false
+          this.$alert(response.message, '审核结果变更为【不通过】', {
             confirmButtonText: '确定',
             showClose: false,
             callback: action => {
               this.searchParam()
-              this.layer_showInfo = false
             }
           })
         } else {
