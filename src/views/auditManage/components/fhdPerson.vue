@@ -74,7 +74,7 @@
     <el-form-item label="平台代理收租服务" style="margin-bottom: 0;">
       <div class="previewItems">
         <Preview
-          :pic-list="temp.attractionFlowImage | picListFilter"
+          :pic-list="temp.proxyImage | picListFilter"
           :delete-icon="``"
           :disabled="``">
         </Preview>
@@ -83,7 +83,7 @@
     <el-form-item label="房源发布和租客引流服务" style="margin-bottom: 0;">
       <div class="previewItems">
         <Preview
-          :pic-list="temp.proxyImage | picListFilter"
+          :pic-list="temp.attractionFlowImage | picListFilter"
           :delete-icon="``"
           :disabled="``">
         </Preview>

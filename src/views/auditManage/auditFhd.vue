@@ -432,7 +432,11 @@ export default {
         return false
       }
       saveAuditApi(store_fhdData).then(response => {
-        this.$message.success('操作成功')
+        if(response.message !== '操作成功') {
+          this.$message.warning(`审核结果变更为【不通过】! ${response.message}`)
+        } else {
+          this.$message.success(response.message || '操作成功')
+        }
         this.searchParam()
         this.layer_showInfo = false
       }).catch()
