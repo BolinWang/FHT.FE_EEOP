@@ -433,12 +433,19 @@ export default {
       }
       saveAuditApi(store_fhdData).then(response => {
         if(response.message !== '操作成功') {
-          this.$message.warning(`审核结果变更为【不通过】! ${response.message}`)
+          this.$alert('审核结果变更为【不通过】', response.message, {
+            confirmButtonText: '确定',
+            showClose: false,
+            callback: action => {
+              this.searchParam()
+              this.layer_showInfo = false
+            }
+          })
         } else {
           this.$message.success(response.message || '操作成功')
+          this.searchParam()
+          this.layer_showInfo = false
         }
-        this.searchParam()
-        this.layer_showInfo = false
       }).catch()
     },
     // 标记为飞虎队
