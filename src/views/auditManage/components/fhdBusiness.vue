@@ -58,7 +58,21 @@
     <el-form-item label="银行开户名" label-width="90px">
       <el-input :value="temp.accountName" :disabled="true"></el-input>
     </el-form-item>
-    <div class="clearfix">
+    <div class="clearfix" v-if="temp.bankCardType === 1">
+      <el-col :span="12">
+        <el-form-item label="开户人身份证" label-width="100px">
+          <el-input :value="temp.accountIdNum | filterNum" :disabled="true">
+          </el-input>
+        </el-form-item>
+      </el-col>
+      <el-col :span="1">&nbsp;&nbsp;</el-col>
+      <el-col :span="11">
+        <el-form-item label="银行卡号">
+          <el-input :value="temp.bankCardNum | filterNum" :disabled="true"></el-input>
+        </el-form-item>
+      </el-col>
+    </div>
+    <div class="clearfix" v-else>
       <el-col :span="13">
         <el-form-item label="银行卡号">
           <el-input :value="temp.bankCardNum | filterNum" :disabled="true"></el-input>
