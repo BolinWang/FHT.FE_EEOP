@@ -82,7 +82,7 @@
             <el-select
               v-model="signForm.id"
               filterable remote
-              placeholder="请输入姓名，选择城市管家"
+              placeholder="输入[姓名/手机号]快速筛选"
               :remote-method="remoteMethod"
               :loading="loading"
               style="width: 100%">
@@ -532,7 +532,7 @@ export default {
         setTimeout(() => {
           this.loading = false
           this.filterManagerList = this.managerList.filter(item => {
-            return item.name.toLowerCase().indexOf(query.toLowerCase()) > -1
+            return (item.name.toLowerCase().includes(query.toLowerCase()) || item.mobile.includes(query))
           })
         }, 200)
       } else {
