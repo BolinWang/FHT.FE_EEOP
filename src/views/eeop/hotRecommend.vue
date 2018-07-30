@@ -19,7 +19,6 @@
       ref="refGridUnit"
       :columns="colModels"
       :formOptions="searchParams"
-      :showPagination="false"
       :url="url"
       :dataMethod="method"
       :height="tableHeight">
@@ -119,7 +118,7 @@ export default {
     /* 表格高度控制 */
    this.$nextTick(() => {
       const offsetTop = this.$refs.refGridUnit.$el.offsetTop || 140
-      const pagenationH = 5
+      const pagenationH = 64
       const containerPadding = 20
       let temp_height = document.body.clientHeight - offsetTop - pagenationH - containerPadding
       this.tableHeight = temp_height > 300 ? temp_height : 300

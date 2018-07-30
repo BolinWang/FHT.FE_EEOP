@@ -2,7 +2,7 @@
   <div class="app-container">
     <el-form ref="houseSearchForm" :inline="true" :model="houseSearchForm" size="small">
       <el-form-item>
-        <el-select v-model="houseSearchForm.region" filterable placeholder="城市">
+        <el-select v-model="houseSearchForm.cityId" filterable placeholder="城市">
           <el-option v-for="item in cityOptions" :key="item.value" :label="item.label" :value="item.value">
           </el-option>
         </el-select>
@@ -14,7 +14,7 @@
         <el-input v-model="houseSearchForm.estateName" placeholder="公寓名称"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search">查询</el-button>
+        <el-button type="primary" icon="el-icon-search" @click="searchEstateHouseList">查询</el-button>
         <el-button icon="el-icon-remove-outline" @click="resetHouseSearchForm('houseSearchForm')">清空</el-button>
       </el-form-item>
       <el-form-item class="right">
@@ -24,15 +24,20 @@
 
     <grid-unit
       ref="estateHouseList"
-      :data="tableData"
+      :url="url"
+      listField="data.list"
+      totalField="data.record"
+      :dataMethod="method"
+      :formOptions="houseSearchForm"
       :columns="colModels"
-      :autoLoad="false"
-      :type="'local'"
       :height="tableHeight">
       <template slot="operateEstate" slot-scope="scope">
         <el-button type="primary" size="mini">查看房间</el-button>
         <el-button type="primary" size="mini">编辑公寓</el-button>
         <el-button type="danger" size="mini">删除公寓</el-button>
+      </template>
+      <template slot="operateRecordStr" slot-scope="scope">
+        <p>{{scope.row.lastoperator}} {{scope.row.lastOperateTime}}</p>
       </template>
     </grid-unit>
 
@@ -86,6 +91,7 @@
 <script>
 import { debounce } from "@/utils"
 import GridUnit from '@/components/GridUnit/grid'
+import { estateHouseListApi } from '@/api/houseManage'
 export default {
   components: {
     GridUnit
@@ -120,13 +126,13 @@ export default {
         ]
       },
       houseSearchForm: {
-        region: "",
-        organization: "",
-        estateName: ""
+        cityId: '123123',
+        orgName: '',
+        estateName: ''
       },
       cityOptions: [
         {
-          value: "选项1",
+          value: "123123",
           label: "黄金糕"
         },
         {
@@ -143,12 +149,14 @@ export default {
         }
       ],
       tableHeight: 500,
+      url: 'http://localhost:9528/api/market/fangyuan',
+      method: 'marketCityAndSubdistrictList',
       colModels: [
         { prop: 'orgName', label: '组织名称', align: 'center' },
         { prop: 'cityName', label: '城市', align: 'center' },
         { prop: 'estateName', label: '公寓名称', align: 'center' },
         { prop: 'operate', label: '操作', slotName: 'operateEstate', width: '300', align: 'center' },
-        { prop: 'operateRecord', label: '操作记录', align: 'center' }
+        { prop: 'operateRecord', label: '操作记录', slotName: 'operateRecordStr', align: 'center' }
       ],
       tableData: [
         {
@@ -199,8 +207,11 @@ export default {
     searchPositionByKeywords() {
       this.local.search(this.searchKeywords)
     },
+    searchEstateHouseList() {
+      this.$refs.estateHouseList.searchHandler()
+    },
     resetHouseSearchForm(formName) {
-      this.$refs[formName].resetFields()
+      // this.searchParams = {}
     }
   },
   watch: {
@@ -214,7 +225,9 @@ export default {
       }
     }
   },
-  mounted() {}
+  mounted() {
+    this.dialogTableVisible = true
+  }
 };
 </script>
 

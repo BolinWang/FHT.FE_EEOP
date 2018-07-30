@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-04-11 17:22:27
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-06-26 15:22:27
+ * @Last Modified time: 2018-07-16 14:12:21
  */
 
 <template>
@@ -11,6 +11,9 @@
       <hamburger class="hamburger-container" :toggleClick="toggleSideBar" :isActive="sidebar.opened"></hamburger>
       <tags-view></tags-view>
       <div class="right-menu">
+        <el-tooltip effect="dark" content="新手引导" placement="bottom">
+          <Guide class="guide right-menu-item"></Guide>
+        </el-tooltip>
         <el-tooltip effect="dark" content="全屏" placement="bottom">
           <screenfull class="screenfull right-menu-item"></screenfull>
         </el-tooltip>
@@ -86,10 +89,11 @@
   </div>
 </template>
 <script>
-import { mapGetters } from 'vuex';
-import Hamburger from '@/components/Hamburger';
+import { mapGetters } from 'vuex'
+import Hamburger from '@/components/Hamburger'
 import ThemePicker from '@/components/ThemePicker'
 import Screenfull from '@/components/Screenfull'
+import Guide from '@/components/Guide'
 import { default as TagsView } from './TagsView'
 import { saveSelfDetailApi, queryMessageQuantityApi } from '@/api/userManage'
 import { ObjectMap } from '@/utils'
@@ -99,7 +103,8 @@ export default {
     TagsView,
     Hamburger,
     ThemePicker,
-    Screenfull
+    Screenfull,
+    Guide
   },
   data() {
     const validateName = (rule, value, callback) => {
