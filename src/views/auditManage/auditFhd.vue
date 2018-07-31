@@ -74,7 +74,7 @@
             <el-input v-model="signForm.mobile" placeholder="请输入手机号"></el-input>
           </el-form-item>
           <el-form-item label="设置出房服务费率" prop="splitFee">
-            <el-input v-model="signForm.splitFee" placeholder="0-100，最多两位小数">
+            <el-input v-model="signForm.splitFee" placeholder="0-100正整数">
               <template slot="append">%</template>
             </el-input>
           </el-form-item>
@@ -249,7 +249,7 @@ export default {
       if(/^\d?$/.test(value) && value > 0 && value <= 100) {
         callback()
       } else {
-        callback(new Error('费率为0到100,最多2位小数'))
+        callback(new Error('费率为0到100的正整数'))
       }
     }
     const validateVolumn = (rule, value, callback) => {
