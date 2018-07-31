@@ -36,6 +36,6 @@ export function validatAlphabets(str) {
 
 /* 正整数 */
 export function validateIntAndZero(num) {
-  let validateResult = Math.sign(num)
-  return ((validateResult === 0 && 1 / validateResult > 0) || validateResult === 1)
+  let reg = /^[0-9]+$/
+  return reg.test(num)
 }
