@@ -246,7 +246,7 @@ export default {
       }
     }
     const validateSpiltRate = (rule, value, callback) => {
-      if(/^\d+(?:.\d{1,2})?$/.test(value) && value <= 100) {
+      if(/^\d?$/.test(value) && value > 0 && value <= 100) {
         callback()
       } else {
         callback(new Error('费率为0到100,最多2位小数'))
