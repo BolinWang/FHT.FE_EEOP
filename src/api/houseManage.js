@@ -168,12 +168,13 @@ export const houseAsyncApi = {
   }
 }
 
-export function estateHouseListApi(params) {
+/* 集中式楼层列表 */
+export function estateRoomFloorApi(params) {
   return fetch({
     url: 'http://localhost:9528/api/market/fangyuan',
     method: 'post',
     data: {
-      method: 'marketCityAndSubdistrictList',
+      method: 'queryFloorListByEstateId',
       params
     }
   })

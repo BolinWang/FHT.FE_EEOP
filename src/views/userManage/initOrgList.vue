@@ -477,6 +477,7 @@ export default {
       this.isEdit = false;
       this.isHideUpload = false;
       queryTemplateListApi().then(response => {
+        console.log(response)
         this.permTemplate = response.data.result;
       })
     },

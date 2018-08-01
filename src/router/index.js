@@ -124,9 +124,27 @@ export const asyncRouterMap = [
       component: _import('houseManage/dataReport'),
       name: '房源报表'
     }, {
-      path: 'estatePage',
+      path: '/houseManage/estatePage',
       component: _import('houseManage/estate'),
-      name: '集中式房源'
+      noDropdown: true,
+      children: [
+        {
+          path: 'estateList',
+          name: '集中式房源',
+          component: _import('houseManage/estate/estateList')
+        },
+        {
+          path: 'estateRoomList',
+          name: '集中式房间列表',
+          component: _import('houseManage/estate/singleEstateRoom'),
+          meta: {
+            noTags: true,
+            parentPath: '/houseManage/estatePage/estateList',
+            parentName: '集中式房源',
+            meta: {}
+          }
+        }
+      ]
     }]
   },
   {

@@ -234,7 +234,6 @@ export function debounce(func, wait, immediate) {
   }
 }
 
-
 /* 深拷贝 */
 export function deepClone(source) {
   if (!source && typeof source !== 'object') {
@@ -256,6 +255,6 @@ export function deepClone(source) {
 
 /* *号隐藏 */
 export function plusXing(str, frontLen, endLen) {
-  let len = str.length - frontLen - endLen;
-  return str.substring(0, frontLen) + '*'.repeat(len) + str.substring(str.length - endLen);
+  let len = str.length - frontLen - endLen
+  return str.substring(0, frontLen) + '*'.repeat(len) + str.substring(str.length - endLen)
 }

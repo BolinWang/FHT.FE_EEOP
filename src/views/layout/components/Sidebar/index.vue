@@ -1,8 +1,8 @@
 /*
  * @Author: FT.FE.Bolin
  * @Date: 2018-04-11 17:11:31
- * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-06-21 13:39:44
+ * @Last Modified by: chudequan
+ * @Last Modified time: 2018-07-30 18:53:09
  */
 
 <template>
@@ -10,7 +10,7 @@
     <el-menu
       mode="vertical"
       :unique-opened="true"
-      :default-active="$route.path"
+      :default-active="$route.meta.parentPath || $route.path"
       background-color="#304156"
       text-color="#fff"
       active-text-color="#ffd04b">
