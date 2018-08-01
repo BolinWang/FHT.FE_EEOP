@@ -157,11 +157,11 @@ export const asyncRouterMap = [
       role: ['admin', 'global']
     },
     children: [
-      // {
-      //   path: 'auditFhd',
-      //   component: _import('auditManage/auditFhd'),
-      //   name: '飞虎队机构'
-      // },
+      {
+        path: 'auditFhd',
+        component: _import('auditManage/auditFhd'),
+        name: '飞虎队机构'
+      },
       {
         path: 'auditSignatures',
         component: _import('auditManage/auditSignatures'),

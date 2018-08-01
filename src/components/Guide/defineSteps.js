@@ -59,7 +59,7 @@ const steps = [
     element: '.notification',
     popover: {
       title: '审核消息',
-      description: '这里推送房源审核消息，点击即可跳转到相应页面进行审核哦',
+      description: '这里推送审核消息，点击即可跳转到相应页面进行审核哦',
       position: 'left'
     }
   }

@@ -1,6 +1,6 @@
 let path = require('path')
 let proxyIPs = {
-  XUQIANG: 'http://192.168.5.162:1234/', // 许强
+  YYY: 'http://192.168.5.243:1234/',
   WANLI: 'http://192.168.1.121:1234/', // 万里小哥哥
   HONGDENG: 'http://192.168.5.241:1234/' // 水滴灯小哥哥
 }
@@ -10,14 +10,15 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/api': {
-        target: proxyIPs.XUQIANG,
+        // target: proxyIPs.YYY,
+        target: 'http://192.168.5.123:3000',
         changeOrigin: true,
         pathRewrite: {
           '^/api': ''
         }
       }
     },
-    host: 'localhost',
+    host: '0.0.0.0', // 请勿修改，localhost/IP均可访问
     port: 9528,
     autoOpenBrowser: true,
     errorOverlay: true,

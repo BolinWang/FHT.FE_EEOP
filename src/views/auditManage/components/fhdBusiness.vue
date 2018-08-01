@@ -1,0 +1,290 @@
+<template>
+  <el-form size="small" :model="temp" label-position="left" label-width="70px">
+    <div class="clearfix">
+      <el-col :span="13">
+        <el-form-item label="企业名称">
+         <el-input v-model="temp.companyName" :disabled="true"></el-input>
+        </el-form-item>
+      </el-col>
+      <el-col :span="1">&nbsp;&nbsp;</el-col>
+      <el-col :span="10">
+        <el-form-item label="企业法人">
+          <el-input :value="temp.legalPerson" :disabled="true"></el-input>
+        </el-form-item>
+      </el-col>
+    </div>
+    <div class="clearfix">
+      <el-col :span="13">
+        <el-form-item label="社会统一信用代码" label-width="130px">
+          <el-input :value="temp.unifiedSocialCreditCode" :disabled="true"></el-input>
+        </el-form-item>
+      </el-col>
+      <el-col :span="1">&nbsp;&nbsp;</el-col>
+      <el-col :span="10">
+        <el-form-item label="出房费率">
+          <el-input :value="`${temp.splitFee}%`" :disabled="true"></el-input>
+        </el-form-item>
+      </el-col>
+    </div>
+    <div class="clearfix">
+      <el-col :span="13">
+        <el-form-item label="企业联系人" label-width="90px">
+         <el-input v-model="temp.name" :disabled="true">
+            <template slot="append">{{temp.sex | sexFilter}}</template>
+          </el-input>
+        </el-form-item>
+      </el-col>
+      <el-col :span="1">&nbsp;&nbsp;</el-col>
+      <el-col :span="10">
+        <el-form-item label="手机号码">
+          <el-input :value="temp.mobile | filterNum" :disabled="true"></el-input>
+        </el-form-item>
+      </el-col>
+    </div>
+    <div class="clearfix">
+      <el-col :span="13">
+        <el-form-item label="联系人身份证" label-width="100px">
+          <el-input :value="temp.idNum | filterNum" :disabled="true"></el-input>
+        </el-form-item>
+      </el-col>
+      <el-col :span="1">&nbsp;&nbsp;</el-col>
+      <el-col :span="10">
+        <el-form-item label="房源体量">
+          <el-input :value="temp.volumn" :disabled="true">
+          </el-input>
+        </el-form-item>
+      </el-col>
+    </div>
+    <el-form-item label="银行开户名" label-width="90px">
+      <el-input :value="temp.accountName" :disabled="true"></el-input>
+    </el-form-item>
+    <div class="clearfix" v-if="temp.bankCardType === 1">
+      <el-col :span="12">
+        <el-form-item label="开户人身份证" label-width="100px">
+          <el-input :value="temp.accountIdNum | filterNum" :disabled="true">
+          </el-input>
+        </el-form-item>
+      </el-col>
+      <el-col :span="1">&nbsp;&nbsp;</el-col>
+      <el-col :span="11">
+        <el-form-item label="银行卡号">
+          <el-input :value="temp.bankCardNum | filterNum" :disabled="true"></el-input>
+        </el-form-item>
+      </el-col>
+    </div>
+    <div class="clearfix" v-else>
+      <el-col :span="13">
+        <el-form-item label="银行卡号">
+          <el-input :value="temp.bankCardNum | filterNum" :disabled="true"></el-input>
+        </el-form-item>
+      </el-col>
+      <el-col :span="1">&nbsp;&nbsp;</el-col>
+      <el-col :span="10">
+        <el-form-item label="开户银行" label-width="70px">
+          <el-input :value="temp.accountBank | filterBankCode" :disabled="true">
+          </el-input>
+        </el-form-item>
+      </el-col>
+    </div>
+    <div class="clearfix">
+      <el-form-item label="审核结果">
+        <el-radio-group v-model="fhdBusinessData.status" v-if="!temp.status || temp.status === 0">
+          <el-radio :label="1">通过</el-radio>
+          <el-radio :label="2">不通过</el-radio>
+        </el-radio-group>
+        <el-tag v-else :type="temp.status | statusFilter">
+          {{temp.status | statusStrFilter}}
+        </el-tag>
+        <el-input v-if="temp.status === 2" type="textarea" :rows="2" v-model="temp.reason" :disabled="true">
+        </el-input>
+        <div v-if="temp.status === 0 && fhdBusinessData.status === 2" style="position: relative;">
+          <el-input style="position: relative;" type="textarea" :rows="2" placeholder="请输入审核不通过原因" v-model="fhdBusinessData.reason" :maxlength="30">
+          </el-input>
+          <span class="textNumber">还可以输入{{textNumber}}字符</span>
+        </div>
+      </el-form-item>
+    </div>
+    <el-form-item label="平台代理收租服务" style="margin-bottom: 0;">
+      <div class="previewItems">
+        <Preview
+          :pic-list="temp.proxyImage | picListFilter"
+          :delete-icon="``"
+          :disabled="``">
+        </Preview>
+      </div>
+    </el-form-item>
+    <el-form-item label="房源发布和租客引流服务" style="margin-bottom: 0;">
+      <div class="previewItems">
+        <Preview
+          :pic-list="temp.attractionFlowImage | picListFilter"
+          :delete-icon="``"
+          :disabled="``">
+        </Preview>
+      </div>
+    </el-form-item>
+    <el-form-item label="企业营业执照" style="margin-bottom: 0;">
+      <div class="previewItems">
+        <Preview
+          :pic-list="temp.businessLicenseImage | picListFilter"
+          :delete-icon="``"
+          :disabled="``">
+        </Preview>
+      </div>
+    </el-form-item>
+    <el-form-item label="身份证照片" style="margin-bottom: 0;">
+      <div class="previewItems">
+        <Preview
+          :pic-list="temp.idCardImage | picListFilter"
+          :delete-icon="``"
+          :disabled="``">
+        </Preview>
+      </div>
+    </el-form-item>
+  </el-form>
+</template>
+
+<script>
+import Preview from '@/components/Preview/Preview'
+import { ObjectMap, deepClone } from '@/utils'
+import noPic from '@/assets/noPic.jpg'
+import store from '@/store'
+let bankList = [
+  { value: "01000000", name: "邮储银行" },
+  { value: "01020000", name: "工商银行" },
+  { value: "01030000", name: "农业银行" },
+  { value: "01040000", name: "中国银行" },
+  { value: "01050000", name: "建设银行" },
+  { value: "03010000", name: "交通银行" },
+  { value: "03020000", name: "中信银行" },
+  { value: "03030000", name: "光大银行" },
+  { value: "03040000", name: "华夏银行" },
+  { value: "03050000", name: "民生银行" },
+  { value: "03060000", name: "广发银行" },
+  { value: "03070000", name: "平安银行" },
+  { value: "03080000", name: "招商银行" },
+  { value: "03090000", name: "兴业银行" },
+  { value: "03100000", name: "浦发银行" },
+  { value: "03160000", name: "浙商银行" },
+  { value: "04012900", name: "上海银行" },
+  { value: "04031000", name: "北京银行" },
+  { value: "04083320", name: "宁波银行" },
+  { value: "04233310", name: "杭州银行" },
+  { value: "04256020", name: "东莞银行" },
+  { value: "04375850", name: "珠海华润" },
+  { value: "04791920", name: "包商银行" },
+  { value: "05083000", name: "江苏银行" },
+  { value: "64135810", name: "广州银行" },
+  { value: "64895910", name: "广东南粤" }
+]
+export default {
+  name: 'fhdBusiness',
+  props: {
+    tempData: {
+      type: Object,
+      default: function() {
+        return {}
+      }
+    }
+  },
+  components: {
+    Preview
+  },
+  computed: {
+    textNumber() {
+      return (30 - this.fhdBusinessData.reason.length) < 0 ? 0 : (30 - this.fhdBusinessData.reason.length)
+    }
+  },
+  filters: {
+    filterBankCode(val) {
+      if (!val) {
+        return ''
+      }
+      let filterBank = bankList.filter((item) => item.value === val)
+      return filterBank.length > 0 ? filterBank[0].name : ''
+    },
+    picListFilter(list = []) {
+      if (!list) {
+        return []
+      }
+      return list.map((src) => {
+        return {src}
+      })
+    },
+    filterNum(val) {
+      if (!val) {
+        return ''
+      }
+      return val.replace(/\s/g,'').replace(/\D/g,'').replace(/(\d{4})(?=\d)/g,"$1 ")
+    },
+    sexFilter(type) {
+      const sexMap = ['先生', '女士']
+      return sexMap[type - 1] || '不详'
+    },
+    statusFilter(status) {
+      const statusMap = {
+        '0': 'info',
+        '1': 'success',
+        '2': 'danger'
+      }
+      return statusMap[status] || 'info'
+    },
+    statusStrFilter(status) {
+      const statusStrData = ['待审核', '审核通过', '审核不通过']
+      return statusStrData[status] || '待审核'
+    }
+  },
+  data() {
+    return {
+      temp: deepClone(this.tempData),
+      fhdBusinessData: {
+        status: '',
+        reason: ''
+      }
+    }
+  },
+  created() {
+    this.fhdBusinessData = {
+      status: '',
+      reason: ''
+    }
+  },
+  watch: {
+    tempData: {
+      handler(val) {
+        this.temp = val
+        this.fhdBusinessData = {
+          status: '',
+          reason: ''
+        }
+      },
+      deep: true
+    },
+    fhdBusinessData: {
+      handler(val) {
+        val.reason = val.status === 1 ? '' : val.reason
+        if (this.temp.status === 0) {
+          store.dispatch('UpdateFhdData', {
+            data: val,
+            rowData: this.temp
+          })
+        }
+      },
+      deep: true
+    }
+  }
+}
+</script>
+
+<style scoped>
+.el-tag {
+  margin: 0 5px 5px 0;
+}
+.textNumber {
+  position: absolute;
+  bottom: 5px;
+  right: 10px;
+  color: #666;
+  font-size: 12px;
+  line-height: 1.2;
+}
+</style>
