@@ -2,7 +2,7 @@
   <div class="app-container">
     <el-form class="house-search-form" ref="houseSearchForm" :inline="true" :model="houseSearchForm" size="small">
       <el-form-item class="house-search-form-group">
-        <area-select v-model="houseSearchForm.cityId" :level="0" placeholder="请选择城市" :filterable="true" :showAllLevels="false"></area-select>
+        <area-select v-model="houseSearchForm.cityArea" :level="0" placeholder="请选择城市" :filterable="true" :showAllLevels="false"></area-select>
       </el-form-item>
       <el-form-item class="house-search-form-group">
         <el-input v-model="houseSearchForm.organization" placeholder="组织名称"></el-input>
@@ -52,7 +52,25 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="具体位置">
-              <el-input v-model="estateModel.address"></el-input>
+              <el-select
+                class="estate-detail-address"
+                v-model="estateModel.address"
+                filterable
+                remote
+                reserve-keyword
+                :clearable="true"
+                placeholder="请输入关键词"
+                :remote-method="remoteMethod"
+                popper-class="detail-address-options"
+                @change="showMap"
+                :loading="loading">
+                <el-option
+                  v-for="item in options4"
+                  :key="item.cityId"
+                  v-html="item.name"
+                  :value="item.address">
+                </el-option>
+              </el-select>
             </el-form-item>
           </el-col>
         </el-row>
@@ -80,6 +98,25 @@
           <el-col :span="24">
             <el-form-item label="公寓简介">
               <el-input type="textarea" v-model="estateModel.intro" placeholder="最多可输入150个字"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="房源管理权限">
+              <el-input placeholder="组织名称"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label-width="0">
+              <el-input placeholder="账号名"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="4">
+            <el-form-item label-width="0">
+              <el-checkbox-group v-model="estateModel.managePeople">
+                <el-checkbox label="飞虎队" name="type"></el-checkbox>
+              </el-checkbox-group>
             </el-form-item>
           </el-col>
         </el-row>
@@ -113,25 +150,6 @@
             </el-badge>
           </el-col>
         </el-row>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="房源管理权限">
-              <el-input placeholder="组织名称"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label-width="0">
-              <el-input placeholder="账号名"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="4">
-            <el-form-item label-width="0">
-              <el-checkbox-group v-model="estateModel.managePeople">
-                <el-checkbox label="飞虎队" name="type"></el-checkbox>
-              </el-checkbox-group>
-            </el-form-item>
-          </el-col>
-        </el-row>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="showEstateModel = false" size="small">保 存</el-button>
@@ -149,7 +167,7 @@
           <div id="bm-view" class="bm-view">
 
           </div>
-          <el-input class="search-input" placeholder="请输入公寓地址" v-model="searchKeywords" clearable @keyup.native="searchPositionByKeywords">
+          <el-input class="search-input" placeholder="请输入公寓地址" v-model="searchKeywords" clearable size="small" @keyup.native="searchPositionByKeywords">
           </el-input>
           <el-popover popper-class="selected-house-position" ref="popover" placement="right" width="360" trigger="manual">
             <el-form label-position="right" label-width="80px" :model="formLabelAlign" :rules="rules" size="mini" ref="ruleForm">
@@ -190,8 +208,7 @@
 import { debounce } from "@/utils"
 import GridUnit from "@/components/GridUnit/grid"
 import areaSelect from "@/components/AreaSelect"
-
-import cityData from '@/components/AreaSelect/cityData'
+import { estateAddressByKeywordsApi } from "@/api/houseManage"
 export default {
   name: "estateHouseList",
   components: {
@@ -200,6 +217,26 @@ export default {
   },
   data() {
     return {
+      loading: false,
+      options4: [],
+      states: ["Alabama", "Alaska", "Arizona",
+        "Arkansas", "California", "Colorado",
+        "Connecticut", "Delaware", "Florida",
+        "Georgia", "Hawaii", "Idaho", "Illinois",
+        "Indiana", "Iowa", "Kansas", "Kentucky",
+        "Louisiana", "Maine", "Maryland",
+        "Massachusetts", "Michigan", "Minnesota",
+        "Mississippi", "Missouri", "Montana",
+        "Nebraska", "Nevada", "New Hampshire",
+        "New Jersey", "New Mexico", "New York",
+        "North Carolina", "North Dakota", "Ohio",
+        "Oklahoma", "Oregon", "Pennsylvania",
+        "Rhode Island", "South Carolina",
+        "South Dakota", "Tennessee", "Texas",
+        "Utah", "Vermont", "Virginia",
+        "Washington", "West Virginia", "Wisconsin",
+        "点击这里添加小区"],
+      list: [],
       showEstateModel: false,
       dialogTableVisible: false,
       searchKeywords: "",
@@ -229,15 +266,16 @@ export default {
         ]
       },
       houseSearchForm: {
-        cityId: "123123",
-        orgName: "",
-        estateName: ""
+        orgName: '',
+        estateName: '',
+        cityArea: [],
+        cityId: ''
       },
       estateModel: {
         name: "",
         areaCode: [],
         region: "",
-        address: "",
+        address: [],
         people: "",
         phone: "",
         sex: "1",
@@ -273,7 +311,12 @@ export default {
           operateRecord: new Date().getTime()
         }
       ]
-    };
+    }
+  },
+  computed: {
+    cityArea() {
+      return this.houseSearchForm.cityArea
+    }
   },
   methods: {
     initBMap() {
@@ -312,18 +355,52 @@ export default {
       this.$refs.popover.doShow();
     },
     searchPositionByKeywords() {
-      this.local.search(this.searchKeywords);
+      this.local.search(this.searchKeywords)
     },
     searchEstateHouseList(type) {
       if (type === 'clear') {
-        this.houseSearchForm = {
-          cityId: this.houseSearchForm.cityId
+        for (const key in this.houseSearchForm) {
+          if (key === 'cityArea' || key === 'cityId') {
+            continue
+          }
+          this.houseSearchForm[key] = ''
         }
+      }
+      if (this.houseSearchForm.cityArea.length === 0) {
+        this.$message.error('请至少选择城市后再查询公寓')
+        return
       }
       this.$refs.estateHouseList.searchHandler()
     },
     routerToEstateRoomList(row) {
       this.$router.push({ path: 'estateRoomList', query: { fangyuanCode: row.fangyuanCode } })
+    },
+    remoteMethod(query) {
+      if (query !== '') {
+        this.loading = true;
+        estateAddressByKeywordsApi({
+          cityId: '330100',
+          keyword: query
+        }).then((res) => {
+          this.loading = false
+          if (res.code === '0') {
+            this.options4 = res.data.list
+            this.options4.push({
+              address: 'noSelect',
+              cityId: '-1',
+              name: '<span style="color: red">找不到小区？点击这里添加小区</span>'
+            })
+          }
+        })
+      } else {
+        this.options4 = [];
+      }
+    },
+    showMap(val) {
+      if (val === 'noSelect') {
+        this.estateModel.address = ''
+        this.dialogTableVisible = true
+      }
     }
   },
   watch: {
@@ -335,33 +412,27 @@ export default {
       } else {
         this.$refs.popover.doClose();
       }
+    },
+    cityArea(val) {
+      if (val && val[1]) {
+        this.houseSearchForm.cityId = val[1]
+      }
     }
   },
   mounted() {
-    // cityData.forEach((item, index) => {
-    //   item.children.forEach((v, i) => {
-    //     this.cityOptions.push({
-    //       value: v.value,
-    //       label: v.label
-    //     })
-    //   })
-    // })
     let changeTableSize = debounce(() => {
-      this.tableHeight = Math.max(document.body.clientHeight - 220, 250);
-    }, 100);
-    changeTableSize();
-    window.addEventListener("resize", changeTableSize);
-    // this.dialogTableVisible = true
-
-
+      this.tableHeight = Math.max(document.body.clientHeight - 190, 250)
+    }, 100)
+    changeTableSize()
+    window.addEventListener("resize", changeTableSize)
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
 .house-search-form {
   .house-search-form-group {
-    margin-bottom: 10px;
+    margin-bottom: 0;
     &.right {
       margin-right: 0;
     }
@@ -399,7 +470,7 @@ export default {
       position: absolute;
       top: 10px;
       left: 10px;
-      width: 380px;
+      width: 340px;
     }
   }
   .search-list {
@@ -466,6 +537,17 @@ export default {
 
 .room-type-btn {
   margin-right: 20px;
+}
+.estate-detail-address {
+  width: 100%;
+}
+.detail-address-options {
+  .el-scrollbar__wrap {
+    padding-bottom: 30px;
+  }
+  li:last-child {
+    color: red;
+  }
 }
 </style>
 

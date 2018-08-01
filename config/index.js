@@ -10,8 +10,7 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/api': {
-        // target: proxyIPs.XUQIANG,
-        target: 'http://192.168.5.123:3000',
+        target: proxyIPs.XUQIANG,
         changeOrigin: true,
         pathRewrite: {
           '^/api': ''

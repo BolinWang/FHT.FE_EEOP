@@ -179,3 +179,15 @@ export function estateRoomFloorApi(params) {
     }
   })
 }
+
+/* 集中式模糊查询具体位置 */
+export function estateAddressByKeywordsApi(params) {
+  return fetch({
+    url: 'http://localhost:9528/api/market/fangyuan',
+    method: 'post',
+    data: {
+      method: 'searchAddressByKeyword',
+      params
+    }
+  })
+}

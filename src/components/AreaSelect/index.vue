@@ -31,7 +31,7 @@ export default {
     },
     level: {
       type: Number,
-      default: 0, // 0->二联 1->三联
+      default: 1, // 0->二联 1->三联
       validator: (val) => [0, 1].indexOf(val) > -1
     },
     size: {
