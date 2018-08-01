@@ -103,49 +103,51 @@ export const asyncRouterMap = [
     meta: {
       role: ['admin', 'global']
     },
-    children: [{
-      path: 'authorize',
-      component: _import('houseManage/authorize'),
-      name: '合作账号授权'
-    }, {
-      path: 'houseSync',
-      component: _import('houseManage/houseSync'),
-      name: '合作房源同步'
-    }, {
-      path: 'displayPage',
-      component: _import('houseManage/promotionDisplay'),
-      name: '推广展示'
-    }, {
-      path: 'queryCenterPage',
-      component: _import('houseManage/queryCenter'),
-      name: '查询中心'
-    }, {
-      path: 'dataReportPage',
-      component: _import('houseManage/dataReport'),
-      name: '房源报表'
-    }, {
-      path: '/houseManage/estatePage',
-      component: _import('houseManage/estate'),
-      noDropdown: true,
-      children: [
-        {
-          path: 'estateList',
-          name: '集中式房源',
-          component: _import('houseManage/estate/estateList')
-        },
-        {
-          path: 'estateRoomList',
-          name: '集中式房间列表',
-          component: _import('houseManage/estate/singleEstateRoom'),
-          meta: {
-            noTags: true,
-            parentPath: '/houseManage/estatePage/estateList',
-            parentName: '集中式房源',
-            meta: {}
+    children: [
+      {
+        path: '/houseManage/estatePage',
+        component: _import('houseManage/estate'),
+        noDropdown: true,
+        children: [
+          {
+            path: 'estateList',
+            name: '集中式房源',
+            component: _import('houseManage/estate/estateList')
+          },
+          {
+            path: 'estateRoomList',
+            name: '集中式房间列表',
+            component: _import('houseManage/estate/singleEstateRoom'),
+            meta: {
+              noTags: true,
+              parentPath: '/houseManage/estatePage/estateList',
+              parentName: '集中式房源',
+              meta: {}
+            }
           }
-        }
-      ]
-    }]
+        ]
+      }, {
+        path: 'authorize',
+        component: _import('houseManage/authorize'),
+        name: '合作账号授权'
+      }, {
+        path: 'houseSync',
+        component: _import('houseManage/houseSync'),
+        name: '合作房源同步'
+      }, {
+        path: 'displayPage',
+        component: _import('houseManage/promotionDisplay'),
+        name: '推广展示'
+      }, {
+        path: 'queryCenterPage',
+        component: _import('houseManage/queryCenter'),
+        name: '查询中心'
+      }, {
+        path: 'dataReportPage',
+        component: _import('houseManage/dataReport'),
+        name: '房源报表'
+      }
+    ]
   },
   {
     path: '/auditManage',

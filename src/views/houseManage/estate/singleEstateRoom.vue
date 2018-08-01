@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-row class="room-options-row">
-      <el-button type="primary" size="small" @click="$router.push({name: '集中式房源'})">返回</el-button>
+      <el-button type="primary" size="small" @click="$router.push({name: '集中式房源'})" icon="el-icon-arrow-left">返回</el-button>
       <el-button type="primary" size="small">新建房号</el-button>
       <el-button type="danger" size="small">删除房号</el-button>
     </el-row>
@@ -134,12 +134,14 @@ export default {
           label: "设置",
           width: '182px',
           align: "center",
+          fixed: 'right',
           slotName: "settingRoom"
         },
         {
           prop: "operate",
           label: "操作",
           align: "center",
+          fixed: 'right',
           slotName: "operateRoom"
         },
         {
