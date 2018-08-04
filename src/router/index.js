@@ -26,6 +26,11 @@ export const constantRouterMap = [{
   hidden: true
 },
 {
+  path: '/fhj-practice',
+  component: _import('fhjPractice'),
+  hidden: true
+},
+{
   path: '/',
   component: Layout,
   redirect: '/dashboard',
