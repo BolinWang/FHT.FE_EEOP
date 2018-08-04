@@ -191,3 +191,39 @@ export function estateAddressByKeywordsApi(params) {
     }
   })
 }
+
+/* 集中式根据区id查询板块列表 */
+export function estateZoneListByAreaIdApi(params) {
+  return fetch({
+    url: 'http://localhost:9528/api/market/fangyuan',
+    method: 'post',
+    data: {
+      method: 'queryZoneListByAreaId',
+      params
+    }
+  })
+}
+
+/* 集中式查询房源基础设施列表 */
+export function estateDeviceListApi(params) {
+  return fetch({
+    url: 'http://localhost:9528/api/market/fangyuan',
+    method: 'post',
+    data: {
+      method: 'queryHeiheihei',
+      params
+    }
+  })
+}
+
+/* 集中式查询房源基础设施列表 */
+export function estateOrgListApi(params) {
+  return fetch({
+    url: 'http://localhost:9528/api/market/fangyuan',
+    method: 'post',
+    data: {
+      method: 'queryOrgListByName',
+      params
+    }
+  })
+}
