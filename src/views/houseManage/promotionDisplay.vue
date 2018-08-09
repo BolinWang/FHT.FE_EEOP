@@ -10,40 +10,19 @@
       </el-form>
     </div>
     <div class="model-table" :style="tableStyle">
-      <el-table :data="tableData" v-loading.body="listLoading" :max-height="tableHeight" size="small" fit stripe highlight-current-row>
-        <el-table-column type="index" width="60" align="center">
-        </el-table-column>
-        <el-table-column v-for="(item,index) in colModels" :label="item.label" :width="item.width" :key="index" fit show-overflow-tooltip>
-          <template slot-scope="scope">
-            <el-tag v-if="item.type === 'status'" :type="scope.row[item.prop] | statusFilter">
-              {{scope.row[item.prop] | statusStrFilter}}
-            </el-tag>
-            <span v-else-if="item.type === 'tags'">
-              <el-tag style="margin: 0 5px 5px 0;"
-                v-for="(tag,tagIndex) in scope.row.tags"
-                :type="tag | filterTags"
-                :key="tagIndex">
-                {{tag}}
-              </el-tag>
-            </span>
-            <span v-else>
-              {{scope.row[item.prop]}}
-            </span>
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" width="220">
-          <template slot-scope="scope">
-            <el-button-group>
-              <el-button type="danger" icon="el-icon-sold-out" size="small" @click.native="downImmediate(scope.$index,scope.row)">立即下架</el-button>
-              <el-button type="primary" icon="el-icon-info" size="small" @click.native="showEstateInfo(scope.row)">公寓详情</el-button>
-            </el-button-group>
-          </template>
-        </el-table-column>
-      </el-table>
-    </div>
-    <div class="model-pagination">
-      <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="pageItems.pageNo" :page-sizes="pageSizeList" :page-size="pageItems.pageSize" layout="total, sizes, prev, pager, next, jumper" :total="total">
-      </el-pagination>
+      <GridUnit ref="refGridUnit" :columns="colModels" :url="url" :formOptions="formData" :dataMethod="method" :height="tableHeight">
+        <template slot="slot_status" slot-scope="scope">
+          <el-tag v-model="formData.status" :type="scope.row['prop']">
+            {{scope.row['prop']}}
+          </el-tag>
+        </template>
+        <template slot="handle" slot-scope="scope">
+          <el-row>
+            <el-button type="danger" icon="el-icon-sold-out" size="small" @click.native="downImmediate(scope.$index,scope.row)">立即下架</el-button>
+            <el-button type="primary" icon="el-icon-info" size="small" @click.native="showEstateInfo(scope.row)">公寓详情</el-button>
+          </el-row>
+        </template>
+      </GridUnit>
     </div>
     <!-- 公寓信息 -->
     <div class="dialog-info">
@@ -78,7 +57,9 @@
             </el-input>
           </el-form-item>
           <el-form-item label="公寓照片">
-            <div class="previewItems"><Preview :pic-list="temp.picList"></Preview></div>
+            <div class="previewItems">
+              <Preview :pic-list="temp.picList"></Preview>
+            </div>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -105,9 +86,9 @@
                 设置首位
               </el-button>
               <span class="left sortContent">
-                                <i class="el-icon-d-caret" aria-hidden="true"></i>
-                                {{item.estateName}}
-                            </span>
+                <i class="el-icon-d-caret" aria-hidden="true"></i>
+                {{item.estateName}}
+              </span>
             </li>
           </transition-group>
         </draggable>
@@ -120,6 +101,7 @@
   </div>
 </template>
 <script>
+import GridUnit from "@/components/GridUnit/grid";
 import draggable from 'vuedraggable'
 import Preview from '@/components/Preview/Preview'
 import { parseTime, ObjectMap, deepClone } from '@/utils'
@@ -127,7 +109,7 @@ import { getCityListApi, getGridApi, saveDataApi } from '@/api/houseManage'
 import noPic from '@/assets/noPic.jpg'
 
 /* 阻止原生dragale打开新页面 */
-document.body.ondrop = function(event) {
+document.body.ondrop = function (event) {
   event.preventDefault();
   event.stopPropagation();
 }
@@ -136,30 +118,8 @@ export default {
   name: 'promotionDisplay',
   components: {
     draggable,
-    Preview
-  },
-  filters: {
-    statusFilter(status) {
-      const statusMap = {
-        '1': 'info',
-        '2': 'success',
-        '3': ''
-      }
-      return statusMap[status] || 'info'
-    },
-    statusStrFilter(status) {
-      const statusStrData = ['未申请', '已展示', '申请中'];
-      return statusStrData[status - 1] || '未发布'
-    },
-    filterTags(val) {
-      const filterObj = {
-        '整租': '',
-        '合租': 'info',
-        '金融': 'warning',
-        '飞虎队': 'success'
-      }
-      return filterObj[val] || ''
-    }
+    Preview,
+    GridUnit
   },
   data() {
     return {
@@ -168,11 +128,38 @@ export default {
       },
       cityOptions: [],
       colModels: [
-        { prop: 'showStatus', label: '状态', width: 80, type: 'status' },
-        { prop: 'addressName', label: '房源位置' },
-        { prop: 'estateName', label: '公寓' },
-        { prop: 'tags', label: '标签', type: 'tags', width: 200 },
-        { prop: 'gmtModified', label: '操作时间', width: 180 }
+        {
+          prop: "showStatus",
+          label: "状态",
+          width: 80,
+          type: "status",
+          slotName: "slot_status",
+          unitFilters: {
+            renderStatusType(status) {
+              const statusMap = {
+                "1": "info",
+                "2": "success",
+                "3": ""
+              };
+              return statusMap[status] || "info";
+            },
+            renderStatusValue(status) {
+              const statusStrData = ["未申请", "已展示", "申请中"];
+              return statusStrData[status - 1] || "未发布";
+            }
+          }
+        },
+        { prop: "addressName", label: "房源位置" },
+        { prop: "estateName", label: "公寓" },
+        { prop: "tags", label: "标签", type: "tags", width: 200 },
+        { prop: "gmtModified", label: "操作时间", width: 180 },
+        {
+          label: "操作",
+          slotName: "handle",
+          fixed: "right",
+          width: 230,
+          align: "center"
+        }
       ],
       isShowSortApp: true,
       tableHeight: 300,
@@ -191,7 +178,10 @@ export default {
       layer_showInfo: false,
       layer_appsort: false,
       isDragging: false,
-      delayedDragging: false
+      delayedDragging: false,
+      tableHeight: 300,
+      method: "queryEstateListByPage",
+      url: "/market/estate/"
     }
   },
   created() {
@@ -273,16 +263,16 @@ export default {
     },
     /* 查询列表 */
     change(value) {
-      this.getGridData(this.pageItems);
+      this.$refs.refGridUnit.searchHandler();
     },
-    handleSizeChange(val) {
-      this.pageItems.pageSize = val;
-      this.getGridData(this.pageItems);
-    },
-    handleCurrentChange(val) {
-      this.pageItems.pageNo = val;
-      this.getGridData(this.pageItems);
-    },
+    // handleSizeChange(val) {
+    //   this.pageItems.pageSize = val;
+    //   this.getGridData(this.pageItems);
+    // },
+    // handleCurrentChange(val) {
+    //   this.pageItems.pageNo = val;
+    //   this.getGridData(this.pageItems);
+    // },
     /* 列表渲染，数据请求 */
     getGridData(params) {
       this.listLoading = true;
@@ -339,7 +329,7 @@ export default {
         }
         map.addControl(new BMap.MapTypeControl());
         map.enableScrollWheelZoom(true);
-        map.addEventListener("click", function(e) {
+        map.addEventListener("click", function (e) {
           map.clearOverlays();
           map.addOverlay(new BMap.Marker(new BMap.Point(e.point.lng, e.point.lat)));
         });

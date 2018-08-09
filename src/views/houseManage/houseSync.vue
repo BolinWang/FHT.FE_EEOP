@@ -224,7 +224,7 @@ export default {
       }
       if (this.selectedItems.length === 0) {
         this.$message.error(`请选择需要${typeConfig[type].title}的房源`)
-        return false
+        return false  
       }
       const pendingRomms = this.selectedItems.filter(item => item.idlefishStatus === '发布中')
       if (pendingRomms.length > 0) {
