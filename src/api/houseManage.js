@@ -123,7 +123,7 @@ export const authorizeApi = {
 /* 合作账号绑定授权 */
 export const houseAsyncApi = {
   defaultOptions: {
-    requestUrl: 'http://localhost:9528/api/market/rooms',
+    requestUrl: '/market/rooms',
     method: 'list'
   },
   list(params) {
@@ -171,7 +171,7 @@ export const houseAsyncApi = {
 /* 集中式查询单个公寓详情 */
 export function estateRoomDetailApi(params) {
   return fetch({
-    url: 'http://localhost:9528/api/market/fangyuan',
+    url: '/market/fangyuan',
     method: 'post',
     data: {
       method: 'queryOneFangyuan',
@@ -183,7 +183,7 @@ export function estateRoomDetailApi(params) {
 /* 集中式楼层列表 */
 export function estateRoomFloorApi(params) {
   return fetch({
-    url: 'http://localhost:9528/api/market/fangyuan',
+    url: '/market/fangyuan',
     method: 'post',
     data: {
       method: 'queryFloorListByEstateId',
@@ -195,7 +195,7 @@ export function estateRoomFloorApi(params) {
 /* 集中式模糊查询具体位置 */
 export function estateAddressByKeywordsApi(params) {
   return fetch({
-    url: 'http://localhost:9528/api/market/fangyuan',
+    url: '/market/fangyuan',
     method: 'post',
     data: {
       method: 'searchAddressByKeyword',
@@ -207,7 +207,7 @@ export function estateAddressByKeywordsApi(params) {
 /* 集中式根据区id查询板块列表 */
 export function estateZoneListByAreaIdApi(params) {
   return fetch({
-    url: 'http://localhost:9528/api/market/fangyuan',
+    url: '/market/fangyuan',
     method: 'post',
     data: {
       method: 'queryZoneListByAreaId',
@@ -219,7 +219,7 @@ export function estateZoneListByAreaIdApi(params) {
 /* 集中式查询房源基础设施列表 */
 export function estateDeviceListApi(params) {
   return fetch({
-    url: 'http://localhost:9528/api/market/fangyuan',
+    url: '/market/fangyuan',
     method: 'post',
     data: {
       method: 'queryHeiheihei',
@@ -231,7 +231,7 @@ export function estateDeviceListApi(params) {
 /* 集中式查询房源组织列表 */
 export function estateOrgListApi(params) {
   return fetch({
-    url: 'http://localhost:9528/api/market/fangyuan',
+    url: '/market/fangyuan',
     method: 'post',
     data: {
       method: 'queryOrgListByName',
@@ -243,7 +243,7 @@ export function estateOrgListApi(params) {
 /* 集中式查询单个公寓下面房间列表 */
 export function estateBatchCopyRoomListApi(params) {
   return fetch({
-    url: 'http://localhost:9528/api/market/fangyuan',
+    url: '/market/fangyuan',
     method: 'post',
     data: {
       method: 'allRoomByRoomCode',
@@ -255,7 +255,7 @@ export function estateBatchCopyRoomListApi(params) {
 /* 集中式新建公寓保存 */
 export function estateNewEstateSaveApi(params) {
   return fetch({
-    url: 'http://localhost:9528/api/market/fangyuan',
+    url: '/market/fangyuan',
     method: 'post',
     data: {
       method: 'saveEstateInfo',
@@ -267,7 +267,7 @@ export function estateNewEstateSaveApi(params) {
 /* 集中式删除公寓 */
 export function estateDeleteEstateApi(params) {
   return fetch({
-    url: 'http://localhost:9528/api/market/fangyuan',
+    url: '/market/fangyuan',
     method: 'post',
     data: {
       method: 'deleteHouse',
@@ -279,7 +279,7 @@ export function estateDeleteEstateApi(params) {
 /* 集中式新增小区 */
 export function estateNewSubdistrictApi(params) {
   return fetch({
-    url: 'http://localhost:9528/api/market/fangyuan',
+    url: '/market/fangyuan',
     method: 'post',
     data: {
       method: 'addSubdistrict',
@@ -291,7 +291,7 @@ export function estateNewSubdistrictApi(params) {
 /* 集中式保存复制到数据 */
 export function copyToOtherRoomApi(params) {
   return fetch({
-    url: 'http://localhost:9528/api/market/fangyuan',
+    url: '/market/fangyuan',
     method: 'post',
     data: {
       method: 'copyToOtherRoom',
@@ -299,3 +299,16 @@ export function copyToOtherRoomApi(params) {
     }
   })
 }
+
+/* 集中式获取交租方式列表 */
+export function estateRoomRentPayWayApi(params) {
+  return fetch({
+    url: '/market/fangyuan',
+    method: 'post',
+    data: {
+      method: 'queryEstateRoomRentType',
+      params
+    }
+  })
+}
+

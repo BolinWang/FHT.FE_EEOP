@@ -47,7 +47,7 @@
       :columns="colModels"
       :height="tableHeight">
       <template slot="settingRoom" slot-scope="scope">
-        <el-button size="mini">交租方式</el-button>
+        <el-button size="mini" @click="openRentPayModel(scope.row)">交租方式</el-button>
         <el-button size="mini" @click="openCopyItemToModel(scope.row)">复制到</el-button>
       </template>
       <template slot="operateRoom" slot-scope="scope">
@@ -89,12 +89,16 @@
         <el-button size="small" @click="copyItemToModelVisible = false">取 消</el-button>
       </span>
     </el-dialog>
+
+    <el-dialog class="rent-pay-model" title="交租方式" :visible.sync="rentPayModelVisible" width="700px">
+
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import GridUnit from "@/components/GridUnit/grid"
-import { estateRoomFloorApi, estateRoomDetailApi, estateBatchCopyRoomListApi, copyToOtherRoomApi } from "@/api/houseManage"
+import { estateRoomFloorApi, estateRoomDetailApi, estateBatchCopyRoomListApi, copyToOtherRoomApi, estateRoomRentPayWayApi } from "@/api/houseManage"
 import RoomListSelecter from '@/components/RoomListSelecter'
 export default {
   name: 'singleEstateRoom',
@@ -236,7 +240,8 @@ export default {
           val: 10
         },
       ],
-      checkedCopyList: []
+      checkedCopyList: [],
+      rentPayModelVisible: false
     }
   },
   computed: {
@@ -274,6 +279,14 @@ export default {
       }).then((res) => {
         this.copyItemRoomList = res.data.dataObject
         this.copyItemToModelVisible = true
+      })
+    },
+    openRentPayModel(row) {
+      estateRoomRentPayWayApi({
+        roomCode: row.roomCode
+      }).then((res) => {
+
+        this.rentPayModelVisible = true
       })
     },
     handleCheckAllChange(val) {
