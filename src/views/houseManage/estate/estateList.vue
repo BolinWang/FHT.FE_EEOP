@@ -15,15 +15,15 @@
         <el-button icon="el-icon-remove-outline" @click="searchEstateHouseList('clear')">清空</el-button>
       </el-form-item>
       <el-form-item class="right house-search-form-group">
-        <el-button type="primary" icon="el-icon-circle-plus-outline" @click="showEstateModel = true; estateModelTitle = '新建公寓'">新建公寓</el-button>
+        <el-button type="primary" icon="el-icon-circle-plus-outline" @click="openEstateModel(1)">新建公寓</el-button>
       </el-form-item>
     </el-form>
 
     <grid-unit ref="estateHouseList" :url="estateListUrl" listField="data.list" totalField="data.record" :dataMethod="method" :formOptions="houseSearchForm" :columns="colModels" :height="tableHeight">
       <template slot="operateEstate" slot-scope="scope">
         <el-button type="primary" size="mini" @click="routerToEstateRoomList(scope.row)">查看房间</el-button>
-        <el-button type="primary" size="mini" @click="showEstateModel = true; estateModelTitle = '编辑公寓'">编辑公寓</el-button>
-        <el-button type="danger" size="mini">删除公寓</el-button>
+        <el-button type="primary" size="mini" @click="openEstateModel(2, scope.row)">编辑公寓</el-button>
+        <el-button type="danger" size="mini" @click="deleteEstate(scope.row)">删除公寓</el-button>
       </template>
       <template slot="operateRecordStr" slot-scope="scope">
         <p>{{scope.row.lastoperator}} {{scope.row.lastOperateTime}}</p>
@@ -31,9 +31,9 @@
     </grid-unit>
 
     <el-dialog :title="estateModelTitle" :visible.sync="showEstateModel" width="900px">
-      <estate-model :showModel="showEstateModel" @changeModelStatus="changeModelStatus"></estate-model>
+      <estate-model ref="estateModel" :type="estateModelTitle" :showEstateModel="showEstateModel"></estate-model>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="showEstateModel = false" size="small">保 存</el-button>
+        <el-button type="primary" @click="saveEstateData('save')" size="small">保 存</el-button>
         <el-button @click="showEstateModel = false" size="small">取 消</el-button>
       </span>
     </el-dialog>
@@ -45,6 +45,7 @@ import { debounce } from "@/utils"
 import GridUnit from "@/components/GridUnit/grid"
 import areaSelect from "@/components/AreaSelect"
 import estateModel from '../components/estateModel'
+import { estateRoomDetailApi, estateDeleteEstateApi } from '@/api/houseManage'
 export default {
   name: "estateHouseList",
   components: {
@@ -100,6 +101,9 @@ export default {
     }
   },
   methods: {
+    searchParam() {
+      this.$refs.estateHouseList.searchHandler()
+    },
     searchEstateHouseList(type) {
       if (type === 'clear') {
         for (const key in this.houseSearchForm) {
@@ -113,19 +117,56 @@ export default {
         this.$message.error('请至少选择城市后再查询公寓')
         return
       }
-      this.$refs.estateHouseList.searchHandler()
+      this.searchParam()
     },
     routerToEstateRoomList(row) {
       this.$router.push({ path: 'estateRoomList', query: { fangyuanCode: row.fangyuanCode } })
     },
-    changeModelStatus(val) {
-      this.showEstateModel = val
+    openEstateModel(type, row) {
+      if (type === 1) {
+        this.estateModelTitle = '新建公寓'
+        this.showEstateModel = true
+      } else {
+        this.estateModelTitle = '编辑公寓'
+        this.$store.commit('SET_FANGYUANCODE', row.fangyuanCode)
+        estateRoomDetailApi({
+          fangyuanCode: row.fangyuanCode
+        }).then((res) => {
+          this.$store.commit('SET_ESTATEDATA', res.data.dataObject)
+          this.showEstateModel = true
+        })
+      }
+    },
+    saveEstateData(type) {
+      this.$refs.estateModel.saveEstateData(type)
+    },
+    deleteEstate(row) {
+      estateDeleteEstateApi({
+        fangyuanCode: row.fangyuanCode
+      }).then((res) => {
+        if (res.data.code === '0') {
+          this.$message({
+            message: res.data.message,
+            type: 'success'
+          })
+          this.searchParam()
+        }
+      })
     }
   },
   watch: {
     cityArea(val) {
       if (val && val[1]) {
         this.houseSearchForm.cityId = val[1]
+      }
+    },
+    showEstateModel(val) {
+      if (val) {
+        this.$nextTick(() => {
+          this.$refs.estateModel.$refs.estateModel.clearValidate()
+        })
+      } else {
+        this.$store.commit('CLEAR_ESTATEDATA')
       }
     }
   },

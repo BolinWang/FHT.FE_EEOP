@@ -16,23 +16,23 @@
             </el-col>
             <el-col :span="12">
               <el-form-item label="所在地区" prop="areaCode">
-                <area-select v-model="estateModel.areaCode" :level="1" @input="searchZoneList"></area-select>
+                <area-select ref="areaSelect" v-model="estateModel.areaCode" :level="1" @input="searchZoneList"></area-select>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row :gutter="20">
             <el-col :span="12">
               <el-form-item label="所属板块" prop="zoneId">
-                <el-select v-model="estateModel.zoneId" class="estate-model-select" placeholder="请输入">
-                  <el-option v-for="item in zoneList" :key="item.zoneId" v-html="item.zoneName" :value="item.zoneName">
+                <el-select v-model="estateModel.zoneId" class="estate-model-select" :placeholder="zoneList.length ? '请选择' : '无'">
+                  <el-option v-for="item in zoneList" :key="item.zoneId" :label="item.zoneName" :value="item.zoneId">
                   </el-option>
                 </el-select>
               </el-form-item>
             </el-col>
             <el-col :span="12">
               <el-form-item label="具体位置" prop="address">
-                <el-select class="estate-model-select" v-model="estateModel.address" filterable remote :clearable="true" placeholder="请输入关键词" :remote-method="remoteMethod" popper-class="detail-address-options" @change="showMap" :loading="loading">
-                  <el-option v-for="item in addressList" :key="item.cityId" v-html="item.name" :value="item.address">
+                <el-select class="estate-model-select" ref="addressSelect" v-model="estateModel.address" filterable remote :clearable="true" placeholder="请输入关键词" :remote-method="remoteMethod" popper-class="detail-address-options" :loading="loading" @focus="checkAddressSelect" @clear="setAddress">
+                  <el-option v-for="(item, index) in addressList" :key="index" v-html="item.displayText" :value="item.formatName" @click.native="setAddress(item)">
                   </el-option>
                 </el-select>
               </el-form-item>
@@ -40,7 +40,7 @@
           </el-row>
           <el-row :gutter="20">
             <el-col :span="12">
-              <el-form-item label="看房电话">
+              <el-form-item label="看房电话" prop="contactName">
                 <el-input v-model="estateModel.contactName" placeholder="联系人"></el-input>
               </el-form-item>
             </el-col>
@@ -69,22 +69,20 @@
           <el-row :gutter="20">
             <el-col :span="12">
               <el-form-item label="房源管理权限">
-                <el-select class="estate-model-select" v-model="estateModel.orgId" filterable remote :clearable="true" placeholder="组织名称" :remote-method="searchOrgListByKeywords" :loading="loading">
-                  <el-option v-for="item in orgList" :key="item.ordId" v-html="item.orgName" :value="item.orgId">
+                <el-select class="estate-model-select" v-model="estateModel.orgId" filterable remote :clearable="true" placeholder="组织名称" :remote-method="searchOrgListByKeywords" :loading="loading" @clear="setOrg">
+                  <el-option v-for="item in orgList" :key="item.ordId" :value="item.orgId" :label="item.orgName" @click.native="setOrg(item)">
                   </el-option>
                 </el-select>
               </el-form-item>
             </el-col>
             <el-col :span="8">
               <el-form-item label-width="0">
-                <el-input placeholder="账号名" v-model="estateModel.accountName"></el-input>
+                <el-input placeholder="账号名" v-model="estateModel.accountName" :disabled="true"></el-input>
               </el-form-item>
             </el-col>
-            <el-col :span="4">
+            <el-col :span="4" v-if="type === '新建公寓'">
               <el-form-item label-width="0">
-                <el-checkbox-group v-model="estateModel.tag">
-                  <el-checkbox label="飞虎队" name="type"></el-checkbox>
-                </el-checkbox-group>
+                <el-checkbox label="飞虎队" name="type" v-model="estateModel.tag"></el-checkbox>
               </el-form-item>
             </el-col>
           </el-row>
@@ -92,9 +90,9 @@
             <el-col :span="24">
               <el-form-item label="公寓/照片">
                 <el-badge :value="estateModel.estatePics.length" class="estate-badge-btn">
-                  <el-button type="primary" @click="addEstatePics">公寓照片</el-button>
+                  <el-button type="primary" @click="addPics('estatePics')">公寓照片</el-button>
                 </el-badge>
-                <el-button type="primary" @click="chooseEstateDevice" class="estate-badge-btn">房源基础设施</el-button>
+                <el-button type="primary" @click="openDeviceModel" class="estate-badge-btn">房源基础设施</el-button>
               </el-form-item>
             </el-col>
           </el-row>
@@ -131,8 +129,8 @@
                       </el-input>
                     </el-form-item>
                   </el-col>
-                  <el-col :span="2" class="estate-floor">
-                    <el-button type="text" icon="el-icon-delete" @click="estateModel.floors.splice(index, 1)"></el-button>
+                  <el-col :span="2" class="estate-floor" v-if="estateModel.floors.length > 1">
+                    <el-button class="delete-btn" type="text" icon="el-icon-delete" @click="deleteCurItem(1, index)"></el-button>
                   </el-col>
                 </el-row>
                 <el-button type="primary" @click="addEstateFloor">添加楼层</el-button>
@@ -147,25 +145,33 @@
             </div>
           </template>
           <el-row :gutter="20" class="estate-house-type-container">
-            <el-col :span="12">
-              <el-form-item label="房间类型">
-                <el-input value=""></el-input>
+            <el-col :span="24">
+              <el-form-item label="房间类型" label-width="90px">
+                <el-row :gutter="20" v-for="(item, index) in estateModel.roomTypeList" :key="index">
+                  <el-col :span="8">
+                    <el-input v-model="item.styleName"></el-input>
+                  </el-col>
+                  <el-col :span="8">
+                    <el-badge :value="item.pictureList.length" class="estate-badge-btn">
+                      <el-button type="primary" size="small" @click="addPics('roomTypePics')">房型照片</el-button>
+                    </el-badge>
+                    <el-badge :value="item.roomCodes.length" class="estate-badge-btn" v-if="type === '编辑公寓'">
+                      <el-button type="primary" size="small" @click="openBatchCopyModel(index)">应用到房间</el-button>
+                    </el-badge>
+                  </el-col>
+                  <el-col :span="2" class="estate-floor" v-if="estateModel.roomTypeList.length > 1">
+                    <el-button class="delete-btn" type="text" icon="el-icon-delete" @click="deleteCurItem(2, index)"></el-button>
+                  </el-col>
+                </el-row>
+                <el-button v-if="type === '编辑公寓'" type="primary" size="small" @click="addEstateRoomType">添加房间类型</el-button>
               </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-badge :value="estateModel.roomTypePics.length" class="estate-badge-btn">
-                <el-button type="primary" size="small">房型照片</el-button>
-              </el-badge>
-              <el-badge :value="40" class="estate-badge-btn">
-                <el-button type="primary" size="small">应用到房间</el-button>
-              </el-badge>
             </el-col>
           </el-row>
         </el-collapse-item>
       </el-collapse>
     </el-form>
 
-    <el-dialog title="地图选择小区" :visible.sync="dialogTableVisible" width="700px" :append-to-body="true">
+    <el-dialog title="地图选择小区" :visible.sync="mapModelVisible" width="700px" :append-to-body="true">
       <el-card class="map-selected-tips" :body-style="{padding: '10px'}">
         <p>1. 如果搜索的内容在右侧列表中小区名称不对（例如：天天超市），点击后可以自定义小区名称、具体位置、所在区域。</p>
         <p>2. 如果搜索的内容在右侧列表中查询不到，请通过鼠标手动定位房源位置，自定义小区名称、具体位置、所在区域。</p>
@@ -182,7 +188,7 @@
               <i class="el-icon-close close-icon" @click="$refs.popover.doClose()"></i>
               <el-form-item class="form-item">
                 <div slot="label" class="city-label">当前城市</div>
-                <p class="city-name">杭州市</p>
+                <p class="city-name">{{formLabelAlign.city}}</p>
               </el-form-item>
               <el-form-item class="form-item" label="所在区域" prop="region">
                 <el-input v-model="formLabelAlign.region"></el-input>
@@ -198,21 +204,21 @@
           </el-popover>
         </div>
         <el-card class="search-list" :body-style="{padding: '10px 0'}">
-          <a class="search-list-item" v-for="(o, i) in searchResult" :key="i" @click="setMapPosition(o.point)">
+          <a class="search-list-item" v-for="(o, i) in searchResult" :key="i" @click="setMapPosition(o.point, o)">
             <p class="title">{{o.title}}</p>
             <p class="address">{{o.address}}</p>
           </a>
         </el-card>
       </div>
       <div slot="footer">
-        <el-button @click="dialogTableVisible = false" size="small">取 消</el-button>
-        <el-button type="primary" @click="dialogTableVisible = false" size="small">确 定</el-button>
+        <el-button @click="closeMapModel('cancel')" size="small">取 消</el-button>
+        <el-button type="primary" @click="closeMapModel('save')" size="small">确 定</el-button>
       </div>
     </el-dialog>
 
-    <el-dialog title="上传公寓照片" :visible.sync="uploadPicsModelVisible" width="600px" :append-to-body="true" custom-class="upload-pics-model">
+    <el-dialog :title="curUploadPicsType === 'estatePics' ? '上传公寓照片' : '上传房间照片'" :visible.sync="uploadPicsModelVisible" width="600px" :append-to-body="true" custom-class="upload-pics-model">
       <div class="previewItems">
-        <Preview :pic-list="estateModel.estatePics" :delete-icon="`delete`" :disabled="``" @emitDelete="emitDelete">
+        <Preview :pic-list="estateModel[curUploadPicsType]" :delete-icon="`delete`" :disabled="``" @emitDelete="emitDelete">
         </Preview>
         <label class="el-upload el-upload--picture-card uploadImage" for="uploadImages">
           <i class="el-icon-plus"></i>
@@ -221,7 +227,8 @@
       </div>
       <p class="upload-pics-info">温馨提示： </p>
       <p class="upload-pics-info">1.请勿上传虚假、模糊、与房源信息无关、含有其他公司水印的照片； </p>
-      <p class="upload-pics-info">2.请上传相关体现公寓形象的照片； </p>
+      <p class="upload-pics-info" v-show="curUploadPicsType === 'estatePics'">2.请上传相关体现公寓形象的照片； </p>
+      <p class="upload-pics-info" v-show="curUploadPicsType === 'roomTypePics'">2.房间照片最佳组合：卧室2~6张、公共区域1~4张、厨房1~3张、卫生间1-4张； </p>
       <p class="upload-pics-info">3.目前最多支持15张，支持JPG/JPEG/PNG，可以拖动图片进行排序，支持批量上传。</p>
       <!-- 图片裁剪 -->
       <ImageCropper :cropperList="cropperList" @emitCropperList="emitCropperList" @emitCropperData="emitCropperData">
@@ -232,20 +239,18 @@
     </el-dialog>
 
     <el-dialog title="公共基础设施" :visible.sync="estateDeviceModelVisible" width="600px" :append-to-body="true" custom-class="estate-device-model">
-      <el-tabs v-model="deviceActiveTab">
-        <el-tab-pane label="配套服务" name="first">
-          <estate-device-group :deviceMap="deviceMap" :checkList1="deviceList.supportingServices" :checkedList1="estateModel.checkedSupportingServices" :type="'baseSupportMap'" @modifyCheckedList="modifyCheckedList"></estate-device-group>
-        </el-tab-pane>
-        <el-tab-pane label="门店服务" name="second">
-          <estate-device-group :deviceMap="deviceMap" :checkList1="deviceList.storeServices" :checkedList1="estateModel.checkedStoreServices" :type="'storeMap'" @modifyCheckedList="modifyCheckedList"></estate-device-group>
-        </el-tab-pane>
-        <el-tab-pane label="周边服务" name="third">
-          <estate-device-group :deviceMap="deviceMap" :checkList1="deviceList.surroundingServices" :checkedList1="estateModel.checkedSurroundingServices" :type="'surroundingMap'" @modifyCheckedList="modifyCheckedList"></estate-device-group>
-        </el-tab-pane>
-      </el-tabs>
+      <estate-device-group ref="deviceModel" :deviceMap="deviceMap" :checkList="deviceList" :estateDeviceModelVisible="estateDeviceModelVisible"></estate-device-group>
       <span slot="footer">
         <el-button @click="saveDeviceData('save')" size="small" type="primary">确 定</el-button>
         <el-button @click="saveDeviceData('clear')" size="small">取 消</el-button>
+      </span>
+    </el-dialog>
+
+    <el-dialog title="应用到房间" :visible.sync="batchCopyModelVisible" width="700px" :append-to-body="true">
+      <room-list-selecter ref="batchCopyRoom" :roomList="batchCopyRoomList" :roomTypeList="estateModel.roomTypeList" :visible="batchCopyModelVisible" :curIndex="curRoomTypeIndex"></room-list-selecter>
+      <span slot="footer">
+        <el-button size="small" type="primary" @click="saveBatchCobyRoom">确 定</el-button>
+        <el-button size="small" @click="batchCopyModelVisible = false">取 消</el-button>
       </span>
     </el-dialog>
   </div>
@@ -253,61 +258,69 @@
 
 <script>
 import areaSelect from '@/components/AreaSelect'
-import { estateAddressByKeywordsApi, estateZoneListByAreaIdApi, estateDeviceListApi, estateOrgListApi } from '@/api/houseManage'
+import { estateAddressByKeywordsApi, estateZoneListByAreaIdApi, estateDeviceListApi, estateOrgListApi, estateRoomDetailApi, estateBatchCopyRoomListApi, estateNewEstateSaveApi, estateNewSubdistrictApi } from '@/api/houseManage'
 import Preview from '@/components/Preview/Preview'
 import ImageCropper from '@/components/ImageCropper/Cropper'
+import RoomListSelecter from '@/components/RoomListSelecter'
 import estateDeviceGroup from './estateDeviceGroup'
+import { deepClone } from '@/utils'
 export default {
   name: 'estateModel',
   components: {
     areaSelect,
     Preview,
     ImageCropper,
-    estateDeviceGroup
+    estateDeviceGroup,
+    RoomListSelecter
   },
   props: [
-    'showModel',
-    'changeModelStatus'
+    'showEstateModel',
+    'type'
   ],
   data() {
     return {
-      dialogTableVisible: false,
+      mapModelVisible: false,
       local: null,
       map: null,
-      showPositionInfoModel: false,
-      searchKeywords: "",
+      searchKeywords: '',
       searchResult: [],
-      formLabelAlign: {
-        name: "",
-        region: "",
-        address: ""
-      },
+      formLabelAlign: {},
       rules: {
       },
-      estateModel: {
-        estateName: "",
-        areaCode: [],
-        zoneId: [],
-        address: [],
-        orgId: [],
-        contactName: "",
-        contactMobile: "",
-        contactGender: "1",
-        accountName: '',
-        houseDesc: '',
-        floors: [],
-        estatePics: [],
-        roomTypePics: [],
-        checkedSupportingServices: [],
-        checkedStoreServices: [],
-        checkedSurroundingServices: []
-      },
+      // estateModel: {
+      //   estateName: "",
+      //   areaCode: [],
+      //   zoneId: [],
+      //   address: [],
+      //   orgId: [],
+      //   contactName: "",
+      //   contactMobile: "",
+      //   contactGender: "1",
+      //   accountName: '',
+      //   houseDesc: '',
+      //   floors: [],
+      //   estatePics: [],
+      //   roomTypePics: [],
+      //   checkedSupportingServices: [],
+      //   checkedStoreServices: [],
+      //   checkedSurroundingServices: [],
+      //   tag: false
+      // },
+      estateModel: {},
       estateModelRules: {
         estateName: [
           { required: true, message: '请输入公寓名称', trigger: 'blur' }
         ],
         areaCode: [
-          { required: true, message: '请选择所在地区', trigger: 'change' }
+          {
+            required: true,
+            validator: (rule, value, callback) => {
+              if (value[0] === '') {
+                callback(new Error('请选择所在地区'))
+              }
+            },
+            trigger: 'change'
+          }
         ],
         zoneId: [
           { required: true, message: '请选择所属板块', trigger: 'change' }
@@ -318,43 +331,50 @@ export default {
         houseDesc: [
           { max: 150, message: '长度不能超过150个字符', trigger: 'change' }
         ],
+        contactName: [
+          { required: true, message: '请输入联系人', trigger: 'change' }
+        ],
         contactMobile: [
-          { pattern: /^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\d{8}$/, message: '请输入正确的手机号码', trigger: 'change' }
+          { required: true, pattern: /^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\d{8}$/, message: '请输入正确的手机号码', trigger: 'change' }
         ]
       },
       loading: false,
       zoneList: [],
       addressList: [],
       orgList: [],
-      activeNames: ['2'],
+      activeNames: ['1'],
       uploadPicsModelVisible: false,
       estateDeviceModelVisible: false,
       cropperList: [],
       accept: 'image/png, image/jpeg, image/jpg',
-      deviceActiveTab: 'first',
       checkAll: false,
       isIndeterminate: false,
-      deviceMap: {
-      },
-      deviceList: {
-        supportingServices: [],
-        storeServices: [],
-        surroundingServices: []
-      }
+      deviceMap: {},
+      deviceList: {},
+      curUploadPicsType: '',
+      batchCopyModelVisible: false,
+      batchCopyRoomList: [],
+      curRoomTypeIndex: 0
     }
   },
   computed: {
-
+    // ...mapGetters({
+    //   estateModel: 'formatEstateDetailData'
+    // })
   },
   methods: {
     initBMap() {
-      let self = this;
+      let self = this
+      let selectAddrArr = this.$refs.areaSelect.$el.innerText.replace(/\s/g, '').split('/')
+
+      let selectAddr = selectAddrArr[1] + selectAddrArr[2]
+      this.formLabelAlign.city = selectAddrArr[1]
       self.map = new BMap.Map("bm-view"); // 创建地图实例
-      self.map.centerAndZoom("杭州", 15);
+      self.map.centerAndZoom(selectAddr || '杭州市', 15);
       self.map.enableScrollWheelZoom(true);
 
       self.map.addEventListener("click", function (e) {
-        self.setMapPosition(e.point);
+        self.setMapPosition(e.point)
       });
       let options = {
         onSearchComplete: function (results) {
@@ -369,16 +389,34 @@ export default {
       };
       self.local = new BMap.LocalSearch(self.map, options);
     },
-    setMapPosition(position) {
-      let point = new BMap.Point(position.lng, position.lat);
-      let marker = new BMap.Marker(point);
-      let geoc = new BMap.Geocoder();
-      this.map.clearOverlays();
-      this.map.addOverlay(marker);
-      this.map.panTo(point);
+    setMapPosition(position, o) {
+      if (o) {
+        this.$set(this, 'formLabelAlign', Object.assign(this.formLabelAlign, {
+          baiduUid: o.uid,
+          longitude: o.point.lng,
+          latitude: o.point.lat,
+          address: o.address
+        }))
+      }
+
+      let point = new BMap.Point(position.lng, position.lat)
+      let marker = new BMap.Marker(point)
+      let geoc = new BMap.Geocoder()
+      this.map.clearOverlays()
+      this.map.addOverlay(marker)
+      this.map.panTo(point)
       geoc.getLocation(point, rs => {
-        this.formLabelAlign.address = rs.address;
-        this.formLabelAlign.region = rs.addressComponents.district;
+        if (o) {
+          this.formLabelAlign.name = o.title
+        } else {
+          this.$set(this, 'formLabelAlign', Object.assign(this.formLabelAlign, {
+            name: rs.surroundingPois[0] ? rs.surroundingPois[0].title : rs.address,
+            address: rs.address,
+            longitude: rs.point.lng,
+            latitude: rs.point.lat
+          }))
+        }
+        this.formLabelAlign.region = rs.addressComponents.district
       });
       this.$refs.popover.doShow();
     },
@@ -394,11 +432,15 @@ export default {
         }).then((res) => {
           this.loading = false
           if (res.code === '0') {
+            res.data.list.forEach((item, index) => {
+              item.formatName = item.name.replace(/<span(.*?)>/g, '').replace(/<\/span>/g, '') + ' - ' + item.address
+              item.displayText = item.name + ' - ' + item.address
+            })
             this.addressList = res.data.list
             this.addressList.push({
-              address: 'noSelect',
+              formatName: '',
               cityId: '-1',
-              name: '<span style="color: red">找不到小区？点击这里添加小区</span>'
+              displayText: '<span style="color: red">找不到小区？点击这里添加小区</span>'
             })
           }
         })
@@ -407,20 +449,15 @@ export default {
       }
     },
     searchZoneList() {
+      [this.estateModel.provinceId, this.estateModel.cityId, this.estateModel.regionId] = this.estateModel.areaCode
       if (this.estateModel.areaCode[2] !== undefined) {
         estateZoneListByAreaIdApi({
-          areaId: this.estateModel.areaCode[2]
+          areaId: this.estateModel.regionId
         }).then((res) => {
           this.zoneList = res.data.list
         })
       } else {
         this.zoneList = []
-      }
-    },
-    showMap(val) {
-      if (val === 'noSelect') {
-        this.estateModel.address = ''
-        this.dialogTableVisible = true
       }
     },
     searchOrgListByKeywords(query) {
@@ -438,45 +475,32 @@ export default {
         this.orgList = []
       }
     },
-    addEstatePics() {
+    addPics(type) {
+      this.curUploadPicsType = type
       this.uploadPicsModelVisible = true
     },
-    chooseEstateDevice() {
-      this.estateDeviceModelVisible = true
-    },
-    handleCheckAllChange(val) {
-      this.estateModel.checkedSupportingServices = val ? this.deviceList.supportingServices : []
-      this.isIndeterminate = false
-    },
-    handleCheckedCitiesChange(value) {
-      let checkedCount = value.length
-      this.checkAll = checkedCount === this.deviceList.supportingServices.length
-      this.isIndeterminate = checkedCount > 0 && checkedCount < this.deviceList.supportingServices.length
-    },
-    modifyCheckedList(type, val) {
-      let checkGroupType = ''
-      switch (type) {
-        case 'baseSupportMap':
-          checkGroupType = 'checkedSupportingServices'
-          break
-        case 'storeMap':
-          checkGroupType = 'checkedStoreServices'
-          break
-        case 'surroundingMap':
-          checkGroupType = 'checkedSurroundingServices'
-          break
+    openDeviceModel() {
+      if (JSON.stringify(this.deviceMap) === '{}') {
+        estateDeviceListApi().then((res) => {
+          if (res.code === '0') {
+            this.deviceMap = res.data.dataObject
+            this.$set(this, 'deviceList', {
+              services: Object.keys(this.deviceMap.baseSupportMap),
+              storeServices: Object.keys(this.deviceMap.storeMap),
+              surroundings: Object.keys(this.deviceMap.surroundingMap)
+            })
+            this.estateDeviceModelVisible = true
+          }
+        })
+      } else {
+        this.estateDeviceModelVisible = true
       }
-      this.estateModel[type] = val
     },
     saveDeviceData(type) {
-      if (type === 'clear') {
-        this.estateModel.checkedSupportingServices = []
-        this.estateModel.checkedStoreServices = []
-        this.estateModel.checkedSurroundingServices = []
-      } else {
-
-      }
-
+      this.$refs.deviceModel.saveDeviceData(type)
+      this.estateModel.services = this.$store.state.estateDetailData.estateInfo.services
+      this.estateModel.storeServices = this.$store.state.estateDetailData.estateInfo.storeServices
+      this.estateModel.surroundings = this.$store.state.estateDetailData.estateInfo.surroundings
       this.estateDeviceModelVisible = false
     },
     addEstateFloor() {
@@ -487,9 +511,140 @@ export default {
         startNo: ''
       })
     },
+    addEstateRoomType() {
+      this.estateModel.roomTypeList.push({
+        id: '',
+        styleName: '',
+        pictureList: [],
+        roomCodes: []
+      })
+    },
+    resetForm(formName) {
+      this.$refs[formName].resetFields()
+    },
+    checkAddressSelect(e) {
+      if (!this.estateModel.areaCode[2]) {
+        this.$message.error('请先选择所在地区')
+        e.target.blur()
+      }
+    },
+    setAddress(item) {
+      if (item && item.cityId === '-1') {
+        this.estateModel.address = ''
+        this.mapModelVisible = true
+        this.$set(this, 'formLabelAlign', {
+          city: '',
+          name: '',
+          region: '',
+          address: ''
+        })
+      } else {
+        this.estateModel.regionAddressId = item ? item.regionAddressId : ''
+      }
+    },
+    setOrg(item) {
+      this.estateModel.accountName = item ? item.accountName : ''
+      this.estateModel.adminUserId = item ? item.adminUserId : ''
+    },
+    closeMapModel(type) {
+      if (type === 'save') {
+        this.addEstateSubdistrict(0)
+      } else {
+        this.$set(this, 'formLabelAlign', {})
+        this.mapModelVisible = false
+      }
+    },
+    addEstateSubdistrict(status) {
+      status = status || 0
+      estateNewSubdistrictApi({
+        ...this.formLabelAlign,
+        confirmStatus: status
+      }).then((res) => {
+        const data = res.data.dataObject
+        if (data.confirmStatus === 0) {
+          this.mapModelVisible = false
+          this.estateModel.address = this.formLabelAlign.name + ' - ' + this.formLabelAlign.address
+          this.estateModel.regionAddressId = data.regionAddressId
+          this.$refs['estateModel'].validateField('address')
+        } else if (data.confirmStatus === 1) {
+          this.$confirm('新选择的小区名称、区域、具体地址和历史录入的一致，<span style="color:red">但经纬度坐标不一致</span>，是否使用新坐标并覆盖？', '再次确定', {
+            dangerouslyUseHTMLString: true,
+            distinguishCancelAndClose: true,
+            confirmButtonText: '使用新地址',
+            cancelButtonText: '使用原地址'
+          }).then(() => {
+            this.addEstateSubdistrict(2)
+          }).catch((action) => {
+            if (action === 'cancel') {
+              this.addEstateSubdistrict(3)
+            }
+          })
+        }
+      })
+    },
+    initEstateData() {
+      this.$set(this, 'estateModel', deepClone(this.$store.getters.formatEstateDetailData))
+      this.estateModel.contactGender = '1'
+      if (this.type === '新建公寓') {
+        this.addEstateFloor()
+        this.addEstateRoomType()
+      }
+    },
+    saveEstateData(type) {
+      if (this.type === '新建公寓') {
+        this.$refs.estateModel.validate((status) => {
+          if (status) {
+            this.$store.commit('UPDATE_ESTATE_DETAIL_DATA', this.estateModel)
+            estateNewEstateSaveApi({
+              estateInfo: this.$store.state.estateDetailData.estateInfo
+            }).then((res) => {
+              if (res.data.code === '0') {
+                this.$emit('closeEstateModel')
+              }
+            })
+          }
+        })
+      } else {
+
+      }
+
+      // this.activeNames = ['1']
+      // this.resetForm('estateModel')
+    },
+    openBatchCopyModel(index) {
+      estateBatchCopyRoomListApi({
+        fangyuanCode: this.$store.state.estateDetailData.fangyuanCode,
+        roomCode: this.estateModel.roomTypeList[index].roomCodes[0]
+      }).then((res) => {
+        this.batchCopyRoomList = res.data.dataObject
+        this.curRoomTypeIndex = index
+        this.batchCopyModelVisible = true
+      })
+    },
+    saveBatchCobyRoom() {
+      this.$refs.batchCopyRoom.saveSelectedRoom()
+      this.batchCopyModelVisible = false
+      this.estateModel.roomTypeList[this.curRoomTypeIndex].roomCodes = this.$store.state.estateDetailData.estateInfo.roomTypeList[this.curRoomTypeIndex].roomCodes
+    },
+    deleteCurItem(type, index) {
+      // type 1: 楼层  2: 房型
+      if (type === 1) {
+        if (this.estateModel.floors[index].roomNum > 0) {
+          this.$message.error('当前楼层下面房间不为空，不能删除该楼层')
+          return
+        }
+        this.estateModel.floors.splice(index, 1)
+      } else {
+        if (this.estateModel.roomTypeList[index].roomCodes.length > 0) {
+          this.$message.error('已有应用该房型的房间，不能删除该楼层')
+          return
+        }
+        this.estateModel.roomTypeList.splice(index, 1)
+      }
+    },
     // 删除图片
     emitDelete(val) {
-      this.estateModel.estatePics = val
+      this.estateModel[this.curUploadPicsType] = val
     },
     // 上传的图片列表
     emitCropperList(list = []) {
@@ -500,8 +655,8 @@ export default {
       list.forEach((v, i) => {
         v.type = 1
       })
-      let picList = [...this.estateModel.estatePics, ...list]
-      this.$set(this.estateModel, 'estatePics', picList)
+      let picList = [...this.estateModel[this.curUploadPicsType], ...list]
+      this.$set(this.estateModel, this.curUploadPicsType, picList)
     },
     /* 选择图片 */
     async uploadImg(e) {
@@ -563,35 +718,36 @@ export default {
     }
   },
   watch: {
-    dialogTableVisible(val) {
+    mapModelVisible(val) {
       if (val) {
         this.$nextTick(() => {
           this.initBMap();
         })
       } else {
+        this.searchKeywords = ''
+        this.searchResult = []
         this.$refs.popover.doClose()
       }
     },
-    estateDeviceModelVisible(val) {
-      if (val && JSON.stringify(this.deviceMap) === '{}') {
-        estateDeviceListApi().then((res) => {
-          if (res.code === '0') {
-            this.deviceMap = res.data.dataObject
-            this.deviceList = {
-              supportingServices: Object.keys(this.deviceMap.baseSupportMap),
-              storeServices: Object.keys(this.deviceMap.storeMap),
-              surroundingServices: Object.keys(this.deviceMap.surroundingMap)
-            }
+    showEstateModel: {
+      immediate: true,
+      handler: function (val) {
+        if (val) {
+          this.initEstateData()
+          if (this.type === '编辑公寓') {
+
+          } else {
+            // this.$set(this, 'estateModel', deepClone(this.$store.state.estateDetailData.estateInfo))
           }
-        })
+        } else {
+          // this.$store.commit('CLEAR_ESTATEDATA')
+          // this.activeNames = ['1']
+          // this.resetForm('estateModel')
+        }
       }
-    },
-    checkedSupportingServices(val) {
-      // console.log(val)
     }
   },
   mounted() {
-
   }
 }
 </script>
@@ -725,6 +881,22 @@ export default {
   }
   .estate-house-type-container {
     padding-top: 10px;
+    .el-row {
+      &:first-child {
+        .el-col:first-child {
+          margin-left: -10px;
+        }
+      }
+      .el-col {
+        &:last-child {
+          .delete-btn {
+            font-size: 18px;
+            color: red;
+          }
+        }
+      }
+      margin-bottom: 10px;
+    }
   }
   .estate-floor-container {
     .el-row {
@@ -736,7 +908,7 @@ export default {
       .el-col {
         &:last-child {
           text-align: center;
-          button {
+          .delete-btn {
             font-size: 18px;
             color: red;
           }
