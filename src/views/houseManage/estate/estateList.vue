@@ -64,7 +64,7 @@ export default {
         cityId: ''
       },
       tableHeight: 500,
-      estateListUrl: "http://localhost:9528/api/market/fangyuan",
+      estateListUrl: "/market/fangyuan",
       method: "queryEstateHouseList",
       colModels: [
         { prop: "orgName", label: "组织名称", align: "center" },

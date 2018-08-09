@@ -118,7 +118,7 @@ export default {
         roomCode: '',
         roomNo: ''
       },
-      estateRoomListUrl: "http://localhost:9528/api/market/fangyuan",
+      estateRoomListUrl: "/market/fangyuan",
       tableHeight: 500,
       reqMethod: 'queryEstateRoomList',
       colModels: [
