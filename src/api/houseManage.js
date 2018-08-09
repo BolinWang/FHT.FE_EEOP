@@ -123,7 +123,7 @@ export const authorizeApi = {
 /* 合作账号绑定授权 */
 export const houseAsyncApi = {
   defaultOptions: {
-    requestUrl: '/market/rooms',
+    requestUrl: 'http://localhost:9528/api/market/rooms',
     method: 'list'
   },
   list(params) {
@@ -283,6 +283,18 @@ export function estateNewSubdistrictApi(params) {
     method: 'post',
     data: {
       method: 'addSubdistrict',
+      params
+    }
+  })
+}
+
+/* 集中式保存复制到数据 */
+export function copyToOtherRoomApi(params) {
+  return fetch({
+    url: 'http://localhost:9528/api/market/fangyuan',
+    method: 'post',
+    data: {
+      method: 'copyToOtherRoom',
       params
     }
   })

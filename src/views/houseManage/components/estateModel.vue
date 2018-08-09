@@ -247,7 +247,14 @@
     </el-dialog>
 
     <el-dialog title="应用到房间" :visible.sync="batchCopyModelVisible" width="700px" :append-to-body="true">
-      <room-list-selecter ref="batchCopyRoom" :roomList="batchCopyRoomList" :roomTypeList="estateModel.roomTypeList" :visible="batchCopyModelVisible" :curIndex="curRoomTypeIndex"></room-list-selecter>
+      <room-list-selecter ref="batchCopyRoom" :roomList="batchCopyRoomList" :checkedList="estateModel.roomTypeList[this.curRoomTypeIndex].roomCodes" :visible="batchCopyModelVisible">
+        <el-row type="flex" justify="center" class="model-head">
+          <el-checkbox label="当前房间已是该类型" v-model="batchCopyOptions.isSelected" disabled></el-checkbox>
+          <el-checkbox label="当前房间尚未选择该类型" v-model="batchCopyOptions.noSelected" disabled></el-checkbox>
+          <el-checkbox label="当前房间正在选择该类型" v-model="batchCopyOptions.activeSelected" @change="batchCopyOptions.activeSelected = true"></el-checkbox>
+        </el-row>
+        <span slot="card-title">请选择要应用该房型的房间</span>
+      </room-list-selecter>
       <span slot="footer">
         <el-button size="small" type="primary" @click="saveBatchCobyRoom">确 定</el-button>
         <el-button size="small" @click="batchCopyModelVisible = false">取 消</el-button>
@@ -354,7 +361,12 @@ export default {
       curUploadPicsType: '',
       batchCopyModelVisible: false,
       batchCopyRoomList: [],
-      curRoomTypeIndex: 0
+      curRoomTypeIndex: 0,
+      batchCopyOptions: {
+        isSelected: true,
+        noSelected: false,
+        activeSelected: true
+      }
     }
   },
   computed: {
@@ -613,8 +625,7 @@ export default {
     },
     openBatchCopyModel(index) {
       estateBatchCopyRoomListApi({
-        fangyuanCode: this.$store.state.estateDetailData.fangyuanCode,
-        roomCode: this.estateModel.roomTypeList[index].roomCodes[0]
+        fangyuanCode: this.$store.state.estateDetailData.fangyuanCode
       }).then((res) => {
         this.batchCopyRoomList = res.data.dataObject
         this.curRoomTypeIndex = index
@@ -622,9 +633,9 @@ export default {
       })
     },
     saveBatchCobyRoom() {
-      this.$refs.batchCopyRoom.saveSelectedRoom()
+      let checkedList = this.$refs.batchCopyRoom.returnCheckedList()
       this.batchCopyModelVisible = false
-      this.estateModel.roomTypeList[this.curRoomTypeIndex].roomCodes = this.$store.state.estateDetailData.estateInfo.roomTypeList[this.curRoomTypeIndex].roomCodes
+      this.estateModel.roomTypeList[this.curRoomTypeIndex].roomCodes = checkedList
     },
     deleteCurItem(type, index) {
       // type 1: 楼层  2: 房型

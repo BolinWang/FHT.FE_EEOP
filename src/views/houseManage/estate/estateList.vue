@@ -107,15 +107,8 @@ export default {
     searchEstateHouseList(type) {
       if (type === 'clear') {
         for (const key in this.houseSearchForm) {
-          if (key === 'cityArea' || key === 'cityId') {
-            continue
-          }
-          this.houseSearchForm[key] = ''
+          this.houseSearchForm[key] = key === 'cityArea' ? [] : ''
         }
-      }
-      if (this.houseSearchForm.cityArea.length === 0) {
-        this.$message.error('请至少选择城市后再查询公寓')
-        return
       }
       this.searchParam()
     },

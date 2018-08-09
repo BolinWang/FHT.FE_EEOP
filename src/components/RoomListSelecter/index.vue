@@ -1,13 +1,10 @@
 <template>
   <div class="batch-copy-container">
-    <el-row type="flex" justify="center" class="model-head">
-        <el-checkbox label="当前房间已是该类型" v-model="options.isSelected" disabled></el-checkbox>
-        <el-checkbox label="当前房间尚未选择该类型" v-model="options.noSelected" disabled></el-checkbox>
-        <el-checkbox label="当前房间正在选择该类型" v-model="options.activeSelected" @change="options.activeSelected = true"></el-checkbox>
-    </el-row>
-    <el-card shadow="never">
+    <slot></slot>
+    <el-card class="batch-copy-card">
       <div slot="header" class="clearfix">
-        <span>请选择要应用该房型的房间</span>
+        <slot name="card-title"></slot>
+        <!-- <span>请选择要应用该房型的房间</span> -->
         <div class="check-all">
           <el-form :inline="true" size="mini">
             <el-form-item :label="checkAll ? '取消全选' : '全选'">
@@ -38,25 +35,23 @@
 </template>
 
 <script>
-import { deepClone } from '@/utils'
 export default {
-  props: [
-    'roomList',
-    'roomTypeList',
-    'visible',
-    'curIndex'
-  ],
+  props: {
+    visible: Boolean,
+    roomList: Object,
+    checkedList: {
+      type: Array,
+      default: () => {
+        return []
+      }
+    }
+  },
   data() {
     return {
       checkedObj: {},
       checkedFloor: {},
       allRoomList: {},
-      checkAll: false,
-      options: {
-        isSelected: true,
-        noSelected: false,
-        activeSelected: true
-      }
+      checkAll: false
     }
   },
   watch: {
@@ -64,7 +59,6 @@ export default {
       immediate: true,
       handler: function (val) {
         if (val) {
-          this.checkedList = this.roomTypeList[this.curIndex].roomCodes
           const allRoomList = {}
           const checkedObj = {}
           const checkedFloor = {}
@@ -104,16 +98,12 @@ export default {
         this.$set(this.checkedObj, key, val ? this.allRoomList[key].allRoom : this.allRoomList[key].isDisabled)
       })
     },
-    saveSelectedRoom() {
+    returnCheckedList() {
       let saveRoomList = []
       Object.keys(this.checkedObj).forEach((key, index) => {
         saveRoomList = saveRoomList.concat(this.checkedObj[key])
       })
-      let roomTypeList = deepClone(this.roomTypeList)
-      roomTypeList[this.curIndex].roomCodes = saveRoomList
-      this.$store.commit('UPDATE_ESTATE_DETAIL_DATA', {
-        roomTypeList: roomTypeList
-      })
+      return saveRoomList
     }
   },
   mounted() {
@@ -126,6 +116,9 @@ export default {
 .batch-copy-container {
   .model-head {
     margin-bottom: 20px;
+  }
+  .batch-copy-card {
+    box-shadow: 0 0;
   }
 }
 .check-all {
