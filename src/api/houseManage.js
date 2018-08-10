@@ -303,10 +303,22 @@ export function copyToOtherRoomApi(params) {
 /* 集中式获取交租方式列表 */
 export function estateRoomRentPayWayApi(params) {
   return fetch({
-    url: '/market/fangyuan',
+    url: 'http://localhost:9528/api/market/fangyuan',
     method: 'post',
     data: {
       method: 'queryEstateRoomRentType',
+      params
+    }
+  })
+}
+
+/* 集中式获取交租方式列表 */
+export function saveEstateRoomRentPayWayApi(params) {
+  return fetch({
+    url: 'http://localhost:9528/api/market/fangyuan',
+    method: 'post',
+    data: {
+      method: 'editEstateRoomRentType',
       params
     }
   })

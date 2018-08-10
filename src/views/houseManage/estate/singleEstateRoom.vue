@@ -90,15 +90,189 @@
       </span>
     </el-dialog>
 
-    <el-dialog class="rent-pay-model" title="交租方式" :visible.sync="rentPayModelVisible" width="700px">
-
+    <el-dialog class="rent-pay-model" title="交租方式" :visible.sync="rentPayModelVisible" width="1000px">
+      <div class="finance-rent-pay-way">
+        <el-row :gutter="10" class="rent-pay-model-row">
+          <el-col :span="3">
+            金融·交租方式
+          </el-col>
+          <el-col :span="3">
+            房价/月
+          </el-col>
+          <el-col :span="3">
+            押金
+          </el-col>
+          <el-col :span="3">
+            最短租期
+          </el-col>
+          <el-col :span="3">
+            最长租期
+          </el-col>
+          <el-col :span="3">
+            服务费·元/月
+          </el-col>
+          <el-col :span="3">
+            服务费支付方式
+          </el-col>
+        </el-row>
+        <el-row :gutter="10" class="rent-pay-model-row" v-for="item in financeRentPayList" :key="item.roomId">
+          <el-col :span="3">
+            {{item.name}}
+          </el-col>
+          <el-col :span="3">
+            <el-input size="mini" v-model="item.rentPrice">
+              <template slot="append">元</template>
+            </el-input>
+          </el-col>
+          <el-col :span="3">
+            <el-input size="mini" v-model="item.depositPrice">
+              <template slot="append">元</template>
+            </el-input>
+          </el-col>
+          <el-col :span="3">
+            <el-select size="mini" :value="item.minMonthNum + '个月'" disabled>
+            </el-select>
+          </el-col>
+          <el-col :span="3">
+            <el-select size="mini" :value="item.maxMonthNum + '个月'" disabled>
+            </el-select>
+          </el-col>
+          <el-col :span="3">
+            <el-select size="mini" v-model="item.serviceChargeType" disabled>
+              <el-option
+                v-for="n in serviceChargeTypeList"
+                :key="n.value"
+                :label="n.label"
+                :value="n.value">
+              </el-option>
+            </el-select>
+          </el-col>
+          <el-col :span="3">
+            <el-select size="mini" v-model="item.serviceFeeType" disabled>
+              <el-option
+                v-for="n in serviceFeeTypeList"
+                :key="n.value"
+                :label="n.label"
+                :value="n.value">
+              </el-option>
+            </el-select>
+          </el-col>
+        </el-row>
+      </div>
+      <div class="default-rent-pay-way">
+        <el-row :gutter="10" class="rent-pay-model-row">
+          <el-col :span="3">
+            常规·交租方式
+          </el-col>
+          <el-col :span="3">
+            房价/月
+          </el-col>
+          <el-col :span="3">
+            押金
+          </el-col>
+          <el-col :span="3">
+            最短租期
+          </el-col>
+          <el-col :span="3">
+            最长租期
+          </el-col>
+          <el-col :span="5">
+            服务费·元/月
+          </el-col>
+          <el-col :span="3">
+            服务费支付方式
+          </el-col>
+        </el-row>
+        <el-row :gutter="10" class="rent-pay-model-row" v-for="item in defaultRentPayList" :key="item.roomId">
+          <el-col :span="3">
+            <span v-if="item.roomRentTypeId">
+              {{item.name}}
+            </span>
+            <el-select v-else v-model="item.name" size="mini">
+              <el-option
+                v-for="n in baseRentTypeList"
+                :key="n.rentQty"
+                :label="n.name"
+                :value="n.rentQty">
+              </el-option>
+            </el-select>
+          </el-col>
+          <el-col :span="3">
+            <el-input size="mini" v-model="item.rentPrice">
+              <template slot="append">元</template>
+            </el-input>
+          </el-col>
+          <el-col :span="3">
+            <el-input size="mini" v-model="item.depositPrice">
+              <template slot="append">元</template>
+            </el-input>
+          </el-col>
+          <el-col :span="3" class="lease-term">
+            <el-select size="mini" v-model="item.minMonthNum">
+              <el-option
+                v-for="n in 24"
+                :key="n"
+                :label="n + '个月'"
+                :value="n">
+              </el-option>
+            </el-select>
+          </el-col>
+          <el-col :span="3" class="lease-term">
+            <el-select size="mini" v-model="item.maxMonthNum">
+              <el-option
+                v-for="n in 24"
+                :key="n"
+                :label="n + '个月'"
+                :value="n">
+              </el-option>
+            </el-select>
+          </el-col>
+          <el-col :span="3">
+            <el-select size="mini" v-model="item.serviceChargeType" @change="switchServiceChargeType(item)">
+              <el-option
+                v-for="n in serviceChargeTypeList"
+                :key="n.value"
+                :label="n.label"
+                :value="n.value">
+              </el-option>
+            </el-select>
+          </el-col>
+          <el-col :span="2">
+            <el-input size="mini"></el-input>
+          </el-col>
+          <el-col :span="3">
+            <el-select size="mini" v-model="item.serviceFeeType">
+              <el-option
+                v-if="item.serviceChargeType === 1"
+                label="无"
+                :value="1">
+              </el-option>
+              <el-option
+                v-else
+                v-for="n in serviceFeeTypeList"
+                :key="n.value"
+                :label="n.label"
+                :value="n.value">
+              </el-option>
+            </el-select>
+          </el-col>
+          <el-col :span="1">
+            <el-button class="delete-btn" type="text" icon="el-icon-delete" @click="deleteCurRentPay(item)"></el-button>
+          </el-col>
+        </el-row>
+      </div>
+      <el-button type="primary" size="mini" @click="addRentPay">添加交租方式</el-button>
+      <span slot="footer">
+        <el-button type="primary" size="small" @click="saveRentPay">保 存</el-button>
+        <el-button @click="rentPayModelVisible = false" size="small">取 消</el-button>
+      </span>
     </el-dialog>
   </div>
 </template>
 
 <script>
 import GridUnit from "@/components/GridUnit/grid"
-import { estateRoomFloorApi, estateRoomDetailApi, estateBatchCopyRoomListApi, copyToOtherRoomApi, estateRoomRentPayWayApi } from "@/api/houseManage"
+import { estateRoomFloorApi, estateRoomDetailApi, estateBatchCopyRoomListApi, copyToOtherRoomApi, estateRoomRentPayWayApi, saveEstateRoomRentPayWayApi } from "@/api/houseManage"
 import RoomListSelecter from '@/components/RoomListSelecter'
 export default {
   name: 'singleEstateRoom',
@@ -241,12 +415,44 @@ export default {
         },
       ],
       checkedCopyList: [],
-      rentPayModelVisible: false
+      rentPayModelVisible: false,
+      rentPayList: [],
+      serviceChargeTypeList: [
+        {
+          label: '无',
+          value: 1
+        },
+        {
+          label: '固定金额',
+          value: 2
+        },
+        {
+          label: '租金百分比',
+          value: 3
+        }
+      ],
+      serviceFeeTypeList: [
+        {
+          label: '随租金付',
+          value: 2
+        },
+        {
+          label: '一次性付清',
+          value: 3
+        }
+      ],
+      baseRentTypeList: []
     }
   },
   computed: {
     allCheckedOptionsList() {
       return this.copyOptions.map((item) => item.val)
+    },
+    financeRentPayList() {
+      return this.rentPayList.filter((item) => item.type === 2)
+    },
+    defaultRentPayList() {
+      return this.rentPayList.filter((item) => item.type === 1)
     }
   },
   methods: {
@@ -285,7 +491,10 @@ export default {
       estateRoomRentPayWayApi({
         roomCode: row.roomCode
       }).then((res) => {
-
+        if (res.code === '0') {
+          this.$set(this, 'rentPayList', res.data.dataObject.roomRentTypeList)
+          this.$set(this, 'baseRentTypeList', res.data.dataObject.baseRentTypeList)
+        }
         this.rentPayModelVisible = true
       })
     },
@@ -313,12 +522,50 @@ export default {
           this.searchParam()
         }
       })
+    },
+    addRentPay() {
+      this.rentPayList.push({
+        depositPrice: '',
+        depositQty: '',
+        maxMonthNum: 24,
+        minMonthNum: 1,
+        name: "月付",
+        rentPrice: '',
+        rentQty: '',
+        rentTypeId: 1,
+        roomId: this.rentPayList[0].roomId,
+        roomRentTypeId: undefined,
+        serviceChargePrice: 0,
+        serviceChargeRatio: 0,
+        serviceChargeType: 1,
+        serviceFeeType: 1,
+        type: 1
+      })
+    },
+    saveRentPay() {
+      saveEstateRoomRentPayWayApi({
+        roomCode: this.curRoomCode,
+        roomRentTypeList: this.rentPayList
+      }).then((res) => {
+        if (res.code === '0') {
+          this.rentPayModelVisible = false
+        }
+      })
+    },
+    deleteCurRentPay(row) {
+      this.$set(this, 'rentPayList', this.rentPayList.filter((item) => item != row))
+    },
+    switchServiceChargeType(row) {
+      row.serviceFeeType = row.serviceChargeType === 1 ? 1 : 2
     }
   },
   mounted() {
     this.fangyuanCode = this.$route.query.fangyuanCode || ''
     this.setFloorList()
     this.fetchEstateDetailData()
+    this.openRentPayModel({
+      roomCode: 1234
+    })
   }
 }
 </script>
@@ -372,6 +619,31 @@ export default {
       width: 20%;
       margin-left: 0;
     }
+  }
+}
+.finance-rent-pay-way {
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 15px;
+}
+.rent-pay-model-row {
+  margin-bottom: 15px;
+  .el-col {
+    &:last-child {
+      .delete-btn {
+        padding: 3px 0;
+        font-size: 18px;
+        color: red;
+      }
+    }
+  }
+  .rent-money {
+    width: 100px;
+    .append {
+      padding: 0 5px;
+    }
+  }
+  .lease-term {
+    width: 100px;
   }
 }
 </style>

@@ -5,7 +5,7 @@
         <area-select v-model="houseSearchForm.cityArea" :level="0" placeholder="请选择城市" :filterable="true" :showAllLevels="false"></area-select>
       </el-form-item>
       <el-form-item class="house-search-form-group">
-        <el-input v-model="houseSearchForm.organization" placeholder="组织名称"></el-input>
+        <el-input v-model="houseSearchForm.orgName" placeholder="组织名称"></el-input>
       </el-form-item>
       <el-form-item class="house-search-form-group">
         <el-input v-model="houseSearchForm.estateName" placeholder="公寓名称"></el-input>
@@ -68,7 +68,7 @@ export default {
       method: "queryEstateList",
       colModels: [
         { prop: "orgName", label: "组织名称", align: "center" },
-        { prop: "cityName", label: "城市", align: "center" },
+        { prop: "displayCityName", label: "城市", align: "center" },
         { prop: "estateName", label: "公寓名称", align: "center" },
         {
           prop: "operate",
@@ -83,14 +83,6 @@ export default {
           label: "操作记录",
           slotName: "operateRecordStr",
           align: "center"
-        }
-      ],
-      tableData: [
-        {
-          orgName: "麦家",
-          cityName: "杭州",
-          estateName: "漫果",
-          operateRecord: new Date().getTime()
         }
       ]
     }
@@ -151,6 +143,8 @@ export default {
     cityArea(val) {
       if (val && val[1]) {
         this.houseSearchForm.cityId = val[1]
+      } else {
+        this.houseSearchForm.cityId = ''
       }
     },
     showEstateModel(val) {
