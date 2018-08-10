@@ -2,7 +2,7 @@
   <div class="app-container">
     <el-row class="room-options-row">
       <el-button type="primary" size="small" @click="$router.push({name: '集中式房源'})" icon="el-icon-arrow-left">返回</el-button>
-      <el-button type="primary" size="small">新建房号</el-button>
+      <el-button type="primary" size="small" @click="openRoomDetailModel">新建房号</el-button>
       <el-button type="danger" size="small">删除房号</el-button>
       <span class="estate-title">{{estateInfo.estateName}}</span>
       <span class="estate-address">{{estateInfo.subdistrictName + ' - ' + estateInfo.subdistrictAddress}}</span>
@@ -39,8 +39,8 @@
     <grid-unit
       ref="estateRoomList"
       :url="estateRoomListUrl"
-      listField="data.list"
-      totalField="data.record"
+      listField="data.result"
+      totalField="data.records"
       :dataMethod="reqMethod"
       :formOptions="roomSearchForm"
       :showSelection="true"
@@ -239,6 +239,8 @@
           </el-col>
           <el-col :span="2">
             <el-input size="mini"></el-input>
+            %
+            <el-input size="mini"></el-input>
           </el-col>
           <el-col :span="3">
             <el-select size="mini" v-model="item.serviceFeeType">
@@ -267,6 +269,14 @@
         <el-button @click="rentPayModelVisible = false" size="small">取 消</el-button>
       </span>
     </el-dialog>
+
+    <el-dialog class="room-detail-model" title="新建房号" :visible.sync="roomDetailModelVisible" width="800px">
+      <room-detail></room-detail>
+      <span slot="footer">
+        <el-button type="primary" size="small">保 存</el-button>
+        <el-button @click="roomDetailModelVisible = false" size="small">取 消</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -274,11 +284,13 @@
 import GridUnit from "@/components/GridUnit/grid"
 import { estateRoomFloorApi, estateRoomDetailApi, estateBatchCopyRoomListApi, copyToOtherRoomApi, estateRoomRentPayWayApi, saveEstateRoomRentPayWayApi } from "@/api/houseManage"
 import RoomListSelecter from '@/components/RoomListSelecter'
+import RoomDetail from '../components/roomDetailModel'
 export default {
   name: 'singleEstateRoom',
   components: {
     GridUnit,
-    RoomListSelecter
+    RoomListSelecter,
+    RoomDetail
   },
   data() {
     return {
@@ -287,10 +299,11 @@ export default {
       estateInfo: {},
       floorList: [],
       roomSearchForm: {
+        fangyuanCode: '1',
         roomStatus: '',
         floor: '',
         roomCode: '',
-        roomNo: ''
+        roomNo: '11'
       },
       estateRoomListUrl: "/market/fangyuan",
       tableHeight: 500,
@@ -441,7 +454,8 @@ export default {
           value: 3
         }
       ],
-      baseRentTypeList: []
+      baseRentTypeList: [],
+      roomDetailModelVisible: false
     }
   },
   computed: {
@@ -557,15 +571,21 @@ export default {
     },
     switchServiceChargeType(row) {
       row.serviceFeeType = row.serviceChargeType === 1 ? 1 : 2
+    },
+    openRoomDetailModel() {
+      this.roomDetailModelVisible = true
     }
   },
   mounted() {
-    this.fangyuanCode = this.$route.query.fangyuanCode || ''
-    this.setFloorList()
+    // this.setFloorList()
     this.fetchEstateDetailData()
-    this.openRentPayModel({
-      roomCode: 1234
-    })
+    // this.openRentPayModel({
+    //   roomCode: 1234
+    // })
+  },
+  created() {
+    this.fangyuanCode = this.$route.query.fangyuanCode || ''
+    this.roomSearchForm.fangyuanCode = this.fangyuanCode
   }
 }
 </script>

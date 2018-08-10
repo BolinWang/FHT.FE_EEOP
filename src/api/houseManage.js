@@ -123,7 +123,7 @@ export const authorizeApi = {
 /* 合作账号绑定授权 */
 export const houseAsyncApi = {
   defaultOptions: {
-    requestUrl: '/market/rooms',
+    requestUrl: 'http://localhost:9528/api/market/rooms',
     method: 'list'
   },
   list(params) {
@@ -303,7 +303,7 @@ export function copyToOtherRoomApi(params) {
 /* 集中式获取交租方式列表 */
 export function estateRoomRentPayWayApi(params) {
   return fetch({
-    url: 'http://localhost:9528/api/market/fangyuan',
+    url: 'http://192.168.5.123:9528/api/market/fangyuan',
     method: 'post',
     data: {
       method: 'queryEstateRoomRentType',
@@ -315,7 +315,7 @@ export function estateRoomRentPayWayApi(params) {
 /* 集中式获取交租方式列表 */
 export function saveEstateRoomRentPayWayApi(params) {
   return fetch({
-    url: 'http://localhost:9528/api/market/fangyuan',
+    url: 'http://192.168.5.123:9528/api/market/fangyuan',
     method: 'post',
     data: {
       method: 'editEstateRoomRentType',
