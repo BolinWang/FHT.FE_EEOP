@@ -222,7 +222,7 @@ export function estateDeviceListApi(params) {
     url: '/market/fangyuan',
     method: 'post',
     data: {
-      method: 'queryHeiheihei',
+      method: 'queryBaseSupportList',
       params
     }
   })
@@ -246,7 +246,7 @@ export function estateBatchCopyRoomListApi(params) {
     url: '/market/fangyuan',
     method: 'post',
     data: {
-      method: 'allRoomByRoomCode',
+      method: 'allRoomByFangyuanCode',
       params
     }
   })

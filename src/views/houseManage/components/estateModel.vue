@@ -105,7 +105,7 @@
           </template>
           <el-row :gutter="20" class="estate-floor-container">
             <el-col :span="24">
-              <el-form-item label="公寓楼层" label-width="110px">
+              <el-form-item label="公寓楼层" label-width="110px" prop="floors">
                 <el-row :gutter="20" v-for="(item, index) in estateModel.floors" :key="index">
                   <el-col :span="7">
                     <el-form-item label-width="0">
@@ -292,6 +292,7 @@ export default {
       searchKeywords: '',
       searchResult: [],
       formLabelAlign: {},
+      tempMapData: {},
       rules: {
       },
       // estateModel: {
@@ -354,7 +355,7 @@ export default {
       zoneList: [],
       addressList: [],
       orgList: [],
-      activeNames: ['1'],
+      activeNames: '1',
       uploadPicsModelVisible: false,
       estateDeviceModelVisible: false,
       cropperList: [],
@@ -411,8 +412,8 @@ export default {
       if (o) {
         this.$set(this, 'formLabelAlign', Object.assign(this.formLabelAlign, {
           baiduUid: o.uid,
-          longitude: o.point.lng,
-          latitude: o.point.lat,
+          longitude: o.point.lng + '',
+          latitude: o.point.lat + '',
           address: o.address
         }))
       }
@@ -430,11 +431,12 @@ export default {
           this.$set(this, 'formLabelAlign', Object.assign(this.formLabelAlign, {
             name: rs.surroundingPois[0] ? rs.surroundingPois[0].title : rs.address,
             address: rs.address,
-            longitude: rs.point.lng,
-            latitude: rs.point.lat
+            longitude: rs.point.lng + '',
+            latitude: rs.point.lat + ''
           }))
         }
         this.formLabelAlign.region = rs.addressComponents.district
+        this.tempMapData = deepClone(this.formLabelAlign)
       });
       this.$refs.popover.doShow();
     },
@@ -575,17 +577,34 @@ export default {
     },
     addEstateSubdistrict(status) {
       status = status || 0
+      let source = 1
+      if (status === 0) {
+        Object.keys(this.formLabelAlign).forEach((key) => {
+          if (this.formLabelAlign[key] != this.tempMapData[key]) {
+            source = 5
+          }
+        })
+      } else {
+        source = 5
+      }
+      let formOptions = {
+        provinceId: this.estateModel.areaCode[0],
+        cityId: this.estateModel.areaCode[1],
+        regionId: this.estateModel.areaCode[2],
+        source: source,
+        confirmStatus: status
+      }
       estateNewSubdistrictApi({
         ...this.formLabelAlign,
-        confirmStatus: status
+        ...formOptions
       }).then((res) => {
-        const data = res.data.dataObject
-        if (data.confirmStatus === 0) {
+        const data = res.data
+        if (data.confirmStatus !== 1) {
           this.mapModelVisible = false
           this.estateModel.address = this.formLabelAlign.name + ' - ' + this.formLabelAlign.address
           this.estateModel.regionAddressId = data.regionAddressId
           this.$refs['estateModel'].validateField('address')
-        } else if (data.confirmStatus === 1) {
+        } else {
           this.$confirm('新选择的小区名称、区域、具体地址和历史录入的一致，<span style="color:red">但经纬度坐标不一致</span>，是否使用新坐标并覆盖？', '再次确定', {
             dangerouslyUseHTMLString: true,
             distinguishCancelAndClose: true,
@@ -605,37 +624,26 @@ export default {
       let estateInfo = this.$store.state.estateDetailData.estateInfo
       estateInfo.contactGender = 1
       estateInfo.areaCode = [estateInfo.provinceId, estateInfo.cityId, estateInfo.regionId]
-      estateInfo.roomTypeList.forEach((item, index) => {
-        item.pictureList = item.pictureList || []
-      })
       estateInfo.tag = estateInfo.tag === 1 ? true : false
       estateInfo.address = estateInfo.subdistrictName ? (estateInfo.subdistrictName + ' - ' + estateInfo.subdistrictAddress) : ''
 
       this.$set(this, 'estateModel', estateInfo)
+      this.activeNames = '1'
       if (this.type === '新建公寓') {
         this.addEstateFloor()
         this.addEstateRoomType()
       }
     },
-    saveEstateData(type) {
-      if (this.type === '新建公寓') {
-        let estateData = false
-        this.$refs.estateModel.validate((status) => {
-          if (status) {
-            estateData = this.estateModel
-            // this.$store.commit('UPDATE_ESTATE_DETAIL_DATA', this.estateModel)
-
-          } else {
-            return false
-          }
-        })
-        return estateData
-      } else {
-
-      }
-
-      // this.activeNames = ['1']
-      // this.resetForm('estateModel')
+    returnEstateData(type) {
+      let estateData = false
+      this.$refs.estateModel.validate((status) => {
+        if (status) {
+          estateData = this.estateModel
+        } else {
+          return false
+        }
+      })
+      return estateData
     },
     openBatchCopyModel(index) {
       estateBatchCopyRoomListApi({
@@ -682,7 +690,9 @@ export default {
     // 裁剪后图片列表
     emitCropperData(list = []) {
       list.forEach((v, i) => {
-        v.type = 1
+        v.type = 1,
+        v.imageName = v.title,
+        v.image = v.src
       })
       let picList = this.curPicListIndex === -1 ? this.estateModel.pictureList : this.estateModel.roomTypeList[this.curPicListIndex].pictureList
       if (this.curPicListIndex === -1) {
@@ -756,6 +766,7 @@ export default {
         this.$nextTick(() => {
           this.initBMap();
         })
+
       } else {
         this.searchKeywords = ''
         this.searchResult = []
@@ -777,6 +788,15 @@ export default {
           // this.activeNames = ['1']
           // this.resetForm('estateModel')
         }
+      }
+    },
+    activeNames: {
+      deep: true,
+      handler: function (val, oldVal) {
+        // if (oldVal != '' && val != oldVal) {
+        //   this.activeNames = oldVal
+        //   this.$message.error('请先将当前更改的内容保存之后再操作')
+        // }
       }
     }
   },

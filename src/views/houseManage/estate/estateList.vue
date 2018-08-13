@@ -123,15 +123,28 @@ export default {
       }
     },
     saveEstateData(type) {
-      let estateInfo = this.$refs.estateModel.saveEstateData(type)
+      let estateInfo = this.$refs.estateModel.returnEstateData(type)
+      console.log(estateInfo)
       if (!estateInfo) {
         return
       }
+      estateInfo.roomTypeList.forEach((item, index) => {
+        item.pictureUploadList = item.pictureList.filter(n => n.image)
+        item.pictureList = item.pictureList.filter(n => n.imageUrl)
+      })
+
+      // let api = this.estateModelTitle === '新建公寓' ? estateNewEstateSaveApi :
+
       estateNewEstateSaveApi({
         estateInfo: JSON.stringify(estateInfo)
       }).then((res) => {
-        if (res.data.code === '0') {
-
+        if (res.code === '0') {
+          this.$message({
+            message: res.message,
+            type: 'success'
+          })
+          this.showEstateModel = false
+          this.searchParam()
         }
       })
     },

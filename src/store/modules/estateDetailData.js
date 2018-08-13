@@ -27,8 +27,8 @@ const estateDetailData = {
       storeServices: '',
       surroundings: '',
       floors: [],
-      roomTypeList: [],
-      roomTypePics: []
+      roomTypeList: []
+      // roomTypePics: []
     },
     fangyuanCode: '',
     estateRoomInfo: {
@@ -86,8 +86,8 @@ const estateDetailData = {
         storeServices: '',
         surroundings: '',
         floors: [],
-        roomTypeList: [],
-        roomTypePics: []
+        roomTypeList: []
+        // roomTypePics: []
       }
     },
     UPDATE_ESTATE_DETAIL_DATA: (state, params) => {
