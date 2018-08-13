@@ -36,25 +36,29 @@
           <el-button size="small" type="success" icon="el-icon-upload" class="filter-item" @click="syncItems('on')">发布</el-button>
           <el-button size="small" type="danger" icon="el-icon-remove" class="filter-item" @click="syncItems('off')">撤销</el-button>
           <!-- fhj -->
-          <el-dialog class="select-dialog" title="选择发布平台" :visible.sync="dialogVisible" width="40%">
+          <el-dialog class="select-dialog" :title='"选择"+dialogTitle+"平台"' :visible.sync="dialogVisible" width="40%">
             <div class="select-platform-container">
               <div class="left">
-                <input type="checkbox" v-model="publishSelect.ml" id="mlRent" />
+                <input type="checkbox" v-model="publishSelect.mlzf" id="mlRent" />
                 <label for="mlRent">
-                  <div class="ml-selectName">麦邻租房</div>
-                  <div class="ml-selectStatus"><i class="el-icon-check" v-show="publishSelect.ml"></i></div>
+                  <div class="ml-selectName" v-bind:class="{changeBackground:publishSelect.mlzf}">麦邻租房</div>
+                  <div class="ml-selectStatus">
+                    <i class="el-icon-check" v-show="publishSelect.mlzf"></i>
+                  </div>
                 </label>
               </div>
               <div class="right">
                 <input type="checkbox" v-model="publishSelect.idlefish" id="idleFishRent" />
                 <label for="idleFishRent">
-                  <div class="ml-selectName">咸鱼租房</div> 
-                  <div class="ml-selectStatus"><i class="el-icon-check" v-show="publishSelect.idlefish"></i></div>
+                  <div class="ml-selectName" v-bind:class="{changeBackground:publishSelect.idlefish}">咸鱼租房</div>
+                  <div class="ml-selectStatus">
+                    <i class="el-icon-check" v-show="publishSelect.idlefish"></i>
+                  </div>
                 </label>
               </div>
             </div>
             <span slot="footer" class="dialog-footer">
-              <el-button type="primary" @click="syncItems">发 布</el-button>
+              <el-button type="primary" @click="gotoHouseAsync">{{dialogTitle === "撤销"?"确定":"发布"}}</el-button>
             </span>
           </el-dialog>
           <!--fhj-->
@@ -62,16 +66,16 @@
       </el-form>
       <GridUnit ref="refGridUnit" :columns="colModels" :formOptions="searchParams" :url="url" :showSelection="true" :pageSizes="[50, 100, 200, 500]" :dataMethod="method" :height="tableHeight" @selection-change="handleSelectionChange">
         <template slot="slot_popover" slot-scope="scope">
-          <el-popover v-if="scope.row.idlefishStatus === `发布失败`" trigger="hover" placement="top">
+          <el-popover v-if="scope.row.idlefishStatus === `发布失败` || scope.row.publishStatus === `发布失败` " trigger="hover" placement="top">
             <p>发布失败原因: {{ scope.row.failReason }}</p>
             <div slot="reference">
-              <el-tag :type="scope.row.idlefishStatus | renderStatusType">
-                {{scope.row.idlefishStatus | renderStatusValue}}
+              <el-tag :type="(scope.row.idlefishStatus|| scope.row.publishStatus) | renderStatusType">
+                {{(scope.row.idlefishStatus || scope.row.publishStatus) | renderStatusValue}}
               </el-tag>
             </div>
           </el-popover>
-          <el-tag v-else :type="scope.row.idlefishStatus | renderStatusType">
-            {{scope.row.idlefishStatus | renderStatusValue}}
+          <el-tag v-else :type="(scope.row.idlefishStatus || scope.row.publishStatus) | renderStatusType">
+            {{scope.row.idlefishStatus || scope.row.publishStatus | renderStatusValue}}
           </el-tag>
         </template>
       </GridUnit>
@@ -81,7 +85,7 @@
 <script>
 import GridUnit from '@/components/GridUnit/grid'
 import { deepClone, cleanArray, ObjectMap } from '@/utils'
-import { houseAsyncApi } from '@/api/houseManage'
+import { reviewHouseAsyncApi } from '@/api/houseManage'
 export default {
   name: 'houseSync',
   components: {
@@ -169,13 +173,14 @@ export default {
         { prop: 'operation', label: '操作记录', width: 180 }
       ],
       tableHeight: 300,
-      url: houseAsyncApi.defaultOptions.requestUrl,
-      method: houseAsyncApi.defaultOptions.method,
+      url: reviewHouseAsyncApi.defaultOptions.requestUrl,
+      method: reviewHouseAsyncApi.defaultOptions.method,
       dialogVisible: false,
       publishSelect: {
-        ml: true,
+        mlzf: true,
         idlefish: true
-      }
+      },
+      dialogTitle: ''
     }
   },
   mounted() {
@@ -234,51 +239,51 @@ export default {
       const typeConfig = {
         'on': {
           title: '发布',
-          api: houseAsyncApi.publish
+          api: reviewHouseAsyncApi.publish
         },
         'off': {
           title: '撤销',
-          api: houseAsyncApi.offshlef
+          api: reviewHouseAsyncApi.offshlef
         }
       }
       if (this.selectedItems.length === 0) {
         this.$message.error(`请选择需要${typeConfig[type].title}的房源`)
         return false
       }
-      const pendingRomms = this.selectedItems.filter(item => item.idlefishStatus === '发布中')
+      const pendingRomms = this.selectedItems.filter(item => item.idlefishStatus === '发布中' || item.publishStatus === '发布中')
       if (pendingRomms.length > 0) {
         this.$message.error(`发布中的房源不能进行${typeConfig[type].title}`)
         return false
       }
-      const unfilterItem = this.selectedItems.filter(item => item.idlefishStatus === type)
+      const unfilterItem = this.selectedItems.filter(item => item.idlefishStatus === type || item.publishStatus === type)
       if (unfilterItem.length !== 0) {
         this.$message.error(`已${typeConfig[type].title}的房源不能再${typeConfig[type].title}`)
         return false
       }
-      const mlPendindRooms = this.selectedItems.filter(item => item.mlStatus === '发布中')
-      
       this.dialogVisible = true;
-
-      // this.$confirm(`已选择${this.selectedItems.length}个房源，确定${typeConfig[type].title}吗？`, '提示', {
-      //   confirmButtonText: '确定',
-      //   cancelButtonText: '取消',
-      //   type: 'warning'
-      // }).then(() => {
-      //   this.gotoHouseAsync(typeConfig[type].api)
-      // }).catch(() => { })
+      this.dialogTitle = typeConfig[type].title;
+      this.publishSelect.mlzf = false;
+      this.publishSelect.idlefish = false;
     },
     // 发布、撤销
-    gotoHouseAsync(api) {
-      let roomCodes = this.selectedItems.map(item => item.roomCode)
+    gotoHouseAsync() {
+      let api = this.dialogTitle === "发布" ? reviewHouseAsyncApi.publish : reviewHouseAsyncApi.offshlef;
+      let roomCodes = this.selectedItems.map(item => item.roomCode);
+      let platform = [];
+      for (var i in this.publishSelect) {
+        if (this.publishSelect[i]) {
+          platform.push(i);
+        }
+      }
       api({
-        platform: ['idlefish'],
+        platforms: platform,
         roomCodes
       }).then(response => {
         this.$notify({
           title: '成功',
           message: '操作成功',
           type: 'success',
-          duration: 2000
+          duration: 2000,
         })
         this.searchParam()
       })
@@ -291,7 +296,7 @@ export default {
   margin-left: 10px;
 }
 
-.select-platform-container{
+.select-platform-container {
   height: 100px;
   padding: 15px 10px;
 }
@@ -300,11 +305,11 @@ export default {
   width: 150px;
 }
 
-.left{
+.left {
   margin-left: 5%;
 }
 
-.right{
+.right {
   margin-right: 5%;
 }
 
@@ -323,20 +328,24 @@ label {
   height: 30px;
   margin-top: -30px;
   font-size: 25px;
-  color: #FFA500;
+  color: #ffa500;
   float: right;
-  border: 0.5px solid #c0c4cc;
+  border: 0.5px solid #e4e7ed;
   text-align: center;
   line-height: 35px;
 }
 
 .ml-selectName {
-  background-color:	#FFA500;
+  background-color: #ebeef5;
   width: 80px;
   height: 30px;
-  font-size: 15px;
+  font-size: 14px;
   text-align: center;
   line-height: 30px;
+}
+.changeBackground {
+  background-color: #ffa500;
+  color: #ffffff;
 }
 //隐藏原生复选框
 #mlRent {

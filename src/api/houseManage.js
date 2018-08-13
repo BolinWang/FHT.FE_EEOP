@@ -348,3 +348,50 @@ export function saveEstateRoomApi(params, type) {
   })
 }
 
+/*发布撤销房源*/
+export const reviewHouseAsyncApi = {
+  defaultOptions: {
+    requestUrl: '/market/rooms',
+    method: 'list'
+  },
+  list(params) {
+    return fetch({
+      url: reviewHouseAsyncApi.defaultOptions.requestUrl,
+      method: 'post',
+      data: {
+        method: reviewHouseAsyncApi.defaultOptions.method,
+        params
+      }
+    })
+  },
+  bind(params) {
+    return fetch({
+      url: '/market/account',
+      method: 'post',
+      data: {
+        method: 'binding',
+        params
+      }
+    })
+  },
+  publish(params) {
+    return fetch({
+      url: '/market/rooms',
+      method: 'post',
+      data: {
+        method: 'publish',
+        params
+      }
+    })
+  },
+  offshlef(params) {
+    return fetch({
+      url: '/market/rooms',
+      method: 'post',
+      data: {
+        method: 'offshelf',
+        params
+      }
+    })
+  }
+}
