@@ -401,6 +401,9 @@ export default {
           Object.keys(this.roomDetailModel).forEach((key) => {
             this.roomDetailModel[key] = Object.prototype.toString.call(this.roomDetailModel[key]) === '[object Array]' ? [] : ''
           })
+          this.$nextTick(() => {
+            this.$refs.roomDetailModel.clearValidate()
+          })
         }
       }
     }

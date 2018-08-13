@@ -473,8 +473,7 @@ export default {
         fangyuanCode: this.fangyuanCode
       }).then((res) => {
         if (res.code === '0') {
-          // this.$store.commit('SET_ESTATEDATA', res.data.dataObject)
-          this.$set(this, 'estateInfo', res.data.dataObject)
+          this.$set(this, 'estateInfo', res.data)
         }
       })
     },
@@ -484,17 +483,20 @@ export default {
         fangyuanCode: this.fangyuanCode,
         roomCode: row.roomCode
       }).then((res) => {
-        this.copyItemRoomList = res.data.dataObject
-        this.copyItemToModelVisible = true
+        if (res.code === '0') {
+          this.copyItemRoomList = res.data
+          this.copyItemToModelVisible = true
+        }
       })
     },
     openRentPayModel(row) {
+      this.curRoomCode = row.roomCode
       estateRoomRentPayWayApi({
         roomCode: row.roomCode
       }).then((res) => {
         if (res.code === '0') {
-          this.$set(this, 'rentPayList', res.data.dataObject.roomRentTypeList)
-          this.$set(this, 'baseRentTypeList', res.data.dataObject.baseRentTypeList)
+          this.$set(this, 'rentPayList', res.data.roomRentTypeList)
+          this.$set(this, 'baseRentTypeList', res.data.baseRentTypeList)
         }
         this.rentPayModelVisible = true
       })
@@ -534,7 +536,7 @@ export default {
         rentPrice: '',
         rentQty: 1,
         rentTypeId: 1,
-        roomId: this.rentPayList[0].roomId,
+        roomId: '',
         roomRentTypeId: undefined,
         serviceChargePrice: null,
         serviceChargeRatio: null,
@@ -544,10 +546,10 @@ export default {
       })
     },
     saveRentPay() {
-      if (true) {
-        this.$message.error('请填写完交租方式再保存')
-        return
-      }
+      // if (true) {
+      //   this.$message.error('请填写完交租方式再保存')
+      //   return
+      // }
       saveEstateRoomRentPayWayApi({
         roomCode: this.curRoomCode,
         roomRentTypeList: this.rentPayList
@@ -583,7 +585,7 @@ export default {
           roomCode: row.roomCode
         }).then((res) => {
           if (res.code === '0') {
-            this.$store.commit('SET_ESTATEROOMDATA', res.data.dataObject)
+            this.$store.commit('SET_ESTATEROOMDATA', res.data)
             this.roomDetailModelVisible = true
           }
         })

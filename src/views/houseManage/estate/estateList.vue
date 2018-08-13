@@ -45,7 +45,7 @@ import { debounce } from "@/utils"
 import GridUnit from "@/components/GridUnit/grid"
 import areaSelect from "@/components/AreaSelect"
 import estateModel from '../components/estateModel'
-import { estateRoomDetailApi, estateDeleteEstateApi } from '@/api/houseManage'
+import { estateRoomDetailApi, estateDeleteEstateApi, estateNewEstateSaveApi } from '@/api/houseManage'
 export default {
   name: "estateHouseList",
   components: {
@@ -117,13 +117,23 @@ export default {
         estateRoomDetailApi({
           fangyuanCode: row.fangyuanCode
         }).then((res) => {
-          this.$store.commit('SET_ESTATEDATA', res.data.dataObject)
+          this.$store.commit('SET_ESTATEDATA', res.data)
           this.showEstateModel = true
         })
       }
     },
     saveEstateData(type) {
-      this.$refs.estateModel.saveEstateData(type)
+      let estateInfo = this.$refs.estateModel.saveEstateData(type)
+      if (!estateInfo) {
+        return
+      }
+      estateNewEstateSaveApi({
+        estateInfo: JSON.stringify(estateInfo)
+      }).then((res) => {
+        if (res.data.code === '0') {
+
+        }
+      })
     },
     deleteEstate(row) {
       estateDeleteEstateApi({
