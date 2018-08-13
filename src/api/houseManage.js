@@ -243,11 +243,7 @@ export function estateOrgListApi(params) {
 /* 集中式查询单个公寓下面房间列表 */
 export function estateBatchCopyRoomListApi(params) {
   return fetch({
-<<<<<<< HEAD
-    url: 'http://localhost:9528/api/market/fangyuan',
-=======
     url: 'http://192.168.1.32:9528/api/market/fangyuan',
->>>>>>> ffffe9d5220f8d38194a975964bd935b612b7946
     method: 'post',
     data: {
       method: 'allRoomByRoomCode',
