@@ -123,7 +123,7 @@ export const authorizeApi = {
 /* 合作账号绑定授权 */
 export const houseAsyncApi = {
   defaultOptions: {
-    requestUrl:'http://localhost:9528/api/market/rooms',
+    requestUrl: 'http://localhost:9528/api/market/rooms',
     method: 'list'
   },
   list(params) {
@@ -171,7 +171,7 @@ export const houseAsyncApi = {
 /* 集中式查询单个公寓详情 */
 export function estateRoomDetailApi(params) {
   return fetch({
-    url: '/market/fangyuan',
+    url: 'http://192.168.1.32:9528/api/market/fangyuan',
     method: 'post',
     data: {
       method: 'queryOneFangyuan',
@@ -183,7 +183,7 @@ export function estateRoomDetailApi(params) {
 /* 集中式楼层列表 */
 export function estateRoomFloorApi(params) {
   return fetch({
-    url: '/market/fangyuan',
+    url: 'http://192.168.1.32:9528/api/market/fangyuan',
     method: 'post',
     data: {
       method: 'queryFloorListByEstateId',
@@ -243,7 +243,11 @@ export function estateOrgListApi(params) {
 /* 集中式查询单个公寓下面房间列表 */
 export function estateBatchCopyRoomListApi(params) {
   return fetch({
+<<<<<<< HEAD
     url: 'http://localhost:9528/api/market/fangyuan',
+=======
+    url: 'http://192.168.1.32:9528/api/market/fangyuan',
+>>>>>>> ffffe9d5220f8d38194a975964bd935b612b7946
     method: 'post',
     data: {
       method: 'allRoomByRoomCode',
@@ -303,7 +307,7 @@ export function copyToOtherRoomApi(params) {
 /* 集中式获取交租方式列表 */
 export function estateRoomRentPayWayApi(params) {
   return fetch({
-    url: 'http://localhost:9528/api/market/fangyuan',
+    url: 'http://192.168.1.32:9528/api/market/fangyuan',
     method: 'post',
     data: {
       method: 'queryEstateRoomRentType',
@@ -315,10 +319,34 @@ export function estateRoomRentPayWayApi(params) {
 /* 集中式获取交租方式列表 */
 export function saveEstateRoomRentPayWayApi(params) {
   return fetch({
-    url: 'http://localhost:9528/api/market/fangyuan',
+    url: 'http://192.168.1.32:9528/api/market/fangyuan',
     method: 'post',
     data: {
       method: 'editEstateRoomRentType',
+      params
+    }
+  })
+}
+
+/* 集中式查询单个房间详情 */
+export function oneEstateRoomApi(params) {
+  return fetch({
+    url: 'http://192.168.1.32:9528/api/market/fangyuan',
+    method: 'post',
+    data: {
+      method: 'queryOneEstateRoom',
+      params
+    }
+  })
+}
+
+/* 集中式保存单个房间详情 */
+export function saveEstateRoomApi(params, type) {
+  return fetch({
+    url: '/market/fangyuan',
+    method: 'post',
+    data: {
+      method: type === 1 ? 'saveEstateRoomInfo' : 'editEstateRoomInfo', // 1 新建 2 编辑
       params
     }
   })

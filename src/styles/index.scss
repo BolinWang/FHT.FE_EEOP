@@ -171,7 +171,17 @@ a:hover {
   cursor: pointer;
 }
 
-
+/* 交租方式 */
+.default-rent-pay-way, .finance-rent-pay-way {
+  input {
+    padding: 0 8px;
+  }
+  .rent-price-input {
+    .el-input-group__append {
+      padding: 0 5px;
+    }
+  }
+}
 
 /* elementUI 修改 */
 

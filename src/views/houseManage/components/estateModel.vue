@@ -464,7 +464,7 @@ export default {
       [this.estateModel.provinceId, this.estateModel.cityId, this.estateModel.regionId] = this.estateModel.areaCode
       if (this.estateModel.areaCode[2] !== undefined) {
         estateZoneListByAreaIdApi({
-          areaId: this.estateModel.regionId
+          regionId: this.estateModel.regionId
         }).then((res) => {
           this.zoneList = res.data.list
         })

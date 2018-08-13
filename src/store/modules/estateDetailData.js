@@ -30,7 +30,23 @@ const estateDetailData = {
       roomTypeList: [],
       roomTypePics: []
     },
-    fangyuanCode: ''
+    fangyuanCode: '',
+    estateRoomInfo: {
+      'bedCount': null,
+      'boardCount': null,
+      'chamberCount': null,
+      'decorationDegree': null,
+      'endNo': null,
+      'fangyuanCode': '',
+      'floorId': null,
+      'maxPerson': null,
+      'roomArea': null,
+      'roomDirection': null,
+      'roomTypeId': null,
+      'skipNo': '',
+      'startNo': null,
+      'toiletCount': null
+    }
   },
 
   mutations: {
@@ -77,6 +93,16 @@ const estateDetailData = {
     UPDATE_ESTATE_DETAIL_DATA: (state, params) => {
       params.tag = params.tag ? 1 : 0
       state.estateInfo = Object.assign(state.estateInfo, params)
+    },
+    SET_ESTATEROOMDATA: (state, params) => {
+      state.estateRoomInfo = {
+        ...params
+      }
+    },
+    CLEAR_ESTATEROOMDATA: (state, params) => {
+      state.estateRoomInfo = {
+
+      }
     }
   },
 
