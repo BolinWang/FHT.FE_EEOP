@@ -3,7 +3,7 @@ const estateDetailData = {
     estateInfo: {
       estateName: '',
       provinceId: '',
-      areaCode: [], // 省市区列表
+      // areaCode: [], // 省市区列表
       cityId: '',
       regionId: '',
       zoneId: '',
@@ -20,7 +20,7 @@ const estateDetailData = {
       accountName: '',
       adminUserId: '',
       tag: 0,
-      estatePics: [], // 集中式公寓图片
+      // estatePics: [], // 集中式公寓图片
       pictureList: [],
       pictureUploadList: [],
       services: '',
@@ -62,11 +62,11 @@ const estateDetailData = {
       state.estateInfo = {
         estateName: '',
         provinceId: '',
-        areaCode: [], // 省市区列表
+        // areaCode: [], // 省市区列表
         cityId: '',
         regionId: '',
         zoneId: '',
-        address: '', // 详细地址
+        // address: '', // 详细地址
         subdistrictAddress: '',
         subdistrictName: '',
         regionAddressId: '',
@@ -79,7 +79,7 @@ const estateDetailData = {
         accountName: '',
         adminUserId: '',
         tag: 0,
-        estatePics: [], // 集中式公寓图片
+        // estatePics: [], // 集中式公寓图片
         pictureList: [],
         pictureUploadList: [],
         services: '',
@@ -116,8 +116,11 @@ const estateDetailData = {
     formatEstateDetailData: state => {
       const aaa = state.estateInfo
       aaa.areaCode = [aaa.provinceId, aaa.cityId, aaa.regionId]
-      aaa.estatePics = aaa.pictureList
-      aaa.roomTypePics = aaa.roomTypeList
+      // aaa.estatePics = aaa.pictureList
+      // aaa.roomTypePics = aaa.roomTypeList
+      aaa.roomTypeList.forEach((item, index) => {
+        item.pictureList = item.pictureList || []
+      })
       aaa.tag = aaa.tag === 1 ? true : false
       aaa.address = aaa.subdistrictName ? (aaa.subdistrictName + ' - ' + aaa.subdistrictAddress) : ''
       return aaa

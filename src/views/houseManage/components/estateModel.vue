@@ -1,7 +1,7 @@
 <template>
   <div class="estate-model-container">
-    <el-form ref="estateModel" :model="estateModel" :rules="estateModelRules" label-width="100px" size="small">
-      <el-collapse v-model="activeNames">
+    <el-form ref="estateModel" :model="estateModel" :rules="estateModelRules" label-width="110px" size="small">
+      <el-collapse v-model="activeNames" accordion>
         <el-collapse-item name="1" class="estate-collapse-container">
           <template slot="title">
             <div class="model-panel-title">
@@ -47,8 +47,8 @@
             <el-col :span="4">
               <el-form-item label-width="0">
                 <el-select v-model="estateModel.contactGender">
-                  <el-option label="先生" value="1"></el-option>
-                  <el-option label="女士" value="2"></el-option>
+                  <el-option label="先生" :value="1"></el-option>
+                  <el-option label="女士" :value="2"></el-option>
                 </el-select>
               </el-form-item>
             </el-col>
@@ -68,7 +68,7 @@
           </el-row>
           <el-row :gutter="20">
             <el-col :span="12">
-              <el-form-item label="房源管理权限">
+              <el-form-item label="房源管理权限" prop="orgId">
                 <el-select class="estate-model-select" v-model="estateModel.orgId" filterable remote :clearable="true" placeholder="组织名称" :remote-method="searchOrgListByKeywords" :loading="loading" @clear="setOrg">
                   <el-option v-for="item in orgList" :key="item.ordId" :value="item.orgId" :label="item.orgName" @click.native="setOrg(item)">
                   </el-option>
@@ -89,8 +89,8 @@
           <el-row :gutter="20">
             <el-col :span="24">
               <el-form-item label="公寓/照片">
-                <el-badge :value="estateModel.estatePics.length" class="estate-badge-btn">
-                  <el-button type="primary" @click="addPics('estatePics')">公寓照片</el-button>
+                <el-badge :value="estateModel.pictureList ? estateModel.pictureList.length : 0" class="estate-badge-btn">
+                  <el-button type="primary" @click="addPics('estatePics', -1)">公寓照片</el-button>
                 </el-badge>
                 <el-button type="primary" @click="openDeviceModel" class="estate-badge-btn">房源基础设施</el-button>
               </el-form-item>
@@ -105,7 +105,7 @@
           </template>
           <el-row :gutter="20" class="estate-floor-container">
             <el-col :span="24">
-              <el-form-item label="公寓楼层" label-width="90px">
+              <el-form-item label="公寓楼层" label-width="110px">
                 <el-row :gutter="20" v-for="(item, index) in estateModel.floors" :key="index">
                   <el-col :span="7">
                     <el-form-item label-width="0">
@@ -146,16 +146,16 @@
           </template>
           <el-row :gutter="20" class="estate-house-type-container">
             <el-col :span="24">
-              <el-form-item label="房间类型" label-width="90px">
-                <el-row :gutter="20" v-for="(item, index) in estateModel.roomTypeList" :key="index">
+              <el-form-item label="房间类型" label-width="110px">
+                <el-row :gutter="20" v-for="(item, index) in estateModel.roomTypeList" :key="item.id">
                   <el-col :span="8">
                     <el-input v-model="item.styleName"></el-input>
                   </el-col>
                   <el-col :span="8">
-                    <el-badge :value="item.pictureList.length" class="estate-badge-btn">
-                      <el-button type="primary" size="small" @click="addPics('roomTypePics')">房型照片</el-button>
+                    <el-badge :value="(item && item.pictureList) ? item.pictureList.length : 0" class="estate-badge-btn">
+                      <el-button type="primary" size="small" @click="addPics('roomTypePics', index)">房型照片</el-button>
                     </el-badge>
-                    <el-badge :value="item.roomCodes.length" class="estate-badge-btn" v-if="type === '编辑公寓'">
+                    <el-badge :value="(item && item.roomCodes) ? item.roomCodes.length : 0" class="estate-badge-btn" v-if="type === '编辑公寓'">
                       <el-button type="primary" size="small" @click="openBatchCopyModel(index)">应用到房间</el-button>
                     </el-badge>
                   </el-col>
@@ -218,7 +218,7 @@
 
     <el-dialog :title="curUploadPicsType === 'estatePics' ? '上传公寓照片' : '上传房间照片'" :visible.sync="uploadPicsModelVisible" width="600px" :append-to-body="true" custom-class="upload-pics-model">
       <div class="previewItems">
-        <Preview :pic-list="estateModel[curUploadPicsType]" :delete-icon="`delete`" :disabled="``" @emitDelete="emitDelete">
+        <Preview :pic-list="curPicListIndex === -1 ? estateModel.pictureList : (estateModel.roomTypeList[this.curPicListIndex] ? estateModel.roomTypeList[this.curPicListIndex].pictureList : [])" :delete-icon="`delete`" :disabled="``" @emitDelete="emitDelete">
         </Preview>
         <label class="el-upload el-upload--picture-card uploadImage" for="uploadImages">
           <i class="el-icon-plus"></i>
@@ -265,7 +265,7 @@
 
 <script>
 import areaSelect from '@/components/AreaSelect'
-import { estateAddressByKeywordsApi, estateZoneListByAreaIdApi, estateDeviceListApi, estateOrgListApi, estateRoomDetailApi, estateBatchCopyRoomListApi, estateNewEstateSaveApi, estateNewSubdistrictApi } from '@/api/houseManage'
+import { estateAddressByKeywordsApi, estateZoneListByAreaIdApi, estateDeviceListApi, estateOrgListApi, estateRoomDetailApi, estateBatchCopyRoomListApi, estateNewSubdistrictApi } from '@/api/houseManage'
 import Preview from '@/components/Preview/Preview'
 import ImageCropper from '@/components/ImageCropper/Cropper'
 import RoomListSelecter from '@/components/RoomListSelecter'
@@ -324,6 +324,8 @@ export default {
             validator: (rule, value, callback) => {
               if (value[0] === '') {
                 callback(new Error('请选择所在地区'))
+              } else {
+                callback()
               }
             },
             trigger: 'change'
@@ -343,6 +345,9 @@ export default {
         ],
         contactMobile: [
           { required: true, pattern: /^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\d{8}$/, message: '请输入正确的手机号码', trigger: 'change' }
+        ],
+        orgId: [
+          { required: true, message: '请选择一个组织，支持模糊查询', trigger: 'change' }
         ]
       },
       loading: false,
@@ -366,7 +371,8 @@ export default {
         isSelected: true,
         noSelected: false,
         activeSelected: true
-      }
+      },
+      curPicListIndex: -1
     }
   },
   computed: {
@@ -439,7 +445,7 @@ export default {
       if (query !== '') {
         this.loading = true;
         estateAddressByKeywordsApi({
-          cityId: '330100',
+          cityId: Number(this.estateModel.areaCode[1]) || 330100,
           keyword: query
         }).then((res) => {
           this.loading = false
@@ -487,9 +493,10 @@ export default {
         this.orgList = []
       }
     },
-    addPics(type) {
+    addPics(type, index) {
       this.curUploadPicsType = type
       this.uploadPicsModelVisible = true
+      this.curPicListIndex = index
     },
     openDeviceModel() {
       if (JSON.stringify(this.deviceMap) === '{}') {
@@ -525,7 +532,7 @@ export default {
     },
     addEstateRoomType() {
       this.estateModel.roomTypeList.push({
-        id: '',
+        id: undefined,
         styleName: '',
         pictureList: [],
         roomCodes: []
@@ -595,8 +602,16 @@ export default {
       })
     },
     initEstateData() {
-      this.$set(this, 'estateModel', deepClone(this.$store.getters.formatEstateDetailData))
-      this.estateModel.contactGender = '1'
+      let estateInfo = this.$store.state.estateDetailData.estateInfo
+      estateInfo.contactGender = 1
+      estateInfo.areaCode = [estateInfo.provinceId, estateInfo.cityId, estateInfo.regionId]
+      estateInfo.roomTypeList.forEach((item, index) => {
+        item.pictureList = item.pictureList || []
+      })
+      estateInfo.tag = estateInfo.tag === 1 ? true : false
+      estateInfo.address = estateInfo.subdistrictName ? (estateInfo.subdistrictName + ' - ' + estateInfo.subdistrictAddress) : ''
+
+      this.$set(this, 'estateModel', estateInfo)
       if (this.type === '新建公寓') {
         this.addEstateFloor()
         this.addEstateRoomType()
@@ -604,18 +619,17 @@ export default {
     },
     saveEstateData(type) {
       if (this.type === '新建公寓') {
+        let estateData = false
         this.$refs.estateModel.validate((status) => {
           if (status) {
-            this.$store.commit('UPDATE_ESTATE_DETAIL_DATA', this.estateModel)
-            estateNewEstateSaveApi({
-              estateInfo: this.$store.state.estateDetailData.estateInfo
-            }).then((res) => {
-              if (res.data.code === '0') {
-                this.$emit('closeEstateModel')
-              }
-            })
+            estateData = this.estateModel
+            // this.$store.commit('UPDATE_ESTATE_DETAIL_DATA', this.estateModel)
+
+          } else {
+            return false
           }
         })
+        return estateData
       } else {
 
       }
@@ -627,7 +641,7 @@ export default {
       estateBatchCopyRoomListApi({
         fangyuanCode: this.$store.state.estateDetailData.fangyuanCode
       }).then((res) => {
-        this.batchCopyRoomList = res.data.dataObject
+        this.batchCopyRoomList = res.data
         this.curRoomTypeIndex = index
         this.batchCopyModelVisible = true
       })
@@ -655,7 +669,11 @@ export default {
     },
     // 删除图片
     emitDelete(val) {
-      this.estateModel[this.curUploadPicsType] = val
+      if (this.curPicListIndex === -1) {
+        this.estateModel.pictureList = val
+      } else {
+        this.estateModel.roomTypeList[this.curPicListIndex].pictureList = val
+      }
     },
     // 上传的图片列表
     emitCropperList(list = []) {
@@ -666,8 +684,12 @@ export default {
       list.forEach((v, i) => {
         v.type = 1
       })
-      let picList = [...this.estateModel[this.curUploadPicsType], ...list]
-      this.$set(this.estateModel, this.curUploadPicsType, picList)
+      let picList = this.curPicListIndex === -1 ? this.estateModel.pictureList : this.estateModel.roomTypeList[this.curPicListIndex].pictureList
+      if (this.curPicListIndex === -1) {
+        this.estateModel.pictureList = [...this.estateModel.pictureList, ...list]
+      } else {
+        this.estateModel.roomTypeList[this.curPicListIndex].pictureList = [...this.estateModel.roomTypeList[this.curPicListIndex].pictureList, ...list]
+      }
     },
     /* 选择图片 */
     async uploadImg(e) {
