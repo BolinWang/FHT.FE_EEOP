@@ -1,5 +1,4 @@
-<<<<<<< HEAD
-=======
+
 <template>
   <div class="app-container">
     <el-row class="room-options-row">
@@ -720,6 +719,3 @@ export default {
   }
 }
 </style>
-
-
->>>>>>> ffffe9d5220f8d38194a975964bd935b612b7946
