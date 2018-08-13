@@ -220,8 +220,7 @@ export default {
         { label: '缺少房间图片', value: '缺少房间图片' },
         { label: '电器/物品有损坏', value: '电器/物品有损坏' },
         { label: '环境脏乱差', value: '环境脏乱差' }
-      ],
-      layer_cropper: false
+      ]
     }
   },
   created() {
@@ -325,7 +324,6 @@ export default {
           type: item.type
         }
       })
-      this.layer_cropper = true
       e.target.value = null
     }
   },
