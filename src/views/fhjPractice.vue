@@ -1,387 +1,345 @@
-<template>
+/*
+ * @Author: FT.FE.Bolin
+ * @Date: 2018-07-11 13:49:21
+ * @Last Modified by: FT.FE.Bolin
+ * @Last Modified time: 2018-07-25 17:35:47
+ */
+
+ <template>
   <div class="app-container">
-    <div class="model-search clearfix">
-      <el-form size="small" :inline="true" :model="formData">
-        <el-select size="small" v-model="formData.cityId" @change="change()" placeholder="城市加载中..." class="item-select" style="width: 150px;">
-          <el-option v-for="item in cityOptions" :key="item.value" :label="item.label" :value="item.value">
-          </el-option>
-        </el-select>
-        <el-button size="small" class="filter-item right" type="primary" icon="el-icon-rank" @click.native="sortApp">APP展示排序</el-button>
-      </el-form>
-    </div>
-    <GridUnit ref="refGridUnit" :columns="colModels" :url="url" :formOptions="formData" :dataMethod="method" :height="tableHeight">
-      <template slot="slot_status" slot-scope="scope">
-        <el-tag v-model="formData.status" :type="scope.row['prop']">
-          {{scope.row['prop']}}
-        </el-tag>
-      </template>
-      <template slot="handle" slot-scope="scope">
-        <el-row>
-          <el-button type="danger" icon="el-icon-sold-out" size="small" @click.native="downImmediate(scope.$index,scope.row)">立即下架</el-button>
-          <el-button type="primary" icon="el-icon-info" size="small" @click.native="showEstateInfo(scope.row)">公寓详情</el-button>
-        </el-row>
-      </template>
-    </GridUnit>
-    <!-- 公寓信息 -->
-    <div class="dialog-info">
-      <el-dialog title="查看公寓信息" @close="layerClose" :visible.sync="layer_showInfo" width="700px">
-        <el-form size="small" :model="temp" label-position="left" label-width="80px" style='width: 620px; margin-left:20px;'>
-          <el-form-item label="公寓名称">
-            <el-input :value="temp.estateName" :disabled="true"></el-input>
-          </el-form-item>
-          <div class="clearfix">
-            <el-col :span="13">
-              <el-form-item label="所在地区">
-                <el-input :value="temp.addressName" :disabled="true"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="1">&nbsp;&nbsp;</el-col>
-            <el-col :span="10">
-              <el-form-item label="所属板块">
-                <el-input :value="temp.zoneName" :disabled="true"></el-input>
-              </el-form-item>
-            </el-col>
-          </div>
-          <el-form-item label="看房电话">
-            <el-input :value="temp.contactNameInfo" :disabled="true"></el-input>
-          </el-form-item>
-          <el-form-item label="地图坐标">
-            <el-input :value="temp.bmapData" :disabled="true">
-              <el-button slot="append" icon="el-icon-search" @click.native="layer_showBMap = true"></el-button>
-            </el-input>
-          </el-form-item>
-          <el-form-item label="简介">
-            <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" v-model="temp.introduction" :disabled="true">
-            </el-input>
-          </el-form-item>
-          <el-form-item label="公寓照片">
-            <div class="previewItems">
-              <Preview :pic-list="temp.picList"></Preview>
+    <el-tabs v-model="activeName" type="border-card" @tab-click="handleClickTab">
+      <el-tab-pane v-for="(item,index) in tabMapOptions" :label="item" :key='index' :name="item">
+      </el-tab-pane>
+      <el-form class="model-search clearfix" :inline="true" size="small">
+        <div>
+          <el-select size="small" v-model="searchParams.houseStatus" filterable clearable placeholder="房间状态" class="item-select">
+            <el-option label="已出租" :value="1"></el-option>
+            <el-option label="未出租" :value="0"></el-option>
+          </el-select>
+          <el-select size="small" v-model="searchParams.houseType" filterable clearable placeholder="房间类型" class="item-select filter-item">
+            <el-option label="普通" :value="0"></el-option>
+            <el-option label="金融" :value="1"></el-option>
+            <el-option label="飞虎队" :value="2"></el-option>
+          </el-select>
+          <el-select size="small" v-model="searchParams.publishStatus" filterable clearable placeholder="麦邻发布状态" class="item-select filter-item">
+            <el-option label="未发布" :value="0"></el-option>
+            <el-option label="已发布" :value="1"></el-option>
+            <el-option label="发布中" :value="2"></el-option>
+          </el-select>
+          <el-button size="small" type="primary" icon="el-icon-search" @click="searchParam" class="filter-item">查询</el-button>
+          <el-button size="small" icon="el-icon-remove-outline" @click="searchParam('clear')" class="filter-item">清空</el-button>
+        </div>
+        <div style="margin-top: 10px;">
+          <el-input size="small" v-model="searchParams.organizationName" clearable placeholder="组织名称" style="width:150px;"></el-input>
+          <el-input size="small" v-model="searchParams.mobileOrName" clearable placeholder="手机号/姓名" class="filter-item" style="width:150px;"></el-input>
+          <el-input size="small" v-model="searchParams.keywords" clearable placeholder="公寓/小区" class="filter-item" style="width:150px;"></el-input>
+          <el-button size="small" type="success" icon="el-icon-upload" class="filter-item" @click="syncItems('on')">发布</el-button>
+          <el-button size="small" type="danger" icon="el-icon-remove" class="filter-item" @click="syncItems('off')">撤销</el-button>
+          <!-- fhj -->
+          <el-dialog class="select-dialog" title="选择发布平台" :visible.sync="dialogVisible" width="40%">
+            <div class="select-platform-container">
+              <div class="left">
+                <input type="checkbox" v-model="publishSelect.ml" id="mlRent" />
+                <label for="mlRent">
+                  <div class="ml-selectName">麦邻租房</div>
+                  <div class="ml-selectStatus"><i class="el-icon-check" v-show="publishSelect.ml"></i></div>
+                </label>
+              </div>
+              <div class="right">
+                <input type="checkbox" v-model="publishSelect.idlefish" id="idleFishRent" />
+                <label for="idleFishRent">
+                  <div class="ml-selectName">咸鱼租房</div> 
+                  <div class="ml-selectStatus"><i class="el-icon-check" v-show="publishSelect.idlefish"></i></div>
+                </label>
+              </div>
             </div>
-          </el-form-item>
-        </el-form>
-        <div slot="footer" class="dialog-footer">
-          <el-button @click="layer_showInfo = false" size="small">关闭</el-button>
+            <span slot="footer" class="dialog-footer">
+              <el-button type="primary" @click="syncItems" >发 布</el-button>
+            </span>
+          </el-dialog>
+          <!--fhj-->
         </div>
-      </el-dialog>
-    </div>
-    <!-- 百度地图 -->
-    <div class="dialog-bmap">
-      <el-dialog title="公寓坐标" :visible.sync="layer_showBMap" width="600px" @open="openBMap">
-        <div id="addressMap" style="width: 560px;height:400px"></div>
-        <div slot="footer" class="dialog-footer">
-          <el-button @click="layer_showBMap = false" size="small">关闭</el-button>
-        </div>
-      </el-dialog>
-    </div>
-    <!-- 列表排序 -->
-    <div class="dialog-sort">
-      <el-dialog title="APP展示排序" :visible.sync="layer_appsort" width="800px">
-        <draggable class="list-group" element="ul" v-model="sort_tableData" :options="dragOptions" @start="isDragging=true" @end="isDragging=false">
-          <transition-group type="transition" :name="'flip-list'">
-            <li class="list-group-item clearfix" v-for="(item,index) in sort_tableData" :key="item.sortNum">
-              <el-button class="right" size="mini" type="primary" icon="el-icon-setting" v-if="index != 0" @click="setSortFirst(index)">
-                设置首位
-              </el-button>
-              <span class="left sortContent">
-                <i class="el-icon-d-caret" aria-hidden="true"></i>
-                {{item.estateName}}
-              </span>
-            </li>
-          </transition-group>
-        </draggable>
-        <div slot="footer" class="dialog-footer">
-          <el-button @click="layer_appsort = false" size="small">取 消</el-button>
-          <el-button type="primary" @click="saveData(sort_tableData,`sort`)" size="small">确 定</el-button>
-        </div>
-      </el-dialog>
-    </div>
+      </el-form>
+      <GridUnit ref="refGridUnit" :columns="colModels" :formOptions="searchParams" :url="url" :showSelection="true" :pageSizes="[50, 100, 200, 500]" :dataMethod="method" :height="tableHeight" @selection-change="handleSelectionChange">
+        <template slot="slot_popover" slot-scope="scope">
+          <el-popover v-if="scope.row.idlefishStatus === `发布失败`" trigger="hover" placement="top">
+            <p>发布失败原因: {{ scope.row.failReason }}</p>
+            <div slot="reference">
+              <el-tag :type="scope.row.idlefishStatus | renderStatusType">
+                {{scope.row.idlefishStatus | renderStatusValue}}
+              </el-tag>
+            </div>
+          </el-popover>
+          <el-tag v-else :type="scope.row.idlefishStatus | renderStatusType">
+            {{scope.row.idlefishStatus | renderStatusValue}}
+          </el-tag>
+        </template>
+      </GridUnit>
+    </el-tabs>
   </div>
 </template>
 <script>
-import GridUnit from "@/components/GridUnit/grid";
-import draggable from "vuedraggable";
-import Preview from "@/components/Preview/Preview";
-import { parseTime, ObjectMap, deepClone } from "@/utils";
-import { getCityListApi, getGridApi, saveDataApi } from "@/api/houseManage";
-import noPic from "@/assets/noPic.jpg";
-
-/* 阻止原生dragale打开新页面 */
-document.body.ondrop = function (event) {
-  event.preventDefault();
-  event.stopPropagation();
-};
-
+import GridUnit from '@/components/GridUnit/grid'
+import { deepClone, cleanArray, ObjectMap } from '@/utils'
+import { houseAsyncApi } from '@/api/houseManage'
 export default {
-  name: "promotionDisplay",
+  name: 'houseSync',
   components: {
-    draggable,
-    Preview,
     GridUnit
+  },
+  filters: {
+    renderStatusType(status) {
+      const statusMap = {
+        '已发布': 'success',
+        '发布中': 'primary',
+        '发布失败': 'danger',
+        '下架中': 'warning',
+        '未发布': 'info'
+      }
+      return statusMap[status] || 'info'
+    },
+    renderStatusValue(status) {
+      return status || '未知'
+    }
   },
   data() {
     return {
-      formData: {
-        cityId: "",
-        status: ""
+      tabMapOptions: ['整租', '合租', '集中式'],
+      activeName: '整租',
+      searchParams: {
+        houseRentType: 1,
+        houseStatus: 0,
+        houseType: '',
+        publishStatus: '',
+        organizationName: '',
+        keywords: '',
+        mobileOrName: ''
       },
-      cityOptions: [],
+      selectedItems: [],
       colModels: [
+        { prop: 'organizationName', label: '组织名称' },
+        { prop: 'name', label: '姓名', width: 100 },
+        { prop: 'mobile', label: '手机号', width: 150 },
+        { prop: 'userType', label: '用户类型', width: 100 },
+        { prop: 'address', label: '房源位置', width: 200 },
+        { prop: 'roomName', label: '公寓/小区-房间', width: 200 },
+        { prop: 'houseType', label: '房源类型', width: 150 },
+        { prop: 'roomCode', label: '房源编码', width: 100 },
+        { prop: 'rent', label: '房价(元/月)', width: 100, align: 'right' },
         {
-          prop: "showStatus",
-          label: "状态",
-          width: 80,
-          type: "status",
-          slotName: "slot_status",
+          prop: 'roomStatus',
+          label: '房间状态',
+          width: 100,
+          type: 'status',
+          fixed: 'right',
           unitFilters: {
             renderStatusType(status) {
               const statusMap = {
-                "1": "info",
-                "2": "success",
-                "3": ""
-              };
-              return statusMap[status] || "info";
+                '已出租': 'success',
+                '未出租': 'info'
+              }
+              return statusMap[status] || 'info'
             },
             renderStatusValue(status) {
-              const statusStrData = ["未申请", "已展示", "申请中"];
-              return statusStrData[status - 1] || "未发布";
+              return status || '未知'
             }
           }
         },
-        { prop: "addressName", label: "房源位置" },
-        { prop: "estateName", label: "公寓" },
-        { prop: "tags", label: "标签", type: "tags", width: 200 },
-        { prop: "gmtModified", label: "操作时间", width: 180 },
         {
-          label: "操作",
-          slotName: "handle",
-          fixed: "right",
-          width: 230,
-          align: "center"
-        }
+          prop: 'publishStatus',
+          label: '麦邻租房',
+          width: 100,
+          type: 'status',
+          fixed: 'right',
+          unitFilters: {
+            renderStatusType(status) {
+              const statusMap = {
+                '已发布': 'success',
+                '未发布': 'info',
+                '发布中': 'primary'
+              }
+              return statusMap[status] || 'info'
+            },
+            renderStatusValue(status) {
+              return status || '未知'
+            }
+          }
+        },
+        { prop: 'idlefishStatus', label: '闲鱼租房', width: 100, slotName: 'slot_popover', fixed: 'right' },
+        { prop: 'operation', label: '操作记录', width: 180 }
       ],
-      isShowSortApp: true,
       tableHeight: 300,
-      tableData: [],
-      total: null,
-      pageItems: {
-        pageNo: 1,
-        pageSize: 20
-      },
-      searchParams: {},
-      temp: {},
-      pageSizeList: [10, 20, 30, 50],
-      sort_tableData: [],
-      listLoading: true,
-      layer_showBMap: false,
-      layer_showInfo: false,
-      layer_appsort: false,
-      isDragging: false,
-      delayedDragging: false,
-      tableHeight: 300,
-      method: "queryEstateListByPage",
-      url: "/market/estate/"
-    };
-  },
-  created() {
-    this.getCityList();
+      url: houseAsyncApi.defaultOptions.requestUrl,
+      method: houseAsyncApi.defaultOptions.method,
+      dialogVisible: false,
+      publishSelect: {
+        ml: true,
+        idlefish: true
+      }
+    }
   },
   mounted() {
     /* 表格高度控制 */
-    let temp_height = document.body.clientHeight - 200;
-    this.tableHeight = temp_height > 300 ? temp_height : 300;
-    window.onresize = () => {
-      return (() => {
-        temp_height = document.body.clientHeight - 200;
-        this.tableHeight = this.tableHeight =
-          temp_height > 300 ? temp_height : 300;
-      })();
-    };
+    this.$nextTick(() => {
+      const offsetTop = 230
+      const pagenationH = 64
+      const containerPadding = 20
+      let temp_height = document.body.clientHeight - offsetTop - pagenationH - containerPadding
+      this.tableHeight = temp_height > 300 ? temp_height : 300
+      window.onresize = () => {
+        return (() => {
+          temp_height = document.body.clientHeight - offsetTop - pagenationH - containerPadding
+          this.tableHeight = this.tableHeight = temp_height > 300 ? temp_height : 300
+        })()
+      }
+    })
   },
   computed: {
-    tableStyle() {
+    tableStyle: function () {
       return {
-        width: "100%",
-        height: this.tableHeight + "px"
-      };
-    },
-    dragOptions() {
-      return {
-        animation: 0,
-        group: "description",
-        ghostClass: "ghost"
-      };
+        width: '100%',
+        height: this.tableHeight + 'px'
+      }
     }
   },
   methods: {
-    setSortFirst(index) {
-      let tempSortObj = this.sort_tableData.splice(index, 1);
-      this.sort_tableData.unshift(tempSortObj[0]);
-    },
-    /* 获取城市列表 */
-    getCityList() {
-      getCityListApi({
-        housingType: 1
-      }).then(response => {
-        this.cityOptions = response.data.list.map(item => ({
-          label: item.areaName,
-          value: item.areaId
-        }));
-        this.formData.cityId = this.cityOptions[0].value;
-        this.getGridData(this.pageItems);
-      });
-    },
-    /* 立即下架 */
-    downImmediate(index, row) {
-      if (row.showStatus != 2) {
-        this.$message.error("请选择【已展示】的房源进行下架");
-        return false;
-      }
-      row.showStatus = 1;
-      row.publishStatus = 1;
-      this.tableData.splice(index, 1, row);
-      this.saveData(this.tableData);
-    },
-    /* 公寓信息 */
-    showEstateInfo(row) {
-      let deepCloneObj = deepClone(row);
-      this.temp.estateName =
-        (deepCloneObj.type == 1 ? "【集中式】" : "【分散式】") +
-        deepCloneObj.estateName;
-      this.temp.contactNameInfo = deepCloneObj.contactName
-        ? deepCloneObj.contactName +
-        (deepCloneObj.contactGender == 1 ? " 先生 " : " 女士 ") +
-        deepCloneObj.contactMobile
-        : "";
-      this.temp.longitude = deepCloneObj.longitude;
-      this.temp.latitude = deepCloneObj.latitude;
-      this.temp.bmapData = this.temp.longitude + "," + this.temp.latitude;
-      this.temp.addressName = deepCloneObj.addressName;
-      this.temp.zoneName = deepCloneObj.zoneName;
-      this.temp.introduction = deepCloneObj.introduction;
-      this.temp.picList =
-        deepCloneObj.estatePictureList.length > 0
-          ? deepCloneObj.estatePictureList.map(item => ({
-            src: item.smallImage,
-            w: 800,
-            h: 600
-          }))
-          : [{ src: noPic, w: 800, h: 600, isnoPic: true }];
-      this.layer_showInfo = true;
-    },
-    layerClose() {
-      this.temp = {};
-    },
-    /* 查询列表 */
-    change(value) {
-      // this.getGridData(this.pageItems);
-      this.$refs.refGridUnit.searchHandler();
-    },
-    handleSizeChange(val) {
-      this.pageItems.pageSize = val;
-      this.getGridData(this.pageItems);
-    },
-    handleCurrentChange(val) {
-      this.pageItems.pageNo = val;
-      this.getGridData(this.pageItems);
-    },
-    /* 列表渲染，数据请求 */
-    getGridData(params) {
-      this.listLoading = true;
-      this.searchParams = deepClone(params);
-      this.searchParams.cityId = this.formData.cityId;
-      getGridApi(ObjectMap(this.searchParams)).then(response => {
-        this.tableData = response.data.content;
-        this.total = response.data.totalElements;
-        this.listLoading = false;
-      });
-    },
-    /* 列表排序 */
-    sortApp() {
-      getGridApi({
-        pageNo: 1,
-        pageSize: 20,
-        cityId: this.formData.cityId,
-        status: 2
-      }).then(response => {
-        this.sort_tableData = response.data.content.sort(
-          (a, b) => a["sortNum"] * 1 - b["sortNum"] * 1
-        );
-        if (this.sort_tableData.length == 0) {
-          this.$message.error("没有【已展示】的房源");
-          return false;
+    // 查询
+    searchParam(type) {
+      if (type === 'clear') {
+        this.searchParams = {
+          houseStatus: '',
+          houseType: '',
+          publishStatus: '',
+          organizationName: '',
+          keywords: '',
+          mobileOrName: ''
         }
-        this.layer_appsort = true;
-      });
-    },
-    saveData(params, type) {
-      let savePatams = deepClone(params);
-      if (type == "sort") {
-        savePatams.forEach((item, index) => (item.sortNum = index * 1 + 1));
       }
-      saveDataApi(savePatams).then(response => {
-        this.layer_appsort = false;
-        this.getGridData(this.pageItems);
+      this.searchParams.houseRentType = this.activeName === '整租' ? 1 : (this.activeName === '合租' ? 2 : 0)
+      // 解决watch执行顺序
+      this.$nextTick(() => {
+        this.$refs.refGridUnit.searchHandler()
+      })
+    },
+    // tabs切换
+    handleClickTab(tab) {
+      this.searchParam('clear')
+    },
+    // 选择列表
+    handleSelectionChange(list) {
+      this.selectedItems = list
+    },
+    // 选择数据
+    syncItems(type = 'on') {
+      const typeConfig = {
+        'on': {
+          title: '发布',
+          api: houseAsyncApi.publish
+        },
+        'off': {
+          title: '撤销',
+          api: houseAsyncApi.offshlef
+        }
+      }
+      if (this.selectedItems.length === 0) {
+        this.$message.error(`请选择需要${typeConfig[type].title}的房源`)
+        return false
+      }
+      const pendingRomms = this.selectedItems.filter(item => item.idlefishStatus === '发布中')
+      if (pendingRomms.length > 0) {
+        this.$message.error(`发布中的房源不能进行${typeConfig[type].title}`)
+        return false
+      }
+      const unfilterItem = this.selectedItems.filter(item => item.idlefishStatus === type)
+      if (unfilterItem.length !== 0) {
+        this.$message.error(`已${typeConfig[type].title}的房源不能再${typeConfig[type].title}`)
+        return false
+      }
+      
+      this.dialogVisible = true;
+
+      // this.$confirm(`已选择${this.selectedItems.length}个房源，确定${typeConfig[type].title}吗？`, '提示', {
+      //   confirmButtonText: '确定',
+      //   cancelButtonText: '取消',
+      //   type: 'warning'
+      // }).then(() => {
+      //   this.gotoHouseAsync(typeConfig[type].api)
+      // }).catch(() => { })
+    },
+    // 发布、撤销
+    gotoHouseAsync(api) {
+      let roomCodes = this.selectedItems.map(item => item.roomCode)
+      api({
+        platform: ['idlefish'],
+        roomCodes
+      }).then(response => {
         this.$notify({
-          title: "成功",
-          message: "操作成功",
-          type: "success",
+          title: '成功',
+          message: '操作成功',
+          type: 'success',
           duration: 2000
-        });
-      });
-    },
-    /* 百度地图 */
-    openBMap() {
-      this.$nextTick(() => {
-        let map = new BMap.Map("addressMap");
-        if (this.temp.bmapData) {
-          let point = new BMap.Point(
-            this.temp.longitude * 1 || 0,
-            this.temp.latitude * 1 || 0
-          );
-          map.centerAndZoom(point, 14);
-          map.addOverlay(new BMap.Marker(point));
-        } else {
-          map.centerAndZoom("杭州市", 12);
-        }
-        map.addControl(new BMap.MapTypeControl());
-        map.enableScrollWheelZoom(true);
-        map.addEventListener("click", function (e) {
-          map.clearOverlays();
-          map.addOverlay(
-            new BMap.Marker(new BMap.Point(e.point.lng, e.point.lat))
-          );
-        });
-      });
-    }
-  },
-  watch: {
-    isDragging(newValue) {
-      if (newValue) {
-        this.delayedDragging = true;
-        return;
-      }
-      this.$nextTick(() => {
-        this.delayedDragging = false;
-      });
+        })
+        this.searchParam()
+      })
     }
   }
-};
+}
 </script>
 <style rel="stylesheet/scss" lang="scss">
-.dialog-image .el-dialog {
-  background: inherit;
-  box-shadow: none;
-}
-
 .model-search .filter-item {
   margin-left: 10px;
 }
 
-.sortContent {
-  max-width: 600px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.select-platform-container{
+  height: 100px;
+  padding: 15px 10px;
+}
+
+.item-select {
+  width: 150px;
+}
+
+.left{
+  margin-left: 5%;
+}
+
+.right{
+  margin-right: 5%;
+}
+
+input[type="checkbox"] {
+  display: none;
+}
+
+label {
+  display: inline-block;
+  width: 120px;
+  height: 30px;
+}
+
+.ml-selectStatus {
+  width: 40px;
+  height: 30px;
+  margin-top: -30px;
+  font-size: 25px;
+  color: #FFA500;
+  float: right;
+  border: 0.5px solid #c0c4cc;
+  text-align: center;
+  line-height: 35px;
+}
+
+.ml-selectName {
+  background-color:	#FFA500;
+  width: 80px;
+  height: 30px;
+  font-size: 15px;
+  text-align: center;
+  line-height: 30px;
+}
+//隐藏原生复选框
+#mlRent {
+  position: absolute;
+  clip: rect(0, 0, 0, 0);
 }
 </style>

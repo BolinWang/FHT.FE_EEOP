@@ -19,7 +19,7 @@
       </el-form-item>
     </el-form>
 
-    <grid-unit ref="estateHouseList" :url="estateListUrl" listField="data.result" totalField="data.records" :dataMethod="method" :formOptions="houseSearchForm" :columns="colModels" :height="tableHeight">
+    <grid-unit ref="estateHouseList" :url="estateListUrl" listField="data.list" totalField="data.record" :dataMethod="method" :formOptions="houseSearchForm" :columns="colModels" :height="tableHeight">
       <template slot="operateEstate" slot-scope="scope">
         <el-button type="primary" size="mini" @click="routerToEstateRoomList(scope.row)">查看房间</el-button>
         <el-button type="primary" size="mini" @click="openEstateModel(2, scope.row)">编辑公寓</el-button>
@@ -64,7 +64,7 @@ export default {
         cityId: ''
       },
       tableHeight: 500,
-      estateListUrl: "/market/fangyuan",
+      estateListUrl: "http://localhost:9528/api/market/fangyuan",
       method: "queryEstateList",
       colModels: [
         { prop: "orgName", label: "组织名称", align: "center" },

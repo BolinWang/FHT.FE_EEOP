@@ -123,7 +123,7 @@ export const authorizeApi = {
 /* 合作账号绑定授权 */
 export const houseAsyncApi = {
   defaultOptions: {
-    requestUrl: '/market/rooms',
+    requestUrl:'http://localhost:9528/api/market/rooms',
     method: 'list'
   },
   list(params) {
@@ -243,7 +243,7 @@ export function estateOrgListApi(params) {
 /* 集中式查询单个公寓下面房间列表 */
 export function estateBatchCopyRoomListApi(params) {
   return fetch({
-    url: '/market/fangyuan',
+    url: 'http://localhost:9528/api/market/fangyuan',
     method: 'post',
     data: {
       method: 'allRoomByRoomCode',

@@ -35,18 +35,32 @@
           <el-input size="small" v-model="searchParams.keywords" clearable placeholder="公寓/小区" class="filter-item" style="width:150px;"></el-input>
           <el-button size="small" type="success" icon="el-icon-upload" class="filter-item" @click="syncItems('on')">发布</el-button>
           <el-button size="small" type="danger" icon="el-icon-remove" class="filter-item" @click="syncItems('off')">撤销</el-button>
+          <!-- fhj -->
+          <el-dialog class="select-dialog" title="选择发布平台" :visible.sync="dialogVisible" width="40%">
+            <div class="select-platform-container">
+              <div class="left">
+                <input type="checkbox" v-model="publishSelect.ml" id="mlRent" />
+                <label for="mlRent">
+                  <div class="ml-selectName">麦邻租房</div>
+                  <div class="ml-selectStatus"><i class="el-icon-check" v-show="publishSelect.ml"></i></div>
+                </label>
+              </div>
+              <div class="right">
+                <input type="checkbox" v-model="publishSelect.idlefish" id="idleFishRent" />
+                <label for="idleFishRent">
+                  <div class="ml-selectName">咸鱼租房</div> 
+                  <div class="ml-selectStatus"><i class="el-icon-check" v-show="publishSelect.idlefish"></i></div>
+                </label>
+              </div>
+            </div>
+            <span slot="footer" class="dialog-footer">
+              <el-button type="primary" @click="syncItems">发 布</el-button>
+            </span>
+          </el-dialog>
+          <!--fhj-->
         </div>
       </el-form>
-      <GridUnit
-        ref="refGridUnit"
-        :columns="colModels"
-        :formOptions="searchParams"
-        :url="url"
-        :showSelection="true"
-        :pageSizes="[50, 100, 200, 500]"
-        :dataMethod="method"
-        :height="tableHeight"
-        @selection-change="handleSelectionChange">
+      <GridUnit ref="refGridUnit" :columns="colModels" :formOptions="searchParams" :url="url" :showSelection="true" :pageSizes="[50, 100, 200, 500]" :dataMethod="method" :height="tableHeight" @selection-change="handleSelectionChange">
         <template slot="slot_popover" slot-scope="scope">
           <el-popover v-if="scope.row.idlefishStatus === `发布失败`" trigger="hover" placement="top">
             <p>发布失败原因: {{ scope.row.failReason }}</p>
@@ -90,7 +104,7 @@ export default {
   },
   data() {
     return {
-      tabMapOptions: ['整租','合租', '集中式'],
+      tabMapOptions: ['整租', '合租', '集中式'],
       activeName: '整租',
       searchParams: {
         houseRentType: 1,
@@ -156,12 +170,17 @@ export default {
       ],
       tableHeight: 300,
       url: houseAsyncApi.defaultOptions.requestUrl,
-      method: houseAsyncApi.defaultOptions.method
+      method: houseAsyncApi.defaultOptions.method,
+      dialogVisible: false,
+      publishSelect: {
+        ml: true,
+        idlefish: true
+      }
     }
   },
   mounted() {
     /* 表格高度控制 */
-   this.$nextTick(() => {
+    this.$nextTick(() => {
       const offsetTop = 230
       const pagenationH = 64
       const containerPadding = 20
@@ -176,7 +195,7 @@ export default {
     })
   },
   computed: {
-    tableStyle: function() {
+    tableStyle: function () {
       return {
         width: '100%',
         height: this.tableHeight + 'px'
@@ -224,7 +243,7 @@ export default {
       }
       if (this.selectedItems.length === 0) {
         this.$message.error(`请选择需要${typeConfig[type].title}的房源`)
-        return false  
+        return false
       }
       const pendingRomms = this.selectedItems.filter(item => item.idlefishStatus === '发布中')
       if (pendingRomms.length > 0) {
@@ -236,13 +255,17 @@ export default {
         this.$message.error(`已${typeConfig[type].title}的房源不能再${typeConfig[type].title}`)
         return false
       }
-      this.$confirm(`已选择${this.selectedItems.length}个房源，确定${typeConfig[type].title}吗？`, '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        this.gotoHouseAsync(typeConfig[type].api)
-      }).catch(() => {})
+      const mlPendindRooms = this.selectedItems.filter(item => item.mlStatus === '发布中')
+      
+      this.dialogVisible = true;
+
+      // this.$confirm(`已选择${this.selectedItems.length}个房源，确定${typeConfig[type].title}吗？`, '提示', {
+      //   confirmButtonText: '确定',
+      //   cancelButtonText: '取消',
+      //   type: 'warning'
+      // }).then(() => {
+      //   this.gotoHouseAsync(typeConfig[type].api)
+      // }).catch(() => { })
     },
     // 发布、撤销
     gotoHouseAsync(api) {
@@ -268,7 +291,56 @@ export default {
   margin-left: 10px;
 }
 
+.select-platform-container{
+  height: 100px;
+  padding: 15px 10px;
+}
+
 .item-select {
   width: 150px;
+}
+
+.left{
+  margin-left: 5%;
+}
+
+.right{
+  margin-right: 5%;
+}
+
+input[type="checkbox"] {
+  display: none;
+}
+
+label {
+  display: inline-block;
+  width: 120px;
+  height: 30px;
+}
+
+.ml-selectStatus {
+  width: 40px;
+  height: 30px;
+  margin-top: -30px;
+  font-size: 25px;
+  color: #FFA500;
+  float: right;
+  border: 0.5px solid #c0c4cc;
+  text-align: center;
+  line-height: 35px;
+}
+
+.ml-selectName {
+  background-color:	#FFA500;
+  width: 80px;
+  height: 30px;
+  font-size: 15px;
+  text-align: center;
+  line-height: 30px;
+}
+//隐藏原生复选框
+#mlRent {
+  position: absolute;
+  clip: rect(0, 0, 0, 0);
 }
 </style>
