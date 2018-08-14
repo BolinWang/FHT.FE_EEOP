@@ -488,7 +488,7 @@ export default {
         fangyuanCode: this.fangyuanCode,
         roomCode: row.roomCode
       }).then((res) => {
-        if (res.code === '0') {
+        if (res.code === '0' && res.data) {
           this.copyItemRoomList = res.data
           this.copyItemToModelVisible = true
         }
@@ -499,8 +499,8 @@ export default {
         roomCode: row.roomCode
       }).then((res) => {
         if (res.code === '0') {
-          this.$set(this, 'rentPayList', res.data.dataObject.roomRentTypeList)
-          this.$set(this, 'baseRentTypeList', res.data.dataObject.baseRentTypeList)
+          this.$set(this, 'rentPayList', res.data.roomRentTypeList)
+          this.$set(this, 'baseRentTypeList', res.data.baseRentTypeList)
         }
         this.rentPayModelVisible = true
       })
@@ -540,7 +540,7 @@ export default {
         rentPrice: '',
         rentQty: 1,
         rentTypeId: 1,
-        roomId: this.rentPayList[0].roomId,
+        roomId: this.rentPayList[0] ? this.rentPayList[0].roomId : undefined,
         roomRentTypeId: undefined,
         serviceChargePrice: null,
         serviceChargeRatio: null,
@@ -604,7 +604,7 @@ export default {
       }
       console.log(data)
       saveEstateRoomApi({
-        roomInfo: data
+        roomInfo: JSON.stringify(data)
       }, this.curType).then((res) => {
         if (res.code === '0') {
           this.$message({
