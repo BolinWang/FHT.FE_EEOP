@@ -348,50 +348,50 @@ export function saveEstateRoomApi(params, type) {
   })
 }
 
-/*发布撤销房源*/
-export const reviewHouseAsyncApi = {
-  defaultOptions: {
-    requestUrl: '/market/rooms',
-    method: 'list'
-  },
-  list(params) {
-    return fetch({
-      url: reviewHouseAsyncApi.defaultOptions.requestUrl,
-      method: 'post',
-      data: {
-        method: reviewHouseAsyncApi.defaultOptions.method,
-        params
-      }
-    })
-  },
-  bind(params) {
-    return fetch({
-      url: '/market/account',
-      method: 'post',
-      data: {
-        method: 'binding',
-        params
-      }
-    })
-  },
-  publish(params) {
-    return fetch({
-      url: '/market/rooms',
-      method: 'post',
-      data: {
-        method: 'publish',
-        params
-      }
-    })
-  },
-  offshlef(params) {
-    return fetch({
-      url: '/market/rooms',
-      method: 'post',
-      data: {
-        method: 'offshelf',
-        params
-      }
-    })
-  }
+/* 集中式编辑公寓基本信息 */
+export function saveEstateBasicInfoApi(params) {
+  return fetch({
+    url: '/market/fangyuan',
+    method: 'post',
+    data: {
+      method: 'editEstateBasicInfo',
+      params
+    }
+  })
+}
+
+/* 集中式编辑公寓楼层信息 */
+export function saveEstateFloorInfoApi(params) {
+  return fetch({
+    url: '/market/fangyuan',
+    method: 'post',
+    data: {
+      method: 'editEstateFloorInfo',
+      params
+    }
+  })
+}
+
+/* 集中式编辑公寓房型信息 */
+export function saveEstateRoomTypeInfoApi(params) {
+  return fetch({
+    url: '/market/fangyuan',
+    method: 'post',
+    data: {
+      method: 'editEstateRoomTypeInfo',
+      params
+    }
+  })
+}
+
+/* 发布撤销房源 */
+export function publishHouseApi(params, type) {
+  return fetch({
+    url: '/market/fangyuan',
+    method: 'post',
+    data: {
+      method: type === 1 ? 'publish' : 'unpublish', // 1.发布 2.撤销
+      params
+    }
+  })
 }
