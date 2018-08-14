@@ -376,7 +376,7 @@ export const reviewHouseAsyncApi = {
   },
   publish(params) {
     return fetch({
-      url: '/market/rooms',
+      url: '/market/fangyuan',
       method: 'post',
       data: {
         method: 'publish',
