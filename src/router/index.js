@@ -129,6 +129,11 @@ export const asyncRouterMap = [
               parentName: '集中式房源',
               meta: {}
             }
+          },
+          {
+            path: 'photoUpload',
+            name: '上传图片',
+            component: _import('houseManage/estate/photoUpload')
           }
         ]
       }, {

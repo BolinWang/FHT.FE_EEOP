@@ -522,7 +522,7 @@ export default {
       if (JSON.stringify(this.deviceMap) === '{}') {
         estateDeviceListApi().then((res) => {
           if (res.code === '0') {
-            this.deviceMap = res.data.dataObject
+            this.deviceMap = res.data
             this.$set(this, 'deviceList', {
               services: Object.keys(this.deviceMap.baseSupportMap),
               storeServices: Object.keys(this.deviceMap.storeMap),
@@ -670,6 +670,9 @@ export default {
       // return this.estateModel
     },
     checkSaveStatus(status) {
+      if (this.type === '新建公寓') {
+        return
+      }
       let differentFlag = false
       Object.keys(this.tempFormData).forEach((key) => {
         if (JSON.stringify(this.tempFormData[key]) != JSON.stringify(this.estateModel[key])) {
@@ -707,9 +710,11 @@ export default {
       estateBatchCopyRoomListApi({
         fangyuanCode: this.$store.state.estateDetailData.fangyuanCode
       }).then((res) => {
-        this.batchCopyRoomList = res.data
-        this.curRoomTypeIndex = index
-        this.batchCopyModelVisible = true
+        if (res.code === '0' && res.data) {
+          this.batchCopyRoomList = res.data
+          this.curRoomTypeIndex = index
+          this.batchCopyModelVisible = true
+        }
       })
     },
     saveBatchCobyRoom() {

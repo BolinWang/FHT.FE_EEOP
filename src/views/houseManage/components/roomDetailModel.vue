@@ -383,8 +383,11 @@ export default {
       this.$refs.roomDetailModel.validate((status) => {
         if (status) {
           roomData = deepClone(this.roomDetailModel)
-          roomData.uploadPictureList = roomData.pictureList.filter(item => item.isBase64)
-          roomData.pictureList = roomData.pictureList.filter(item => !item.isBase64)
+          if (this.type === 2) {
+            roomData.uploadPictureList = roomData.pictureList.filter(item => item.isBase64)
+            roomData.pictureList = roomData.pictureList.filter(item => !item.isBase64)
+          }
+          roomData.skipNo = roomData.skipNo.join(',')
         }
       })
       return roomData

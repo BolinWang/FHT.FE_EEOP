@@ -589,7 +589,7 @@ export default {
           roomCode: row.roomCode
         }).then((res) => {
           if (res.code === '0') {
-            this.$store.commit('SET_ESTATEROOMDATA', res.data.dataObject)
+            this.$store.commit('SET_ESTATEROOMDATA', res.data)
             this.roomDetailModelVisible = true
           }
         })
@@ -602,6 +602,7 @@ export default {
       if (!data) {
         return
       }
+      console.log(data)
       saveEstateRoomApi({
         roomInfo: data
       }, this.curType).then((res) => {
