@@ -487,7 +487,6 @@ export default {
         fangyuanCode: this.fangyuanCode,
         roomCode: row.roomCode
       }).then((res) => {
-<<<<<<< HEAD
         if (res.code === '0') {
           if (!res.data) {
             this.$message.error('获取房间列表失败')
@@ -496,10 +495,6 @@ export default {
           this.copyItemRoomList = res.data
           this.copyItemToModelVisible = true
         }
-=======
-        this.copyItemRoomList = res.data.dataObject
-        this.copyItemToModelVisible = true
->>>>>>> cc4132e857ed6f7f295f9d043adc1b136eb5b614
       })
     },
     openRentPayModel(row) {
