@@ -106,33 +106,37 @@
           <el-row :gutter="20" class="estate-floor-container">
             <el-col :span="24">
               <el-form-item label="公寓楼层" label-width="110px" prop="floors">
-                <el-row :gutter="20" v-for="(item, index) in estateModel.floors" :key="index">
-                  <el-col :span="7">
-                    <el-form-item label-width="0">
-                      <el-input type="text" v-model="item.floorName">
-                        <template slot="prepend">楼层名称</template>
-                      </el-input>
-                    </el-form-item>
-                  </el-col>
-                  <el-col :span="7">
-                    <el-form-item label-width="0">
-                      <el-input type="text" v-model="item.roomNum">
-                        <template slot="prepend">共</template>
-                        <template slot="append">间</template>
-                      </el-input>
-                    </el-form-item>
-                  </el-col>
-                  <el-col :span="7">
-                    <el-form-item label-width="0">
-                      <el-input type="text" v-model="item.startNo">
-                        <template slot="prepend">起始房号</template>
-                      </el-input>
-                    </el-form-item>
-                  </el-col>
-                  <el-col :span="2" class="estate-floor" v-if="estateModel.floors.length > 1">
-                    <el-button class="delete-btn" type="text" icon="el-icon-delete" @click="deleteCurItem(1, index)"></el-button>
-                  </el-col>
-                </el-row>
+                <draggable v-model="estateModel.floors">
+                  <transition-group>
+                    <el-row :gutter="20" v-for="(item, index) in estateModel.floors" :key="index">
+                      <el-col :span="7">
+                        <el-form-item label-width="0">
+                          <el-input type="text" v-model="item.floorName">
+                            <template slot="prepend">楼层名称</template>
+                          </el-input>
+                        </el-form-item>
+                      </el-col>
+                      <el-col :span="7">
+                        <el-form-item label-width="0">
+                          <el-input type="text" v-model="item.roomNum">
+                            <template slot="prepend">共</template>
+                            <template slot="append">间</template>
+                          </el-input>
+                        </el-form-item>
+                      </el-col>
+                      <el-col :span="7">
+                        <el-form-item label-width="0">
+                          <el-input type="text" v-model="item.startNo">
+                            <template slot="prepend">起始房号</template>
+                          </el-input>
+                        </el-form-item>
+                      </el-col>
+                      <el-col :span="2" class="estate-floor" v-if="estateModel.floors.length > 1">
+                        <el-button class="delete-btn" type="text" icon="el-icon-delete" @click="deleteCurItem(1, index)"></el-button>
+                      </el-col>
+                    </el-row>
+                  </transition-group>
+                </draggable>
                 <el-button type="primary" @click="addEstateFloor">添加楼层</el-button>
                 <el-button type="primary" @click="sortEstateFloor">楼层排序</el-button>
               </el-form-item>
@@ -261,6 +265,8 @@
         <el-button size="small" @click="batchCopyModelVisible = false">取 消</el-button>
       </span>
     </el-dialog>
+
+
   </div>
 </template>
 
@@ -272,6 +278,7 @@ import ImageCropper from '@/components/ImageCropper/Cropper'
 import RoomListSelecter from '@/components/RoomListSelecter'
 import estateDeviceGroup from './estateDeviceGroup'
 import { deepClone } from '@/utils'
+import draggable from 'vuedraggable'
 export default {
   name: 'estateModel',
   components: {
@@ -279,7 +286,8 @@ export default {
     Preview,
     ImageCropper,
     estateDeviceGroup,
-    RoomListSelecter
+    RoomListSelecter,
+    draggable
   },
   props: [
     'showEstateModel',
@@ -287,6 +295,13 @@ export default {
   ],
   data() {
     return {
+      myArray: [{
+        id: '1',
+        name: 'nihao'
+      },{
+        id: '2',
+        name: 'heihei'
+      }],
       mapModelVisible: false,
       local: null,
       map: null,
@@ -643,16 +658,16 @@ export default {
       }
     },
     returnEstateData(type) {
-      // let estateData = false
-      // this.$refs.estateModel.validate((status) => {
-      //   if (status) {
-      //     estateData = this.estateModel
-      //   } else {
-      //     return false
-      //   }
-      // })
-      // return estateData
-      return this.estateModel
+      let estateData = false
+      this.$refs.estateModel.validate((status) => {
+        if (status) {
+          estateData = this.estateModel
+        } else {
+          return false
+        }
+      })
+      return estateData
+      // return this.estateModel
     },
     checkSaveStatus(status) {
       let differentFlag = false

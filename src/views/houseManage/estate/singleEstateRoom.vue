@@ -39,9 +39,7 @@
       <template slot="settingRoom" slot-scope="scope">
         <el-button size="mini" @click="openRentPayModel(scope.row)">交租方式</el-button>
         <el-button size="mini" @click="openCopyItemToModel(scope.row)">复制到</el-button>
-        <div >
-          <el-button size="mini">房态管理</el-button>
-        </div>
+        <el-button size="mini">房态管理</el-button>
       </template>
       <template slot="operateRoom" slot-scope="scope">
         <el-button type="primary" size="mini" @click="openRoomDetailModel(2, scope.row)">编辑房间</el-button>
@@ -477,7 +475,7 @@ export default {
       }).then((res) => {
         if (res.code === '0') {
           // this.$store.commit('SET_ESTATEDATA', res.data.dataObject)
-          this.$set(this, 'estateInfo', res.data.dataObject)
+          this.$set(this, 'estateInfo', res.data)
         }
       })
     },
@@ -488,10 +486,6 @@ export default {
         roomCode: row.roomCode
       }).then((res) => {
         if (res.code === '0') {
-          if (!res.data) {
-            this.$message.error('获取房间列表失败')
-            return
-          }
           this.copyItemRoomList = res.data
           this.copyItemToModelVisible = true
         }
