@@ -86,6 +86,7 @@
 import GridUnit from '@/components/GridUnit/grid'
 import { deepClone, cleanArray, ObjectMap } from '@/utils'
 import { houseAsyncApi } from '@/api/houseManage'
+import { publishHouseApi } from '@/api/houseManage'
 export default {
   name: 'houseSync',
   components: {
@@ -238,12 +239,10 @@ export default {
     syncItems(type = 'on') {
       const typeConfig = {
         'on': {
-          title: '发布',
-          api: houseAsyncApi.publish
+          title: '发布'
         },
         'off': {
-          title: '撤销',
-          api: houseAsyncApi.unpublish
+          title: '撤销'
         }
       }
       if (this.selectedItems.length === 0) {
@@ -267,7 +266,6 @@ export default {
     },
     // 发布、撤销
     gotoHouseAsync() {
-      let api = this.dialogTitle === "发布" ? houseAsyncApi.publish : houseAsyncApi.unpublish;
       let roomCodes = this.selectedItems.map(item => item.roomCode);
       let platform = [];
       for (var i in this.publishSelect) {
@@ -275,16 +273,17 @@ export default {
           platform.push(i);
         }
       }
-      api({
+      publishHouseApi({
         platforms: platform,
-        roomCodes
-      }).then(response => {
+        roomCodeList: roomCodes
+      },this.dialogTitle === "发布" ? 1 : 2).then(response => {
         this.$notify({
           title: '成功',
           message: '操作成功',
           type: 'success',
           duration: 2000,
         })
+        this.dialogVisible=false;
         this.searchParam()
       })
     }
