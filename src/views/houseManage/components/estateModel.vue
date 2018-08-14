@@ -1,7 +1,7 @@
 <template>
   <div class="estate-model-container">
     <el-form ref="estateModel" :model="estateModel" :rules="estateModelRules" label-width="110px" size="small">
-      <el-collapse v-model="activeNames" accordion>
+      <el-collapse v-model="activeNames" accordion @change="checkSaveStatus">
         <el-collapse-item name="1" class="estate-collapse-container">
           <template slot="title">
             <div class="model-panel-title">
@@ -134,6 +134,7 @@
                   </el-col>
                 </el-row>
                 <el-button type="primary" @click="addEstateFloor">添加楼层</el-button>
+                <el-button type="primary" @click="sortEstateFloor">楼层排序</el-button>
               </el-form-item>
             </el-col>
           </el-row>
@@ -355,7 +356,7 @@ export default {
       zoneList: [],
       addressList: [],
       orgList: [],
-      activeNames: '1',
+      activeNames: ['1'],
       uploadPicsModelVisible: false,
       estateDeviceModelVisible: false,
       cropperList: [],
@@ -373,7 +374,9 @@ export default {
         noSelected: false,
         activeSelected: true
       },
-      curPicListIndex: -1
+      curPicListIndex: -1,
+      tempFormData: {},
+      tempNames: ['1']
     }
   },
   computed: {
@@ -532,6 +535,9 @@ export default {
         startNo: ''
       })
     },
+    sortEstateFloor() {
+
+    },
     addEstateRoomType() {
       this.estateModel.roomTypeList.push({
         id: undefined,
@@ -627,23 +633,60 @@ export default {
       estateInfo.tag = estateInfo.tag === 1 ? true : false
       estateInfo.address = estateInfo.subdistrictName ? (estateInfo.subdistrictName + ' - ' + estateInfo.subdistrictAddress) : ''
 
-      this.$set(this, 'estateModel', estateInfo)
-      this.activeNames = '1'
+      this.$set(this, 'estateModel', deepClone(estateInfo))
+      this.activeNames = ['1']
+      this.$set(this, 'tempFormData', this.estateModel)
+      this.tempNames = ['1']
       if (this.type === '新建公寓') {
         this.addEstateFloor()
         this.addEstateRoomType()
       }
     },
     returnEstateData(type) {
-      let estateData = false
-      this.$refs.estateModel.validate((status) => {
-        if (status) {
-          estateData = this.estateModel
-        } else {
-          return false
+      // let estateData = false
+      // this.$refs.estateModel.validate((status) => {
+      //   if (status) {
+      //     estateData = this.estateModel
+      //   } else {
+      //     return false
+      //   }
+      // })
+      // return estateData
+      return this.estateModel
+    },
+    checkSaveStatus(status) {
+      let differentFlag = false
+      Object.keys(this.tempFormData).forEach((key) => {
+        if (JSON.stringify(this.tempFormData[key]) != JSON.stringify(this.estateModel[key])) {
+          differentFlag = true
         }
       })
-      return estateData
+
+      if (differentFlag) {
+        this.$message.error('请先将当前更改的内容保存之后再操作')
+        this.activeNames = this.tempNames
+      } else {
+        switch (status) {
+          case '1':
+            this.$set(this, 'tempFormData', deepClone(this.estateModel))
+            this.tempNames = ['1']
+            break
+          case '2':
+            this.$set(this, 'tempFormData', {
+              fangyuanCode: this.estateModel.fangyuanCode,
+              floors: deepClone(this.estateModel.floors)
+            })
+            this.tempNames = ['2']
+            break
+          case '3':
+            this.$set(this, 'tempFormData', {
+              fangyuanCode: this.estateModel.fangyuanCode,
+              roomTypeList: deepClone(this.estateModel.roomTypeList)
+            })
+            this.tempNames = ['3']
+            break
+        }
+      }
     },
     openBatchCopyModel(index) {
       estateBatchCopyRoomListApi({
@@ -691,8 +734,8 @@ export default {
     emitCropperData(list = []) {
       list.forEach((v, i) => {
         v.type = 1,
-        v.imageName = v.title,
-        v.image = v.src
+          v.imageName = v.title,
+          v.image = v.src
       })
       let picList = this.curPicListIndex === -1 ? this.estateModel.pictureList : this.estateModel.roomTypeList[this.curPicListIndex].pictureList
       if (this.curPicListIndex === -1) {
@@ -791,13 +834,10 @@ export default {
       }
     },
     activeNames: {
-      deep: true,
-      handler: function (val, oldVal) {
-        // if (oldVal != '' && val != oldVal) {
-        //   this.activeNames = oldVal
-        //   this.$message.error('请先将当前更改的内容保存之后再操作')
-        // }
-      }
+      handler: function (val) {
+
+      },
+      deep: true
     }
   },
   mounted() {

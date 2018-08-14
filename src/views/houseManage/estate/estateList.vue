@@ -26,7 +26,7 @@
         <el-button type="danger" size="mini" @click="deleteEstate(scope.row)">删除公寓</el-button>
       </template>
       <template slot="operateRecordStr" slot-scope="scope">
-        <p>{{scope.row.lastoperator}} {{scope.row.lastOperateTime}}</p>
+        <p>{{scope.row.lastOperator}} {{scope.row.lastOperateTime}}</p>
       </template>
     </grid-unit>
 
@@ -45,7 +45,7 @@ import { debounce } from "@/utils"
 import GridUnit from "@/components/GridUnit/grid"
 import areaSelect from "@/components/AreaSelect"
 import estateModel from '../components/estateModel'
-import { estateRoomDetailApi, estateDeleteEstateApi, estateNewEstateSaveApi } from '@/api/houseManage'
+import { estateRoomDetailApi, estateDeleteEstateApi, estateNewEstateSaveApi, saveEstateBasicInfoApi, saveEstateFloorInfoApi, saveEstateRoomTypeInfoApi } from '@/api/houseManage'
 export default {
   name: "estateHouseList",
   components: {
@@ -124,18 +124,32 @@ export default {
     },
     saveEstateData(type) {
       let estateInfo = this.$refs.estateModel.returnEstateData(type)
-      console.log(estateInfo)
       if (!estateInfo) {
         return
       }
+      estateInfo.pictureUploadList = estateInfo.pictureList.filter(n => n.image)
+      estateInfo.pictureList = estateInfo.pictureList.filter(n => n.imageUrl)
       estateInfo.roomTypeList.forEach((item, index) => {
         item.pictureUploadList = item.pictureList.filter(n => n.image)
         item.pictureList = item.pictureList.filter(n => n.imageUrl)
       })
-
-      // let api = this.estateModelTitle === '新建公寓' ? estateNewEstateSaveApi :
-
-      estateNewEstateSaveApi({
+      let api = null
+      if (this.estateModelTitle === '新建公寓') {
+        api = estateNewEstateSaveApi
+      } else {
+        switch (this.$refs.estateModel.activeNames[0]) {
+          case '1':
+            api = saveEstateBasicInfoApi
+            break
+          case '2':
+            api = saveEstateFloorInfoApi
+            break
+          case '3':
+            api = saveEstateRoomTypeInfoApi
+            break
+        }
+      }
+      api({
         estateInfo: JSON.stringify(estateInfo)
       }).then((res) => {
         if (res.code === '0') {
