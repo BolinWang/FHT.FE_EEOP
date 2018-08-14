@@ -348,3 +348,50 @@ export function saveEstateRoomApi(params, type) {
   })
 }
 
+/* 集中式编辑公寓基本信息 */
+export function saveEstateBasicInfoApi(params) {
+  return fetch({
+    url: '/market/fangyuan',
+    method: 'post',
+    data: {
+      method: 'editEstateBasicInfo',
+      params
+    }
+  })
+}
+
+/* 集中式编辑公寓楼层信息 */
+export function saveEstateFloorInfoApi(params) {
+  return fetch({
+    url: '/market/fangyuan',
+    method: 'post',
+    data: {
+      method: 'editEstateFloorInfo',
+      params
+    }
+  })
+}
+
+/* 集中式编辑公寓房型信息 */
+export function saveEstateRoomTypeInfoApi(params) {
+  return fetch({
+    url: '/market/fangyuan',
+    method: 'post',
+    data: {
+      method: 'editEstateRoomTypeInfo',
+      params
+    }
+  })
+}
+
+/* 发布撤销房源 */
+export function publishHouseApi(params, type) {
+  return fetch({
+    url: '/market/fangyuan',
+    method: 'post',
+    data: {
+      method: type === 1 ? 'publish' : 'unpublish', // 1.发布 2.撤销
+      params
+    }
+  })
+}
