@@ -44,7 +44,7 @@
     <div class="clearfix">
       <el-col :span="13">
         <el-form-item label="联系人身份证" label-width="100px">
-          <el-input :value="temp.idNum | filterNum" :disabled="true"></el-input>
+          <el-input :value="temp.idNum" :disabled="true"></el-input>
         </el-form-item>
       </el-col>
       <el-col :span="1">&nbsp;&nbsp;</el-col>
@@ -61,7 +61,7 @@
     <div class="clearfix" v-if="temp.bankCardType === 1">
       <el-col :span="12">
         <el-form-item label="开户人身份证" label-width="100px">
-          <el-input :value="temp.accountIdNum | filterNum" :disabled="true">
+          <el-input :value="temp.accountIdNum" :disabled="true">
           </el-input>
         </el-form-item>
       </el-col>

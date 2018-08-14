@@ -478,7 +478,7 @@ export default {
       }).then((res) => {
         if (res.code === '0') {
           // this.$store.commit('SET_ESTATEDATA', res.data.dataObject)
-          this.$set(this, 'estateInfo', res.data.dataObject)
+          this.$set(this, 'estateInfo', res.data)
         }
       })
     },
@@ -489,10 +489,6 @@ export default {
         roomCode: row.roomCode
       }).then((res) => {
         if (res.code === '0') {
-          if (!res.data) {
-            this.$message.error('获取房间列表失败')
-            return
-          }
           this.copyItemRoomList = res.data
           this.copyItemToModelVisible = true
         }

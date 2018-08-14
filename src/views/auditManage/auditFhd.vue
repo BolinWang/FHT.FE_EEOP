@@ -129,7 +129,7 @@
           <div class="clearfix">
             <el-col :span="12">
               <el-form-item label="身份证号">
-                <el-input :value="cardForm.idNo | filterNum" disabled>
+                <el-input :value="cardForm.idNo" disabled>
                 </el-input>
               </el-form-item>
             </el-col>
@@ -202,12 +202,6 @@ export default {
     fhdBusiness
   },
   filters: {
-    filterNum(val) {
-      if (!val) {
-        return ''
-      }
-      return val.replace(/\s/g,'').replace(/\D/g,'').replace(/(\d{4})(?=\d)/g,"$1 ")
-    },
     typeFilter(type) {
       const typeData = ['个人', '企业']
       return `飞虎队${typeData[type - 1]}机构` || ''
