@@ -85,7 +85,7 @@
 <script>
 import GridUnit from '@/components/GridUnit/grid'
 import { deepClone, cleanArray, ObjectMap } from '@/utils'
-import { reviewHouseAsyncApi } from '@/api/houseManage'
+import { publishHouseApi } from '@/api/houseManage'
 export default {
   name: 'houseSync',
   components: {
@@ -173,8 +173,8 @@ export default {
         { prop: 'operation', label: '操作记录', width: 180 }
       ],
       tableHeight: 300,
-      url: reviewHouseAsyncApi.defaultOptions.requestUrl,
-      method: reviewHouseAsyncApi.defaultOptions.method,
+      url: publishHouseApi.url,
+      method: publishHouseApi.method,
       dialogVisible: false,
       publishSelect: {
         mlzf: true,
@@ -206,7 +206,7 @@ export default {
         height: this.tableHeight + 'px'
       }
     }
-  },
+  },  
   methods: {
     // 查询
     searchParam(type) {
@@ -239,11 +239,11 @@ export default {
       const typeConfig = {
         'on': {
           title: '发布',
-          api: reviewHouseAsyncApi.publish
+          api: publishHouseApi.publish
         },
         'off': {
           title: '撤销',
-          api: reviewHouseAsyncApi.offshlef
+          api: publishHouseApi.unpublish
         }
       }
       if (this.selectedItems.length === 0) {
@@ -267,7 +267,7 @@ export default {
     },
     // 发布、撤销
     gotoHouseAsync() {
-      let api = this.dialogTitle === "发布" ? reviewHouseAsyncApi.publish : reviewHouseAsyncApi.offshlef;
+      let api = this.dialogTitle === "发布" ? publishHouseApi.publish : publishHouseApi.unpublish;
       let roomCodes = this.selectedItems.map(item => item.roomCode);
       let platform = [];
       for (var i in this.publishSelect) {

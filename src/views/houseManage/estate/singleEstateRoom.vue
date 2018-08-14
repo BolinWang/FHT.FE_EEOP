@@ -1,4 +1,3 @@
-
 <template>
   <div class="app-container">
     <el-row class="room-options-row">
@@ -40,6 +39,9 @@
       <template slot="settingRoom" slot-scope="scope">
         <el-button size="mini" @click="openRentPayModel(scope.row)">交租方式</el-button>
         <el-button size="mini" @click="openCopyItemToModel(scope.row)">复制到</el-button>
+        <div >
+          <el-button size="mini">房态管理</el-button>
+        </div>
       </template>
       <template slot="operateRoom" slot-scope="scope">
         <el-button type="primary" size="mini" @click="openRoomDetailModel(2, scope.row)">编辑房间</el-button>
@@ -351,8 +353,8 @@ export default {
         {
           prop: "settings",
           label: "设置",
-          width: '182px',
-          align: "center",
+          width: '290px',
+          align: 'center',
           fixed: 'right',
           slotName: "settingRoom"
         },
@@ -474,7 +476,8 @@ export default {
         fangyuanCode: this.fangyuanCode
       }).then((res) => {
         if (res.code === '0') {
-          this.$set(this, 'estateInfo', res.data)
+          // this.$store.commit('SET_ESTATEDATA', res.data.dataObject)
+          this.$set(this, 'estateInfo', res.data.dataObject)
         }
       })
     },
@@ -484,6 +487,7 @@ export default {
         fangyuanCode: this.fangyuanCode,
         roomCode: row.roomCode
       }).then((res) => {
+<<<<<<< HEAD
         if (res.code === '0') {
           if (!res.data) {
             this.$message.error('获取房间列表失败')
@@ -492,16 +496,19 @@ export default {
           this.copyItemRoomList = res.data
           this.copyItemToModelVisible = true
         }
+=======
+        this.copyItemRoomList = res.data.dataObject
+        this.copyItemToModelVisible = true
+>>>>>>> cc4132e857ed6f7f295f9d043adc1b136eb5b614
       })
     },
     openRentPayModel(row) {
-      this.curRoomCode = row.roomCode
       estateRoomRentPayWayApi({
         roomCode: row.roomCode
       }).then((res) => {
         if (res.code === '0') {
-          this.$set(this, 'rentPayList', res.data.roomRentTypeList)
-          this.$set(this, 'baseRentTypeList', res.data.baseRentTypeList)
+          this.$set(this, 'rentPayList', res.data.dataObject.roomRentTypeList)
+          this.$set(this, 'baseRentTypeList', res.data.dataObject.baseRentTypeList)
         }
         this.rentPayModelVisible = true
       })
@@ -541,7 +548,7 @@ export default {
         rentPrice: '',
         rentQty: 1,
         rentTypeId: 1,
-        roomId: '',
+        roomId: this.rentPayList[0].roomId,
         roomRentTypeId: undefined,
         serviceChargePrice: null,
         serviceChargeRatio: null,
@@ -551,10 +558,10 @@ export default {
       })
     },
     saveRentPay() {
-      // if (true) {
-      //   this.$message.error('请填写完交租方式再保存')
-      //   return
-      // }
+      if (true) {
+        this.$message.error('请填写完交租方式再保存')
+        return
+      }
       saveEstateRoomRentPayWayApi({
         roomCode: this.curRoomCode,
         roomRentTypeList: this.rentPayList
@@ -590,7 +597,7 @@ export default {
           roomCode: row.roomCode
         }).then((res) => {
           if (res.code === '0') {
-            this.$store.commit('SET_ESTATEROOMDATA', res.data)
+            this.$store.commit('SET_ESTATEROOMDATA', res.data.dataObject)
             this.roomDetailModelVisible = true
           }
         })
