@@ -4,7 +4,7 @@
     <el-row class="room-options-row">
       <el-button type="primary" size="small" @click="$router.push({name: '集中式房源'})" icon="el-icon-arrow-left">返回</el-button>
       <el-button type="primary" size="small" @click="openRoomDetailModel(1)">新建房号</el-button>
-      <el-button type="danger" size="small">删除房号</el-button>
+      <el-button type="danger" size="small" @click="deleteRoom">删除房号</el-button>
       <span class="estate-title">{{estateInfo.estateName}}</span>
       <span class="estate-address">{{estateInfo.subdistrictName + ' - ' + estateInfo.subdistrictAddress}}</span>
     </el-row>
@@ -33,7 +33,7 @@
       </el-form-item>
     </el-form>
 
-    <grid-unit ref="estateRoomList" :url="estateRoomListUrl" listField="data.result" totalField="data.records" :dataMethod="reqMethod" :formOptions="roomSearchForm" :showSelection="true" :columns="colModels" :height="tableHeight">
+    <grid-unit ref="estateRoomList" :url="estateRoomListUrl" listField="data.result" totalField="data.records" :dataMethod="reqMethod" :formOptions="roomSearchForm" :showSelection="true" :columns="colModels" :height="tableHeight" @selection-change="handleSelectionChange">
       <template slot="setTag" slot-scope="scope">
         <el-tag v-if="scope.row.tag === 1">飞虎队</el-tag>
       </template>
@@ -264,7 +264,7 @@
 
 <script>
 import GridUnit from "@/components/GridUnit/grid"
-import { estateRoomFloorApi, estateRoomDetailApi, estateBatchCopyRoomListApi, copyToOtherRoomApi, estateRoomRentPayWayApi, saveEstateRoomRentPayWayApi, oneEstateRoomApi, saveEstateRoomApi } from "@/api/houseManage"
+import { estateRoomFloorApi, estateRoomDetailApi, estateBatchCopyRoomListApi, copyToOtherRoomApi, estateRoomRentPayWayApi, saveEstateRoomRentPayWayApi, oneEstateRoomApi, saveEstateRoomApi, checkRoomHasDeviceApi, deleteRoomApi } from "@/api/houseManage"
 import RoomListSelecter from '@/components/RoomListSelecter'
 import RoomDetail from '../components/roomDetailModel'
 export default {
@@ -442,7 +442,8 @@ export default {
       ],
       baseRentTypeList: [],
       roomDetailModelVisible: false,
-      curType: ''
+      curType: '',
+      selectedRooms: []
     }
   },
   computed: {
@@ -484,6 +485,10 @@ export default {
         roomCode: row.roomCode
       }).then((res) => {
         if (res.code === '0') {
+          if (!res.data) {
+            this.$message.error('获取房间列表失败')
+            return
+          }
           this.copyItemRoomList = res.data
           this.copyItemToModelVisible = true
         }
@@ -607,6 +612,32 @@ export default {
             type: 'success'
           })
           this.roomDetailModelVisible = false
+        }
+      })
+    },
+    handleSelectionChange(list) {
+      this.selectedRooms = list
+    },
+    deleteRoom() {
+      if (!this.selectedRooms.length) {
+        this.$message.error('请先选择要删除的房间号')
+        return
+      }
+      checkRoomHasDeviceApi({
+        roomCodeList: this.selectedRooms.map(item => item.roomCode)
+      }).then((res) => {
+        if (res.code === '0') {
+          deleteRoomApi({
+            roomCodeList: this.selectedRooms.map(item => item.roomCode)
+          }).then((res) => {
+            if (res.code === '0') {
+              this.$message({
+                message: res.message,
+                type: 'success'
+              })
+              this.searchParam()
+            }
+          })
         }
       })
     }

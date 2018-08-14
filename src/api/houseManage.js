@@ -395,3 +395,27 @@ export function publishHouseApi(params, type) {
     }
   })
 }
+
+/* 检查房间是否有智能设备 */
+export function checkRoomHasDeviceApi(params) {
+  return fetch({
+    url: '/market/fangyuan',
+    method: 'post',
+    data: {
+      method: 'checkRoomHasDevice',
+      params
+    }
+  })
+}
+
+/* 集中式删除房间 */
+export function deleteRoomApi(params) {
+  return fetch({
+    url: '/market/fangyuan',
+    method: 'post',
+    data: {
+      method: 'deleteRoom',
+      params
+    }
+  })
+}
