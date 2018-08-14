@@ -1,8 +1,8 @@
 /*
  * @Author: FT.FE.Bolin
  * @Date: 2018-07-11 13:49:21
- * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-07-25 17:35:47
+ * @Last Modified by: chudequan
+ * @Last Modified time: 2018-08-14 16:16:30
  */
 
  <template>
@@ -85,7 +85,7 @@
 <script>
 import GridUnit from '@/components/GridUnit/grid'
 import { deepClone, cleanArray, ObjectMap } from '@/utils'
-import { publishHouseApi } from '@/api/houseManage'
+import { houseAsyncApi } from '@/api/houseManage'
 export default {
   name: 'houseSync',
   components: {
@@ -173,8 +173,8 @@ export default {
         { prop: 'operation', label: '操作记录', width: 180 }
       ],
       tableHeight: 300,
-      url: publishHouseApi.url,
-      method: publishHouseApi.method,
+      url: houseAsyncApi.defaultOptions.requestUrl,
+      method: houseAsyncApi.defaultOptions.method,
       dialogVisible: false,
       publishSelect: {
         mlzf: true,
@@ -206,7 +206,7 @@ export default {
         height: this.tableHeight + 'px'
       }
     }
-  },  
+  },
   methods: {
     // 查询
     searchParam(type) {
@@ -239,11 +239,11 @@ export default {
       const typeConfig = {
         'on': {
           title: '发布',
-          api: publishHouseApi.publish
+          api: houseAsyncApi.publish
         },
         'off': {
           title: '撤销',
-          api: publishHouseApi.unpublish
+          api: houseAsyncApi.unpublish
         }
       }
       if (this.selectedItems.length === 0) {
@@ -267,7 +267,7 @@ export default {
     },
     // 发布、撤销
     gotoHouseAsync() {
-      let api = this.dialogTitle === "发布" ? publishHouseApi.publish : publishHouseApi.unpublish;
+      let api = this.dialogTitle === "发布" ? houseAsyncApi.publish : houseAsyncApi.unpublish;
       let roomCodes = this.selectedItems.map(item => item.roomCode);
       let platform = [];
       for (var i in this.publishSelect) {
