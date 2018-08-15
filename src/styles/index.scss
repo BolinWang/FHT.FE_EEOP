@@ -176,6 +176,11 @@ a:hover {
   input {
     padding: 0 8px;
   }
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+      -webkit-appearance: none !important;
+      margin: 0;
+  }
   .rent-price-input {
     .el-input-group__append {
       padding: 0 5px;
@@ -184,6 +189,25 @@ a:hover {
   table td {
     padding-top: 0;
     padding-bottom: 0;
+  }
+  .el-form-item {
+    line-height: 66px;
+    margin-bottom: 0;
+  }
+  .el-form-item__content {
+    display: inline-block;
+    vertical-align: middle;
+    line-height: 28px;
+  }
+  .el-form-item__error {
+    width: 100px;
+  }
+}
+
+/* 编辑公寓楼层 */
+.estate-floor-container {
+  .el-input-group__prepend, .el-input-group__append {
+    padding: 0 8px;
   }
 }
 

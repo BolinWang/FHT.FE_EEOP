@@ -106,37 +106,53 @@
           <el-row :gutter="20" class="estate-floor-container">
             <el-col :span="24">
               <el-form-item label="公寓楼层" label-width="110px" prop="floors">
-                <draggable v-model="estateModel.floors">
-                  <transition-group>
-                    <el-row :gutter="20" v-for="(item, index) in estateModel.floors" :key="index">
-                      <el-col :span="7">
-                        <el-form-item label-width="0">
-                          <el-input type="text" v-model="item.floorName">
-                            <template slot="prepend">楼层名称</template>
-                          </el-input>
-                        </el-form-item>
-                      </el-col>
-                      <el-col :span="7">
-                        <el-form-item label-width="0">
-                          <el-input type="text" v-model="item.roomNum">
-                            <template slot="prepend">共</template>
-                            <template slot="append">间</template>
-                          </el-input>
-                        </el-form-item>
-                      </el-col>
-                      <el-col :span="7">
-                        <el-form-item label-width="0">
-                          <el-input type="text" v-model="item.startNo">
-                            <template slot="prepend">起始房号</template>
-                          </el-input>
-                        </el-form-item>
-                      </el-col>
-                      <el-col :span="2" class="estate-floor" v-if="estateModel.floors.length > 1">
-                        <el-button class="delete-btn" type="text" icon="el-icon-delete" @click="deleteCurItem(1, index)"></el-button>
-                      </el-col>
-                    </el-row>
-                  </transition-group>
-                </draggable>
+                <el-row :gutter="10" v-for="(item, index) in estateModel.floors" :key="index">
+                  <el-col :span="6">
+                    <el-form-item
+                      label-width="0"
+                      :prop="'floors.' + index + '.floorName'"
+                      :rules="estateModelRules.floor.floorName">
+                      <el-input type="text" v-model="item.floorName">
+                        <template slot="prepend">楼层名称</template>
+                      </el-input>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="4">
+                    <el-form-item
+                      label-width="0"
+                      :prop="'floors.' + index + '.roomNum'"
+                      :rules="estateModelRules.floor.roomNum">
+                      <el-input type="text" v-model="item.roomNum" :disabled="item.forbbidenEdit">
+                        <template slot="prepend">共</template>
+                        <template slot="append">间</template>
+                      </el-input>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="6" v-if="!item.forbbidenEdit">
+                    <el-form-item
+                      label-width="0"
+                      :prop="'floors.' + index + '.startNo'"
+                      :rules="estateModelRules.floor.startNo">
+                      <el-input type="text" v-model="item.startNo">
+                        <template slot="prepend">起始房号</template>
+                      </el-input>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="6" v-if="!item.forbbidenEdit">
+                    <el-form-item
+                      label-width="0"
+                      :prop="'floors.' + index + '.roomTypeId'"
+                      :rules="estateModelRules.floor.roomTypeId">
+                      <el-select v-model="item.roomTypeId" placeholder="请选择房间类型">
+                        <el-option v-for="(item, index) in estateModel.roomTypeList" :key="index" v-html="item.styleName" :value="item.id">
+                        </el-option>
+                      </el-select>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="2" class="estate-floor" v-if="estateModel.floors.length > 1">
+                    <el-button class="delete-btn" type="text" icon="el-icon-delete" @click="deleteCurItem(1, index)"></el-button>
+                  </el-col>
+                </el-row>
                 <el-button type="primary" @click="addEstateFloor">添加楼层</el-button>
                 <el-button type="primary" @click="sortEstateFloor">楼层排序</el-button>
               </el-form-item>
@@ -265,8 +281,6 @@
         <el-button size="small" @click="batchCopyModelVisible = false">取 消</el-button>
       </span>
     </el-dialog>
-
-
   </div>
 </template>
 
@@ -367,7 +381,21 @@ export default {
         ],
         orgId: [
           { required: true, message: '请选择一个组织，支持模糊查询', trigger: 'change' }
-        ]
+        ],
+        floor: {
+          floorName: [
+            { required: true, message: '请填写楼层名称', trigger: 'change' }
+          ],
+          roomNum: [
+            { required: true, message: '请填写房间数量', trigger: 'change' }
+          ],
+          startNo: [
+            { required: true, message: '请填写起始房号', trigger: 'change' }
+          ],
+          roomTypeId: [
+            { required: true, message: '请选择房间类型', trigger: 'change' }
+          ],
+        }
       },
       loading: false,
       zoneList: [],
@@ -548,7 +576,8 @@ export default {
         floorSort: '',
         floorName: '',
         roomNum: '',
-        startNo: ''
+        startNo: '',
+        roomTypeId: ''
       })
     },
     sortEstateFloor() {
@@ -648,6 +677,7 @@ export default {
       estateInfo.areaCode = [estateInfo.provinceId, estateInfo.cityId, estateInfo.regionId]
       estateInfo.tag = estateInfo.tag === 1 ? true : false
       estateInfo.address = estateInfo.subdistrictName ? (estateInfo.subdistrictName + ' - ' + estateInfo.subdistrictAddress) : ''
+      estateInfo.floors.forEach((item) => {item.forbbidenEdit = true})
 
       this.$set(this, 'estateModel', deepClone(estateInfo))
       this.activeNames = ['1']
@@ -733,7 +763,7 @@ export default {
         this.estateModel.floors.splice(index, 1)
       } else {
         if (this.estateModel.roomTypeList[index].roomCodes.length > 0) {
-          this.$message.error('已有应用该房型的房间，不能删除该楼层')
+          this.$message.error('已有应用该房型的房间，不能删除该房型')
           return
         }
         this.estateModel.roomTypeList.splice(index, 1)
@@ -1016,7 +1046,7 @@ export default {
     .el-row {
       &:first-child {
         .el-col:first-child {
-          margin-left: -10px;
+          margin-left: -5px;
         }
       }
       .el-col {

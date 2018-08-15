@@ -149,6 +149,7 @@ export default {
             break
         }
       }
+      console.log(estateInfo)
       api({
         estateInfo: JSON.stringify(estateInfo)
       }).then((res) => {

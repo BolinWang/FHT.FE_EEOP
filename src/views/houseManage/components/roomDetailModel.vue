@@ -59,8 +59,8 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="房号" prop="roomCode">
-              <el-input v-model="roomDetailModel.roomCode"></el-input>
+            <el-form-item label="房号" prop="roomNo">
+              <el-input v-model="roomDetailModel.roomNo"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -387,7 +387,7 @@ export default {
             roomData.uploadPictureList = roomData.pictureList.filter(item => item.isBase64)
             roomData.pictureList = roomData.pictureList.filter(item => !item.isBase64)
           }
-          roomData.skipNo = roomData.skipNo.join(',')
+          roomData.skipNo = roomData.skipNo ? roomData.skipNo.join(',') : []
           roomData.tag = roomData.tag ? 1 : 0
         }
       })
