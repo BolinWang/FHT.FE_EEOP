@@ -98,11 +98,6 @@ const estateDetailData = {
       state.estateRoomInfo = {
         ...params
       }
-    },
-    CLEAR_ESTATEROOMDATA: (state, params) => {
-      state.estateRoomInfo = {
-
-      }
     }
   },
 
@@ -113,26 +108,7 @@ const estateDetailData = {
   },
 
   getters: {
-    formatEstateDetailData: state => {
-      const aaa = state.estateInfo
-      aaa.areaCode = [aaa.provinceId, aaa.cityId, aaa.regionId]
-      // aaa.estatePics = aaa.pictureList
-      // aaa.roomTypePics = aaa.roomTypeList
-      aaa.roomTypeList.forEach((item, index) => {
-        item.pictureList = item.pictureList || []
-      })
-      aaa.tag = aaa.tag === 1 ? true : false
-      aaa.address = aaa.subdistrictName ? (aaa.subdistrictName + ' - ' + aaa.subdistrictAddress) : ''
-      return aaa
-    },
-    estateDeviceCheckedList: state => {
-      const aaa = {
-        services: state.estateInfo.services ? state.estateInfo.services.split(',') : [],
-        storeServices: state.estateInfo.storeServices ? state.estateInfo.storeServices.split(',') : [],
-        surroundings: state.estateInfo.surroundings ? state.estateInfo.surroundings.split(',') : []
-      }
-      return aaa
-    }
+
   }
 }
 

@@ -4,8 +4,10 @@
       <el-button type="primary" size="small" @click="$router.push({name: '集中式房源'})" icon="el-icon-arrow-left">返回</el-button>
       <el-button type="primary" size="small" @click="openRoomDetailModel(1)">新建房号</el-button>
       <el-button type="danger" size="small" @click="deleteRoom">删除房号</el-button>
-      <span class="estate-title">{{estateInfo.estateName}}</span>
-      <span class="estate-address">{{estateInfo.subdistrictName + ' - ' + estateInfo.subdistrictAddress}}</span>
+      <template v-if="estateInfo.estateName">
+        <span class="estate-title">{{estateInfo.estateName}}</span>
+        <span class="estate-address">{{estateInfo.subdistrictName + ' - ' + estateInfo.subdistrictAddress}}</span>
+      </template>
     </el-row>
     <el-form class="room-search-form" ref="form" :inline="true" :model="roomSearchForm" size="small">
       <el-form-item class="room-search-form-group">
@@ -43,8 +45,8 @@
       <template slot="floorName" slot-scope="scope">
         {{scope.row.floorId | setFloorName(estateInfo.floors)}}
       </template>
-      <template slot="floorName" slot-scope="scope">
-        <el-tag :type="[2].includes(scope.row.roomStatus) ? 'success' : ([5, 6, 8, 10].includes(scope.row.roomStatus) ? '' : 'danger')">{{scope.row.roomStatus | setRoomStatus(roomStatusList)}}</el-tag>
+      <template slot="roomStatus" slot-scope="scope">
+        <el-tag :type="[2].includes(scope.row.roomStatus) ? 'success' : ([5, 6, 8, 10].includes(scope.row.roomStatus) ? 'info' : 'danger')">{{scope.row.roomStatus | setRoomStatus(roomStatusList)}}</el-tag>
       </template>
       <template slot="settingRoom" slot-scope="scope">
         <el-button size="mini" @click="openRentPayModel(scope.row)">交租方式</el-button>
@@ -103,7 +105,7 @@
 
     <el-dialog class="rent-pay-model" title="交租方式" :visible.sync="rentPayModelVisible" width="1000px">
       <el-form :model="defaultRentPayForm" ref="financeRentPayForm" label-width="0">
-        <el-table class="finance-rent-pay-way" :data="defaultRentPayForm.financeRentPayList" style="width: 100%">
+        <el-table class="finance-rent-pay-way" :data="defaultRentPayForm.financeRentPayList" style="width: 100%" empty-text="暂无金融·交租方式">
           <el-table-column label="金融·交租方式" width="130">
             <template slot-scope="scope">
               {{scope.row.name}}
@@ -215,7 +217,7 @@
         </el-table>
       </el-form>
       <el-form :model="defaultRentPayForm" ref="defaultRentPayForm" label-width="0">
-        <el-table class="default-rent-pay-way" :data="defaultRentPayForm.defaultRentPayList" style="width: 100%">
+        <el-table class="default-rent-pay-way" :data="defaultRentPayForm.defaultRentPayList" style="width: 100%" empty-text="暂无常规·交租方式">
           <el-table-column label="常规·交租方式" width="130">
             <template slot-scope="scope">
                 <span v-if="scope.row.roomRentTypeId">
@@ -399,21 +401,6 @@ export default {
   },
   data() {
     return {
-      // defaultRentPayForm: {
-      //   financeRentPayList: [],
-      //   defaultRentPayList: [],
-      //   rules: {
-      //     rentPrice: [
-      //       { required: true, message: '请输入房价', trigger: 'blur' }
-      //     ],
-      //     depositPrice: [
-      //       { required: true, message: '请输入押金', trigger: 'blur' }
-      //     ],
-      //     serviceChargePrice: [
-      //       { required: true, message: '请输入服务费', trigger: 'blur' }
-      //     ]
-      //   }
-      // },
       fangyuanCode: '',
       curRoomCode: '',
       estateInfo: {},
@@ -460,9 +447,6 @@ export default {
           label: "楼层",
           align: "center",
           slotName: "floorName"
-          // render(row) {
-          //   return this.estateInfo.floors.filter((item) => item === row.floorId)
-          // }
         },
         { prop: "roomNo", label: "房号", align: "center" },
         {
@@ -616,12 +600,6 @@ export default {
     allCheckedOptionsList() {
       return this.copyOptions.map((item) => item.val)
     },
-    financeRentPayList() {
-      return this.rentPayList.filter((item) => item.type === 2)
-    },
-    defaultRentPayList() {
-      return this.rentPayList.filter((item) => item.type === 1)
-    },
     defaultRentPayForm() {
       return {
         financeRentPayList: this.rentPayList.filter((item) => item.type === 2),
@@ -774,6 +752,7 @@ export default {
           row[key] = tempArr[0][key]
         }
       })
+      row.minMonthNum = row.rentQty
     },
     deleteCurRentPay(row) {
       this.$set(this, 'rentPayList', this.rentPayList.filter((item) => item != row))
@@ -879,15 +858,6 @@ export default {
     }
   },
   watch: {
-    roomDetailModelVisible(val) {
-      if (val) {
-        this.$nextTick(() => {
-          // this.$refs.roomDetailModel.$refs.roomDetailModel.clearValidate()
-        })
-      } else {
-
-      }
-    },
     defaultRentPayList(val) {
       if (val) {
         this.defaultRentPayForm.defaultRentPayList = val
@@ -908,9 +878,6 @@ export default {
   },
   mounted() {
     this.fetchEstateDetailData()
-    // this.openRentPayModel({
-    //   roomCode: 1234
-    // })
   },
   created() {
     this.fangyuanCode = this.$route.query.fangyuanCode || ''

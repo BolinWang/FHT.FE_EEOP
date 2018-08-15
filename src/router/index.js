@@ -26,11 +26,6 @@ export const constantRouterMap = [{
   hidden: true
 },
 {
-  path: '/fhj-practice',
-  component: _import('fhjPractice'),
-  hidden: true
-},
-{
   path: '/',
   component: Layout,
   redirect: '/dashboard',
@@ -229,6 +224,19 @@ export const asyncRouterMap = [
       name: '组织列表'
     }
     ]
+  }, {
+    path: '/fhdManage',
+    component: Layout,
+    name: '飞虎队项目',
+    icon: 'excel',
+    meta: {
+      role: ['admin', 'global']
+    },
+    children: [{
+      path: 'rentingABill',
+      component: _import('fhdManage/rentingABill'),
+      name: '催租账单'
+    }]
   },
   // {
   //   path: '/serviceManage',

@@ -154,7 +154,6 @@
                   </el-col>
                 </el-row>
                 <el-button type="primary" @click="addEstateFloor">添加楼层</el-button>
-                <el-button type="primary" @click="sortEstateFloor">楼层排序</el-button>
               </el-form-item>
             </el-col>
           </el-row>
@@ -167,10 +166,15 @@
           </template>
           <el-row :gutter="20" class="estate-house-type-container">
             <el-col :span="24">
-              <el-form-item label="房间类型" label-width="110px">
+              <el-form-item label="房间类型" label-width="110px" prop="roomTypeList">
                 <el-row :gutter="20" v-for="(item, index) in estateModel.roomTypeList" :key="item.id">
                   <el-col :span="8">
-                    <el-input v-model="item.styleName"></el-input>
+                    <el-form-item
+                      label-width="0"
+                      :prop="'roomTypeList.' + index + '.styleName'"
+                      :rules="estateModelRules.roomType.styleName">
+                      <el-input v-model="item.styleName"></el-input>
+                    </el-form-item>
                   </el-col>
                   <el-col :span="8">
                     <el-badge :value="(item && item.pictureList) ? item.pictureList.length : 0" class="estate-badge-btn">
@@ -382,6 +386,9 @@ export default {
         orgId: [
           { required: true, message: '请选择一个组织，支持模糊查询', trigger: 'change' }
         ],
+        floors: [
+          { required: true, message: '', trigger: 'change' }
+        ],
         floor: {
           floorName: [
             { required: true, message: '请填写楼层名称', trigger: 'change' }
@@ -395,6 +402,14 @@ export default {
           roomTypeId: [
             { required: true, message: '请选择房间类型', trigger: 'change' }
           ],
+        },
+        roomTypeList: [
+          { required: true, message: '', trigger: 'change' }
+        ],
+        roomType: {
+          styleName: [
+            { required: true, message: '请填写房间类型', trigger: 'change' }
+          ]
         }
       },
       loading: false,
@@ -579,9 +594,6 @@ export default {
         startNo: '',
         roomTypeId: ''
       })
-    },
-    sortEstateFloor() {
-
     },
     addEstateRoomType() {
       this.estateModel.roomTypeList.push({
