@@ -624,6 +624,10 @@ export default {
           this.$set(this, 'baseRentTypeList', res.data.baseRentTypeList)
         }
         this.rentPayModelVisible = true
+        this.$nextTick(() => {
+          this.$refs.defaultRentPayForm.clearValidate()
+          this.$refs.financeRentPayForm.clearValidate()
+        })
       })
     },
     handleCheckAllChange(val) {

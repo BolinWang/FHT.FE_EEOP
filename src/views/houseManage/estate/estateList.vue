@@ -127,12 +127,40 @@ export default {
       if (!estateInfo) {
         return
       }
+
+      // let tempPictureList = []
+      // let temppictureUploadList = []
+
+      // estateInfo.pictureUploadList = estateInfo.pictureList.forEach((item) => {
+      //   tempPictureList.push({
+      //     imageName: item.imageName,
+      //     imageUrl: item.imageUrl
+      //   })
+      //   temppictureUploadList
+      // })
+
+
+
       estateInfo.pictureUploadList = estateInfo.pictureList.filter(n => n.image)
       estateInfo.pictureList = estateInfo.pictureList.filter(n => n.imageUrl)
+      estateInfo.pictureUploadList.forEach((item) => {
+        item.src = null
+      })
+      estateInfo.pictureList.forEach((item) => {
+        item.src = null
+      })
+
       estateInfo.roomTypeList.forEach((item, index) => {
         item.pictureUploadList = item.pictureList.filter(n => n.image)
         item.pictureList = item.pictureList.filter(n => n.imageUrl)
+        item.pictureUploadList.forEach((n) => {
+          n.src = null
+        })
+        item.pictureList.forEach((n) => {
+          n.src = null
+        })
       })
+
       let api = null
       if (this.estateModelTitle === '新建公寓') {
         api = estateNewEstateSaveApi

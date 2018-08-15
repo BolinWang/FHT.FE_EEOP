@@ -785,8 +785,8 @@ export default {
     emitCropperData(list = []) {
       list.forEach((v, i) => {
         v.type = 1,
-          v.imageName = v.title,
-          v.image = v.src
+        v.imageName = v.title,
+        v.image = v.src
       })
       let picList = this.curPicListIndex === -1 ? this.estateModel.pictureList : this.estateModel.roomTypeList[this.curPicListIndex].pictureList
       if (this.curPicListIndex === -1) {
