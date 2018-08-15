@@ -43,13 +43,26 @@
       <template slot="floorName" slot-scope="scope">
         {{scope.row.floorId | setFloorName(estateInfo.floors)}}
       </template>
+      <template slot="floorName" slot-scope="scope">
+        <el-tag :type="[2].includes(scope.row.roomStatus) ? 'success' : ([5, 6, 8, 10].includes(scope.row.roomStatus) ? '' : 'danger')">{{scope.row.roomStatus | setRoomStatus(roomStatusList)}}</el-tag>
+      </template>
       <template slot="settingRoom" slot-scope="scope">
         <el-button size="mini" @click="openRentPayModel(scope.row)">交租方式</el-button>
         <el-button size="mini" @click="openCopyItemToModel(scope.row)">复制到</el-button>
-        <el-popover placement="bottom" width="150" trigger="hover">
-          ....
-          <el-button slot="reference" size="mini" class="settingRoom-btn">房态管理</el-button>
-        </el-popover>
+        <el-dropdown :hide-on-click="false" @command="handleCommand">
+          <el-button size="mini" class="settingRoom-btn">房态管理</el-button>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item
+              v-for="(val, key) in scope.row.roomStatusOperateList"
+              :command="{
+                roomCode: scope.row.roomCode,
+                roomStatus: Number(key)
+              }"
+              :key="key">
+              {{val}}
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
       </template>
       <template slot="operateRoom" slot-scope="scope">
         <el-button type="primary" size="mini" @click="openRoomDetailModel(2, scope.row)">编辑房间</el-button>
@@ -354,12 +367,27 @@
         <el-button @click="roomDetailModelVisible = false" size="small">取 消</el-button>
       </span>
     </el-dialog>
+    <el-dialog
+      title="设置装修结束日期"
+      :visible.sync="selectDateModelVisible"
+      width="400px">
+      <el-date-picker
+        v-model="tempRoomStatusParams.endDate"
+        type="date"
+        value-format="yyyy-MM-dd"
+        placeholder="选择日期">
+      </el-date-picker>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="selectDateModelVisible = false">取 消</el-button>
+        <el-button type="primary" @click="setRoomStatus">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import GridUnit from "@/components/GridUnit/grid"
-import { estateRoomFloorApi, estateRoomDetailApi, estateBatchCopyRoomListApi, copyToOtherRoomApi, estateRoomRentPayWayApi, saveEstateRoomRentPayWayApi, oneEstateRoomApi, saveEstateRoomApi, checkRoomHasDeviceApi, deleteRoomApi } from "@/api/houseManage"
+import { estateRoomFloorApi, estateRoomDetailApi, estateBatchCopyRoomListApi, copyToOtherRoomApi, estateRoomRentPayWayApi, saveEstateRoomRentPayWayApi, oneEstateRoomApi, saveEstateRoomApi, checkRoomHasDeviceApi, deleteRoomApi, changeRoomStatusApi } from "@/api/houseManage"
 import RoomListSelecter from '@/components/RoomListSelecter'
 import RoomDetail from '../components/roomDetailModel'
 export default {
@@ -398,16 +426,8 @@ export default {
       },
       roomStatusList: [
         {
-          label: '未启用租务',
-          value: 1
-        },
-        {
           label: '可用',
           value: 2
-        },
-        {
-          label: '下单未入住',
-          value: 3
         },
         {
           label: '在住',
@@ -420,10 +440,6 @@ export default {
         {
           label: '空脏',
           value: 6
-        },
-        {
-          label: '预定',
-          value: 8
         },
         {
           label: '已出租（无租客）',
@@ -462,20 +478,7 @@ export default {
           prop: "roomStatus",
           label: "房间状态",
           align: "center",
-          type: 'status',
-          unitFilters: {
-            renderStatusType(status) {
-              const statusMap = {
-                '1': 'success',
-                '2': 'info'
-              }
-              return statusMap[status] || 'info'
-            },
-            renderStatusValue(status) {
-              const statusStrData = ['已出租', '未出租']
-              return statusStrData[status - 1] || '待上线'
-            }
-          }
+          slotName: "roomStatus"
         },
         { prop: "roomCode", label: "平台房源编码", align: "center" },
         {
@@ -599,7 +602,14 @@ export default {
       baseRentTypeList: [],
       roomDetailModelVisible: false,
       curType: '',
-      selectedRooms: []
+      selectedRooms: [],
+      roomStatusEndDate: '',
+      selectDateModelVisible: false,
+      tempRoomStatusParams: {
+        endDate: '',
+        roomCode: '',
+        roomStatus: null
+      }
     }
   },
   computed: {
@@ -846,6 +856,26 @@ export default {
           })
         }
       })
+    },
+    handleCommand(command) {
+      this.tempRoomStatusParams = Object.assign(this.tempRoomStatusParams, command)
+      if (this.tempRoomStatusParams.roomStatus === 10) {
+        this.selectDateModelVisible = true
+        return
+      }
+      this.setRoomStatus()
+    },
+    setRoomStatus() {
+      changeRoomStatusApi(this.tempRoomStatusParams).then((res) => {
+        if (res.code === '0') {
+          this.$message({
+            message: res.message,
+            type: 'success'
+          })
+          this.searchParam()
+          this.selectDateModelVisible = false
+        }
+      })
     }
   },
   watch: {
@@ -867,9 +897,13 @@ export default {
   filters: {
     setFloorName(val, floors) {
       if (floors) {
-        let aaa = floors.filter((item) => item.floorId === val)
-        return aaa.length ? aaa[0].floorName : ''
+        let floor = floors.filter((item) => item.floorId === val)
+        return floor.length ? floor[0].floorName : ''
       }
+    },
+    setRoomStatus(val, statusList) {
+      let status = statusList.filter(item => item.value === val)
+      return status.length ? status[0].label : ''
     }
   },
   mounted() {

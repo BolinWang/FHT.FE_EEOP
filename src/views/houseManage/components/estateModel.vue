@@ -144,7 +144,7 @@
                       :prop="'floors.' + index + '.roomTypeId'"
                       :rules="estateModelRules.floor.roomTypeId">
                       <el-select v-model="item.roomTypeId" placeholder="请选择房间类型">
-                        <el-option v-for="(item, index) in estateModel.roomTypeList" :key="index" v-html="item.styleName" :value="item.id">
+                        <el-option v-for="(item, index) in estateModel.roomTypeList" :key="index" :label="item.styleName" :value="item.id">
                         </el-option>
                       </el-select>
                     </el-form-item>

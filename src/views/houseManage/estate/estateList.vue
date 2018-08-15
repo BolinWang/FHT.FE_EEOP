@@ -179,16 +179,28 @@ export default {
       })
     },
     deleteEstate(row) {
-      estateDeleteEstateApi({
-        fangyuanCode: row.fangyuanCode
-      }).then((res) => {
-        if (res.data.code === '0') {
-          this.$message({
-            message: res.data.message,
-            type: 'success'
-          })
-          this.searchParam()
-        }
+      const h = this.$createElement
+      this.$msgbox({
+        title: '确认消息',
+        message: h('p', null, [
+          h('span', null, '确定删除吗？ '),
+          h('span', { style: 'color: red' }, '确定后，绑定在公寓上的门禁设备也将解除绑定!')
+        ]),
+        showCancelButton: true,
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(action => {
+        estateDeleteEstateApi({
+          fangyuanCode: row.fangyuanCode
+        }).then((res) => {
+          if (res.data.code === '0') {
+            this.$message({
+              message: res.data.message,
+              type: 'success'
+            })
+            this.searchParam()
+          }
+        })
       })
     }
   },

@@ -420,3 +420,15 @@ export function deleteRoomApi(params) {
   })
 }
 
+/* 集中式修改房间出租状态 */
+export function changeRoomStatusApi(params) {
+  return fetch({
+    url: '/market/fangyuan',
+    method: 'post',
+    data: {
+      method: 'changeRoomStatus',
+      params
+    }
+  })
+}
+
