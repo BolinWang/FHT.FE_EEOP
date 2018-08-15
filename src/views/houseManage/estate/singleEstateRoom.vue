@@ -16,8 +16,12 @@
       </el-form-item>
       <el-form-item class="room-search-form-group">
         <el-select v-model="roomSearchForm.roomStatus" placeholder="房间状态">
-          <el-option label="已出租" value="1"></el-option>
-          <el-option label="未出租" value="2"></el-option>
+          <el-option
+            v-for="(item, index) in roomStatusList"
+            :key="index"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
         </el-select>
       </el-form-item>
       <el-form-item class="room-search-form-group">
@@ -36,12 +40,15 @@
       <template slot="setTag" slot-scope="scope">
         <el-tag v-if="scope.row.tag === 1">飞虎队</el-tag>
       </template>
+      <template slot="floorName" slot-scope="scope">
+        {{scope.row.floorId | setFloorName(estateInfo.floors)}}
+      </template>
       <template slot="settingRoom" slot-scope="scope">
         <el-button size="mini" @click="openRentPayModel(scope.row)">交租方式</el-button>
         <el-button size="mini" @click="openCopyItemToModel(scope.row)">复制到</el-button>
         <el-popover placement="bottom" width="150" trigger="hover">
           ....
-          <el-button slot="reference" size="mini">房态管理</el-button>
+          <el-button slot="reference" size="mini" class="settingRoom-btn">房态管理</el-button>
         </el-popover>
       </template>
       <template slot="operateRoom" slot-scope="scope">
@@ -389,12 +396,58 @@ export default {
         roomCode: '',
         roomNo: ''
       },
+      roomStatusList: [
+        {
+          label: '未启用租务',
+          value: 1
+        },
+        {
+          label: '可用',
+          value: 2
+        },
+        {
+          label: '下单未入住',
+          value: 3
+        },
+        {
+          label: '在住',
+          value: 4
+        },
+        {
+          label: '维修',
+          value: 5
+        },
+        {
+          label: '空脏',
+          value: 6
+        },
+        {
+          label: '预定',
+          value: 8
+        },
+        {
+          label: '已出租（无租客）',
+          value: 9
+        },
+        {
+          label: '装修中',
+          value: 10
+        }
+      ],
       estateRoomListUrl: "/market/fangyuan",
       tableHeight: 500,
       reqMethod: 'queryEstateRoomList',
       colModels: [
-        { prop: "orgName", label: "房间类型", align: "center" },
-        { prop: "floorName", label: "楼层", align: "center" },
+        { prop: "roomTypeName", label: "房间类型", align: "center" },
+        {
+          prop: "floorId",
+          label: "楼层",
+          align: "center",
+          slotName: "floorName"
+          // render(row) {
+          //   return this.estateInfo.floors.filter((item) => item === row.floorId)
+          // }
+        },
         { prop: "roomNo", label: "房号", align: "center" },
         {
           prop: "roomDirection",
@@ -454,7 +507,7 @@ export default {
         {
           prop: "settings",
           label: "设置",
-          width: '290px',
+          width: '280px',
           align: 'center',
           fixed: 'right',
           slotName: "settingRoom"
@@ -746,6 +799,16 @@ export default {
       }
       console.log(data)
       data.fangyuanCode = this.fangyuanCode
+
+      data.pictureUploadList = data.pictureList.filter(n => n.image)
+      data.pictureList = data.pictureList.filter(n => n.imageUrl)
+      data.pictureUploadList.forEach((item) => {
+        item.src = null
+      })
+      data.pictureList.forEach((item) => {
+        item.src = null
+      })
+
       saveEstateRoomApi({
         roomInfo: JSON.stringify(data)
       }, this.curType).then((res) => {
@@ -801,6 +864,14 @@ export default {
       }
     }
   },
+  filters: {
+    setFloorName(val, floors) {
+      if (floors) {
+        let aaa = floors.filter((item) => item.floorId === val)
+        return aaa.length ? aaa[0].floorName : ''
+      }
+    }
+  },
   mounted() {
     this.fetchEstateDetailData()
     // this.openRentPayModel({
@@ -849,6 +920,9 @@ export default {
       margin-right: 0;
     }
   }
+}
+.settingRoom-btn {
+  margin-left: 10px;
 }
 .copy-item-to-model {
   .head-card {

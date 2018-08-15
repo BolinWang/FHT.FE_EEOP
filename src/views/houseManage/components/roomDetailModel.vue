@@ -313,9 +313,8 @@ export default {
     emitCropperData(list = []) {
       list.forEach((v, i) => {
         v.type = 1
-        // v.imageName = v.title
-        // v.imageUrl = v.src
-        // v.isBase64 = true
+        v.imageName = v.title
+        v.image = v.src
       })
       let picList = [...this.roomDetailModel.pictureList, ...list]
       this.$set(this.roomDetailModel, 'pictureList', picList)

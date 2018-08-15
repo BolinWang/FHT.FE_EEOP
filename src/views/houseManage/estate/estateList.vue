@@ -128,21 +128,8 @@ export default {
         return
       }
 
-      // let tempPictureList = []
-      // let temppictureUploadList = []
-
-      // estateInfo.pictureUploadList = estateInfo.pictureList.forEach((item) => {
-      //   tempPictureList.push({
-      //     imageName: item.imageName,
-      //     imageUrl: item.imageUrl
-      //   })
-      //   temppictureUploadList
-      // })
-
-
-
       estateInfo.pictureUploadList = estateInfo.pictureList.filter(n => n.image)
-      estateInfo.pictureList = estateInfo.pictureList.filter(n => n.imageUrl)
+      estateInfo.pictureList = estateInfo.pictureList.filter(n => n.imageUrl !== undefined)
       estateInfo.pictureUploadList.forEach((item) => {
         item.src = null
       })
@@ -186,7 +173,7 @@ export default {
             message: res.message,
             type: 'success'
           })
-          // this.showEstateModel = false
+          this.showEstateModel = false
           this.searchParam()
         }
       })

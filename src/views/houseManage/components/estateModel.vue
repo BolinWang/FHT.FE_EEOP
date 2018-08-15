@@ -138,7 +138,7 @@
                       </el-input>
                     </el-form-item>
                   </el-col>
-                  <el-col :span="6" v-if="!item.forbbidenEdit">
+                  <el-col :span="6" v-if="!item.forbbidenEdit && type === '编辑公寓'">
                     <el-form-item
                       label-width="0"
                       :prop="'floors.' + index + '.roomTypeId'"
@@ -268,7 +268,7 @@
     </el-dialog>
 
     <el-dialog title="应用到房间" :visible.sync="batchCopyModelVisible" width="700px" :append-to-body="true">
-      <room-list-selecter ref="batchCopyRoom" :roomList="batchCopyRoomList" :checkedList="estateModel.roomTypeList[this.curRoomTypeIndex].roomCodes" :visible="batchCopyModelVisible">
+      <room-list-selecter ref="batchCopyRoom" :roomList="batchCopyRoomList" :checkedList="estateModel.roomTypeList[this.curRoomTypeIndex] ? estateModel.roomTypeList[this.curRoomTypeIndex].roomCodes : []" :visible="batchCopyModelVisible">
         <el-row type="flex" justify="center" class="model-head">
           <el-checkbox label="当前房间已是该类型" v-model="batchCopyOptions.isSelected" disabled></el-checkbox>
           <el-checkbox label="当前房间尚未选择该类型" v-model="batchCopyOptions.noSelected" disabled></el-checkbox>
@@ -679,6 +679,18 @@ export default {
       estateInfo.address = estateInfo.subdistrictName ? (estateInfo.subdistrictName + ' - ' + estateInfo.subdistrictAddress) : ''
       estateInfo.floors.forEach((item) => {item.forbbidenEdit = true})
 
+      estateInfo.pictureList.forEach((item) => {
+        item.src = item.imageUrl
+        item.title = item.imageName
+      })
+
+      estateInfo.roomTypeList.forEach((item) => {
+        item.pictureList.forEach((n) => {
+          n.src = n.imageUrl
+          n.title = n.imageName
+        })
+      })
+
       this.$set(this, 'estateModel', deepClone(estateInfo))
       this.activeNames = ['1']
       this.$set(this, 'tempFormData', this.estateModel)
@@ -701,7 +713,6 @@ export default {
       // return this.estateModel
     },
     checkSaveStatus(status) {
-
       if (this.type === '新建公寓') {
         return
       }
@@ -713,7 +724,7 @@ export default {
       })
       if (differentFlag) {
         this.$message.error('请先将当前更改的内容保存之后再操作')
-        this.activeNames = tempNames
+        this.activeNames = [tempNames.join('')]
       } else {
         switch (status) {
           case '1':
@@ -751,7 +762,15 @@ export default {
     saveBatchCobyRoom() {
       let checkedList = this.$refs.batchCopyRoom.returnCheckedList()
       this.batchCopyModelVisible = false
-      this.estateModel.roomTypeList[this.curRoomTypeIndex].roomCodes = checkedList
+      if (checkedList.length) {
+        this.estateModel.roomTypeList.forEach((roomType, index) => {
+          if (this.curRoomTypeIndex === index) {
+            roomType.roomCodes = checkedList
+          } else {
+            roomType.roomCodes = roomType.roomCodes.filter(item => !checkedList.includes(item))
+          }
+        })
+      }
     },
     deleteCurItem(type, index) {
       // type 1: 楼层  2: 房型
