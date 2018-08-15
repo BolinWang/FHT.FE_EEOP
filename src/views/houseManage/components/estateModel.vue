@@ -279,6 +279,8 @@ import RoomListSelecter from '@/components/RoomListSelecter'
 import estateDeviceGroup from './estateDeviceGroup'
 import { deepClone } from '@/utils'
 import draggable from 'vuedraggable'
+
+let tempNames = []
 export default {
   name: 'estateModel',
   components: {
@@ -390,8 +392,7 @@ export default {
         activeSelected: true
       },
       curPicListIndex: -1,
-      tempFormData: {},
-      tempNames: ['1']
+      tempFormData: {}
     }
   },
   computed: {
@@ -651,7 +652,7 @@ export default {
       this.$set(this, 'estateModel', deepClone(estateInfo))
       this.activeNames = ['1']
       this.$set(this, 'tempFormData', this.estateModel)
-      this.tempNames = ['1']
+      tempNames = ['1']
       if (this.type === '新建公寓') {
         this.addEstateFloor()
         this.addEstateRoomType()
@@ -670,6 +671,7 @@ export default {
       // return this.estateModel
     },
     checkSaveStatus(status) {
+
       if (this.type === '新建公寓') {
         return
       }
@@ -679,29 +681,28 @@ export default {
           differentFlag = true
         }
       })
-
       if (differentFlag) {
         this.$message.error('请先将当前更改的内容保存之后再操作')
-        this.activeNames = this.tempNames
+        this.activeNames = tempNames
       } else {
         switch (status) {
           case '1':
             this.$set(this, 'tempFormData', deepClone(this.estateModel))
-            this.tempNames = ['1']
+            tempNames = ['1']
             break
           case '2':
             this.$set(this, 'tempFormData', {
               fangyuanCode: this.estateModel.fangyuanCode,
               floors: deepClone(this.estateModel.floors)
             })
-            this.tempNames = ['2']
+            tempNames = ['2']
             break
           case '3':
             this.$set(this, 'tempFormData', {
               fangyuanCode: this.estateModel.fangyuanCode,
               roomTypeList: deepClone(this.estateModel.roomTypeList)
             })
-            this.tempNames = ['3']
+            tempNames = ['3']
             break
         }
       }

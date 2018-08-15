@@ -162,92 +162,175 @@
           </template>
         </el-table-column>
       </el-table>
-      <el-table class="default-rent-pay-way" :data="defaultRentPayList" style="width: 100%">
-        <el-table-column label="常规·交租方式" width="130">
-          <template slot-scope="scope">
-            <span v-if="scope.row.roomRentTypeId">
-              {{scope.row.name}}
-            </span>
-            <el-select v-else v-model="scope.row.rentQty" size="mini" @change="switchRentType(scope.row)">
-              <el-option v-for="n in baseRentTypeList" :key="n.rentQty" :label="n.name" :value="n.rentQty">
-              </el-option>
-            </el-select>
-          </template>
-        </el-table-column>
-        <el-table-column label="房价/月">
-          <template slot-scope="scope">
-            <el-input size="mini" v-model="scope.row.rentPrice" class="rent-price-input" @change="computeServiceChargePrice(scope.row)">
-              <template slot="append">元</template>
-            </el-input>
-          </template>
-        </el-table-column>
-        <el-table-column label="押金">
-          <template slot-scope="scope">
-            <el-input size="mini" v-model="scope.row.depositPrice" class="rent-price-input">
-              <template slot="append">元</template>
-            </el-input>
-          </template>
-        </el-table-column>
-        <el-table-column label="最短租期" width="100">
-          <template slot-scope="scope">
-            <el-select size="mini" v-model="scope.row.minMonthNum">
-              <el-option v-for="n in 24" :key="n" :label="n + '个月'" :value="n">
-              </el-option>
-            </el-select>
-          </template>
-        </el-table-column>
-        <el-table-column label="最长租期" width="100">
-          <template slot-scope="scope">
-            <el-select size="mini" v-model="scope.row.maxMonthNum">
-              <el-option v-for="n in 24" :key="n" :label="n + '个月'" :value="n">
-              </el-option>
-            </el-select>
-          </template>
-        </el-table-column>
-        <el-table-column label="服务费·元/月" width="130">
-          <template slot-scope="scope">
-            <el-select size="mini" v-model="scope.row.serviceChargeType" @change="switchServiceChargeType(scope.row)">
-              <el-option v-for="n in serviceChargeTypeList" :key="n.value" :label="n.label" :value="n.value">
-              </el-option>
-            </el-select>
-          </template>
-        </el-table-column>
-        <el-table-column label="" width="140">
-          <template slot-scope="scope">
-            <el-row>
-              <el-col :span="24" v-if="scope.row.serviceChargeType === 2">
-                <el-input size="mini" v-model="scope.row.serviceChargePrice"></el-input>
-              </el-col>
-              <template v-else-if="scope.row.serviceChargeType === 3">
-                <el-col :span="10">
-                  <el-input size="mini" v-model="scope.row.serviceChargeRatio" @change="computeServiceChargePrice(scope.row)"></el-input>
+      <el-form :model="defaultRentPayForm" ref="defaultRentPayForm" label-width="0">
+        <el-table class="default-rent-pay-way" :data="defaultRentPayForm.defaultRentPayList" style="width: 100%">
+          <el-table-column label="常规·交租方式" width="130">
+            <template slot-scope="scope">
+                <span v-if="scope.row.roomRentTypeId">
+                  {{scope.row.name}}
+                </span>
+                <el-form-item
+                  v-else
+                  label=""
+                  :key="scope.row.roomRentTypeId"
+                  :prop="'defaultRentPayList.' + scope.$index + '.rentQty'"
+                  :rules="{
+                    required: true, message: 'heiheihei', trigger: 'change'
+                  }">
+                  <el-select  v-model="scope.row.rentQty" size="mini" @change="switchRentType(scope.row)">
+                    <el-option v-for="n in baseRentTypeList" :key="n.rentQty" :label="n.name" :value="n.rentQty">
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+            </template>
+          </el-table-column>
+          <el-table-column label="房价/月">
+            <template slot-scope="scope">
+              <el-form-item
+                label=""
+                :key="scope.row.roomRentTypeId"
+                :prop="'defaultRentPayList.' + scope.$index + '.rentPrice'"
+                :rules="{
+                  required: true, message: 'heiheihei', trigger: ['change', 'blur']
+                }">
+                <el-input size="mini" v-model="scope.row.rentPrice" class="rent-price-input" @change="computeServiceChargePrice(scope.row)">
+                  <template slot="append">元</template>
+                </el-input>
+              </el-form-item>
+            </template>
+          </el-table-column>
+          <el-table-column label="押金">
+            <template slot-scope="scope">
+              <el-form-item
+                label=""
+                :key="scope.row.roomRentTypeId"
+                :prop="'defaultRentPayList.' + scope.$index + '.depositPrice'"
+                :rules="{
+                  required: true, message: 'heiheihei', trigger: ['change', 'blur']
+                }">
+                <el-input size="mini" v-model="scope.row.depositPrice" class="rent-price-input">
+                  <template slot="append">元</template>
+                </el-input>
+              </el-form-item>
+            </template>
+          </el-table-column>
+          <el-table-column label="最短租期" width="100">
+            <template slot-scope="scope">
+              <el-form-item
+                label=""
+                :key="scope.row.roomRentTypeId"
+                :prop="'defaultRentPayList.' + scope.$index + '.minMonthNum'"
+                :rules="{
+                  required: true, message: 'heiheihei', trigger: ['change', 'blur']
+                }">
+                <el-select size="mini" v-model="scope.row.minMonthNum">
+                  <el-option v-for="n in 24" :key="n" :label="n + '个月'" :value="n">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </template>
+          </el-table-column>
+          <el-table-column label="最长租期" width="100">
+            <template slot-scope="scope">
+              <el-form-item
+                label=""
+                :key="scope.row.roomRentTypeId"
+                :prop="'defaultRentPayList.' + scope.$index + '.maxMonthNum'"
+                :rules="{
+                  required: true, message: 'heiheihei', trigger: ['change', 'blur']
+                }">
+                <el-select size="mini" v-model="scope.row.maxMonthNum">
+                  <el-option v-for="n in 24" :key="n" :label="n + '个月'" :value="n">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </template>
+          </el-table-column>
+          <el-table-column label="服务费·元/月" width="130">
+            <template slot-scope="scope">
+              <el-form-item
+                label=""
+                :key="scope.row.roomRentTypeId"
+                :prop="'defaultRentPayList.' + scope.$index + '.serviceChargeType'"
+                :rules="{
+                  required: true, message: 'heiheihei', trigger: ['change', 'blur']
+                }">
+                <el-select size="mini" v-model="scope.row.serviceChargeType" @change="switchServiceChargeType(scope.row)">
+                  <el-option v-for="n in serviceChargeTypeList" :key="n.value" :label="n.label" :value="n.value">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </template>
+          </el-table-column>
+          <el-table-column label="" width="140">
+            <template slot-scope="scope">
+              <el-row>
+                <el-col :span="24" v-if="scope.row.serviceChargeType === 2">
+                  <el-form-item
+                    label=""
+                    :key="scope.row.roomRentTypeId"
+                    :prop="'defaultRentPayList.' + scope.$index + '.serviceChargePrice'"
+                    :rules="{
+                      required: true, message: 'heiheihei', trigger: ['change', 'blur']
+                    }">
+                    <el-input size="mini" v-model="scope.row.serviceChargePrice"></el-input>
+                  </el-form-item>
                 </el-col>
-                <el-col :span="4" class="service-charge-price-percent">
-                  %
-                </el-col>
-                <el-col :span="10">
-                  <el-input size="mini" v-model="scope.row.serviceChargePrice" disabled></el-input>
-                </el-col>
-              </template>
-            </el-row>
-          </template>
-        </el-table-column>
-        <el-table-column label="服务费支付方式" width="130">
-          <template slot-scope="scope">
-            <el-select size="mini" v-model="scope.row.serviceFeeType">
-              <el-option v-if="scope.row.serviceChargeType === 1" label="无" :value="1">
-              </el-option>
-              <el-option v-else v-for="n in serviceFeeTypeList" :key="n.value" :label="n.label" :value="n.value">
-              </el-option>
-            </el-select>
-          </template>
-        </el-table-column>
-        <el-table-column label="" width="50">
-          <template slot-scope="scope">
-            <el-button class="delete-btn" type="text" icon="el-icon-delete" @click="deleteCurRentPay(scope.row)"></el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+                <template v-else-if="scope.row.serviceChargeType === 3">
+                  <el-col :span="10">
+                    <el-form-item
+                      label=""
+                      :key="scope.row.roomRentTypeId"
+                      :prop="'defaultRentPayList.' + scope.$index + '.serviceChargeRatio'"
+                      :rules="{
+                        required: true, message: 'heiheihei', trigger: ['change', 'blur']
+                      }">
+                      <el-input size="mini" v-model="scope.row.serviceChargeRatio" @change="computeServiceChargePrice(scope.row)"></el-input>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="4" class="service-charge-price-percent">
+                    %
+                  </el-col>
+                  <el-col :span="10">
+                    <el-form-item
+                      label=""
+                      :key="scope.row.roomRentTypeId"
+                      :prop="'defaultRentPayList.' + scope.$index + '.serviceChargePrice'"
+                      :rules="{
+                        required: true, message: 'heiheihei', trigger: ['change', 'blur']
+                      }">
+                      <el-input size="mini" v-model="scope.row.serviceChargePrice" disabled></el-input>
+                    </el-form-item>
+                  </el-col>
+                </template>
+              </el-row>
+            </template>
+          </el-table-column>
+          <el-table-column label="服务费支付方式" width="130">
+            <template slot-scope="scope">
+              <el-form-item
+                label=""
+                :key="scope.row.roomRentTypeId"
+                :prop="'defaultRentPayList.' + scope.$index + '.serviceFeeType'"
+                :rules="{
+                  required: true, message: 'heiheihei', trigger: ['change', 'blur']
+                }">
+                <el-select size="mini" v-model="scope.row.serviceFeeType">
+                  <el-option v-if="scope.row.serviceChargeType === 1" label="无" :value="1">
+                  </el-option>
+                  <el-option v-else v-for="n in serviceFeeTypeList" :key="n.value" :label="n.label" :value="n.value">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </template>
+          </el-table-column>
+          <el-table-column label="" width="50">
+            <template slot-scope="scope">
+              <el-button class="delete-btn" type="text" icon="el-icon-delete" @click="deleteCurRentPay(scope.row)"></el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-form>
       <el-button type="primary" size="mini" @click="addRentPay">添加交租方式</el-button>
       <span slot="footer">
         <el-button type="primary" size="small" @click="saveRentPay">保 存</el-button>
@@ -279,6 +362,9 @@ export default {
   },
   data() {
     return {
+      defaultRentPayForm: {
+        defaultRentPayList: []
+      },
       fangyuanCode: '',
       curRoomCode: '',
       estateInfo: {},
@@ -603,6 +689,7 @@ export default {
         return
       }
       console.log(data)
+      data.fangyuanCode = this.fangyuanCode
       saveEstateRoomApi({
         roomInfo: JSON.stringify(data)
       }, this.curType).then((res) => {
@@ -651,6 +738,11 @@ export default {
       } else {
 
       }
+    },
+    defaultRentPayList(val) {
+      if (val) {
+        this.defaultRentPayForm.defaultRentPayList = val
+      }
     }
   },
   mounted() {
@@ -662,6 +754,14 @@ export default {
   created() {
     this.fangyuanCode = this.$route.query.fangyuanCode || ''
     this.roomSearchForm.fangyuanCode = this.fangyuanCode
+  },
+  beforeDestroy() {
+    let dialog = document.querySelectorAll('body > .el-dialog__wrapper')
+    if (dialog) {
+      [].forEach.call(dialog, function (item, index) {
+        document.body.removeChild(item)
+      })
+    }
   }
 }
 </script>
@@ -720,7 +820,7 @@ export default {
 .finance-rent-pay-way {
   margin-bottom: 15px;
   .service-charge-price-percent {
-    line-height: 28px;
+    line-height: 40px;
     text-align: center;
   }
 }
@@ -741,14 +841,25 @@ export default {
 }
 .default-rent-pay-way {
   margin-bottom: 15px;
+  td {
+    padding: 0 !important;
+  }
   .delete-btn {
     padding: 3px 0;
     font-size: 18px;
     color: red;
   }
   .service-charge-price-percent {
-    line-height: 28px;
+    line-height: 40px;
     text-align: center;
+  }
+  .el-form-item {
+    height: 60px;
+    margin-bottom: 0;
+    .el-form-item__error {
+      padding-top: 0;
+    }
+    // margin-bottom: 0;
   }
 }
 </style>

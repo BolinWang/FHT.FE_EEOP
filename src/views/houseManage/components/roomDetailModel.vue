@@ -388,6 +388,7 @@ export default {
             roomData.pictureList = roomData.pictureList.filter(item => !item.isBase64)
           }
           roomData.skipNo = roomData.skipNo.join(',')
+          roomData.tag = roomData.tag ? 1 : 0
         }
       })
       return roomData

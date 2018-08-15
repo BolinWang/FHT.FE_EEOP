@@ -157,7 +157,7 @@ export default {
             message: res.message,
             type: 'success'
           })
-          this.showEstateModel = false
+          // this.showEstateModel = false
           this.searchParam()
         }
       })
@@ -200,6 +200,14 @@ export default {
     }, 100)
     changeTableSize()
     window.addEventListener("resize", changeTableSize)
+  },
+  beforeDestroy() {
+    let dialog = document.querySelectorAll('body > .el-dialog__wrapper')
+    if (dialog) {
+      [].forEach.call(dialog, function (item, index) {
+        document.body.removeChild(item)
+      })
+    }
   }
 }
 </script>
