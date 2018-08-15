@@ -81,8 +81,8 @@ export function cleanArray(actual) {
 
 /* 去除对象空值 */
 export function ObjectMap(obj = {}) {
-  let newObject = {}
-  for (let key of Object.keys(obj)) {
+  const newObject = {}
+  for (const key of Object.keys(obj)) {
     const value = obj[key]
     if (typeof value !== 'undefined' && value !== '' && value !== null && !Number.isNaN(value) && value !== -1) {
       newObject[key] = value
@@ -233,8 +233,6 @@ export function debounce(func, wait, immediate) {
     return result
   }
 }
-
-
 /* 深拷贝 */
 export function deepClone(source) {
   if (!source && typeof source !== 'object') {
@@ -256,6 +254,14 @@ export function deepClone(source) {
 
 /* *号隐藏 */
 export function plusXing(str, frontLen, endLen) {
-  let len = str.length - frontLen - endLen;
-  return str.substring(0, frontLen) + '*'.repeat(len) + str.substring(str.length - endLen);
+  const len = str.length - frontLen - endLen
+  return str.substring(0, frontLen) + '*'.repeat(len) + str.substring(str.length - endLen)
+}
+
+// 清空对象
+export function delObjectItem(obj) {
+  Object.keys(obj).forEach(function(key) {
+    obj[key] = ''
+  })
+  return obj
 }
