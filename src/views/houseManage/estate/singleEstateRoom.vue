@@ -780,17 +780,18 @@ export default {
       if (!data) {
         return
       }
-      console.log(data)
       data.fangyuanCode = this.fangyuanCode
 
-      data.pictureUploadList = data.pictureList.filter(n => n.image)
-      data.pictureList = data.pictureList.filter(n => n.imageUrl)
-      data.pictureUploadList.forEach((item) => {
-        item.src = null
-      })
-      data.pictureList.forEach((item) => {
-        item.src = null
-      })
+      if (this.curType === 2) {
+        data.pictureUploadList = data.pictureList.filter(n => n.image)
+        data.pictureList = data.pictureList.filter(n => n.imageUrl)
+        data.pictureUploadList.forEach((item) => {
+          item.src = null
+        })
+        data.pictureList.forEach((item) => {
+          item.src = null
+        })
+      }
 
       saveEstateRoomApi({
         roomInfo: JSON.stringify(data)

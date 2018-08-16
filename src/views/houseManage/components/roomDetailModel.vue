@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="room-detail-container">
     <el-form ref="roomDetailModel" :model="roomDetailModel" :rules="roomDetailModelRules" label-width="110px" size="small">
       <template v-if="type === 1">
         <el-row :gutter="20">
@@ -60,7 +60,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="房号" prop="roomNo">
-              <el-input v-model="roomDetailModel.roomNo"></el-input>
+              <el-input type="number" v-model="roomDetailModel.roomNo"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -88,7 +88,7 @@
             <el-row :gutter="10">
               <el-col :span="6">
                 <el-form-item label="" prop="chamberCount" class="room-item-count">
-                  <el-input v-model="roomDetailModel.chamberCount"></el-input>
+                  <el-input type="number" v-model="roomDetailModel.chamberCount"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="2">
@@ -96,7 +96,7 @@
               </el-col>
               <el-col :span="6">
                 <el-form-item label="" prop="toiletCount" class="room-item-count">
-                  <el-input v-model="roomDetailModel.toiletCount"></el-input>
+                  <el-input type="number" v-model="roomDetailModel.toiletCount"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="2">
@@ -104,7 +104,7 @@
               </el-col>
               <el-col :span="6">
                 <el-form-item label="" prop="boardCount" class="room-item-count">
-                  <el-input v-model="roomDetailModel.boardCount"></el-input>
+                  <el-input type="number" v-model="roomDetailModel.boardCount"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="2">
@@ -115,7 +115,7 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="面积" prop="roomArea">
-            <el-input placeholder="请输入内容" v-model="roomDetailModel.roomArea">
+            <el-input type="number" placeholder="请输入内容" v-model="roomDetailModel.roomArea">
               <template slot="append">m<sup>2</sup></template>
             </el-input>
           </el-form-item>
@@ -142,12 +142,12 @@
       <el-row :gutter="20">
         <el-col :span="12">
           <el-form-item label="最多入住人数" prop="maxPerson">
-            <el-input v-model="roomDetailModel.maxPerson"></el-input>
+            <el-input type="number" v-model="roomDetailModel.maxPerson"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="床数" prop="bedCount">
-            <el-input v-model="roomDetailModel.bedCount"></el-input>
+            <el-input type="number" v-model="roomDetailModel.bedCount"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
@@ -358,6 +358,13 @@ export default {
       })
 
       const files = e.target.files
+      let picList = this.roomDetailModel.pictureList
+      if (picList.length + files.length > 15) {
+        this.$message.error(`您已上传${picList.length}张图片，最多还能上传${15 - picList.length}张图片`)
+        e.target.value = null
+        return false
+      }
+
       for (let i = 0; i < files.length; i++) {
         if (!this.accept.includes(files[i].type)) {
           this.$message.error(`请上传${this.accept.replace(/image\//gi, '')}的图片`)
@@ -415,6 +422,13 @@ export default {
 </script>
 
 <style lang="scss">
+.room-detail-container {
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none !important;
+    margin: 0;
+  }
+}
 .room-detail-select {
   width: 100%;
 }

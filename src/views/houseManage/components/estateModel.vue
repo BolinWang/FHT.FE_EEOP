@@ -216,7 +216,11 @@
                 <p class="city-name">{{formLabelAlign.city}}</p>
               </el-form-item>
               <el-form-item class="form-item" label="所在区域" prop="region">
-                <el-input v-model="formLabelAlign.region"></el-input>
+                <!-- <el-input v-model="formLabelAlign.region"></el-input> -->
+                <el-select v-model="formLabelAlign.region">
+                  <el-option v-for="item in zoneList" :key="item.zoneId" :label="item.zoneName" :value="item.zoneId">
+                  </el-option>
+                </el-select>
               </el-form-item>
               <el-form-item class="form-item" label="小区名称" prop="name">
                 <el-input v-model="formLabelAlign.name"></el-input>
@@ -331,25 +335,6 @@ export default {
       tempMapData: {},
       rules: {
       },
-      // estateModel: {
-      //   estateName: "",
-      //   areaCode: [],
-      //   zoneId: [],
-      //   address: [],
-      //   orgId: [],
-      //   contactName: "",
-      //   contactMobile: "",
-      //   contactGender: "1",
-      //   accountName: '',
-      //   houseDesc: '',
-      //   floors: [],
-      //   estatePics: [],
-      //   roomTypePics: [],
-      //   checkedSupportingServices: [],
-      //   checkedStoreServices: [],
-      //   checkedSurroundingServices: [],
-      //   tag: false
-      // },
       estateModel: {},
       estateModelRules: {
         estateName: [
@@ -535,6 +520,10 @@ export default {
     },
     searchZoneList(n) {
       [this.estateModel.provinceId, this.estateModel.cityId, this.estateModel.regionId] = this.estateModel.areaCode
+      if (this.tempFormData.regionId !== this.estateModel.regionId) {
+        this.estateModel.address = ''
+        this.estateModel.zoneId = ''
+      }
       if (this.estateModel.areaCode[2] !== undefined) {
         estateZoneListByAreaIdApi({
           regionId: this.estateModel.regionId
@@ -743,6 +732,7 @@ export default {
         if (status) {
           estateData = this.estateModel
         } else {
+          this.$message.error('您还有必填信息未填写完全，请全部填写好后再保存')
           return false
         }
       })
@@ -895,7 +885,8 @@ export default {
       let picList = this.curPicListIndex === -1 ? this.estateModel.pictureList : this.estateModel.roomTypeList[this.curPicListIndex].pictureList
       if (picList.length + files.length > 15) {
         this.$message.error(`您已上传${picList.length}张图片，最多还能上传${15 - picList.length}张图片`)
-        return
+        e.target.value = null
+        return false
       }
       for (let i = 0; i < files.length; i++) {
         if (!this.accept.includes(files[i].type)) {
@@ -946,12 +937,6 @@ export default {
           // this.activeNames = ['1']
           // this.resetForm('estateModel')
         }
-      }
-    },
-    'estateModel.regionId': function (val, oldVal) {
-      if (!val) {
-        this.estateModel.zoneId = ''
-        this.estateModel.address = ''
       }
     }
   },
