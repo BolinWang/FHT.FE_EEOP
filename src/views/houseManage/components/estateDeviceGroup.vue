@@ -54,7 +54,13 @@ export default {
       handler: function (val) {
         if (val) {
           this.deviceActiveTab = 'first'
-          this.$set(this, 'checkedList', deepClone(this.$store.getters.estateDeviceCheckedList))
+          let estateInfo = this.$store.state.estateDetailData.estateInfo
+          const checkedList = {
+            services: estateInfo.services ? estateInfo.services.split(',') : [],
+            storeServices: estateInfo.storeServices ? estateInfo.storeServices.split(',') : [],
+            surroundings: estateInfo.surroundings ? estateInfo.surroundings.split(',') : []
+          }
+          this.$set(this, 'checkedList', checkedList)
           this.setStatus(this.checkedList[activeTabMap[this.deviceActiveTab]].length, activeTabMap[this.deviceActiveTab])
         } else {
           // this.$set(this, 'checkedList', {})
@@ -72,13 +78,12 @@ export default {
       this.setStatus(value.length, activeTabMap[this.deviceActiveTab])
     },
     saveDeviceData(type) {
-      if (type === 'save') {
-        const curChecked ={}
-        for (const key in this.checkedList) {
-          curChecked[key] = this.checkedList[key].join(',')
-        }
-        this.$store.commit('UPDATE_ESTATE_DETAIL_DATA', curChecked)
+      const curChecked ={}
+      for (const key in this.checkedList) {
+        curChecked[key] = this.checkedList[key].join(',')
       }
+      return curChecked
+      // this.$store.commit('UPDATE_ESTATE_DETAIL_DATA', curChecked)
     },
     setStatus(checkedCount, curType) {
       this.checkAll = checkedCount === this.checkList[curType].length

@@ -208,7 +208,7 @@
           </div>
           <el-input class="search-input" placeholder="请输入公寓地址" v-model="searchKeywords" clearable size="small" @keyup.native="searchPositionByKeywords">
           </el-input>
-          <el-popover popper-class="selected-house-position" ref="popover" placement="right" width="360" trigger="manual">
+          <el-popover popper-class="selected-house-position" ref="popover" placement="bottom" width="360" trigger="manual">
             <el-form label-position="right" label-width="80px" :model="formLabelAlign" :rules="rules" size="mini" ref="ruleForm">
               <i class="el-icon-close close-icon" @click="$refs.popover.doClose()"></i>
               <el-form-item class="form-item">
@@ -513,24 +513,24 @@ export default {
           keyword: query
         }).then((res) => {
           this.loading = false
-          if (res.code === '0') {
+          if (res.code === '0' && res.data.list) {
             res.data.list.forEach((item, index) => {
               item.formatName = item.name.replace(/<span(.*?)>/g, '').replace(/<\/span>/g, '') + ' - ' + item.address
               item.displayText = item.name + ' - ' + item.address
             })
             this.addressList = res.data.list
-            this.addressList.push({
-              formatName: '',
-              cityId: '-1',
-              displayText: '<span style="color: red">找不到小区？点击这里添加小区</span>'
-            })
           }
+          this.addressList.push({
+            formatName: '',
+            cityId: '-1',
+            displayText: '<span style="color: red">找不到小区？点击这里添加小区</span>'
+          })
         })
       } else {
         this.addressList = []
       }
     },
-    searchZoneList() {
+    searchZoneList(n) {
       [this.estateModel.provinceId, this.estateModel.cityId, this.estateModel.regionId] = this.estateModel.areaCode
       if (this.estateModel.areaCode[2] !== undefined) {
         estateZoneListByAreaIdApi({
@@ -579,11 +579,13 @@ export default {
         this.estateDeviceModelVisible = true
       }
     },
-    saveDeviceData(type) {
-      this.$refs.deviceModel.saveDeviceData(type)
-      this.estateModel.services = this.$store.state.estateDetailData.estateInfo.services
-      this.estateModel.storeServices = this.$store.state.estateDetailData.estateInfo.storeServices
-      this.estateModel.surroundings = this.$store.state.estateDetailData.estateInfo.surroundings
+    saveDeviceData() {
+      const curChecked = this.$refs.deviceModel.saveDeviceData()
+
+      this.estateModel.services = curChecked.services
+      this.estateModel.storeServices = curChecked.storeServices
+      this.estateModel.surroundings = curChecked.surroundings
+
       this.estateDeviceModelVisible = false
     },
     addEstateFloor() {
@@ -705,7 +707,7 @@ export default {
 
       this.$set(this, 'estateModel', deepClone(estateInfo))
       this.activeNames = ['1']
-      this.$set(this, 'tempFormData', this.estateModel)
+      this.$set(this, 'tempFormData', deepClone(this.estateModel))
       tempNames = ['1']
       if (this.type === '新建公寓') {
         this.addEstateFloor()
@@ -915,11 +917,11 @@ export default {
         }
       }
     },
-    activeNames: {
-      handler: function (val) {
-
-      },
-      deep: true
+    'estateModel.areaCode': function (val, oldVal) {
+      if (oldVal[0] !== '' && val !== oldVal) {
+        this.estateModel.zoneId = ''
+        this.estateModel.address = ''
+      }
     }
   },
   mounted() {
