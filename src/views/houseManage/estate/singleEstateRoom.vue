@@ -466,7 +466,7 @@ export default {
           prop: "roomLayout",
           label: "室卫厅",
           render(row) {
-            return row.chamberCount + row.boardCount + row.toiletCount
+            return (row.chamberCount || 0) + '室' + (row.boardCount || 0) + '厅' + (row.toiletCount || 0) + '卫'
           }
         },
         { prop: "roomArea", label: "面积" },
@@ -801,6 +801,7 @@ export default {
             message: res.message || '操作成功',
             type: 'success'
           })
+          this.searchParam()
           this.roomDetailModelVisible = false
         }
       })
