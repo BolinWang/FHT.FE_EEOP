@@ -781,7 +781,7 @@ export default {
         return
       }
       data.fangyuanCode = this.fangyuanCode
-
+      console.log(data)
       if (this.curType === 2) {
         data.pictureUploadList = data.pictureList.filter(n => n.image)
         data.pictureList = data.pictureList.filter(n => n.imageUrl)

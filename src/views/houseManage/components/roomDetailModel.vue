@@ -84,7 +84,7 @@
       </template>
       <el-row :gutter="20">
         <el-col :span="12">
-          <el-form-item label="室卫厅" class="room-count" prop="chamberCount">
+          <el-form-item label="室卫厅" class="room-count" prop="tag">
             <el-row :gutter="10">
               <el-col :span="6">
                 <el-form-item label="" prop="chamberCount" class="room-item-count">
@@ -238,6 +238,9 @@ export default {
         ],
         bedCount: [
           { required: true, message: '请输入房间床数', trigger: 'change' }
+        ],
+        tag: [
+          { required: true, message: '', trigger: 'change' }
         ]
       },
       decorationDegreeList: [
@@ -406,7 +409,9 @@ export default {
       handler: function (val) {
         if (val) {
           this.type === 1 && this.$set(this.roomDetailModel, 'estateName', this.estateInfo.estateName)
-          this.type === 2 && this.$set(this, 'roomDetailModel', deepClone(this.$store.state.estateDetailData.estateRoomInfo))
+          let roomData = deepClone(this.$store.state.estateDetailData.estateRoomInfo)
+          roomData.tag = roomData.tag === 1 ? true : false
+          this.type === 2 && this.$set(this, 'roomDetailModel', roomData)
           this.$nextTick(() => {
             this.$refs.roomDetailModel.clearValidate()
           })
