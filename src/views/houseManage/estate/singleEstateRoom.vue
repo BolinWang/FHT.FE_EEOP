@@ -441,18 +441,16 @@ export default {
       tableHeight: 500,
       reqMethod: 'queryEstateRoomList',
       colModels: [
-        { prop: "roomTypeName", label: "房间类型", align: "center" },
+        { prop: "roomTypeName", label: "房间类型" },
         {
           prop: "floorId",
           label: "楼层",
-          align: "center",
           slotName: "floorName"
         },
-        { prop: "roomNo", label: "房号", align: "center" },
+        { prop: "roomNo", label: "房号" },
         {
           prop: "roomDirection",
           label: "朝向",
-          align: "center",
           render(row) {
             let directionList = ['', '朝南', '朝北', '朝东', '朝西', '东南', '西南', '东北', '西北']
             return directionList[row.roomDirection]
@@ -461,30 +459,27 @@ export default {
         {
           prop: "roomStatus",
           label: "房间状态",
-          align: "center",
           slotName: "roomStatus"
         },
-        { prop: "roomCode", label: "平台房源编码", align: "center" },
+        { prop: "roomCode", label: "平台房源编码" },
         {
           prop: "roomLayout",
           label: "室卫厅",
-          align: "center",
           render(row) {
             return row.chamberCount + row.boardCount + row.toiletCount
           }
         },
-        { prop: "roomArea", label: "面积", align: "center" },
+        { prop: "roomArea", label: "面积" },
         {
           prop: "decorationDegree",
           label: "装修程度",
-          align: "center",
           render(row) {
             let decorationDegreeList = ['', '毛坯', '简装', '精装修', '豪华装']
             return decorationDegreeList[row.decorationDegree]
           }
         },
-        { prop: "bedCount", label: "床数", align: "center" },
-        { prop: "maxPerson", label: "最大入住人数", align: "center" },
+        { prop: "bedCount", label: "床数" },
+        { prop: "maxPerson", label: "最大入住人数" },
         {
           prop: "tag",
           label: "标签",
@@ -509,7 +504,6 @@ export default {
         {
           prop: "operateRecord",
           label: "操作记录",
-          align: "center",
           render(row) {
             return row.lastOperator + ' ' + row.lastOperateTime
           }

@@ -209,6 +209,11 @@ a:hover {
   .el-input-group__prepend, .el-input-group__append {
     padding: 0 8px;
   }
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+      -webkit-appearance: none !important;
+      margin: 0;
+  }
 }
 
 /* elementUI 修改 */

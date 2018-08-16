@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-07-11 13:49:21
  * @Last Modified by: chudequan
- * @Last Modified time: 2018-08-16 14:18:54
+ * @Last Modified time: 2018-08-16 16:19:34
  */
 
  <template>
@@ -123,14 +123,14 @@ export default {
       selectedItems: [],
       colModels: [
         { prop: 'organizationName', label: '组织名称' },
-        { prop: 'name', label: '姓名', width: 100 },
-        { prop: 'mobile', label: '手机号', width: 150 },
-        { prop: 'userType', label: '用户类型', width: 100 },
         { prop: 'address', label: '房源位置', width: 200 },
         { prop: 'roomName', label: '公寓/小区-房间', width: 200 },
         { prop: 'houseType', label: '房源类型', width: 150 },
         { prop: 'roomCode', label: '房源编码', width: 100 },
         { prop: 'rent', label: '房价(元/月)', width: 100, align: 'right' },
+        { prop: 'name', label: '姓名', width: 100 },
+        { prop: 'mobile', label: '手机号', width: 150 },
+        { prop: 'userType', label: '用户类型', width: 100 },
         {
           prop: 'roomStatus',
           label: '房间状态',
@@ -305,11 +305,11 @@ export default {
 }
 
 .left {
-  margin-left: 5%;
+  margin-left: 15%;
 }
 
 .right {
-  margin-right: 5%;
+  margin-right: 15%;
 }
 
 input[type="checkbox"] {
@@ -331,7 +331,7 @@ label {
   float: right;
   border: 0.5px solid #e4e7ed;
   text-align: center;
-  line-height: 35px;
+  line-height: 30px;
 }
 
 .ml-selectName {

@@ -17,9 +17,10 @@
         <el-col :span="4">
           <el-checkbox :label="key" v-model="checkedFloor[key]" @change="handleCheckFloorChange(key)"></el-checkbox>
         </el-col>
-        <el-col :span="20">
-          <el-checkbox-group v-model="checkedObj[key]">
+        <el-col :span="19" :offset="1">
+          <el-checkbox-group v-model="checkedObj[key]" class="room-list-group">
             <el-checkbox
+              class="room-list-checkbox"
               v-for="v in val"
               :key="v.roomCode"
               :label="v.roomCode"
@@ -120,12 +121,39 @@ export default {
   .batch-copy-card {
     box-shadow: 0 0;
   }
+  .el-row {
+    // padding-bottom: 10px;
+    .el-col {
+      & + .el-col {
+        position: relative;
+        padding-bottom: 10px;
+        &::before {
+          content: "";
+          position: absolute;
+          top: 0;
+          left: -35px;
+          width: 0;
+          height: 100%;
+          border-left: 1px solid #ddd;
+        }
+      }
+    }
+  }
 }
 .check-all {
   float: right;
   position: relative;
   .el-form-item {
     margin-bottom: 0;
+  }
+}
+
+.room-list-group {
+  display: flex;
+  flex-wrap: wrap;
+  .room-list-checkbox {
+    margin-left: 0;
+    width: 16%;
   }
 }
 </style>

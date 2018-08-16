@@ -2,13 +2,13 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-04-11 16:49:39
  * @Last Modified by: chudequan
- * @Last Modified time: 2018-08-11 18:56:37
+ * @Last Modified time: 2018-08-16 16:10:15
  */
 
 <template>
   <div class="dialog-cropper">
       <!-- append-to-body  嵌套内层dialog -->
-      <el-dialog title="图片裁剪" :visible.sync="layer_cropper" append-to-body width="920px" @close="cropperClose">
+      <el-dialog title="图片裁剪" :visible.sync="layer_cropper" append-to-body width="740px" @close="cropperClose">
         <div class="cropper-wrapper">
           <div class="cropper-item"
             v-for="(item,index) in cropperImgs"
@@ -82,13 +82,13 @@ export default {
   },
   computed: {
     itemStyle() {
-      const _width = this.cropperImgs.length > 1 ? 400 : 830
+      const _width = this.cropperImgs.length > 1 ? 300 : 660
       return {
         width: _width + 'px'
       }
     },
     componentStyle() {
-      const componentH = this.cropperImgs.length > 1 ? 300 : 600
+      const componentH = this.cropperImgs.length > 1 ? 260 : 500
       return {
         height: componentH + 'px'
       }

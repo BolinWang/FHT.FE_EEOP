@@ -1,5 +1,5 @@
 <template>
-  <div class="estate-model-container">
+  <div class="estate-model-container" v-if="JSON.stringify(estateModel) !== '{}'">
     <el-form ref="estateModel" :model="estateModel" :rules="estateModelRules" label-width="110px" size="small">
       <el-collapse v-model="activeNames" accordion @change="checkSaveStatus">
         <el-collapse-item name="1" class="estate-collapse-container">
@@ -69,7 +69,7 @@
           <el-row :gutter="20">
             <el-col :span="12">
               <el-form-item label="房源管理权限" prop="orgId">
-                <el-select class="estate-model-select" v-model="estateModel.orgId" filterable remote :clearable="true" placeholder="组织名称" :remote-method="searchOrgListByKeywords" :loading="loading" @clear="setOrg">
+                <el-select class="estate-model-select" v-model="estateModel.orgId" filterable remote :clearable="true" placeholder="组织名称" :remote-method="searchOrgListByKeywords" :loading="loading" @clear="setOrg" :disabled="type === '编辑公寓'">
                   <el-option v-for="item in orgList" :key="item.ordId" :value="item.orgId" :label="item.orgName" @click.native="setOrg(item)">
                   </el-option>
                 </el-select>
@@ -122,7 +122,7 @@
                       label-width="0"
                       :prop="'floors.' + index + '.roomNum'"
                       :rules="estateModelRules.floor.roomNum">
-                      <el-input type="number" v-model="item.roomNum" :disabled="item.forbbidenEdit">
+                      <el-input type="number" min="0" v-model="item.roomNum" :disabled="item.forbbidenEdit">
                         <template slot="prepend">共</template>
                         <template slot="append">间</template>
                       </el-input>
@@ -133,7 +133,7 @@
                       label-width="0"
                       :prop="'floors.' + index + '.startNo'"
                       :rules="estateModelRules.floor.startNo">
-                      <el-input type="number" v-model="item.startNo">
+                      <el-input type="number" min="0" v-model="item.startNo">
                         <template slot="prepend">起始房号</template>
                       </el-input>
                     </el-form-item>
@@ -689,8 +689,8 @@ export default {
       })
     },
     initEstateData() {
-
       let estateInfo = this.$store.state.estateDetailData.estateInfo
+
       estateInfo.contactGender = 1
       estateInfo.areaCode = [estateInfo.provinceId, estateInfo.cityId, estateInfo.regionId]
       estateInfo.tag = estateInfo.tag === 1 ? true : false
@@ -715,17 +715,27 @@ export default {
           orgName: estateInfo.orgName
         }
       ]
-
-      this.$set(this, 'estateModel', deepClone(estateInfo))
-      this.activeNames = ['1']
-      this.$set(this, 'tempFormData', deepClone(this.estateModel))
-      console.log(this.estateModel)
-      console.log(this.tempFormData)
-      tempNames = ['1']
-      if (this.type === '新建公寓') {
-        this.addEstateFloor()
-        this.addEstateRoomType()
-      }
+      this.zoneList = [
+        {
+          zoneId: estateInfo.zoneId,
+          zoneName: estateInfo.zoneName
+        }
+      ]
+      setTimeout(() => {
+        this.$set(this, 'estateModel', deepClone(estateInfo))
+        this.activeNames = ['1']
+        this.$set(this, 'tempFormData', deepClone(this.estateModel))
+        tempNames = ['1']
+        if (this.type === '新建公寓') {
+          this.addEstateFloor()
+          this.addEstateRoomType()
+        }
+        this.$nextTick(() => {
+          if (this.$refs.estateModel) {
+            this.$refs.estateModel.clearValidate()
+          }
+        })
+      }, 0)
     },
     returnEstateData(type) {
       let estateData = false
@@ -746,7 +756,8 @@ export default {
       let differentFlag = false
       Object.keys(this.tempFormData).forEach((key) => {
         if (JSON.stringify(this.tempFormData[key]) != JSON.stringify(this.estateModel[key])) {
-          console.log(key)
+          console.log(this.tempFormData[key])
+          console.log(this.estateModel[key])
           differentFlag = true
         }
       })
@@ -931,18 +942,16 @@ export default {
           }
         } else {
           // this.$store.commit('CLEAR_ESTATEDATA')
+          // this.$set(this, 'estateModel', this.$store.state.estateDetailData.estateInfo)
           // this.activeNames = ['1']
           // this.resetForm('estateModel')
         }
       }
     },
-    'estateModel.areaCode': function (val, oldVal) {
-      console.log(oldVal)
-      if (oldVal[0] !== '' && val.join('') !== oldVal.join('')) {
-        // console.log(val)
-        // console.log(oldVal)
-        // this.estateModel.zoneId = ''
-        // this.estateModel.address = ''
+    'estateModel.regionId': function (val, oldVal) {
+      if (!val) {
+        this.estateModel.zoneId = ''
+        this.estateModel.address = ''
       }
     }
   },

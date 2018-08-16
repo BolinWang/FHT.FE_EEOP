@@ -67,22 +67,20 @@ export default {
       estateListUrl: "/market/fangyuan",
       method: "queryEstateList",
       colModels: [
-        { prop: "orgName", label: "组织名称", align: "center" },
-        { prop: "displayCityName", label: "城市", align: "center" },
-        { prop: "estateName", label: "公寓名称", align: "center" },
+        { prop: "orgName", label: "组织名称" },
+        { prop: "displayCityName", label: "城市" },
+        { prop: "estateName", label: "公寓名称" },
         {
           prop: "operate",
           label: "操作",
           slotName: "operateEstate",
           width: "300",
-          align: "center",
           fixed: 'right'
         },
         {
           prop: "operateRecord",
           label: "操作记录",
           slotName: "operateRecordStr",
-          align: "center"
         }
       ]
     }
@@ -214,9 +212,9 @@ export default {
     },
     showEstateModel(val) {
       if (val) {
-        this.$nextTick(() => {
-          this.$refs.estateModel.$refs.estateModel.clearValidate()
-        })
+        // this.$nextTick(() => {
+
+        // })
       } else {
         this.$store.commit('CLEAR_ESTATEDATA')
       }
