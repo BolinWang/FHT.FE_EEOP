@@ -122,7 +122,7 @@
                       label-width="0"
                       :prop="'floors.' + index + '.roomNum'"
                       :rules="estateModelRules.floor.roomNum">
-                      <el-input type="text" v-model="item.roomNum" :disabled="item.forbbidenEdit">
+                      <el-input type="number" v-model="item.roomNum" :disabled="item.forbbidenEdit">
                         <template slot="prepend">共</template>
                         <template slot="append">间</template>
                       </el-input>
@@ -133,7 +133,7 @@
                       label-width="0"
                       :prop="'floors.' + index + '.startNo'"
                       :rules="estateModelRules.floor.startNo">
-                      <el-input type="text" v-model="item.startNo">
+                      <el-input type="number" v-model="item.startNo">
                         <template slot="prepend">起始房号</template>
                       </el-input>
                     </el-form-item>
@@ -487,6 +487,9 @@ export default {
       this.map.addOverlay(marker)
       this.map.panTo(point)
       geoc.getLocation(point, rs => {
+        if (rs.addressComponents.city !== this.formLabelAlign.city) {
+          this.$message.error('当前选择小区不属于当前城市，请重新选择所在地区')
+        }
         if (o) {
           this.formLabelAlign.name = o.title
         } else {
@@ -686,6 +689,7 @@ export default {
       })
     },
     initEstateData() {
+
       let estateInfo = this.$store.state.estateDetailData.estateInfo
       estateInfo.contactGender = 1
       estateInfo.areaCode = [estateInfo.provinceId, estateInfo.cityId, estateInfo.regionId]
@@ -705,9 +709,18 @@ export default {
         })
       })
 
+      this.orgList = [
+        {
+          orgId: estateInfo.orgId,
+          orgName: estateInfo.orgName
+        }
+      ]
+
       this.$set(this, 'estateModel', deepClone(estateInfo))
       this.activeNames = ['1']
       this.$set(this, 'tempFormData', deepClone(this.estateModel))
+      console.log(this.estateModel)
+      console.log(this.tempFormData)
       tempNames = ['1']
       if (this.type === '新建公寓') {
         this.addEstateFloor()
@@ -733,6 +746,7 @@ export default {
       let differentFlag = false
       Object.keys(this.tempFormData).forEach((key) => {
         if (JSON.stringify(this.tempFormData[key]) != JSON.stringify(this.estateModel[key])) {
+          console.log(key)
           differentFlag = true
         }
       })
@@ -789,7 +803,7 @@ export default {
     deleteCurItem(type, index) {
       // type 1: 楼层  2: 房型
       if (type === 1) {
-        if (this.estateModel.floors[index].roomNum > 0) {
+        if (this.type === '编辑公寓' && this.estateModel.floors[index].roomNum > 0) {
           this.$message.error('当前楼层下面房间不为空，不能删除该楼层')
           return
         }
@@ -867,6 +881,11 @@ export default {
       })
 
       const files = e.target.files
+      let picList = this.curPicListIndex === -1 ? this.estateModel.pictureList : this.estateModel.roomTypeList[this.curPicListIndex].pictureList
+      if (picList.length + files.length > 15) {
+        this.$message.error(`您已上传${picList.length}张图片，最多还能上传${15 - picList.length}张图片`)
+        return
+      }
       for (let i = 0; i < files.length; i++) {
         if (!this.accept.includes(files[i].type)) {
           this.$message.error(`请上传${this.accept.replace(/image\//gi, '')}的图片`)
@@ -918,9 +937,12 @@ export default {
       }
     },
     'estateModel.areaCode': function (val, oldVal) {
-      if (oldVal[0] !== '' && val !== oldVal) {
-        this.estateModel.zoneId = ''
-        this.estateModel.address = ''
+      console.log(oldVal)
+      if (oldVal[0] !== '' && val.join('') !== oldVal.join('')) {
+        // console.log(val)
+        // console.log(oldVal)
+        // this.estateModel.zoneId = ''
+        // this.estateModel.address = ''
       }
     }
   },
@@ -1091,7 +1113,7 @@ export default {
           }
         }
       }
-      margin-bottom: 10px;
+      margin-bottom: 15px;
     }
   }
 }

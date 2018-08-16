@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-07-11 13:49:21
  * @Last Modified by: chudequan
- * @Last Modified time: 2018-08-14 16:16:30
+ * @Last Modified time: 2018-08-16 14:18:54
  */
 
  <template>
@@ -50,7 +50,7 @@
               <div class="right">
                 <input type="checkbox" v-model="publishSelect.idlefish" id="idleFishRent" />
                 <label for="idleFishRent">
-                  <div class="ml-selectName" v-bind:class="{changeBackground:publishSelect.idlefish}">咸鱼租房</div>
+                  <div class="ml-selectName" v-bind:class="{changeBackground:publishSelect.idlefish}">闲鱼租房</div>
                   <div class="ml-selectStatus">
                     <i class="el-icon-check" v-show="publishSelect.idlefish"></i>
                   </div>
