@@ -566,7 +566,7 @@ export default {
       if (JSON.stringify(this.deviceMap) === '{}') {
         estateDeviceListApi().then((res) => {
           if (res.code === '0') {
-            this.deviceMap = res.data
+            this.$set(this, 'deviceMap', res.data || {})
             this.$set(this, 'deviceList', {
               services: Object.keys(this.deviceMap.baseSupportMap),
               storeServices: Object.keys(this.deviceMap.storeMap),

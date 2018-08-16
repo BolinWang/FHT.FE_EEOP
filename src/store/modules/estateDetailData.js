@@ -108,7 +108,14 @@ const estateDetailData = {
   },
 
   getters: {
-
+    estateDeviceCheckedList: (state) => {
+      const aaa = {
+        services: state.estateInfo.services ? state.estateInfo.services.split(',') : [],
+        storeServices: state.estateInfo.storeServices ? state.estateInfo.storeServices.split(',') : [],
+        surroundings: state.estateInfo.surroundings ? state.estateInfo.surroundings.split(',') : []
+      }
+      return aaa
+    }
   }
 }
 
