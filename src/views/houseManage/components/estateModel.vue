@@ -218,7 +218,7 @@
               <el-form-item class="form-item" label="所在区域" prop="region">
                 <!-- <el-input v-model="formLabelAlign.region"></el-input> -->
                 <el-select v-model="formLabelAlign.region">
-                  <el-option v-for="item in zoneList" :key="item.zoneId" :label="item.zoneName" :value="item.zoneId">
+                  <el-option v-for="item in regionOptions" :key="item.value" :label="item.label" :value="item.value">
                   </el-option>
                 </el-select>
               </el-form-item>
@@ -301,7 +301,7 @@ import RoomListSelecter from '@/components/RoomListSelecter'
 import estateDeviceGroup from './estateDeviceGroup'
 import { deepClone } from '@/utils'
 import draggable from 'vuedraggable'
-
+import cityData from '@/components/AreaSelect/cityData'
 let tempNames = []
 export default {
   name: 'estateModel',
@@ -420,7 +420,9 @@ export default {
         activeSelected: true
       },
       curPicListIndex: -1,
-      tempFormData: {}
+      tempFormData: {},
+      regionOptions: [],
+      tempAreaCode: []
     }
   },
   computed: {
@@ -434,14 +436,39 @@ export default {
       let selectAddrArr = this.$refs.areaSelect.$el.innerText.replace(/\s/g, '').split('/')
 
       let selectAddr = selectAddrArr[1] + selectAddrArr[2]
+
+      let cityArr = cityData.filter((n) => n.value === this.tempAreaCode[0])
+      if (cityArr[0] && cityArr[0].children) {
+        this.regionOptions = cityArr[0].children.filter((n) => n.value === this.tempAreaCode[1])[0].children
+      }
+
       this.formLabelAlign.city = selectAddrArr[1]
-      self.map = new BMap.Map("bm-view"); // 创建地图实例
-      self.map.centerAndZoom(selectAddr || '杭州市', 15);
-      self.map.enableScrollWheelZoom(true);
+      self.map = new BMap.Map("bm-view") // 创建地图实例
+      self.map.centerAndZoom(selectAddr || '杭州市', 15)
+      self.map.enableScrollWheelZoom(true)
+      // let a = 0
+      // self.map.addEventListener("tilesloaded", () => {
+      //   return function () {
+      //     console.log(a)
+      //     a++
+      //     if (a > 1) {
+      //       return
+      //     }
+      //     const centerLat = self.map.getCenter().lat
+      //     const centerLng = self.map.getCenter().lng
+      //     console.log(self.map.getCenter())
+      //     const b = new BMap.Bounds(new BMap.Point(centerLng - 0.4, centerLat - 0.2),new BMap.Point(centerLng + 0.4, centerLat + 0.2))
+      //     try {
+      //       BMapLib.AreaRestriction.setBounds(self.map, b)
+      //     } catch (e) {
+      //       alert(e)
+      //     }
+      //   }()
+      // })
 
       self.map.addEventListener("click", function (e) {
         self.setMapPosition(e.point)
-      });
+      })
       let options = {
         onSearchComplete: function (results) {
           // 判断状态是否正确
@@ -471,10 +498,25 @@ export default {
       this.map.clearOverlays()
       this.map.addOverlay(marker)
       this.map.panTo(point)
+      this.map.setZoom(15)
       geoc.getLocation(point, rs => {
-        if (rs.addressComponents.city !== this.formLabelAlign.city) {
-          this.$message.error('当前选择小区不属于当前城市，请重新选择所在地区')
+        let addressInfo = rs.addressComponents
+        console.log(addressInfo)
+        if (addressInfo.city !== this.formLabelAlign.city) {
+          this.formLabelAlign.city = addressInfo.city
+          let provinceArr = cityData.filter((item) => item.label === addressInfo.province)
+          if (provinceArr[0] && provinceArr[0].children) {
+            this.tempAreaCode[0] = provinceArr[0].value
+            let cityArr = provinceArr[0].children.filter((n) => n.label === addressInfo.city)
+
+            if (cityArr[0] && cityArr[0].children) {
+              this.tempAreaCode[1] = cityArr[0].value
+              this.regionOptions = cityArr[0].children
+            }
+          }
+          // this.$message.error('当前选择小区不属于当前城市，请重新选择所在地区')
         }
+
         if (o) {
           this.formLabelAlign.name = o.title
         } else {
@@ -485,10 +527,14 @@ export default {
             latitude: rs.point.lat + ''
           }))
         }
-        this.formLabelAlign.region = rs.addressComponents.district
+        this.regionOptions.forEach((item) => {
+          if (item.label === addressInfo.district) {
+            this.formLabelAlign.region = item.value
+          }
+        })
         this.tempMapData = deepClone(this.formLabelAlign)
       });
-      this.$refs.popover.doShow();
+      this.$refs.popover.doShow()
     },
     searchPositionByKeywords() {
       this.local.search(this.searchKeywords)
@@ -519,9 +565,9 @@ export default {
         this.addressList = []
       }
     },
-    searchZoneList(n) {
+    searchZoneList(flag) {
       [this.estateModel.provinceId, this.estateModel.cityId, this.estateModel.regionId] = this.estateModel.areaCode
-      if (this.tempFormData.regionId !== this.estateModel.regionId) {
+      if (this.tempFormData.regionId !== this.estateModel.regionId && !flag) {
         this.estateModel.address = ''
         this.estateModel.zoneId = ''
       }
@@ -646,9 +692,9 @@ export default {
         source = 5
       }
       let formOptions = {
-        provinceId: this.estateModel.areaCode[0],
-        cityId: this.estateModel.areaCode[1],
-        regionId: this.estateModel.areaCode[2],
+        provinceId: this.tempAreaCode[0],
+        cityId: this.tempAreaCode[1],
+        regionId: this.tempAreaCode[2],
         source: source,
         confirmStatus: status
       }
@@ -659,9 +705,12 @@ export default {
         const data = res.data
         if (data.confirmStatus !== 1) {
           this.mapModelVisible = false
+          this.estateModel.areaCode = this.tempAreaCode
           this.estateModel.address = this.formLabelAlign.name + ' - ' + this.formLabelAlign.address
           this.estateModel.regionAddressId = data.regionAddressId
           this.$refs['estateModel'].validateField('address')
+          this.searchZoneList(true)
+          this.estateModel.zoneId = ''
         } else {
           this.$confirm('新选择的小区名称、区域、具体地址和历史录入的一致，<span style="color:red">但经纬度坐标不一致</span>，是否使用新坐标并覆盖？', '再次确定', {
             dangerouslyUseHTMLString: true,
@@ -747,9 +796,25 @@ export default {
       let differentFlag = false
       Object.keys(this.tempFormData).forEach((key) => {
         if (JSON.stringify(this.tempFormData[key]) != JSON.stringify(this.estateModel[key])) {
-          console.log(this.tempFormData[key])
-          console.log(this.estateModel[key])
-          differentFlag = true
+          if (key === 'pictureList') {
+            differentFlag = checkDiff(this.tempFormData[key], this.estateModel[key])
+          } else if (key === 'roomTypeList') {
+            this.tempFormData[key].forEach((item, index) => {
+              differentFlag = checkDiff(item.pictureList, this.estateModel[key][index].pictureList)
+            })
+          } else {
+            console.log(key)
+            differentFlag = true
+          }
+          function checkDiff(a, b) {
+            let diffCount = 0
+            a.forEach((item, index) => {
+              if (item.imageName !== b[index].imageName) {
+                diffCount++
+              }
+            })
+            return diffCount > 0 ? true : false
+          }
         }
       })
       if (differentFlag) {
@@ -913,9 +978,9 @@ export default {
     mapModelVisible(val) {
       if (val) {
         this.$nextTick(() => {
-          this.initBMap();
+          this.tempAreaCode = deepClone(this.estateModel.areaCode)
+          this.initBMap()
         })
-
       } else {
         this.searchKeywords = ''
         this.searchResult = []
@@ -927,17 +992,20 @@ export default {
       handler: function (val) {
         if (val) {
           this.initEstateData()
-          if (this.type === '编辑公寓') {
-
-          } else {
-            // this.$set(this, 'estateModel', deepClone(this.$store.state.estateDetailData.estateInfo))
-          }
         } else {
           // this.$store.commit('CLEAR_ESTATEDATA')
           // this.$set(this, 'estateModel', this.$store.state.estateDetailData.estateInfo)
-          // this.activeNames = ['1']
-          // this.resetForm('estateModel')
         }
+      }
+    },
+    'formLabelAlign.region': function (val, oldVal) {
+      if (val !== oldVal) {
+        this.tempAreaCode[2] = val
+        // this.regionOptions.forEach((item) => {
+        //   if (item.value === val) {
+
+        //   }
+        // })
       }
     }
   },

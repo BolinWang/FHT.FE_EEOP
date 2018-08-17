@@ -249,7 +249,7 @@ export default {
         this.$message.error(`请选择需要${typeConfig[type].title}的房源`)
         return false
       }
-      const pendingRomms = this.selectedItems.filter(item => item.idlefishStatus === '发布中' || item.publishStatus === '发布中')
+      const pendingRomms = this.selectedItems.filter(item => item.idlefishStatus === '发布中')
       if (pendingRomms.length > 0) {
         this.$message.error(`发布中的房源不能进行${typeConfig[type].title}`)
         return false

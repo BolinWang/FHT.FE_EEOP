@@ -191,9 +191,9 @@ export default {
         estateDeleteEstateApi({
           fangyuanCode: row.fangyuanCode
         }).then((res) => {
-          if (res.data.code === '0') {
+          if (res.code === '0') {
             this.$message({
-              message: res.data.message,
+              message: res.message,
               type: 'success'
             })
             this.searchParam()

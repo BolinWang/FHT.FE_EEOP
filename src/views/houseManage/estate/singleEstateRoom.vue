@@ -645,6 +645,7 @@ export default {
       }).then((res) => {
         if (res.code === '0' && res.data) {
           this.copyItemRoomList = res.data
+          this.checkedCopyList = []
           this.copyItemToModelVisible = true
         }
       })

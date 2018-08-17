@@ -411,7 +411,12 @@ export default {
           this.type === 1 && this.$set(this.roomDetailModel, 'estateName', this.estateInfo.estateName)
           let roomData = deepClone(this.$store.state.estateDetailData.estateRoomInfo)
           roomData.tag = roomData.tag === 1 ? true : false
+          roomData.pictureList.forEach((item) => {
+            item.src = item.imageUrl
+            item.title = item.imageName
+          })
           this.type === 2 && this.$set(this, 'roomDetailModel', roomData)
+
           this.$nextTick(() => {
             this.$refs.roomDetailModel.clearValidate()
           })
