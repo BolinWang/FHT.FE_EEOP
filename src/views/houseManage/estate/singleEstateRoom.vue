@@ -464,7 +464,7 @@ export default {
         { prop: "roomCode", label: "平台房源编码" },
         {
           prop: "roomLayout",
-          label: "室卫厅",
+          label: "室厅卫",
           render(row) {
             return (row.chamberCount || 0) + '室' + (row.boardCount || 0) + '厅' + (row.toiletCount || 0) + '卫'
           }

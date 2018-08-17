@@ -84,7 +84,7 @@
       </template>
       <el-row :gutter="20">
         <el-col :span="12">
-          <el-form-item label="室卫厅" class="room-count" prop="tag">
+          <el-form-item label="室厅卫" class="room-count" prop="tag">
             <el-row :gutter="10">
               <el-col :span="6">
                 <el-form-item label="" prop="chamberCount" class="room-item-count">
@@ -95,20 +95,20 @@
                 室
               </el-col>
               <el-col :span="6">
-                <el-form-item label="" prop="toiletCount" class="room-item-count">
-                  <el-input type="number" v-model="roomDetailModel.toiletCount"></el-input>
-                </el-form-item>
-              </el-col>
-              <el-col :span="2">
-                卫
-              </el-col>
-              <el-col :span="6">
                 <el-form-item label="" prop="boardCount" class="room-item-count">
                   <el-input type="number" v-model="roomDetailModel.boardCount"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="2">
                 厅
+              </el-col>
+              <el-col :span="6">
+                <el-form-item label="" prop="toiletCount" class="room-item-count">
+                  <el-input type="number" v-model="roomDetailModel.toiletCount"></el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="2">
+                卫
               </el-col>
             </el-row>
           </el-form-item>

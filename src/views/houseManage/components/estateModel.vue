@@ -501,6 +501,7 @@ export default {
           keyword: query
         }).then((res) => {
           this.loading = false
+          this.addressList = []
           if (res.code === '0' && res.data.list) {
             res.data.list.forEach((item, index) => {
               item.formatName = item.name.replace(/<span(.*?)>/g, '').replace(/<\/span>/g, '') + ' - ' + item.address
