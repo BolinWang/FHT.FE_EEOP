@@ -231,7 +231,7 @@
 
     <el-dialog :title="curUploadPicsType === 'estatePics' ? '上传公寓照片' : '上传房间照片'" :visible.sync="uploadPicsModelVisible" width="600px" :append-to-body="true" custom-class="upload-pics-model">
       <div class="previewItems">
-        <Preview :pic-list="curPicListIndex === -1 ? estateModel.pictureList : (estateModel.roomTypeList[this.curPicListIndex] ? estateModel.roomTypeList[this.curPicListIndex].pictureList : [])" :delete-icon="`delete`" :disabled="``" @emitDelete="emitDelete">
+        <Preview :pic-list="curPicListIndex === -1 ? estateModel.pictureList : (estateModel.roomTypeList[this.curPicListIndex] ? estateModel.roomTypeList[this.curPicListIndex].pictureList : [])" :delete-icon="`delete`" :disabled="``" @emitDelete="emitDelete" :modelVisible="uploadPicsModelVisible">
         </Preview>
         <label class="el-upload el-upload--picture-card uploadImage" for="uploadImages">
           <i class="el-icon-plus"></i>

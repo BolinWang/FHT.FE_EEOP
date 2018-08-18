@@ -66,6 +66,10 @@ export default {
     disabled: {
       type: String,
       default: 'disabled'
+    },
+    modelVisible: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {
@@ -96,11 +100,8 @@ export default {
     this.deleteFlag = this.deleteIcon
     this.list.map((item, index) => {
       item.opacityVal = 0
-      item.sortNum = index
-      item.type = item.type || 1
       item.title = item.picTag || ''
     })
-
   },
   methods: {
     handleMouseenter(index) {
@@ -166,7 +167,7 @@ export default {
       handler: function (val) {
         this.list = (val || []).slice()
         this.list.map((item, index) => {
-          item.sortNum = index
+          item.sortNum = Math.random()
           item.type = item.type || 1
         })
       }
@@ -182,6 +183,11 @@ export default {
       this.$nextTick(() => {
         this.delayedDragging = false
       })
+    },
+    modelVisible(val) {
+      if (!val) {
+        this.list = []
+      }
     }
   }
 }
