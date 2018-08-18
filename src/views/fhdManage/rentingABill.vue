@@ -109,7 +109,7 @@
                             prop="deadlineDate">
                             </el-table-column>
                             <el-table-column
-                             width='80px'
+                             width='60px'
                             label="状态">
                               <template slot-scope="scope">
                                     <span >{{scope.row.status | filStatus}}</span>
@@ -138,6 +138,7 @@
                                 </template>
                             </el-table-column>
                               <el-table-column
+                              width='130px'
                             label="租客/手机号码">
                               <template slot-scope="scope">
                                   {{scope.row.customerName}}/{{scope.row.customerMobile}}
@@ -147,7 +148,15 @@
                             label="催租跟进">
                               <template slot-scope="scope">
                                   <span class="col-red pad" @click="goFollow(scope.row.id,scope.row.billNo,scope.row.isOver)">{{scope.row.followCount
-| filterText }}</span>      <el-button v-show="scope.row.followType" size="mini" type="info" plain>{{scope.row.followType | filterBtn}}</el-button>
+| filterText }}</span>           
+                                  <el-popover
+                                    placement="top-start"
+                                    width="200"
+                                    trigger="hover"
+                                    :disabled='scope.row.followType != 3'
+                                    :content="scope.row.content">
+                                    <el-button slot="reference" v-show="scope.row.followType" size="mini" type="info" plain>{{scope.row.followType | filterBtn}}</el-button>
+                                  </el-popover>
                               </template>
                             </el-table-column>
                     </el-table>
@@ -175,6 +184,7 @@ export default {
   },
     data() {
       return { 
+         fullscreenLoading: false,
         pageItems: {   //pageSize对象
           pageNo: 1,
           pageSize: 20
@@ -274,7 +284,7 @@ export default {
                 label:'未接听'
               }
           ]
-        return resultTypeList[val]?resultTypeList[val].label:''
+        return resultTypeList[val]?resultTypeList[val-1].label:''
       },
       filStatus(val){
         const valStatus=['未缴租','线上已缴租','线下已缴租','已撤销']
@@ -309,16 +319,83 @@ export default {
     },
     methods:{
       exportExcel(){
+        const loading = this.$loading({
+          lock: true,
+          text: 'Loading',
+          spinner: 'el-icon-loading',
+          background: 'rgba(0, 0, 0, 0.7)'
+        });
+        this.pageItems.pageSize = 9999;
+        let searchParams = Object.assign(this.pageItems, this.formData);
         exportExcelApi(this.formData).then(response => {
             console.log(response)
-            if(response.code == 0){
-              this.$message({
-                message: response.message,
-                type: 'success'
-             });
-            }
+            response.data.map((item, index) => {
+          item.index = index * 1 + 1;
+        })
+        require.ensure([], () => {
+          const { export_json_to_excel } = require('@/vendor/Export2Excel')
+          const tHeader = [
+            "序号", "生成时间", "账单号", "城市", "区域", "板块", "小区/公寓-房间", "房东", "房东手机号码",
+            "账单名称", "最迟支付时间", "状态", "是否逾期","支付时间",
+            "租客",
+            "租客手机号码",
+            "跟进次数",
+            "最新跟进时间",
+            "最新跟进人",
+            "跟进结果",
+            "城市管家",
+            "城市管家手机号",
+            "所在部门",
+            "上级部门"
+          ];
+          const filterVal = [
+            "index", "生成时间", "账单号", "城市", "区域", "板块", "小区/公寓-房间", "房东", "房东手机号码",
+            "账单名称", "最迟支付时间", "状态", "是否逾期","支付时间",
+            "租客",
+            "租客手机号码",
+            "跟进次数",
+            "最新跟进时间",
+            "最新跟进人",
+            "跟进结果",
+            "城市管家",
+            "城市管家手机号",
+            "所在部门",
+            "上级部门"
+          ];
+          const data = this.formatJson(filterVal, response.data || [])
+          export_json_to_excel(tHeader, data, new Date().getTime(), '催租信息表')
+          
+        })
+
+        loading.close();
+        this.$message({
+            message: response.message,
+            type: 'success'
+         });
+            // if(response.code == 0){
+            //   let data = response.data.bytes
+            //   var blob = new Blob([data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8'}); //application/vnd.openxmlformats-officedocument.spreadsheetml.sheet这里表示xlsx类型
+            // 　　var downloadElement = document.createElement('a');
+            // 　　var href = window.URL.createObjectURL(blob); //创建下载的链接
+            // 　　downloadElement.href = href;
+            // 　　downloadElement.download = '列表.xlsx'; //下载后文件名
+            // 　　document.body.appendChild(downloadElement);
+            // 　　downloadElement.click(); //点击下载
+            // 　　document.body.removeChild(downloadElement); //下载完成移除元素
+            // 　　window.URL.revokeObjectURL(href); //释放掉blob对象 
+            //  console.log(href)
+            //   this.$message({
+            //     message: response.message,
+            //     type: 'success'
+            //  });
+            // }
         })
       },
+        formatJson(filterVal, jsonData) {
+      return jsonData.map(v => filterVal.map(j => {
+        return v[j]
+      }))
+    },
       handleSizeChange(val) {
       this.pageItems.pageSize = val;
       this.searchParam();
