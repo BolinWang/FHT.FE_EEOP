@@ -108,20 +108,14 @@
               <el-form-item label="公寓楼层" label-width="110px" prop="floors">
                 <el-row :gutter="10" v-for="(item, index) in estateModel.floors" :key="index">
                   <el-col :span="6">
-                    <el-form-item
-                      label-width="0"
-                      :prop="'floors.' + index + '.floorName'"
-                      :rules="estateModelRules.floor.floorName">
+                    <el-form-item label-width="0" :prop="'floors.' + index + '.floorName'" :rules="estateModelRules.floor.floorName">
                       <el-input type="text" v-model="item.floorName">
                         <template slot="prepend">楼层名称</template>
                       </el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :span="4">
-                    <el-form-item
-                      label-width="0"
-                      :prop="'floors.' + index + '.roomNum'"
-                      :rules="estateModelRules.floor.roomNum">
+                    <el-form-item label-width="0" :prop="'floors.' + index + '.roomNum'" :rules="estateModelRules.floor.roomNum">
                       <el-input type="number" min="0" v-model="item.roomNum" :disabled="item.forbbidenEdit">
                         <template slot="prepend">共</template>
                         <template slot="append">间</template>
@@ -129,20 +123,14 @@
                     </el-form-item>
                   </el-col>
                   <el-col :span="6" v-if="!item.forbbidenEdit">
-                    <el-form-item
-                      label-width="0"
-                      :prop="'floors.' + index + '.startNo'"
-                      :rules="estateModelRules.floor.startNo">
+                    <el-form-item label-width="0" :prop="'floors.' + index + '.startNo'" :rules="estateModelRules.floor.startNo">
                       <el-input type="number" min="0" v-model="item.startNo">
                         <template slot="prepend">起始房号</template>
                       </el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :span="6" v-if="!item.forbbidenEdit && type === '编辑公寓'">
-                    <el-form-item
-                      label-width="0"
-                      :prop="'floors.' + index + '.roomTypeId'"
-                      :rules="estateModelRules.floor.roomTypeId">
+                    <el-form-item label-width="0" :prop="'floors.' + index + '.roomTypeId'" :rules="estateModelRules.floor.roomTypeId">
                       <el-select v-model="item.roomTypeId" placeholder="请选择房间类型">
                         <el-option v-for="(item, index) in estateModel.roomTypeList" :key="index" :label="item.styleName" :value="item.id">
                         </el-option>
@@ -169,10 +157,7 @@
               <el-form-item label="房间类型" label-width="110px" prop="roomTypeList">
                 <el-row :gutter="20" v-for="(item, index) in estateModel.roomTypeList" :key="item.id">
                   <el-col :span="8">
-                    <el-form-item
-                      label-width="0"
-                      :prop="'roomTypeList.' + index + '.styleName'"
-                      :rules="estateModelRules.roomType.styleName">
+                    <el-form-item label-width="0" :prop="'roomTypeList.' + index + '.styleName'" :rules="estateModelRules.roomType.styleName">
                       <el-input v-model="item.styleName"></el-input>
                     </el-form-item>
                   </el-col>
@@ -216,8 +201,7 @@
                 <p class="city-name">{{formLabelAlign.city}}</p>
               </el-form-item>
               <el-form-item class="form-item" label="所在区域" prop="region">
-                <!-- <el-input v-model="formLabelAlign.region"></el-input> -->
-                <el-select v-model="formLabelAlign.region">
+                <el-select v-model="formLabelAlign.region" style="width: 100%">
                   <el-option v-for="item in regionOptions" :key="item.value" :label="item.label" :value="item.value">
                   </el-option>
                 </el-select>
@@ -322,7 +306,7 @@ export default {
       myArray: [{
         id: '1',
         name: 'nihao'
-      },{
+      }, {
         id: '2',
         name: 'heihei'
       }],
@@ -443,28 +427,9 @@ export default {
       }
 
       this.formLabelAlign.city = selectAddrArr[1]
-      self.map = new BMap.Map("bm-view") // 创建地图实例
+      self.map = new BMap.Map("bm-view", { minZoom: 13, maxZoom: 19 }) // 创建地图实例
       self.map.centerAndZoom(selectAddr || '杭州市', 15)
       self.map.enableScrollWheelZoom(true)
-      // let a = 0
-      // self.map.addEventListener("tilesloaded", () => {
-      //   return function () {
-      //     console.log(a)
-      //     a++
-      //     if (a > 1) {
-      //       return
-      //     }
-      //     const centerLat = self.map.getCenter().lat
-      //     const centerLng = self.map.getCenter().lng
-      //     console.log(self.map.getCenter())
-      //     const b = new BMap.Bounds(new BMap.Point(centerLng - 0.4, centerLat - 0.2),new BMap.Point(centerLng + 0.4, centerLat + 0.2))
-      //     try {
-      //       BMapLib.AreaRestriction.setBounds(self.map, b)
-      //     } catch (e) {
-      //       alert(e)
-      //     }
-      //   }()
-      // })
 
       self.map.addEventListener("click", function (e) {
         self.setMapPosition(e.point)
@@ -501,7 +466,6 @@ export default {
       this.map.setZoom(15)
       geoc.getLocation(point, rs => {
         let addressInfo = rs.addressComponents
-        console.log(addressInfo)
         if (addressInfo.city !== this.formLabelAlign.city) {
           this.formLabelAlign.city = addressInfo.city
           let provinceArr = cityData.filter((item) => item.label === addressInfo.province)
@@ -734,7 +698,7 @@ export default {
       estateInfo.areaCode = [estateInfo.provinceId, estateInfo.cityId, estateInfo.regionId]
       estateInfo.tag = estateInfo.tag === 1 ? true : false
       estateInfo.address = estateInfo.subdistrictName ? (estateInfo.subdistrictName + ' - ' + estateInfo.subdistrictAddress) : ''
-      estateInfo.floors.forEach((item) => {item.forbbidenEdit = true})
+      estateInfo.floors.forEach((item) => { item.forbbidenEdit = true })
 
       estateInfo.pictureList.forEach((item) => {
         item.src = item.imageUrl
@@ -899,8 +863,8 @@ export default {
     emitCropperData(list = []) {
       list.forEach((v, i) => {
         v.type = 1,
-        v.imageName = v.title,
-        v.image = v.src
+          v.imageName = v.title,
+          v.image = v.src
       })
       let picList = this.curPicListIndex === -1 ? this.estateModel.pictureList : this.estateModel.roomTypeList[this.curPicListIndex].pictureList
       if (this.curPicListIndex === -1) {
@@ -993,19 +957,13 @@ export default {
         if (val) {
           this.initEstateData()
         } else {
-          // this.$store.commit('CLEAR_ESTATEDATA')
-          // this.$set(this, 'estateModel', this.$store.state.estateDetailData.estateInfo)
+          this.$store.commit('CLEAR_ESTATEDATA')
         }
       }
     },
     'formLabelAlign.region': function (val, oldVal) {
       if (val !== oldVal) {
         this.tempAreaCode[2] = val
-        // this.regionOptions.forEach((item) => {
-        //   if (item.value === val) {
-
-        //   }
-        // })
       }
     }
   },

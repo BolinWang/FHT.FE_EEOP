@@ -209,15 +209,6 @@ export default {
       } else {
         this.houseSearchForm.cityId = ''
       }
-    },
-    showEstateModel(val) {
-      if (val) {
-        // this.$nextTick(() => {
-
-        // })
-      } else {
-        this.$store.commit('CLEAR_ESTATEDATA')
-      }
     }
   },
   mounted() {
