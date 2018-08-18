@@ -1,8 +1,8 @@
 /*
  * @Author: FT.FE.Bolin
  * @Date: 2018-04-11 16:50:08
- * @Last Modified by: chudequan
- * @Last Modified time: 2018-08-17 17:18:52
+ * @Last Modified by: FT.FE.Bolin
+ * @Last Modified time: 2018-08-18 11:42:08
  */
 
 <template>
@@ -165,6 +165,8 @@ export default {
         this.list.map((item, index) => {
           item.sortNum = item.key || index
           item.type = item.type || 1
+          item.opacityVal = 0
+          item.title = item.picTag || ''
         })
       }
     },

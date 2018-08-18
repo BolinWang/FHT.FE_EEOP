@@ -229,9 +229,17 @@
       </div>
     </el-dialog>
 
-    <el-dialog :title="curUploadPicsType === 'estatePics' ? '上传公寓照片' : '上传房间照片'" :visible.sync="uploadPicsModelVisible" width="600px" :append-to-body="true" custom-class="upload-pics-model">
+    <el-dialog :title="curUploadPicsType === 'estatePics' ? '上传公寓照片' : '上传房间照片'"
+      :visible.sync="uploadPicsModelVisible"
+      :append-to-body="true"
+      @close="uploadModelClose"
+      custom-class="upload-pics-model" width="600px" >
       <div class="previewItems">
-        <Preview :pic-list="curPicListIndex === -1 ? estateModel.pictureList : (estateModel.roomTypeList[this.curPicListIndex] ? estateModel.roomTypeList[this.curPicListIndex].pictureList : [])" :delete-icon="`delete`" :disabled="``" @emitDelete="emitDelete" :modelVisible="uploadPicsModelVisible">
+        <Preview
+          :pic-list="currentPicList"
+          :delete-icon="`delete`"
+          :disabled="``"
+          @emitDelete="emitDelete">
         </Preview>
         <label class="el-upload el-upload--picture-card uploadImage" for="uploadImages">
           <i class="el-icon-plus"></i>
@@ -310,6 +318,7 @@ export default {
         id: '2',
         name: 'heihei'
       }],
+      currentPicList: [],  //当前展示图片
       mapModelVisible: false,
       local: null,
       map: null,
@@ -418,9 +427,7 @@ export default {
     initBMap() {
       let self = this
       let selectAddrArr = this.$refs.areaSelect.$el.innerText.replace(/\s/g, '').split('/')
-
       let selectAddr = selectAddrArr[1] + selectAddrArr[2]
-
       let cityArr = cityData.filter((n) => n.value === this.tempAreaCode[0])
       if (cityArr[0] && cityArr[0].children) {
         this.regionOptions = cityArr[0].children.filter((n) => n.value === this.tempAreaCode[1])[0].children
@@ -564,6 +571,7 @@ export default {
       this.curUploadPicsType = type
       this.uploadPicsModelVisible = true
       this.curPicListIndex = index
+      this.currentPicList = this.curPicListIndex === -1 ? this.estateModel.pictureList : (this.estateModel.roomTypeList[this.curPicListIndex] ? this.estateModel.roomTypeList[this.curPicListIndex].pictureList : [])
     },
     openDeviceModel() {
       if (JSON.stringify(this.deviceMap) === '{}') {
@@ -847,6 +855,10 @@ export default {
         this.estateModel.roomTypeList.splice(index, 1)
       }
     },
+    // preview弹出层关闭
+    uploadModelClose() {
+      this.currentPicList = []
+    },
     // 删除图片
     emitDelete(val) {
       if (this.curPicListIndex === -1) {
@@ -872,6 +884,7 @@ export default {
       } else {
         this.estateModel.roomTypeList[this.curPicListIndex].pictureList = [...this.estateModel.roomTypeList[this.curPicListIndex].pictureList, ...list]
       }
+      this.currentPicList = [...this.currentPicList, ...list]
     },
     /* 选择图片 */
     async uploadImg(e) {
