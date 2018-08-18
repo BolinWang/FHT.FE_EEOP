@@ -1,8 +1,8 @@
 /*
  * @Author: FT.FE.Bolin
  * @Date: 2018-04-11 16:47:22
- * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-07-12 16:32:35
+ * @Last Modified by: chudequan
+ * @Last Modified time: 2018-07-27 16:38:56
  */
 <template>
   <div class="model-table-pagenation">
@@ -266,10 +266,13 @@
     },
     mounted() {
       this.$refs['gridUnit'].$on('expand-change', (row, expanded) => this.emitEventHandler('expand-change', row, expanded))
-      const { type, autoLoad, formOptions, params } = this
+      const { type, autoLoad, formOptions, params, data } = this
       if (type === 'remote' && autoLoad) {
         this.searchParams = formOptions ? Object.assign(formOptions, params) : params
         this.fetchHandler()
+      } else if (type === 'local' && Array.isArray(data)) {
+        this.tableData = data
+        this.total = data.length
       } else {
         this.$message.error('请联系柏林Grid组件使用姿势')
       }

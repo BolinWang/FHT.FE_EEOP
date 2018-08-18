@@ -1,8 +1,8 @@
 /*
  * @Author: FT.FE.Bolin
  * @Date: 2018-07-11 13:49:21
- * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-07-25 17:35:47
+ * @Last Modified by: chudequan
+ * @Last Modified time: 2018-08-16 16:19:34
  */
 
  <template>
@@ -35,29 +35,47 @@
           <el-input size="small" v-model="searchParams.keywords" clearable placeholder="公寓/小区" class="filter-item" style="width:150px;"></el-input>
           <el-button size="small" type="success" icon="el-icon-upload" class="filter-item" @click="syncItems('on')">发布</el-button>
           <el-button size="small" type="danger" icon="el-icon-remove" class="filter-item" @click="syncItems('off')">撤销</el-button>
+          <!-- fhj -->
+          <el-dialog class="select-dialog" :title='"选择"+dialogTitle+"平台"' :visible.sync="dialogVisible" width="40%">
+            <div class="select-platform-container">
+              <div class="left">
+                <input type="checkbox" v-model="publishSelect.mlzf" id="mlRent" />
+                <label for="mlRent">
+                  <div class="ml-selectName" v-bind:class="{changeBackground:publishSelect.mlzf}">麦邻租房</div>
+                  <div class="ml-selectStatus">
+                    <i class="el-icon-check" v-show="publishSelect.mlzf"></i>
+                  </div>
+                </label>
+              </div>
+              <div class="right">
+                <input type="checkbox" v-model="publishSelect.idlefish" id="idleFishRent" />
+                <label for="idleFishRent">
+                  <div class="ml-selectName" v-bind:class="{changeBackground:publishSelect.idlefish}">闲鱼租房</div>
+                  <div class="ml-selectStatus">
+                    <i class="el-icon-check" v-show="publishSelect.idlefish"></i>
+                  </div>
+                </label>
+              </div>
+            </div>
+            <span slot="footer" class="dialog-footer">
+              <el-button type="primary" @click="gotoHouseAsync">{{dialogTitle === "撤销"?"确定":"发布"}}</el-button>
+            </span>
+          </el-dialog>
+          <!--fhj-->
         </div>
       </el-form>
-      <GridUnit
-        ref="refGridUnit"
-        :columns="colModels"
-        :formOptions="searchParams"
-        :url="url"
-        :showSelection="true"
-        :pageSizes="[50, 100, 200, 500]"
-        :dataMethod="method"
-        :height="tableHeight"
-        @selection-change="handleSelectionChange">
+      <GridUnit ref="refGridUnit" :columns="colModels" :formOptions="searchParams" :url="url" :showSelection="true" :pageSizes="[50, 100, 200, 500]" :dataMethod="method" :height="tableHeight" @selection-change="handleSelectionChange">
         <template slot="slot_popover" slot-scope="scope">
-          <el-popover v-if="scope.row.idlefishStatus === `发布失败`" trigger="hover" placement="top">
+          <el-popover v-if="scope.row.idlefishStatus === `发布失败` || scope.row.publishStatus === `发布失败` " trigger="hover" placement="top">
             <p>发布失败原因: {{ scope.row.failReason }}</p>
             <div slot="reference">
-              <el-tag :type="scope.row.idlefishStatus | renderStatusType">
-                {{scope.row.idlefishStatus | renderStatusValue}}
+              <el-tag :type="(scope.row.idlefishStatus|| scope.row.publishStatus) | renderStatusType">
+                {{(scope.row.idlefishStatus || scope.row.publishStatus) | renderStatusValue}}
               </el-tag>
             </div>
           </el-popover>
-          <el-tag v-else :type="scope.row.idlefishStatus | renderStatusType">
-            {{scope.row.idlefishStatus | renderStatusValue}}
+          <el-tag v-else :type="(scope.row.idlefishStatus || scope.row.publishStatus) | renderStatusType">
+            {{scope.row.idlefishStatus || scope.row.publishStatus | renderStatusValue}}
           </el-tag>
         </template>
       </GridUnit>
@@ -68,6 +86,7 @@
 import GridUnit from '@/components/GridUnit/grid'
 import { deepClone, cleanArray, ObjectMap } from '@/utils'
 import { houseAsyncApi } from '@/api/houseManage'
+import { publishHouseApi } from '@/api/houseManage'
 export default {
   name: 'houseSync',
   components: {
@@ -90,7 +109,7 @@ export default {
   },
   data() {
     return {
-      tabMapOptions: ['整租','合租', '集中式'],
+      tabMapOptions: ['整租', '合租', '集中式'],
       activeName: '整租',
       searchParams: {
         houseRentType: 1,
@@ -104,14 +123,14 @@ export default {
       selectedItems: [],
       colModels: [
         { prop: 'organizationName', label: '组织名称' },
-        { prop: 'name', label: '姓名', width: 100 },
-        { prop: 'mobile', label: '手机号', width: 150 },
-        { prop: 'userType', label: '用户类型', width: 100 },
         { prop: 'address', label: '房源位置', width: 200 },
         { prop: 'roomName', label: '公寓/小区-房间', width: 200 },
         { prop: 'houseType', label: '房源类型', width: 150 },
         { prop: 'roomCode', label: '房源编码', width: 100 },
         { prop: 'rent', label: '房价(元/月)', width: 100, align: 'right' },
+        { prop: 'name', label: '姓名', width: 100 },
+        { prop: 'mobile', label: '手机号', width: 150 },
+        { prop: 'userType', label: '用户类型', width: 100 },
         {
           prop: 'roomStatus',
           label: '房间状态',
@@ -156,12 +175,18 @@ export default {
       ],
       tableHeight: 300,
       url: houseAsyncApi.defaultOptions.requestUrl,
-      method: houseAsyncApi.defaultOptions.method
+      method: houseAsyncApi.defaultOptions.method,
+      dialogVisible: false,
+      publishSelect: {
+        mlzf: true,
+        idlefish: true
+      },
+      dialogTitle: ''
     }
   },
   mounted() {
     /* 表格高度控制 */
-   this.$nextTick(() => {
+    this.$nextTick(() => {
       const offsetTop = 230
       const pagenationH = 64
       const containerPadding = 20
@@ -176,7 +201,7 @@ export default {
     })
   },
   computed: {
-    tableStyle: function() {
+    tableStyle: function () {
       return {
         width: '100%',
         height: this.tableHeight + 'px'
@@ -214,12 +239,10 @@ export default {
     syncItems(type = 'on') {
       const typeConfig = {
         'on': {
-          title: '发布',
-          api: houseAsyncApi.publish
+          title: '发布'
         },
         'off': {
-          title: '撤销',
-          api: houseAsyncApi.offshlef
+          title: '撤销'
         }
       }
       if (this.selectedItems.length === 0) {
@@ -231,32 +254,36 @@ export default {
         this.$message.error(`发布中的房源不能进行${typeConfig[type].title}`)
         return false
       }
-      const unfilterItem = this.selectedItems.filter(item => item.idlefishStatus === type)
+      const unfilterItem = this.selectedItems.filter(item => item.idlefishStatus === type || item.publishStatus === type)
       if (unfilterItem.length !== 0) {
         this.$message.error(`已${typeConfig[type].title}的房源不能再${typeConfig[type].title}`)
         return false
       }
-      this.$confirm(`已选择${this.selectedItems.length}个房源，确定${typeConfig[type].title}吗？`, '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        this.gotoHouseAsync(typeConfig[type].api)
-      }).catch(() => {})
+      this.dialogVisible = true;
+      this.dialogTitle = typeConfig[type].title;
+      this.publishSelect.mlzf = false;
+      this.publishSelect.idlefish = false;
     },
     // 发布、撤销
-    gotoHouseAsync(api) {
-      let roomCodes = this.selectedItems.map(item => item.roomCode)
-      api({
-        platform: ['idlefish'],
-        roomCodes
-      }).then(response => {
+    gotoHouseAsync() {
+      let roomCodes = this.selectedItems.map(item => item.roomCode);
+      let platform = [];
+      for (var i in this.publishSelect) {
+        if (this.publishSelect[i]) {
+          platform.push(i);
+        }
+      }
+      publishHouseApi({
+        platforms: platform,
+        roomCodeList: roomCodes
+      },this.dialogTitle === "发布" ? 1 : 2).then(response => {
         this.$notify({
           title: '成功',
           message: '操作成功',
           type: 'success',
-          duration: 2000
+          duration: 2000,
         })
+        this.dialogVisible=false;
         this.searchParam()
       })
     }
@@ -268,7 +295,60 @@ export default {
   margin-left: 10px;
 }
 
+.select-platform-container {
+  height: 100px;
+  padding: 15px 10px;
+}
+
 .item-select {
   width: 150px;
+}
+
+.left {
+  margin-left: 15%;
+}
+
+.right {
+  margin-right: 15%;
+}
+
+input[type="checkbox"] {
+  display: none;
+}
+
+label {
+  display: inline-block;
+  width: 120px;
+  height: 30px;
+}
+
+.ml-selectStatus {
+  width: 40px;
+  height: 30px;
+  margin-top: -30px;
+  font-size: 25px;
+  color: #ffa500;
+  float: right;
+  border: 0.5px solid #e4e7ed;
+  text-align: center;
+  line-height: 30px;
+}
+
+.ml-selectName {
+  background-color: #ebeef5;
+  width: 80px;
+  height: 30px;
+  font-size: 14px;
+  text-align: center;
+  line-height: 30px;
+}
+.changeBackground {
+  background-color: #ffa500;
+  color: #ffffff;
+}
+//隐藏原生复选框
+#mlRent {
+  position: absolute;
+  clip: rect(0, 0, 0, 0);
 }
 </style>

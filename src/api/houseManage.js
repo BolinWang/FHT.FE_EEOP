@@ -167,3 +167,268 @@ export const houseAsyncApi = {
     })
   }
 }
+
+/* 集中式查询单个公寓详情 */
+export function estateRoomDetailApi(params) {
+  return fetch({
+    url: '/market/fangyuan',
+    method: 'post',
+    data: {
+      method: 'queryOneFangyuan',
+      params
+    }
+  })
+}
+
+/* 集中式楼层列表 */
+export function estateRoomFloorApi(params) {
+  return fetch({
+    url: '/market/fangyuan',
+    method: 'post',
+    data: {
+      method: 'queryFloorListByEstateId',
+      params
+    }
+  })
+}
+
+/* 集中式模糊查询具体位置 */
+export function estateAddressByKeywordsApi(params) {
+  return fetch({
+    url: '/market/fangyuan',
+    method: 'post',
+    data: {
+      method: 'searchAddressByKeyword',
+      params
+    }
+  })
+}
+
+/* 集中式根据区id查询板块列表 */
+export function estateZoneListByAreaIdApi(params) {
+  return fetch({
+    url: '/market/fangyuan',
+    method: 'post',
+    data: {
+      method: 'queryZoneListByAreaId',
+      params
+    }
+  })
+}
+
+/* 集中式查询房源基础设施列表 */
+export function estateDeviceListApi(params) {
+  return fetch({
+    url: '/market/fangyuan',
+    method: 'post',
+    data: {
+      method: 'queryBaseSupportList',
+      params
+    }
+  })
+}
+
+/* 集中式查询房源组织列表 */
+export function estateOrgListApi(params) {
+  return fetch({
+    url: '/market/fangyuan',
+    method: 'post',
+    data: {
+      method: 'queryOrgListByName',
+      params
+    }
+  })
+}
+
+/* 集中式查询单个公寓下面房间列表 */
+export function estateBatchCopyRoomListApi(params) {
+  return fetch({
+    url: '/market/fangyuan',
+    method: 'post',
+    data: {
+      method: 'allRoomByFangyuanCode',
+      params
+    }
+  })
+}
+
+/* 集中式新建公寓保存 */
+export function estateNewEstateSaveApi(params) {
+  return fetch({
+    url: '/market/fangyuan',
+    method: 'post',
+    data: {
+      method: 'saveEstateInfo',
+      params
+    }
+  })
+}
+
+/* 集中式删除公寓 */
+export function estateDeleteEstateApi(params) {
+  return fetch({
+    url: '/market/fangyuan',
+    method: 'post',
+    data: {
+      method: 'deleteHouse',
+      params
+    }
+  })
+}
+
+/* 集中式新增小区 */
+export function estateNewSubdistrictApi(params) {
+  return fetch({
+    url: '/market/fangyuan',
+    method: 'post',
+    data: {
+      method: 'addSubdistrict',
+      params
+    }
+  })
+}
+
+/* 集中式保存复制到数据 */
+export function copyToOtherRoomApi(params) {
+  return fetch({
+    url: '/market/fangyuan',
+    method: 'post',
+    data: {
+      method: 'copyToOtherRoom',
+      params
+    }
+  })
+}
+
+/* 集中式获取交租方式列表 */
+export function estateRoomRentPayWayApi(params) {
+  return fetch({
+    url: '/market/fangyuan',
+    method: 'post',
+    data: {
+      method: 'queryEstateRoomRentType',
+      params
+    }
+  })
+}
+
+/* 集中式获取交租方式列表 */
+export function saveEstateRoomRentPayWayApi(params) {
+  return fetch({
+    url: '/market/fangyuan',
+    method: 'post',
+    data: {
+      method: 'editEstateRoomRentType',
+      params
+    }
+  })
+}
+
+/* 集中式查询单个房间详情 */
+export function oneEstateRoomApi(params) {
+  return fetch({
+    url: '/market/fangyuan',
+    method: 'post',
+    data: {
+      method: 'queryOneEstateRoom',
+      params
+    }
+  })
+}
+
+/* 集中式保存单个房间详情 */
+export function saveEstateRoomApi(params, type) {
+  return fetch({
+    url: '/market/fangyuan',
+    method: 'post',
+    data: {
+      method: type === 1 ? 'saveEstateRoomInfo' : 'editEstateRoomInfo', // 1 新建 2 编辑
+      params
+    }
+  })
+}
+
+/* 集中式编辑公寓基本信息 */
+export function saveEstateBasicInfoApi(params) {
+  return fetch({
+    url: '/market/fangyuan',
+    method: 'post',
+    data: {
+      method: 'editEstateBasicInfo',
+      params
+    }
+  })
+}
+
+/* 集中式编辑公寓楼层信息 */
+export function saveEstateFloorInfoApi(params) {
+  return fetch({
+    url: '/market/fangyuan',
+    method: 'post',
+    data: {
+      method: 'editEstateFloorInfo',
+      params
+    }
+  })
+}
+
+/* 集中式编辑公寓房型信息 */
+export function saveEstateRoomTypeInfoApi(params) {
+  return fetch({
+    url: '/market/fangyuan',
+    method: 'post',
+    data: {
+      method: 'editEstateRoomTypeInfo',
+      params
+    }
+  })
+}
+
+/* 发布撤销房源 */
+export function publishHouseApi(params, type) {
+  return fetch({
+    url: '/market/fangyuan',
+    method: 'post',
+    data: {
+      method: type === 1 ? 'publish' : 'unpublish', // 1.发布 2.撤销
+      params
+    }
+  })
+}
+
+/* 检查房间是否有智能设备 */
+export function checkRoomHasDeviceApi(params) {
+  return fetch({
+    url: '/market/fangyuan',
+    method: 'post',
+    data: {
+      method: 'checkRoomHasDevice',
+      params
+    }
+  })
+}
+
+/* 集中式删除房间 */
+export function deleteRoomApi(params) {
+  return fetch({
+    url: '/market/fangyuan',
+    method: 'post',
+    data: {
+      method: 'deleteRoom',
+      params
+    }
+  })
+}
+
+/* 集中式修改房间出租状态 */
+export function changeRoomStatusApi(params) {
+  return fetch({
+    url: '/market/fangyuan',
+    method: 'post',
+    data: {
+      method: 'changeRoomStatus',
+      params
+    }
+  })
+}
+

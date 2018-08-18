@@ -1,8 +1,8 @@
 /*
- * @Author: FT.FE.Bolin 
- * @Date: 2018-04-11 17:11:36 
- * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-04-11 17:18:29
+ * @Author: FT.FE.Bolin
+ * @Date: 2018-04-11 17:11:36
+ * @Last Modified by: chudequan
+ * @Last Modified time: 2018-07-30 18:40:58
  */
 
 <template>
@@ -40,6 +40,9 @@ export default {
     routes: {
       type: Array
     }
+  },
+  mounted() {
+
   }
 }
 </script>

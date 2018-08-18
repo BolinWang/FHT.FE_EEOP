@@ -19,11 +19,13 @@ export const constantRouterMap = [{
   path: '/login',
   component: _import('login/index'),
   hidden: true
-}, {
+},
+{
   path: '/404',
   component: _import('404'),
   hidden: true
-}, {
+},
+{
   path: '/',
   component: Layout,
   redirect: '/dashboard',
@@ -101,25 +103,51 @@ export const asyncRouterMap = [
     meta: {
       role: ['admin', 'global']
     },
-    children: [{
+    children: [
+      {
+        path: '/houseManage/estatePage',
+        component: _import('houseManage/estate'),
+        noDropdown: true,
+        children: [
+          {
+            path: 'estateList',
+            name: '集中式房源',
+            component: _import('houseManage/estate/estateList')
+          },
+          {
+            path: 'estateRoomList',
+            name: '集中式房间列表',
+            component: _import('houseManage/estate/singleEstateRoom'),
+            meta: {
+              noTags: true,
+              parentPath: '/houseManage/estatePage/estateList',
+              parentName: '集中式房源',
+              meta: {}
+            }
+          },
+          {
+            path: 'photoUpload',
+            name: '上传图片',
+            component: _import('houseManage/estate/photoUpload')
+          }
+        ]
+      }, {
         path: 'authorize',
         component: _import('houseManage/authorize'),
         name: '合作账号授权'
-      },{
+      }, {
         path: 'houseSync',
         component: _import('houseManage/houseSync'),
         name: '合作房源同步'
-      },{
+      }, {
         path: 'displayPage',
         component: _import('houseManage/promotionDisplay'),
         name: '推广展示'
-      },
-      {
+      }, {
         path: 'queryCenterPage',
         component: _import('houseManage/queryCenter'),
         name: '查询中心'
-      },
-      {
+      }, {
         path: 'dataReportPage',
         component: _import('houseManage/dataReport'),
         name: '房源报表'
@@ -168,33 +196,33 @@ export const asyncRouterMap = [
       role: ['admin', 'global']
     },
     children: [{
-        path: 'userListPage',
-        component: _import('userManage/userList'),
-        name: '账号管理',
-        meta: {
-          role: ['admin']
-        }
-      },
-      {
-        path: 'feedbackPage',
-        component: _import('userManage/feedback'),
-        name: '意见反馈'
-      },
-      {
-        path: 'applyRegister',
-        component: _import('userManage/applyRegister'),
-        name: '申请注册'
-      },
-      {
-        path: 'initCustomerList',
-        component: _import('userManage/initCustomerList'),
-        name: '用户信息'
-      },
-      {
-        path: 'initOrgList',
-        component: _import('userManage/initOrgList'),
-        name: '组织列表'
+      path: 'userListPage',
+      component: _import('userManage/userList'),
+      name: '账号管理',
+      meta: {
+        role: ['admin']
       }
+    },
+    {
+      path: 'feedbackPage',
+      component: _import('userManage/feedback'),
+      name: '意见反馈'
+    },
+    {
+      path: 'applyRegister',
+      component: _import('userManage/applyRegister'),
+      name: '申请注册'
+    },
+    {
+      path: 'initCustomerList',
+      component: _import('userManage/initCustomerList'),
+      name: '用户信息'
+    },
+    {
+      path: 'initOrgList',
+      component: _import('userManage/initOrgList'),
+      name: '组织列表'
+    }
     ]
   }, {
     path: '/fhdManage',

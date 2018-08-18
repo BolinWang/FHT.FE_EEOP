@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-04-11 16:50:08
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-06-13 14:47:11
+ * @Last Modified time: 2018-08-18 11:42:08
  */
 
 <template>
@@ -93,12 +93,9 @@ export default {
     }
   },
   mounted() {
-    this.list = this.picList.slice()
     this.deleteFlag = this.deleteIcon
     this.list.map((item, index) => {
       item.opacityVal = 0
-      item.sortNum = index
-      item.type = item.type || 1
       item.title = item.picTag || ''
     })
   },
@@ -161,12 +158,17 @@ export default {
     }
   },
   watch: {
-    picList(val) {
-      this.list = (val || []).slice()
-      this.list.map((item, index) => {
-        item.sortNum = index
-        item.type = item.type || 1
-      })
+    picList: {
+      immediate: true,
+      handler: function (val) {
+        this.list = (val || []).slice()
+        this.list.map((item, index) => {
+          item.sortNum = item.key || index
+          item.type = item.type || 1
+          item.opacityVal = 0
+          item.title = item.picTag || ''
+        })
+      }
     },
     deleteIcon(val) {
       this.deleteFlag = val

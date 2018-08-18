@@ -36,6 +36,7 @@
             </el-tag>
           </div>
         </el-popover>
+        <!-- 审核状态 -->
         <el-tag v-else :type="scope.row.status | renderStatusType">
           {{scope.row.status | renderStatusValue}}
         </el-tag>

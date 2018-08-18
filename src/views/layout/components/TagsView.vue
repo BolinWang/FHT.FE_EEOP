@@ -1,8 +1,8 @@
 /*
  * @Author: FT.FE.Bolin
  * @Date: 2018-04-11 17:22:33
- * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-07-13 16:43:12
+ * @Last Modified by: chudequan
+ * @Last Modified time: 2018-07-30 20:10:16
  */
 
 <template>
@@ -61,13 +61,21 @@ export default {
   },
   methods: {
     isActive(route) {
-      return route.path === this.$route.path || route.name === this.$route.name
+      return route.path === this.$route.path || route.name === this.$route.name || route.path === this.$route.meta.parentPath
     },
     addViewTags() {
       if (!this.$route.name) {
         return false
       }
-      this.$store.dispatch('addVisitedViews', this.$route)
+      let parentRoute = null
+      if (this.$route.meta.noTags) {
+        parentRoute = {
+          meta: this.$route.meta.meta || {},
+          name: this.$route.meta.parentName,
+          path: this.$route.meta.parentPath
+        }
+      }
+      this.$store.dispatch('addVisitedViews', parentRoute || this.$route)
     },
     moveToCurrentTag() {
       const tags = this.$refs.tag
