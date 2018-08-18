@@ -362,7 +362,7 @@
       </span>
     </el-dialog>
 
-    <el-dialog class="room-detail-model" :title="curType === 1 ? '新建房号' : '编辑房号'" :visible.sync="roomDetailModelVisible" width="800px">
+    <el-dialog class="room-detail-model" :title="curType === 1 ? '新建房号' : '编辑房号'" :visible.sync="roomDetailModelVisible" :before-close="checkEditStatus" width="800px">
       <room-detail ref="roomDetailModel" :type="curType" :modelVisible="roomDetailModelVisible" :estateInfo="estateInfo"></room-detail>
       <span slot="footer">
         <el-button type="primary" size="small" @click="saveRoomData">{{curType === 1 ? '确 定' : '保 存' }}</el-button>
@@ -852,6 +852,18 @@ export default {
           this.selectDateModelVisible = false
         }
       })
+    },
+    checkEditStatus(done) {
+      const differentFlag = this.$refs.roomDetailModel.checkEditFlag()
+      if (differentFlag) {
+        this.$confirm('您还有数据未保存, 确认关闭吗？')
+        .then(_ => {
+          done()
+        })
+        .catch(_ => {})
+      } else {
+        done()
+      }
     }
   },
   watch: {

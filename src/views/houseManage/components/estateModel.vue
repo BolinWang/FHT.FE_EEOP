@@ -359,7 +359,7 @@ export default {
           { required: true, message: '请输入联系人', trigger: 'change' }
         ],
         contactMobile: [
-          { required: true, pattern: /^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\d{8}$/, message: '请输入正确的手机号码', trigger: 'change' }
+          { required: true, pattern: /^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\d{8}$/, message: '请输入正确的手机号码', trigger: 'blur' }
         ],
         orgId: [
           { required: true, message: '请选择一个组织，支持模糊查询', trigger: 'change' }
@@ -772,6 +772,34 @@ export default {
       if (this.type === '新建公寓') {
         return
       }
+      const differentFlag = this.checkEditFlag()
+      if (differentFlag) {
+        this.$message.error('请先将当前更改的内容保存之后再操作')
+        this.activeNames = [tempNames.join('')]
+      } else {
+        switch (status) {
+          case '1':
+            this.$set(this, 'tempFormData', deepClone(this.estateModel))
+            tempNames = ['1']
+            break
+          case '2':
+            this.$set(this, 'tempFormData', {
+              fangyuanCode: this.estateModel.fangyuanCode,
+              floors: deepClone(this.estateModel.floors)
+            })
+            tempNames = ['2']
+            break
+          case '3':
+            this.$set(this, 'tempFormData', {
+              fangyuanCode: this.estateModel.fangyuanCode,
+              roomTypeList: deepClone(this.estateModel.roomTypeList)
+            })
+            tempNames = ['3']
+            break
+        }
+      }
+    },
+    checkEditFlag() {
       let differentFlag = false
       Object.keys(this.tempFormData).forEach((key) => {
         if (JSON.stringify(this.tempFormData[key]) != JSON.stringify(this.estateModel[key])) {
@@ -799,31 +827,7 @@ export default {
           }
         }
       })
-      if (differentFlag) {
-        this.$message.error('请先将当前更改的内容保存之后再操作')
-        this.activeNames = [tempNames.join('')]
-      } else {
-        switch (status) {
-          case '1':
-            this.$set(this, 'tempFormData', deepClone(this.estateModel))
-            tempNames = ['1']
-            break
-          case '2':
-            this.$set(this, 'tempFormData', {
-              fangyuanCode: this.estateModel.fangyuanCode,
-              floors: deepClone(this.estateModel.floors)
-            })
-            tempNames = ['2']
-            break
-          case '3':
-            this.$set(this, 'tempFormData', {
-              fangyuanCode: this.estateModel.fangyuanCode,
-              roomTypeList: deepClone(this.estateModel.roomTypeList)
-            })
-            tempNames = ['3']
-            break
-        }
-      }
+      return differentFlag
     },
     openBatchCopyModel(index) {
       estateBatchCopyRoomListApi({

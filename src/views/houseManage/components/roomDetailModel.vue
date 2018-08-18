@@ -116,7 +116,9 @@
         <el-col :span="12">
           <el-form-item label="面积" prop="roomArea">
             <el-input type="number" placeholder="请输入内容" v-model="roomDetailModel.roomArea">
-              <template slot="append">m<sup>2</sup></template>
+              <template slot="append">m
+                <sup>2</sup>
+              </template>
             </el-input>
           </el-form-item>
         </el-col>
@@ -199,6 +201,7 @@ export default {
   data() {
     return {
       roomDetailModel: {},
+      tempFormData: {},
       roomDetailModelRules: {
         estateName: [
           { required: true, message: '请输入公寓名称', trigger: 'change' }
@@ -304,6 +307,32 @@ export default {
     openPicListModel() {
       this.uploadPicsModelVisible = true
     },
+    checkEditFlag() {
+      let differentFlag = false
+      Object.keys(this.tempFormData).forEach((key) => {
+        if (JSON.stringify(this.tempFormData[key]) != JSON.stringify(this.roomDetailModel[key])) {
+          if (key === 'pictureList') {
+            differentFlag = checkDiff(this.tempFormData[key], this.roomDetailModel[key])
+          } else {
+            differentFlag = true
+          }
+          function checkDiff(a, b) {
+            let diffCount = 0
+            if (a.length !== b.length) {
+              diffCount++
+              return diffCount
+            }
+            a.forEach((item, index) => {
+              if (item.imageName !== b[index].imageName) {
+                diffCount++
+              }
+            })
+            return diffCount > 0 ? true : false
+          }
+        }
+      })
+      return differentFlag
+    },
     // 删除图片
     emitDelete(val) {
       this.roomDetailModel.pictureList = val
@@ -331,7 +360,7 @@ export default {
       const uploadList = []
       const readFileAsync = file => new Promise(resolve => {
         let reader = new FileReader()
-        reader.onerror = function(e) {
+        reader.onerror = function (e) {
           console.log('读取异常....')
         }
         reader.onload = e => {
@@ -419,6 +448,7 @@ export default {
 
           this.$nextTick(() => {
             this.$refs.roomDetailModel.clearValidate()
+            this.$set(this, 'tempFormData', deepClone(this.roomDetailModel))
           })
         } else {
           Object.keys(this.roomDetailModel).forEach((key) => {

@@ -30,7 +30,7 @@
       </template>
     </grid-unit>
 
-    <el-dialog :title="estateModelTitle" :visible.sync="showEstateModel" width="900px">
+    <el-dialog :title="estateModelTitle" :visible.sync="showEstateModel" :before-close="checkEditStatus" width="900px">
       <estate-model ref="estateModel" :type="estateModelTitle" :showEstateModel="showEstateModel"></estate-model>
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="saveEstateData('save')" size="small">保 存</el-button>
@@ -118,6 +118,18 @@ export default {
           this.$store.commit('SET_ESTATEDATA', res.data)
           this.showEstateModel = true
         })
+      }
+    },
+    checkEditStatus(done) {
+      const differentFlag = this.$refs.estateModel.checkEditFlag()
+      if (differentFlag) {
+        this.$confirm('您还有数据未保存, 确认关闭吗？')
+        .then(_ => {
+          done()
+        })
+        .catch(_ => {})
+      } else {
+        done()
       }
     },
     saveEstateData(type) {
