@@ -742,12 +742,12 @@ export default {
       setTimeout(() => {
         this.$set(this, 'estateModel', deepClone(estateInfo))
         this.activeNames = ['1']
-        this.$set(this, 'tempFormData', deepClone(this.estateModel))
         tempNames = ['1']
         if (this.type === '新建公寓') {
           this.addEstateFloor()
           this.addEstateRoomType()
         }
+        this.$set(this, 'tempFormData', deepClone(this.estateModel))
         this.$nextTick(() => {
           if (this.$refs.estateModel) {
             this.$refs.estateModel.clearValidate()
