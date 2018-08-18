@@ -626,17 +626,24 @@ export default {
       }
     },
     setAddress(item) {
-      if (item && item.cityId === '-1') {
-        this.estateModel.address = ''
-        this.mapModelVisible = true
-        this.$set(this, 'formLabelAlign', {
-          city: '',
-          name: '',
-          region: '',
-          address: ''
-        })
-      } else {
-        this.estateModel.regionAddressId = item ? item.regionAddressId : ''
+      if (item) {
+        if (item.cityId === '-1') {
+          this.estateModel.address = ''
+          this.mapModelVisible = true
+          this.$set(this, 'formLabelAlign', {
+            city: '',
+            name: '',
+            region: '',
+            address: ''
+          })
+        } else {
+          if (item.areaId !== this.estateModel.areaCode[2]) {
+            this.estateModel.areaCode = [item.provinceId, item.cityId, item.areaId]
+            this.estateModel.zoneId = ''
+            this.searchZoneList(true)
+          }
+          this.estateModel.regionAddressId = item ? item.regionAddressId : ''
+        }
       }
     },
     setOrg(item) {
