@@ -16,7 +16,7 @@
             </el-col>
             <el-col :span="12">
               <el-form-item label="所在地区" prop="areaCode">
-                <area-select ref="areaSelect" v-model="estateModel.areaCode" :level="1" @input="searchZoneList"></area-select>
+                <area-select ref="areaSelect" v-model="estateModel.areaCode" :level="1" @input="searchZoneList(false)"></area-select>
               </el-form-item>
             </el-col>
           </el-row>
@@ -775,11 +775,14 @@ export default {
               differentFlag = checkDiff(item.pictureList, this.estateModel[key][index].pictureList)
             })
           } else {
-            console.log(key)
             differentFlag = true
           }
           function checkDiff(a, b) {
             let diffCount = 0
+            if (a.length !== b.length) {
+              diffCount++
+              return diffCount
+            }
             a.forEach((item, index) => {
               if (item.imageName !== b[index].imageName) {
                 diffCount++
