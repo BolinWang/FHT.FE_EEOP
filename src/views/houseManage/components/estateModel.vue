@@ -866,6 +866,7 @@ export default {
       } else {
         this.estateModel.roomTypeList[this.curPicListIndex].pictureList = val
       }
+      this.currentPicList = val || []
     },
     // 上传的图片列表
     emitCropperList(list = []) {
