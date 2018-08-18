@@ -66,10 +66,6 @@ export default {
     disabled: {
       type: String,
       default: 'disabled'
-    },
-    modelVisible: {
-      type: Boolean,
-      default: false
     }
   },
   computed: {
@@ -167,7 +163,7 @@ export default {
       handler: function (val) {
         this.list = (val || []).slice()
         this.list.map((item, index) => {
-          item.sortNum = Math.random()
+          item.sortNum = item.key || index
           item.type = item.type || 1
         })
       }
@@ -183,11 +179,6 @@ export default {
       this.$nextTick(() => {
         this.delayedDragging = false
       })
-    },
-    modelVisible(val) {
-      if (!val) {
-        this.list = []
-      }
     }
   }
 }
