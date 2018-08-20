@@ -68,17 +68,10 @@
         <el-button size="mini" @click="openCopyItemToModel(scope.row)">复制到</el-button>
         <el-dropdown :hide-on-click="false" @command="handleCommand">
           <el-button size="mini" class="settingRoom-btn">房态管理</el-button>
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item
-              v-for="(val, key) in scope.row.roomStatusOperateList"
-              :command="{
-                roomCodes: [scope.row.roomCode],
-                roomStatus: Number(key)
-              }"
-              :key="key">
-              {{val}}
-            </el-dropdown-item>
-          </el-dropdown-menu>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item :command="{roomCodes: [scope.row.roomCode], roomStatus: 2}">空房</el-dropdown-item>
+              <el-dropdown-item :command="{roomCodes: [scope.row.roomCode], roomStatus: 9}">已出租无租客</el-dropdown-item>
+            </el-dropdown-menu>
         </el-dropdown>
       </template>
       <template slot="operateRoom" slot-scope="scope">
@@ -583,7 +576,6 @@ export default {
       curType: '',
       selectedRooms: [],
       roomStatusEndDate: '',
-      selectDateModelVisible: false,
       tempRoomStatusParams: {
         endDate: '',
         roomCodes: '',
@@ -850,12 +842,26 @@ export default {
       }
       changeRoomStatusApi(roomStatusParams).then((res) => {
         if (res.code === '0') {
-          this.$message({
-            message: res.message,
-            type: 'success'
-          })
+          let message = {}
+          if (res.data.success === roomStatusParams.roomCodes.length) {
+            message = {
+              message: res.message,
+              type: 'success'
+            }
+          } else if (res.data.fail === roomStatusParams.roomCodes.length) {
+            message = {
+              message: res.message,
+              type: 'error'
+            }
+          } else {
+            const status = roomStatusParams.roomStatus === 2 ? '空房' : '已出租无租客'
+            message = {
+              message: `成功${res.data.success}个房间，失败${res.data.fail}个房间，${res.data.already}个房间已经是${status}状态`,
+              type: 'success'
+            }
+          }
+          this.$message(message)
           this.searchParam()
-          this.selectDateModelVisible = false
         }
       })
     },

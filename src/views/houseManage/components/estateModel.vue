@@ -736,37 +736,39 @@ export default {
     },
     initEstateData() {
       let estateInfo = this.$store.state.estateDetailData.estateInfo
-
-      estateInfo.contactGender = 1
       estateInfo.areaCode = [estateInfo.provinceId, estateInfo.cityId, estateInfo.regionId]
-      estateInfo.tag = estateInfo.tag === 1 ? true : false
-      estateInfo.address = estateInfo.subdistrictName ? (estateInfo.subdistrictName + ' - ' + estateInfo.subdistrictAddress) : ''
-      estateInfo.floors.forEach((item) => { item.forbbidenEdit = true })
+      if (this.type === '新建公寓') {
+        estateInfo.contactGender = 1
+      } else {
+        estateInfo.tag = estateInfo.tag === 1 ? true : false
+        estateInfo.address = estateInfo.subdistrictName ? (estateInfo.subdistrictName + ' - ' + estateInfo.subdistrictAddress) : ''
+        estateInfo.floors.forEach((item) => { item.forbbidenEdit = true })
 
-      estateInfo.pictureList.forEach((item) => {
-        item.src = item.imageUrl
-        item.title = item.imageName
-      })
-
-      estateInfo.roomTypeList.forEach((item) => {
-        item.pictureList.forEach((n) => {
-          n.src = n.imageUrl
-          n.title = n.imageName
+        estateInfo.pictureList.forEach((item) => {
+          item.src = item.imageUrl
+          item.title = item.imageName
         })
-      })
 
-      this.orgList = [
-        {
-          orgId: estateInfo.orgId,
-          orgName: estateInfo.orgName
-        }
-      ]
-      this.zoneList = [
-        {
-          zoneId: estateInfo.zoneId,
-          zoneName: estateInfo.zoneName
-        }
-      ]
+        estateInfo.roomTypeList.forEach((item) => {
+          item.pictureList.forEach((n) => {
+            n.src = n.imageUrl
+            n.title = n.imageName
+          })
+        })
+
+        this.orgList = [
+          {
+            orgId: estateInfo.orgId,
+            orgName: estateInfo.orgName
+          }
+        ]
+        this.zoneList = [
+          {
+            zoneId: estateInfo.zoneId,
+            zoneName: estateInfo.zoneName
+          }
+        ]
+      }
       setTimeout(() => {
         this.$set(this, 'estateModel', deepClone(estateInfo))
         this.activeNames = ['1']
