@@ -3,7 +3,6 @@ const estateDetailData = {
     estateInfo: {
       estateName: '',
       provinceId: '',
-      // areaCode: [], // 省市区列表
       cityId: '',
       regionId: '',
       zoneId: '',
@@ -20,15 +19,14 @@ const estateDetailData = {
       accountName: '',
       adminUserId: '',
       tag: 0,
-      // estatePics: [], // 集中式公寓图片
       pictureList: [],
       pictureUploadList: [],
       services: '',
       storeServices: '',
       surroundings: '',
       floors: [],
-      roomTypeList: []
-      // roomTypePics: []
+      roomTypeList: [],
+      sourceInfo: ''
     },
     fangyuanCode: '',
     estateRoomInfo: {

@@ -75,7 +75,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="房间照片" prop="">
-              <el-badge :value="roomDetailModel.pictureList.length">
+              <el-badge :value="roomDetailModel.pictureList ? roomDetailModel.pictureList.length : 0">
                 <el-button type="primary" size="mini" @click="openPicListModel">上传照片</el-button>
               </el-badge>
             </el-form-item>
@@ -440,7 +440,7 @@ export default {
           this.type === 1 && this.$set(this.roomDetailModel, 'estateName', this.estateInfo.estateName)
           let roomData = deepClone(this.$store.state.estateDetailData.estateRoomInfo)
           roomData.tag = roomData.tag === 1 ? true : false
-          roomData.pictureList.forEach((item) => {
+          this.type === 2 && roomData.pictureList.forEach((item) => {
             item.src = item.imageUrl
             item.title = item.imageName
           })

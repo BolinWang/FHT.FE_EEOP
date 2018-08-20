@@ -2,6 +2,13 @@
   <div class="app-container">
     <el-row class="room-options-row">
       <el-button type="primary" size="small" @click="$router.push({name: '集中式房源'})" icon="el-icon-arrow-left">返回</el-button>
+      <el-dropdown @command="handleCommand" class="room-options-dropdown">
+        <el-button plain size="small">批量房态管理</el-button>
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item :command="2">空房</el-dropdown-item>
+          <el-dropdown-item :command="9">已出租无租客</el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
       <el-button type="primary" size="small" @click="openRoomDetailModel(1)">新建房号</el-button>
       <el-button type="danger" size="small" @click="deleteRoom">删除房号</el-button>
       <template v-if="estateInfo.estateName">
@@ -33,6 +40,14 @@
         <el-input placeholder="房号" v-model="roomSearchForm.roomNo"></el-input>
       </el-form-item>
       <el-form-item class="room-search-form-group">
+        <el-select v-model="roomSearchForm.tag" placeholder="标签">
+          <el-option
+            label="飞虎队"
+            value="fhd">
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item class="room-search-form-group">
         <el-button type="primary" @click="searchEstateRoomList('search')">查询</el-button>
         <el-button @click="searchEstateRoomList('clear')">清空</el-button>
       </el-form-item>
@@ -57,7 +72,7 @@
             <el-dropdown-item
               v-for="(val, key) in scope.row.roomStatusOperateList"
               :command="{
-                roomCode: scope.row.roomCode,
+                roomCodes: [scope.row.roomCode],
                 roomStatus: Number(key)
               }"
               :key="key">
@@ -369,21 +384,6 @@
         <el-button @click="roomDetailModelVisible = false" size="small">取 消</el-button>
       </span>
     </el-dialog>
-    <el-dialog
-      title="设置装修结束日期"
-      :visible.sync="selectDateModelVisible"
-      width="400px">
-      <el-date-picker
-        v-model="tempRoomStatusParams.endDate"
-        type="date"
-        value-format="yyyy-MM-dd"
-        placeholder="选择日期">
-      </el-date-picker>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="selectDateModelVisible = false">取 消</el-button>
-        <el-button type="primary" @click="setRoomStatus">确 定</el-button>
-      </span>
-    </el-dialog>
   </div>
 </template>
 
@@ -409,7 +409,8 @@ export default {
         roomStatus: '',
         floorId: '',
         roomCode: '',
-        roomNo: ''
+        roomNo: '',
+        tag: ''
       },
       roomStatusList: [
         {
@@ -585,7 +586,7 @@ export default {
       selectDateModelVisible: false,
       tempRoomStatusParams: {
         endDate: '',
-        roomCode: '',
+        roomCodes: '',
         roomStatus: null
       }
     }
@@ -834,15 +835,20 @@ export default {
       })
     },
     handleCommand(command) {
-      this.tempRoomStatusParams = Object.assign(this.tempRoomStatusParams, command)
-      if (this.tempRoomStatusParams.roomStatus === 10) {
-        this.selectDateModelVisible = true
-        return
+      let roomStatusParams = {}
+      if (typeof command === 'number') {
+        if (!this.selectedRooms.length) {
+          this.$message.error('请选择需要设置房态的房间')
+          return
+        }
+        roomStatusParams = {
+          roomCodes: this.selectedRooms.map(item => item.roomCode),
+          roomStatus: command
+        }
+      } else {
+        roomStatusParams = command
       }
-      this.setRoomStatus()
-    },
-    setRoomStatus() {
-      changeRoomStatusApi(this.tempRoomStatusParams).then((res) => {
+      changeRoomStatusApi(roomStatusParams).then((res) => {
         if (res.code === '0') {
           this.$message({
             message: res.message,
@@ -906,6 +912,9 @@ export default {
 <style lang="scss" scoped>
 .room-options-row {
   margin-bottom: 20px;
+  .room-options-dropdown {
+    margin: 0 10px;
+  }
   .estate-title {
     display: inline-block;
     vertical-align: middle;
@@ -990,6 +999,5 @@ export default {
     line-height: 66px;
     text-align: center;
   }
-
 }
 </style>

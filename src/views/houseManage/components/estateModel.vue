@@ -80,9 +80,31 @@
                 <el-input placeholder="账号名" v-model="estateModel.accountName" :disabled="true"></el-input>
               </el-form-item>
             </el-col>
-            <el-col :span="4" v-if="type === '新建公寓'">
-              <el-form-item label-width="0">
+          </el-row>
+          <el-row :gutter="20">
+            <el-col :span="6" v-if="type === '新建公寓'">
+              <el-form-item>
                 <el-checkbox label="飞虎队" name="type" v-model="estateModel.tag"></el-checkbox>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label-width="0" prop="sourceInfo" v-if="type === '新建公寓' && estateModel.tag">
+                <el-select
+                  v-model="estateModel.sourceInfo"
+                  filterable remote
+                  placeholder="房源提供者"
+                  :remote-method="fetchFlyTigerList"
+                  :loading="loading"
+                  :clearable="true"
+                  size="small"
+                  style="width: 100%">
+                  <el-option v-for="item in filterManagerList" :key="item.id"
+                    :label="item.name"
+                    :value="item.id">
+                    <span style="float: left">{{ item.name }}</span>
+                    <span style="float: right; color: #8492a6; font-size: 13px">{{ item.mobile }}</span>
+                  </el-option>
+                </el-select>
               </el-form-item>
             </el-col>
           </el-row>
@@ -287,6 +309,7 @@
 <script>
 import areaSelect from '@/components/AreaSelect'
 import { estateAddressByKeywordsApi, estateZoneListByAreaIdApi, estateDeviceListApi, estateOrgListApi, estateRoomDetailApi, estateBatchCopyRoomListApi, estateNewSubdistrictApi } from '@/api/houseManage'
+import { fhdAuditApi } from '@/api/auditCenter'
 import Preview from '@/components/Preview/Preview'
 import ImageCropper from '@/components/ImageCropper/Cropper'
 import RoomListSelecter from '@/components/RoomListSelecter'
@@ -388,7 +411,10 @@ export default {
           styleName: [
             { required: true, message: '请填写房间类型', trigger: 'change' }
           ]
-        }
+        },
+        sourceInfo: [
+          { required: true, message: '请选择一个房源提供者', trigger: 'change' }
+        ]
       },
       loading: false,
       zoneList: [],
@@ -415,7 +441,9 @@ export default {
       curPicListIndex: -1,
       tempFormData: {},
       regionOptions: [],
-      tempAreaCode: []
+      tempAreaCode: [],
+      cityManagerList: [],
+      filterManagerList: []
     }
   },
   computed: {
@@ -512,7 +540,7 @@ export default {
     },
     remoteMethod(query) {
       if (query !== '') {
-        this.loading = true;
+        this.loading = true
         estateAddressByKeywordsApi({
           cityId: Number(this.estateModel.areaCode[1]) || 330100,
           keyword: query
@@ -554,7 +582,7 @@ export default {
     },
     searchOrgListByKeywords(query) {
       if (query !== '') {
-        this.loading = true;
+        this.loading = true
         estateOrgListApi({
           orgName: query
         }).then((res) => {
@@ -765,8 +793,8 @@ export default {
           return false
         }
       })
-      return estateData
-      // return this.estateModel
+      // return estateData
+      return this.estateModel
     },
     checkSaveStatus(status) {
       if (this.type === '新建公寓') {
@@ -867,6 +895,29 @@ export default {
           return
         }
         this.estateModel.roomTypeList.splice(index, 1)
+      }
+    },
+    fetchFlyTigerList(query) {
+      if (query !== '') {
+        this.loading = true
+        if (this.cityManagerList.length) {
+          this.loading = false
+          this.filterManagerList = this.cityManagerList.filter(item => {
+            return (item.name.toLowerCase().includes(query.toLowerCase()) || item.mobile.includes(query))
+          })
+        } else {
+          fhdAuditApi.queryCityManager().then((res) => {
+            this.loading = false
+            if (res.code === '0' && res.data) {
+              this.cityManagerList = res.data
+              this.filterManagerList = this.cityManagerList.filter(item => {
+                return (item.name.toLowerCase().includes(query.toLowerCase()) || item.mobile.includes(query))
+              })
+            }
+          })
+        }
+      } else {
+        this.filterManagerList = []
       }
     },
     // preview弹出层关闭

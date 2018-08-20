@@ -41,7 +41,7 @@
 </template>
 
 <script>
-import { debounce } from "@/utils"
+import { debounce, deepClone } from "@/utils"
 import GridUnit from "@/components/GridUnit/grid"
 import areaSelect from "@/components/AreaSelect"
 import estateModel from '../components/estateModel'
@@ -133,11 +133,10 @@ export default {
       }
     },
     saveEstateData(type) {
-      let estateInfo = this.$refs.estateModel.returnEstateData(type)
+      let estateInfo = deepClone(this.$refs.estateModel.returnEstateData(type))
       if (!estateInfo) {
         return
       }
-
       estateInfo.pictureUploadList = estateInfo.pictureList.filter(n => n.image)
       estateInfo.pictureList = estateInfo.pictureList.filter(n => n.imageUrl !== undefined)
       estateInfo.pictureUploadList.forEach((item) => {
@@ -160,6 +159,9 @@ export default {
 
       let api = null
       if (this.estateModelTitle === '新建公寓') {
+        estateInfo.tag = estateInfo.tag === true ? 1 : 0
+        const sourceInfo = estateInfo.tag ? this.$refs.estateModel.filterManagerList.filter((item) => item.id === estateInfo.sourceInfo) : ''
+        estateInfo.sourceInfo = sourceInfo.length ? (sourceInfo[0].id + ',' + sourceInfo[0].name) : ''
         api = estateNewEstateSaveApi
       } else {
         switch (this.$refs.estateModel.activeNames[0]) {
@@ -174,7 +176,6 @@ export default {
             break
         }
       }
-      console.log(estateInfo)
       api({
         estateInfo: JSON.stringify(estateInfo)
       }).then((res) => {
