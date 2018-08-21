@@ -132,10 +132,6 @@ export const asyncRouterMap = [
           }
         ]
       }, {
-        path: 'hostingPage',
-        component: _import('houseManage/hostingList'),
-        name: '分散式房源'
-      }, {
         path: 'authorize',
         component: _import('houseManage/authorize'),
         name: '合作账号授权'
