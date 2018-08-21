@@ -62,7 +62,7 @@
             <el-col :span="24">
               <el-form-item label="公寓简介" prop="houseDesc">
                 <el-input type="textarea" v-model="estateModel.houseDesc" placeholder="最多可输入150个字" :rows="3"></el-input>
-                <span class="estate-iontro-length-tips">{{estateModel.houseDesc.length}}/150</span>
+                <span class="estate-iontro-length-tips">{{estateModel.houseDesc ? estateModel.houseDesc.length : 0}}/150</span>
               </el-form-item>
             </el-col>
           </el-row>
@@ -334,13 +334,6 @@ export default {
   ],
   data() {
     return {
-      myArray: [{
-        id: '1',
-        name: 'nihao'
-      }, {
-        id: '2',
-        name: 'heihei'
-      }],
       currentPicList: [],  //当前展示图片
       mapModelVisible: false,
       local: null,
