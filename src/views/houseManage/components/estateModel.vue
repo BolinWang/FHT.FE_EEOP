@@ -84,7 +84,7 @@
           <el-row :gutter="20">
             <el-col :span="6" v-if="type === '新建公寓'">
               <el-form-item>
-                <el-checkbox label="飞虎队" name="type" v-model="estateModel.tag"></el-checkbox>
+                <el-checkbox label="飞虎队" name="type" v-model="estateModel.tag" @change="handleSourceInfo"></el-checkbox>
               </el-form-item>
             </el-col>
             <el-col :span="6">
@@ -739,6 +739,8 @@ export default {
       estateInfo.areaCode = [estateInfo.provinceId, estateInfo.cityId, estateInfo.regionId]
       if (this.type === '新建公寓') {
         estateInfo.contactGender = 1
+        this.orgList = []
+        this.zoneList = []
       } else {
         estateInfo.tag = estateInfo.tag === 1 ? true : false
         estateInfo.address = estateInfo.subdistrictName ? (estateInfo.subdistrictName + ' - ' + estateInfo.subdistrictAddress) : ''
@@ -795,8 +797,8 @@ export default {
           return false
         }
       })
-      // return estateData
-      return this.estateModel
+      return estateData
+      // return this.estateModel
     },
     checkSaveStatus(status) {
       if (this.type === '新建公寓') {
@@ -920,6 +922,11 @@ export default {
         }
       } else {
         this.filterManagerList = []
+      }
+    },
+    handleSourceInfo(val) {
+      if (!val && this.type === '新建公寓') {
+        this.estateModel.sourceInfo = ''
       }
     },
     // preview弹出层关闭
