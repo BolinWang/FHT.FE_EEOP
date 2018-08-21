@@ -216,6 +216,22 @@ a:hover {
   }
 }
 
+/* 编辑分散式房源 */
+.room-detail-container {
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none !important;
+    margin: 0;
+  }
+  .room-count {
+    .room-item-count {
+      input {
+        padding: 0 8px;
+      }
+    }
+  }
+}
+
 /* elementUI 修改 */
 
 .el-form-item--small.el-form-item {

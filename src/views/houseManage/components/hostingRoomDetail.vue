@@ -1,5 +1,5 @@
 <template>
-  <el-dialog title="添加房源" :visible.sync="roomDetail" width="1000px">
+  <el-dialog title="添加房源" :visible.sync="roomDetail" width="1000px" class="room-detail-container">
     <el-form ref="hostingRoomDetail" :model="hostingRoomDetail" :rules="hostingRoomDetailRules" label-width="90px" size="small">
       <el-row :gutter="20">
         <el-col :span="8">
@@ -7,17 +7,17 @@
             <area-select ref="areaSelect" v-model="hostingRoomDetail.areaCode" :level="1" @input="searchZoneList(false)"></area-select>
           </el-form-item>
         </el-col>
-        <el-col :span="8">
+        <el-col :span="7">
           <el-form-item label="所属板块" prop="zoneId">
-            <el-select v-model="hostingRoomDetail.zoneId" class="estate-model-select" :placeholder="zoneList.length ? '请选择' : '无'">
+            <el-select v-model="hostingRoomDetail.zoneId" class="room-detail-select" :placeholder="zoneList.length ? '请选择' : '无'">
               <el-option v-for="item in zoneList" :key="item.zoneId" :label="item.zoneName" :value="item.zoneId">
               </el-option>
             </el-select>
           </el-form-item>
         </el-col>
-        <el-col :span="8">
+        <el-col :span="9">
           <el-form-item label="公寓/小区" prop="address">
-            <el-select class="estate-model-select" ref="addressSelect" v-model="hostingRoomDetail.address" filterable remote :clearable="true" placeholder="请搜索" :remote-method="fetchAddressList" popper-class="detail-address-options" :loading="loading" @focus="checkAddressSelect" @clear="setAddress">
+            <el-select class="room-detail-select" ref="addressSelect" v-model="hostingRoomDetail.address" filterable remote :clearable="true" placeholder="请搜索" :remote-method="fetchAddressList" popper-class="detail-address-options" :loading="loading" @focus="checkAddressSelect" @clear="setAddress">
               <el-option v-for="(item, index) in addressList" :key="index" v-html="item.displayText" :value="item.formatName" @click.native="setAddress(item)">
               </el-option>
             </el-select>
@@ -30,14 +30,54 @@
             <el-input v-model="hostingRoomDetail.estateName"></el-input>
           </el-form-item>
         </el-col>
-        <el-col :span="8">
+        <el-col :span="7">
           <el-form-item label="单元" prop="">
             <el-input v-model="hostingRoomDetail.estateName"></el-input>
           </el-form-item>
         </el-col>
-        <el-col :span="8">
+        <el-col :span="6">
           <el-form-item label="室" prop="">
             <el-input v-model="hostingRoomDetail.estateName"></el-input>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="11">
+          <el-form-item label="户型" class="room-count" prop="tag">
+            <el-row :gutter="10">
+              <el-col :span="4">
+                <el-form-item label="" prop="chamberCount" class="room-item-count">
+                  <el-input type="number" v-model="hostingRoomDetail.chamberCount"></el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="2">
+                室
+              </el-col>
+              <el-col :span="4">
+                <el-form-item label="" prop="boardCount" class="room-item-count">
+                  <el-input type="number" v-model="hostingRoomDetail.boardCount"></el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="2">
+                厅
+              </el-col>
+              <el-col :span="4">
+                <el-form-item label="" prop="toiletCount" class="room-item-count">
+                  <el-input type="number" v-model="hostingRoomDetail.toiletCount"></el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="2">
+                卫
+              </el-col>
+              <el-col :span="4">
+                <el-form-item label="" prop="" class="room-item-count">
+                  <el-input type="number" v-model="hostingRoomDetail.toiletCount"></el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="2">
+                m<sup>2</sup>
+              </el-col>
+            </el-row>
           </el-form-item>
         </el-col>
       </el-row>
@@ -145,5 +185,11 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss" scoped>
+.room-detail-container {
+  .room-detail-select {
+    width: 100%;
+  }
+}
 </style>
+
