@@ -27,15 +27,19 @@
       <el-row :gutter="20">
         <el-col :span="8">
           <el-form-item label="楼幢" prop="">
-            <el-input v-model="estateModel.estateName"></el-input>
+            <el-input v-model="hostingRoomDetail.estateName"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="8">
           <el-form-item label="单元" prop="">
-            <el-input v-model="estateModel.estateName"></el-input>
+            <el-input v-model="hostingRoomDetail.estateName"></el-input>
           </el-form-item>
         </el-col>
-
+        <el-col :span="8">
+          <el-form-item label="室" prop="">
+            <el-input v-model="hostingRoomDetail.estateName"></el-input>
+          </el-form-item>
+        </el-col>
       </el-row>
     </el-form>
     <span slot="footer" class="dialog-footer">
@@ -118,7 +122,7 @@ export default {
     setAddress(item) {
       if (item) {
         if (item.cityId === '-1') {
-          this.estateModel.address = ''
+          this.hostingRoomDetail.address = ''
           this.mapModelVisible = true
           this.$set(this, 'formLabelAlign', {
             city: '',
@@ -127,12 +131,12 @@ export default {
             address: ''
           })
         } else {
-          if (item.areaId !== this.estateModel.areaCode[2]) {
-            this.estateModel.areaCode = [item.provinceId, item.cityId, item.areaId]
-            this.estateModel.zoneId = ''
+          if (item.areaId !== this.hostingRoomDetail.areaCode[2]) {
+            this.hostingRoomDetail.areaCode = [item.provinceId, item.cityId, item.areaId]
+            this.hostingRoomDetail.zoneId = ''
             this.searchZoneList(true)
           }
-          this.estateModel.regionAddressId = item ? item.regionAddressId : ''
+          this.hostingRoomDetail.regionAddressId = item ? item.regionAddressId : ''
         }
       }
     },
