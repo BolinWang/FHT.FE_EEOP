@@ -111,7 +111,7 @@
       </span>
     </el-dialog>
 
-    <el-dialog class="rent-pay-model" title="交租方式" :visible.sync="rentPayModelVisible" :width="curRoomFinanceType === 2 ? '1000px' : '700px'">
+    <el-dialog class="rent-pay-model" title="交租方式" :visible.sync="rentPayModelVisible" :width="curRoomFinanceType !== 2 ? '1000px' : '700px'">
       <el-form :model="defaultRentPayForm" ref="financeRentPayForm" label-width="0">
         <el-table class="finance-rent-pay-way" :data="defaultRentPayForm.financeRentPayList" style="width: 100%" empty-text="暂无金融·交租方式">
           <el-table-column label="金融·交租方式" width="130">
@@ -161,7 +161,7 @@
               </el-select>
             </template>
           </el-table-column>
-          <template v-if="curRoomFinanceType === 2">
+          <template v-if="curRoomFinanceType !== 2">
             <el-table-column label="服务费·元/月" width="130">
               <template slot-scope="scope">
                 <el-select size="mini" v-model="scope.row.serviceChargeType" @change="switchServiceChargeType(scope.row)" disabled>
@@ -294,7 +294,7 @@
               </el-form-item>
             </template>
           </el-table-column>
-          <template v-if="curRoomFinanceType === 2">
+          <template v-if="curRoomFinanceType !== 2">
             <el-table-column label="服务费·元/月" width="130">
               <template slot-scope="scope">
                 <el-form-item
@@ -585,7 +585,7 @@ export default {
         roomCodes: '',
         roomStatus: null
       },
-      curRoomFinanceType: 2
+      curRoomFinanceType: 1
     }
   },
   computed: {
