@@ -432,6 +432,18 @@ export function changeRoomStatusApi(params) {
   })
 }
 
+/* 分散式查询房源列表 */
+export function hostingHouseListApi(params) {
+  return fetch({
+    url: '/market/fangyuan',
+    method: 'post',
+    data: {
+      method: 'queryHostingHouseList',
+      params
+    }
+  })
+}
+
 /* 分散式模糊查询小区，公寓 */
 export function hostingAddressByKeywordsApi(params) {
   return fetch({

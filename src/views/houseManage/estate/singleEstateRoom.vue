@@ -111,7 +111,7 @@
       </span>
     </el-dialog>
 
-    <el-dialog class="rent-pay-model" title="交租方式" :visible.sync="rentPayModelVisible" width="1000px">
+    <el-dialog class="rent-pay-model" title="交租方式" :visible.sync="rentPayModelVisible" :width="curRoomFinanceType !== 2 ? '1000px' : '700px'">
       <el-form :model="defaultRentPayForm" ref="financeRentPayForm" label-width="0">
         <el-table class="finance-rent-pay-way" :data="defaultRentPayForm.financeRentPayList" style="width: 100%" empty-text="暂无金融·交租方式">
           <el-table-column label="金融·交租方式" width="130">
@@ -161,62 +161,64 @@
               </el-select>
             </template>
           </el-table-column>
-          <el-table-column label="服务费·元/月" width="130">
-            <template slot-scope="scope">
-              <el-select size="mini" v-model="scope.row.serviceChargeType" @change="switchServiceChargeType(scope.row)" disabled>
-                <el-option v-for="n in serviceChargeTypeList" :key="n.value" :label="n.label" :value="n.value">
-                </el-option>
-              </el-select>
-            </template>
-          </el-table-column>
-          <el-table-column label="" width="140">
-            <template slot-scope="scope">
-              <el-row>
-                <el-col :span="24" v-if="scope.row.serviceChargeType === 2">
-                  <el-form-item
-                    label=""
-                    :key="scope.row.roomRentTypeId"
-                    :prop="'financeRentPayList.' + scope.$index + '.serviceChargePrice'"
-                    :rules="defaultRentPayForm.rules.serviceChargePrice">
-                    <el-input size="mini" type="number" v-model="scope.row.serviceChargePrice" disabled></el-input>
-                  </el-form-item>
-                </el-col>
-                <template v-else-if="scope.row.serviceChargeType === 3">
-                  <el-col :span="10">
-                    <el-form-item
-                      label=""
-                      :key="scope.row.roomRentTypeId"
-                      :prop="'financeRentPayList.' + scope.$index + '.serviceChargeRatio'"
-                      :rules="defaultRentPayForm.rules.serviceChargeRatio">
-                      <el-input size="mini" v-model="scope.row.serviceChargeRatio" disabled></el-input>
-                    </el-form-item>
-                  </el-col>
-                  <el-col :span="4" class="service-charge-price-percent">
-                    %
-                  </el-col>
-                  <el-col :span="10">
+          <template v-if="curRoomFinanceType !== 2">
+            <el-table-column label="服务费·元/月" width="130">
+              <template slot-scope="scope">
+                <el-select size="mini" v-model="scope.row.serviceChargeType" @change="switchServiceChargeType(scope.row)" disabled>
+                  <el-option v-for="n in serviceChargeTypeList" :key="n.value" :label="n.label" :value="n.value">
+                  </el-option>
+                </el-select>
+              </template>
+            </el-table-column>
+            <el-table-column label="" width="140">
+              <template slot-scope="scope">
+                <el-row>
+                  <el-col :span="24" v-if="scope.row.serviceChargeType === 2">
                     <el-form-item
                       label=""
                       :key="scope.row.roomRentTypeId"
                       :prop="'financeRentPayList.' + scope.$index + '.serviceChargePrice'"
                       :rules="defaultRentPayForm.rules.serviceChargePrice">
-                      <el-input size="mini" v-model="scope.row.serviceChargePrice" disabled></el-input>
+                      <el-input size="mini" type="number" v-model="scope.row.serviceChargePrice" disabled></el-input>
                     </el-form-item>
                   </el-col>
-                </template>
-              </el-row>
-            </template>
-          </el-table-column>
-          <el-table-column label="服务费支付方式" width="130">
-            <template slot-scope="scope">
-              <el-select size="mini" v-model="scope.row.serviceFeeType" disabled>
-                <el-option v-if="scope.row.serviceChargeType === 1" label="无" :value="1">
-                </el-option>
-                <el-option v-else v-for="n in serviceFeeTypeList" :key="n.value" :label="n.label" :value="n.value">
-                </el-option>
-              </el-select>
-            </template>
-          </el-table-column>
+                  <template v-else-if="scope.row.serviceChargeType === 3">
+                    <el-col :span="10">
+                      <el-form-item
+                        label=""
+                        :key="scope.row.roomRentTypeId"
+                        :prop="'financeRentPayList.' + scope.$index + '.serviceChargeRatio'"
+                        :rules="defaultRentPayForm.rules.serviceChargeRatio">
+                        <el-input size="mini" v-model="scope.row.serviceChargeRatio" disabled></el-input>
+                      </el-form-item>
+                    </el-col>
+                    <el-col :span="4" class="service-charge-price-percent">
+                      %
+                    </el-col>
+                    <el-col :span="10">
+                      <el-form-item
+                        label=""
+                        :key="scope.row.roomRentTypeId"
+                        :prop="'financeRentPayList.' + scope.$index + '.serviceChargePrice'"
+                        :rules="defaultRentPayForm.rules.serviceChargePrice">
+                        <el-input size="mini" v-model="scope.row.serviceChargePrice" disabled></el-input>
+                      </el-form-item>
+                    </el-col>
+                  </template>
+                </el-row>
+              </template>
+            </el-table-column>
+            <el-table-column label="服务费支付方式" width="130">
+              <template slot-scope="scope">
+                <el-select size="mini" v-model="scope.row.serviceFeeType" disabled>
+                  <el-option v-if="scope.row.serviceChargeType === 1" label="无" :value="1">
+                  </el-option>
+                  <el-option v-else v-for="n in serviceFeeTypeList" :key="n.value" :label="n.label" :value="n.value">
+                  </el-option>
+                </el-select>
+              </template>
+            </el-table-column>
+          </template>
           <el-table-column label="" width="50">
             <template slot-scope="scope">
               <el-button v-show="false" class="delete-btn" type="text" icon="el-icon-delete" @click="deleteCurRentPay(scope.row)"></el-button>
@@ -292,70 +294,72 @@
               </el-form-item>
             </template>
           </el-table-column>
-          <el-table-column label="服务费·元/月" width="130">
-            <template slot-scope="scope">
-              <el-form-item
-                label=""
-                :key="scope.row.roomRentTypeId">
-                <el-select size="mini" v-model="scope.row.serviceChargeType" @change="switchServiceChargeType(scope.row)">
-                  <el-option v-for="n in serviceChargeTypeList" :key="n.value" :label="n.label" :value="n.value">
-                  </el-option>
-                </el-select>
-              </el-form-item>
-            </template>
-          </el-table-column>
-          <el-table-column label="" width="140">
-            <template slot-scope="scope">
-              <el-row>
-                <el-col :span="24" v-if="scope.row.serviceChargeType === 2">
-                  <el-form-item
-                    label=""
-                    :key="scope.row.roomRentTypeId"
-                    :prop="'defaultRentPayList.' + scope.$index + '.serviceChargePrice'"
-                    :rules="defaultRentPayForm.rules.serviceChargePrice">
-                    <el-input size="mini" type="number" v-model="scope.row.serviceChargePrice"></el-input>
-                  </el-form-item>
-                </el-col>
-                <template v-else-if="scope.row.serviceChargeType === 3">
-                  <el-col :span="10">
-                    <el-form-item
-                      label=""
-                      :key="scope.row.roomRentTypeId"
-                      :prop="'defaultRentPayList.' + scope.$index + '.serviceChargeRatio'"
-                      :rules="defaultRentPayForm.rules.serviceChargeRatio">
-                      <el-input size="mini" type="number" v-model="scope.row.serviceChargeRatio" @change="computeServiceChargePrice(scope.row)"></el-input>
-                    </el-form-item>
-                  </el-col>
-                  <el-col :span="4" class="service-charge-price-percent">
-                    %
-                  </el-col>
-                  <el-col :span="10">
+          <template v-if="curRoomFinanceType !== 2">
+            <el-table-column label="服务费·元/月" width="130">
+              <template slot-scope="scope">
+                <el-form-item
+                  label=""
+                  :key="scope.row.roomRentTypeId">
+                  <el-select size="mini" v-model="scope.row.serviceChargeType" @change="switchServiceChargeType(scope.row)">
+                    <el-option v-for="n in serviceChargeTypeList" :key="n.value" :label="n.label" :value="n.value">
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </template>
+            </el-table-column>
+            <el-table-column label="" width="140">
+              <template slot-scope="scope">
+                <el-row>
+                  <el-col :span="24" v-if="scope.row.serviceChargeType === 2">
                     <el-form-item
                       label=""
                       :key="scope.row.roomRentTypeId"
                       :prop="'defaultRentPayList.' + scope.$index + '.serviceChargePrice'"
                       :rules="defaultRentPayForm.rules.serviceChargePrice">
-                      <el-input size="mini" v-model="scope.row.serviceChargePrice" disabled></el-input>
+                      <el-input size="mini" type="number" v-model="scope.row.serviceChargePrice"></el-input>
                     </el-form-item>
                   </el-col>
-                </template>
-              </el-row>
-            </template>
-          </el-table-column>
-          <el-table-column label="服务费支付方式" width="130">
-            <template slot-scope="scope">
-              <el-form-item
-                label=""
-                :key="scope.row.roomRentTypeId">
-                <el-select size="mini" v-model="scope.row.serviceFeeType">
-                  <el-option v-if="scope.row.serviceChargeType === 1" label="无" :value="1">
-                  </el-option>
-                  <el-option v-else v-for="n in serviceFeeTypeList" :key="n.value" :label="n.label" :value="n.value">
-                  </el-option>
-                </el-select>
-              </el-form-item>
-            </template>
-          </el-table-column>
+                  <template v-else-if="scope.row.serviceChargeType === 3">
+                    <el-col :span="10">
+                      <el-form-item
+                        label=""
+                        :key="scope.row.roomRentTypeId"
+                        :prop="'defaultRentPayList.' + scope.$index + '.serviceChargeRatio'"
+                        :rules="defaultRentPayForm.rules.serviceChargeRatio">
+                        <el-input size="mini" type="number" v-model="scope.row.serviceChargeRatio" @change="computeServiceChargePrice(scope.row)"></el-input>
+                      </el-form-item>
+                    </el-col>
+                    <el-col :span="4" class="service-charge-price-percent">
+                      %
+                    </el-col>
+                    <el-col :span="10">
+                      <el-form-item
+                        label=""
+                        :key="scope.row.roomRentTypeId"
+                        :prop="'defaultRentPayList.' + scope.$index + '.serviceChargePrice'"
+                        :rules="defaultRentPayForm.rules.serviceChargePrice">
+                        <el-input size="mini" v-model="scope.row.serviceChargePrice" disabled></el-input>
+                      </el-form-item>
+                    </el-col>
+                  </template>
+                </el-row>
+              </template>
+            </el-table-column>
+            <el-table-column label="服务费支付方式" width="130">
+              <template slot-scope="scope">
+                <el-form-item
+                  label=""
+                  :key="scope.row.roomRentTypeId">
+                  <el-select size="mini" v-model="scope.row.serviceFeeType">
+                    <el-option v-if="scope.row.serviceChargeType === 1" label="无" :value="1">
+                    </el-option>
+                    <el-option v-else v-for="n in serviceFeeTypeList" :key="n.value" :label="n.label" :value="n.value">
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </template>
+            </el-table-column>
+          </template>
           <el-table-column label="" width="50">
             <template slot-scope="scope">
               <el-button class="delete-btn" type="text" icon="el-icon-delete" @click="deleteCurRentPay(scope.row)"></el-button>
@@ -580,7 +584,8 @@ export default {
         endDate: '',
         roomCodes: '',
         roomStatus: null
-      }
+      },
+      curRoomFinanceType: 1
     }
   },
   computed: {
@@ -649,6 +654,7 @@ export default {
         roomCode: row.roomCode
       }).then((res) => {
         if (res.code === '0') {
+          this.curRoomFinanceType = res.data.houseFinanceType
           this.$set(this, 'rentPayList', res.data.roomRentTypeList)
           this.$set(this, 'baseRentTypeList', res.data.baseRentTypeList)
         }

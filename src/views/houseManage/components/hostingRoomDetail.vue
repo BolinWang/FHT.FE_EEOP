@@ -1,5 +1,5 @@
 <template>
-  <el-dialog title="添加房源" :visible.sync="roomDetail" width="1000px" class="room-detail-container">
+  <el-dialog title="添加房源" :visible.sync="roomDetail" width="1000px" class="room-detail-container hosting-room-detail">
     <el-form ref="hostingRoomDetail" :model="hostingRoomDetail" :rules="hostingRoomDetailRules" label-width="90px" size="small">
       <el-row :gutter="20">
         <el-col :span="8">
@@ -41,8 +41,8 @@
           </el-form-item>
         </el-col>
       </el-row>
-      <el-row>
-        <el-col :span="11">
+      <el-row :gutter="20">
+        <el-col :span="10">
           <el-form-item label="户型" class="room-count" prop="tag">
             <el-row :gutter="10">
               <el-col :span="4">
@@ -80,6 +80,52 @@
             </el-row>
           </el-form-item>
         </el-col>
+        <el-col :span="5">
+          <el-form-item label="朝向" label-width="60px" prop="roomDirection">
+            <el-select class="room-detail-select" v-model="hostingRoomDetail.roomDirection" placeholder="请选择">
+              <el-option v-for="item in roomDirectionList" :key="item.value" :label="item.label" :value="item.value">
+              </el-option>
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :span="6">
+          <el-form-item label="装修程度" prop="decorationDegree">
+            <el-select class="room-detail-select" v-model="hostingRoomDetail.decorationDegree" placeholder="请选择">
+              <el-option v-for="item in decorationDegreeList" :key="item.value" :label="item.label" :value="item.value">
+              </el-option>
+            </el-select>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20">
+        <el-col :span="6">
+          <el-form-item label="看房电话" prop="contactName">
+            <el-input v-model="hostingRoomDetail.contactName" placeholder="联系人"></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="3">
+          <el-form-item label-width="0">
+            <el-select v-model="hostingRoomDetail.contactGender">
+              <el-option label="先生" :value="1"></el-option>
+              <el-option label="女士" :value="2"></el-option>
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :span="4">
+          <el-form-item label-width="0" prop="contactMobile">
+            <el-input v-model="hostingRoomDetail.contactMobile" placeholder="联系电话"></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="5">
+          <el-form-item label="层高" label-width="60px" prop="contactMobile" class="room-detail-floor-container">
+            <el-input v-model="hostingRoomDetail.contactMobile">
+              <template slot="prepend">所在层</template>
+            </el-input>
+            <el-input v-model="hostingRoomDetail.contactMobile">
+              <template slot="prepend">总楼层</template>
+            </el-input>
+          </el-form-item>
+        </el-col>
       </el-row>
     </el-form>
     <span slot="footer" class="dialog-footer">
@@ -107,7 +153,59 @@ export default {
       hostingRoomDetailRules: {},
       zoneList: [],
       addressList: [],
-      loading: false
+      loading: false,
+      decorationDegreeList: [
+        {
+          label: '毛坯',
+          value: 1
+        },
+        {
+          label: '简装',
+          value: 2
+        },
+        {
+          label: '精装修',
+          value: 3
+        },
+        {
+          label: '豪华装',
+          value: 4
+        }
+      ],
+      roomDirectionList: [
+        {
+          label: '朝南',
+          value: 1
+        },
+        {
+          label: '朝北',
+          value: 2
+        },
+        {
+          label: '朝东',
+          value: 3
+        },
+        {
+          label: '朝西',
+          value: 4
+        },
+        {
+          label: '东南',
+          value: 5
+        },
+        {
+          label: '西南',
+          value: 6
+        },
+        {
+          label: '东北',
+          value: 7
+        },
+        {
+          label: '西北',
+          value: 8
+        }
+      ],
     }
   },
   methods: {
@@ -191,5 +289,6 @@ export default {
     width: 100%;
   }
 }
+
 </style>
 

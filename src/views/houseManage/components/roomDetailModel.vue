@@ -1,5 +1,5 @@
 <template>
-  <div class="room-detail-container">
+  <div class="room-detail-container estate-room-detail">
     <el-form ref="roomDetailModel" :model="roomDetailModel" :rules="roomDetailModelRules" label-width="110px" size="small">
       <template v-if="type === 1">
         <el-row :gutter="20">
@@ -461,26 +461,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
-.room-detail-container {
-  input::-webkit-outer-spin-button,
-  input::-webkit-inner-spin-button {
-    -webkit-appearance: none !important;
-    margin: 0;
-  }
-}
-.room-detail-select {
-  width: 100%;
-}
-.room-count {
-  .room-item-count {
-    margin-bottom: 0;
-  }
-  label {
-    width: 90px !important;
-    padding-right: 0;
-  }
-}
+<style lang="scss" scoped>
 .upload-pics-model {
   .previewItems {
     margin-bottom: 10px;

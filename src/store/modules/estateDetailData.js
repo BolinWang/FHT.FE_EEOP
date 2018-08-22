@@ -64,7 +64,7 @@ const estateDetailData = {
         cityId: '',
         regionId: '',
         zoneId: '',
-        // address: '', // 详细地址
+        address: '', // 详细地址
         subdistrictAddress: '',
         subdistrictName: '',
         regionAddressId: '',
@@ -103,18 +103,8 @@ const estateDetailData = {
     UpdateInfoData({ commit }, params) {
 
     }
-  },
-
-  getters: {
-    // estateDeviceCheckedList: (state) => {
-    //   const aaa = {
-    //     services: state.estateInfo.services ? state.estateInfo.services.split(',') : [],
-    //     storeServices: state.estateInfo.storeServices ? state.estateInfo.storeServices.split(',') : [],
-    //     surroundings: state.estateInfo.surroundings ? state.estateInfo.surroundings.split(',') : []
-    //   }
-    //   return aaa
-    // }
   }
+
 }
 
 export default estateDetailData
