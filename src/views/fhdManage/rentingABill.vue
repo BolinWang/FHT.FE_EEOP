@@ -4,7 +4,7 @@
 
             <el-form size="small" :inline="true" :model="formData" >
                 <el-form-item id="pad-b">
-                    <el-select size="small" style="width:120px;" v-model="formData.cityId" placeholder="城市" class="item-select" clearable>
+                    <el-select size="small" style="width:120px;" v-model="formData.cityId" placeholder="城市" class="item-select" >
                        <el-option v-for="item in cityData" :key="item.value" :label="item.label" :value="item.value">
                        </el-option>
                     </el-select>
@@ -132,8 +132,17 @@
                               >
                                 <template slot-scope="scope">
                                     <div class="overdueReason" @click="overDue(scope.row.overdueReason,scope.row.overdueType,scope.row.id)">
-                                        <span v-if="scope.row.overdueType">{{scope.row.overdueType | filoverdueType}}</span>
-                                        <span v-else class="choose">请选择</span>
+                                       <span v-if="scope.row.overdueType||scope.row.overdueType==0">
+                                         <el-popover
+                                          placement="top-start"
+                                          title="原因"
+                                          width="200"
+                                          trigger="hover"
+                                          :content="scope.row.overdueReason">
+                                           <span slot="reference" >{{scope.row.overdueType | filoverdueType}}</span>
+                                        </el-popover>
+                                       </span> 
+                                       <span v-else class="choose">请选择</span>
                                     </div>
                                 </template>
                             </el-table-column>
@@ -147,7 +156,7 @@
                              <el-table-column
                             label="催租跟进">
                               <template slot-scope="scope">
-                                  <span class="col-red pad" @click="goFollow(scope.row.id,scope.row.billNo,scope.row.isOver)">{{scope.row.followCount
+                                  <span class="col-red pad cursor" @click="goFollow(scope.row.id,scope.row.billNo,scope.row.isOver)">{{scope.row.followCount
 | filterText }}</span>           
                                   <el-popover
                                     placement="top-start"
@@ -319,19 +328,18 @@ export default {
     },
     methods:{
       exportExcel(){
-        const loading = this.$loading({
-          lock: true,
-          text: 'Loading',
-          spinner: 'el-icon-loading',
-          background: 'rgba(0, 0, 0, 0.7)'
-        });
+        // const loading = this.$loading({
+        //   lock: true,
+        //   text: 'Loading',
+        //   spinner: 'el-icon-loading',
+        //   background: 'rgba(0, 0, 0, 0.7)'
+        // });
         this.pageItems.pageSize = 9999;
         let searchParams = Object.assign(this.pageItems, this.formData);
-        exportExcelApi(this.formData).then(response => {
-            console.log(response)
-            response.data.map((item, index) => {
-          item.index = index * 1 + 1;
-        })
+        exportExcelApi(this.formData).then(response => {console.log('124')
+          response.data.map((item, index) => {
+              item.index = index * 1 + 1;
+             })
         require.ensure([], () => {
           const { export_json_to_excel } = require('@/vendor/Export2Excel')
           const tHeader = [
@@ -391,10 +399,18 @@ export default {
             // }
         })
       },
+
         formatJson(filterVal, jsonData) {
       return jsonData.map(v => filterVal.map(j => {
         return v[j]
-      }))
+      })).catch(response => {
+        
+         loading.close();
+        this.$message({
+            message: response.message,
+            type: 'error'
+         });
+      })
     },
       handleSizeChange(val) {
       this.pageItems.pageSize = val;
@@ -420,13 +436,19 @@ export default {
       },
       searchParam(){   //搜索
         let searchParams = Object.assign(this.pageItems, this.formData);
-        getRentingListApi(searchParams).then(response => {
-          this.tableData = response.data.content
-          this.listLoading = false
-          this.total = response.data.totalElements
-          console.log(response)
-        }).catch()
-      },
+        if(this.formData.startTime){
+          getRentingListApi(searchParams).then(response => {
+            this.tableData = response.data.content
+            this.listLoading = false
+            this.total = response.data.totalElements
+          }).catch()
+        }else{
+          this.$message({
+            message: '请选择时间段',
+            type: 'success'
+         });
+        }
+       },
     }
   }
 </script>
@@ -469,6 +491,10 @@ export default {
  .choose{
      text-decoration:underline;
  }
+ .cursor{
+   cursor:pointer
+ }
+
 </style>
 
 
