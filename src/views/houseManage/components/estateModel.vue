@@ -31,7 +31,7 @@
             </el-col>
             <el-col :span="12">
               <el-form-item label="具体位置" prop="address">
-                <el-select class="estate-model-select" ref="addressSelect" v-model="estateModel.address" filterable remote :clearable="true" placeholder="请输入关键词" :remote-method="remoteMethod" popper-class="detail-address-options" :loading="loading" @focus="checkAddressSelect" @clear="setAddress">
+                <el-select class="estate-model-select" ref="addressSelect" v-model="estateModel.address" filterable remote :clearable="true" placeholder="请输入关键词" :remote-method="remoteMethod" popper-class="detail-address-options" :loading="loading" @focus="checkAddressSelect">
                   <el-option v-for="(item, index) in addressList" :key="index" v-html="item.displayText" :value="item.formatName" @click.native="setAddress(item)">
                   </el-option>
                 </el-select>
@@ -506,7 +506,6 @@ export default {
               this.regionOptions = cityArr[0].children
             }
           }
-          // this.$message.error('当前选择小区不属于当前城市，请重新选择所在地区')
         }
 
         if (o) {
@@ -532,6 +531,22 @@ export default {
       this.local.search(this.searchKeywords)
     },
     remoteMethod(query) {
+      // if (query !== '') {
+      //   this.loading = true
+      //   setTimeout(() => {
+      //     this.addressList = [
+      //       {
+      //         formatName: '1112111',
+      //         displayText: 'nihao - wojs'
+      //       },
+      //       {
+      //         formatName: '2221112',
+      //         displayText: 'nihao - ljsh'
+      //       }
+      //     ]
+      //     this.loading = false
+      //   }, 500)
+      // }
       if (query !== '') {
         this.loading = true
         estateAddressByKeywordsApi({
@@ -665,6 +680,7 @@ export default {
           }
           this.estateModel.regionAddressId = item ? item.regionAddressId : ''
         }
+        this.addressList = []
       }
     },
     setOrg(item) {
@@ -729,6 +745,7 @@ export default {
     },
     initEstateData() {
       let estateInfo = this.$store.state.estateDetailData.estateInfo
+
       estateInfo.areaCode = [estateInfo.provinceId, estateInfo.cityId, estateInfo.regionId]
       if (this.type === '新建公寓') {
         estateInfo.contactGender = 1

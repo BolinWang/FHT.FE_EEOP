@@ -134,11 +134,11 @@ export const asyncRouterMap = [
       }, {
         path: 'authorize',
         component: _import('houseManage/authorize'),
-        name: '合作账号授权'
+        name: 'OTA账号授权'
       }, {
         path: 'houseSync',
         component: _import('houseManage/houseSync'),
-        name: '合作房源同步'
+        name: 'OTA房源发布'
       }, {
         path: 'displayPage',
         component: _import('houseManage/promotionDisplay'),

@@ -64,7 +64,7 @@ const estateDetailData = {
         cityId: '',
         regionId: '',
         zoneId: '',
-        // address: '', // 详细地址
+        address: '', // 详细地址
         subdistrictAddress: '',
         subdistrictName: '',
         regionAddressId: '',
