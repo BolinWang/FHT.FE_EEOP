@@ -232,6 +232,11 @@ a:hover {
         width: 80px !important;
         padding-right: 0;
       }
+      .room-count-text {
+        text-align: center;
+        line-height: 32px;
+        padding: 0 !important;
+      }
     }
   }
   &.estate-room-detail {
@@ -251,9 +256,34 @@ a:hover {
     }
   }
   .room-detail-floor-container {
-    .el-input {
-      width: 50%;
+    font-size: 0;
+    .el-form-item {
+      display: inline-block;
+      &:first-child {
+        width: 60%;
+      }
+      &:last-child {
+        width: 40%;
+      }
     }
+    .room-detail-floor-input {
+
+    }
+    // .room-detail-floor-input {
+    //   &:first-child {
+    //     input {
+    //       border-top-right-radius: 0;
+    //       border-bottom-right-radius: 0;
+    //     }
+    //   }
+    //   &:last-child {
+    //     .el-input-group__prepend {
+    //       border-left: 0;
+    //       border-top-left-radius: 0;
+    //       border-bottom-left-radius: 0;
+    //     }
+    //   }
+    // }
     .el-input-group__prepend {
       padding: 0 8px;
     }
