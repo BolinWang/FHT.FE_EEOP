@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-07-11 13:49:21
  * @Last Modified by: chudequan
- * @Last Modified time: 2018-08-16 16:19:34
+ * @Last Modified time: 2018-08-23 16:28:10
  */
 
  <template>
@@ -46,7 +46,7 @@
                     <i class="el-icon-check" v-show="publishSelect.mlzf"></i>
                   </div>
                 </label>
-                <el-select v-show="publishSelect.mlzf" class="item-select" v-model="sourceInfo" filterable remote placeholder="照片提供者" :remote-method="fetchFlyTigerList" :loading="loading" :clearable="true" size="small">
+                <el-select v-show="publishSelect.mlzf && dialogTitle === '发布'" class="item-select" v-model="sourceInfo" filterable remote placeholder="照片提供者" :remote-method="fetchFlyTigerList" :loading="loading" :clearable="true" size="small">
                   <el-option v-for="item in filterManagerList" :key="item.id" :label="item.name" :value="item.id">
                     <span style="float: left">{{ item.name }}</span>
                     <span style="float: right; color: #8492a6; font-size: 13px">{{ item.mobile }}</span>

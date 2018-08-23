@@ -1,8 +1,8 @@
 /*
  * @Author: FT.FE.Bolin
  * @Date: 2018-04-11 16:50:08
- * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-08-18 11:42:08
+ * @Last Modified by: chudequan
+ * @Last Modified time: 2018-08-23 16:47:18
  */
 
 <template>
@@ -163,7 +163,7 @@ export default {
       handler: function (val) {
         this.list = (val || []).slice()
         this.list.map((item, index) => {
-          item.sortNum = item.key || index
+          item.sortNum = item.imageName || index
           item.type = item.type || 1
           item.opacityVal = 0
           item.title = item.picTag || ''
