@@ -53,7 +53,7 @@
       </el-form-item>
     </el-form>
 
-    <grid-unit ref="estateRoomList" :url="estateRoomListUrl" listField="data.result" totalField="data.records" :dataMethod="reqMethod" :formOptions="roomSearchForm" :showSelection="true" :columns="colModels" :height="tableHeight" @selection-change="handleSelectionChange">
+    <grid-unit ref="estateRoomList" :url="estateRoomListUrl" listField="data.result" totalField="data.records" :dataMethod="reqMethod" :formOptions="roomSearchForm" :showSelection="true" :columns="colModels" :height="tableHeight" @selection-change="handleSelectionChange" :pageSizes="[20, 50, 100, 200]">
       <template slot="setTag" slot-scope="scope">
         <el-tag v-if="scope.row.tag === 1">飞虎队</el-tag>
       </template>
@@ -694,7 +694,7 @@ export default {
       this.rentPayList.push({
         depositPrice: '',
         depositQty: '',
-        maxMonthNum: 24,
+        maxMonthNum: 12,
         minMonthNum: 1,
         name: "月付",
         rentPrice: '',

@@ -159,15 +159,15 @@
       </el-row>
 
       <template>
-        <el-tabs v-model="activeRoomName" type="card" editable @edit="handleTabsEdit">
+        <el-tabs class="sub-room-info-list" v-model="activeRoomName" type="border-card" editable @edit="handleTabsEdit">
           <el-tab-pane :key="item.name" v-for="(item, index) in editableTabs" :label="item.title" :name="item.name">
-            <el-row :gutter="20" >
+            <el-row :gutter="20">
               <el-col :span="5">
                 <el-form-item label-width="0" class="room-count">
                   <el-row>
                     <el-col :span="19">
-                      <el-form-item label="房间面积" prop="">
-                        <el-input v-model="hostingRoomDetail.hostingRoomList[0].roomArea"></el-input>
+                      <el-form-item label="房间面积" prop="" class="room-item-count">
+                        <el-input v-model="hostingRoomDetail.hostingRooms[0].roomArea"></el-input>
                       </el-form-item>
                     </el-col>
                     <el-col :span="5" class="room-count-text">
@@ -179,7 +179,7 @@
               </el-col>
               <el-col :span="4">
                 <el-form-item label-width="0" prop="roomDirection">
-                  <el-select class="room-detail-select" v-model="hostingRoomDetail.hostingRoomList[0].roomDirection" placeholder="房间朝向">
+                  <el-select class="room-detail-select" v-model="hostingRoomDetail.hostingRooms[0].roomDirection" placeholder="房间朝向">
                     <el-option v-for="item in roomDirectionList" :key="item.value" :label="item.label" :value="item.value">
                     </el-option>
                   </el-select>
@@ -187,24 +187,26 @@
               </el-col>
               <el-col :span="5">
                 <el-form-item label="房间照片" prop="">
-                  <el-badge :value="hostingRoomDetail.hostingRoomList[0].pictures ? hostingRoomDetail.hostingRoomList[0].pictures.length : 0">
+                  <el-badge :value="hostingRoomDetail.hostingRooms[0].pictures ? hostingRoomDetail.hostingRooms[0].pictures.length : 0">
                     <el-button type="primary" size="mini" @click="openPicModel">上传照片</el-button>
                   </el-badge>
                 </el-form-item>
               </el-col>
               <el-col :span="10">
-                <el-checkbox-group v-model="hostingRoomDetail.hostingRoomList[0].roomAttributes">
-                  <el-checkbox label="独立卫生间"></el-checkbox>
-                  <el-checkbox label="独立阳台"></el-checkbox>
-                  <el-checkbox label="独立厨房"></el-checkbox>
-                  <el-checkbox label="飘窗"></el-checkbox>
-                </el-checkbox-group>
+                <el-form-item label-width="0" prop="">
+                  <el-checkbox-group v-model="hostingRoomDetail.hostingRooms[0].roomAttributes">
+                    <el-checkbox label="独立卫生间" class="room-attributes"></el-checkbox>
+                    <el-checkbox label="独立阳台" class="room-attributes"></el-checkbox>
+                    <el-checkbox label="独立厨房" class="room-attributes"></el-checkbox>
+                    <el-checkbox label="飘窗" class="room-attributes"></el-checkbox>
+                  </el-checkbox-group>
+                </el-form-item>
               </el-col>
             </el-row>
             <el-row :gutter="20">
               <el-col :span="13">
                 <el-form-item label="房间设施" prop="">
-                  <el-select class="room-detail-select" v-model="hostingRoomDetail.hostingRoomList[0].facilityItems" multiple placeholder="请选择">
+                  <el-select class="room-detail-select" v-model="hostingRoomDetail.hostingRooms[0].facilityItems" multiple placeholder="请选择">
                     <el-option-group v-for="group in roomFacilityGroup" :key="group.label" :label="group.label">
                       <el-option v-for="item in group.facilitys" :key="item.value" :label="item.label" :value="item.value">
                       </el-option>
@@ -216,6 +218,47 @@
           </el-tab-pane>
         </el-tabs>
       </template>
+
+      <el-row :gutter="20">
+        <el-col :span="8">
+          <el-form-item label-width="110px" label="房源管理权限" prop="orgId">
+            <el-select class="estate-model-select" v-model="hostingRoomDetail.orgId" filterable remote :clearable="true" placeholder="组织名称" :remote-method="searchOrgListByKeywords" :loading="loading" @clear="setOrg">
+              <el-option v-for="item in orgList" :key="item.ordId" :value="item.orgId" :label="item.orgName" @click.native="setOrg(item)">
+              </el-option>
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :span="5">
+          <el-form-item label-width="0">
+            <el-input placeholder="账号名" v-model="hostingRoomDetail.accountName" :disabled="true"></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="3">
+          <el-form-item label-width="30px">
+            <el-checkbox label="飞虎队" name="type" v-model="hostingRoomDetail.tag"></el-checkbox>
+          </el-form-item>
+        </el-col>
+        <el-col :span="6">
+          <el-form-item label-width="0" prop="sourceInfo">
+            <el-select
+              v-model="hostingRoomDetail.sourceInfo"
+              filterable remote
+              placeholder="房源提供者"
+              :remote-method="fetchFlyTigerList"
+              :loading="loading"
+              :clearable="true"
+              size="small"
+              style="width: 100%">
+              <el-option v-for="item in filterManagerList" :key="item.id"
+                :label="item.name"
+                :value="item.id">
+                <span style="float: left">{{ item.name }}</span>
+                <span style="float: right; color: #8492a6; font-size: 13px">{{ item.mobile }}</span>
+              </el-option>
+            </el-select>
+          </el-form-item>
+        </el-col>
+      </el-row>
     </el-form>
     <span slot="footer" class="dialog-footer">
       <el-button size="small" type="primary" @click="roomDetail = false">保存并继续添加</el-button>
@@ -238,7 +281,7 @@ export default {
       roomDetail: true,
       hostingRoomDetail: {
         areaCode: ['', '', ''],
-        hostingRoomList: [{
+        hostingRooms: [{
           roomArea: '',
           roomAttributes: []
         }]
@@ -250,6 +293,7 @@ export default {
       },
       zoneList: [],
       addressList: [],
+      orgList: [],
       loading: false,
       decorationDegreeList: [
         {
@@ -352,7 +396,9 @@ export default {
         name: '2',
         content: 'Tab 2 content'
       }],
-      tabIndex: 2
+      tabIndex: 2,
+      cityManagerList: [],
+      filterManagerList: []
     }
   },
   computed: {
@@ -474,7 +520,49 @@ export default {
         this.activeRoomName = activeName
         this.editableTabs = tabs.filter(tab => tab.name !== targetName)
       }
-    }
+    },
+    searchOrgListByKeywords(query) {
+      if (query !== '') {
+        this.loading = true
+        estateOrgListApi({
+          orgName: query
+        }).then((res) => {
+          this.loading = false
+          if (res.code === '0') {
+            this.orgList = res.data.list
+          }
+        })
+      } else {
+        this.orgList = []
+      }
+    },
+    setOrg(item) {
+      this.hostingRoomDetail.accountName = item ? item.accountName : ''
+      this.hostingRoomDetail.adminUserId = item ? item.adminUserId : ''
+    },
+    fetchFlyTigerList(query) {
+      if (query !== '') {
+        this.loading = true
+        if (this.cityManagerList.length) {
+          this.loading = false
+          this.filterManagerList = this.cityManagerList.filter(item => {
+            return (item.name.toLowerCase().includes(query.toLowerCase()) || item.mobile.includes(query))
+          })
+        } else {
+          fhdAuditApi.queryCityManager().then((res) => {
+            this.loading = false
+            if (res.code === '0' && res.data) {
+              this.cityManagerList = res.data
+              this.filterManagerList = this.cityManagerList.filter(item => {
+                return (item.name.toLowerCase().includes(query.toLowerCase()) || item.mobile.includes(query))
+              })
+            }
+          })
+        }
+      } else {
+        this.filterManagerList = []
+      }
+    },
   },
 
 }
@@ -486,6 +574,15 @@ export default {
     position: absolute;
     bottom: 0px;
     right: 10px;
+  }
+  .room-attributes {
+    & + .room-attributes {
+      margin-left: 20px;
+    }
+  }
+  .sub-room-info-list {
+    margin-bottom: 18px;
+    box-shadow: 0 0;
   }
 }
 </style>

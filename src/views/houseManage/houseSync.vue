@@ -36,8 +36,8 @@
           <el-button size="small" type="success" icon="el-icon-upload" class="filter-item" @click="syncItems('on')">发布</el-button>
           <el-button size="small" type="danger" icon="el-icon-remove" class="filter-item" @click="syncItems('off')">撤销</el-button>
           <!-- fhj -->
-          <el-dialog class="select-dialog" :title='"选择"+dialogTitle+"平台"' :visible.sync="dialogVisible" width="40%">
-            <div class="select-platform-container">
+          <el-dialog class="select-dialog" :title='"选择"+dialogTitle+"平台"' :visible.sync="dialogVisible" width="450px">
+            <div class="select-platform-container clearfix">
               <div class="left">
                 <input type="checkbox" v-model="publishSelect.mlzf" id="mlRent" />
                 <label for="mlRent">
@@ -46,6 +46,12 @@
                     <i class="el-icon-check" v-show="publishSelect.mlzf"></i>
                   </div>
                 </label>
+                <el-select v-show="publishSelect.mlzf" class="item-select" v-model="sourceInfo" filterable remote placeholder="照片提供者" :remote-method="fetchFlyTigerList" :loading="loading" :clearable="true" size="small">
+                  <el-option v-for="item in filterManagerList" :key="item.id" :label="item.name" :value="item.id">
+                    <span style="float: left">{{ item.name }}</span>
+                    <span style="float: right; color: #8492a6; font-size: 13px">{{ item.mobile }}</span>
+                  </el-option>
+                </el-select>
               </div>
               <div class="right">
                 <input type="checkbox" v-model="publishSelect.idlefish" id="idleFishRent" />
@@ -58,7 +64,8 @@
               </div>
             </div>
             <span slot="footer" class="dialog-footer">
-              <el-button type="primary" @click="gotoHouseAsync">{{dialogTitle === "撤销"?"确定":"发布"}}</el-button>
+              <span class="tips">温馨提示：飞虎队房源需填写照片提供者</span>
+              <el-button type="primary" size="small" @click="gotoHouseAsync">{{dialogTitle === "撤销"?"确定":"发布"}}</el-button>
             </span>
           </el-dialog>
           <!--fhj-->
@@ -85,8 +92,8 @@
 <script>
 import GridUnit from '@/components/GridUnit/grid'
 import { deepClone, cleanArray, ObjectMap } from '@/utils'
-import { houseAsyncApi } from '@/api/houseManage'
-import { publishHouseApi } from '@/api/houseManage'
+import { fhdAuditApi } from '@/api/auditCenter'
+import { houseAsyncApi, publishHouseApi } from '@/api/houseManage'
 export default {
   name: 'houseSync',
   components: {
@@ -181,7 +188,11 @@ export default {
         mlzf: true,
         idlefish: true
       },
-      dialogTitle: ''
+      dialogTitle: '',
+      loading: false,
+      sourceInfo: '',
+      cityManagerList: [],
+      filterManagerList: []
     }
   },
   mounted() {
@@ -273,53 +284,90 @@ export default {
           platform.push(i);
         }
       }
+      let picProviderId = this.sourceInfo
+      let manage = this.filterManagerList.filter(item => item.id === this.sourceInfo)
+      let picProviderName = manage ? manage[0].label : ''
+      console.log(manage)
+      return
       publishHouseApi({
         platforms: platform,
-        roomCodeList: roomCodes
-      },this.dialogTitle === "发布" ? 1 : 2).then(response => {
+        roomCodeList: roomCodes,
+        picProviderId: picProviderId,
+        picProviderName: picProviderName
+      }, this.dialogTitle === "发布" ? 1 : 2).then(response => {
         this.$notify({
           title: '成功',
           message: '操作成功',
           type: 'success',
           duration: 2000,
         })
-        this.dialogVisible=false;
+        this.dialogVisible = false;
         this.searchParam()
       })
+    },
+    fetchFlyTigerList(query) {
+      if (query !== '') {
+        this.loading = true
+        if (this.cityManagerList.length) {
+          this.loading = false
+          this.filterManagerList = this.cityManagerList.filter(item => {
+            return (item.name.toLowerCase().includes(query.toLowerCase()) || item.mobile.includes(query))
+          })
+        } else {
+          fhdAuditApi.queryCityManager().then((res) => {
+            this.loading = false
+            if (res.code === '0' && res.data) {
+              this.cityManagerList = res.data
+              this.filterManagerList = this.cityManagerList.filter(item => {
+                return (item.name.toLowerCase().includes(query.toLowerCase()) || item.mobile.includes(query))
+              })
+            }
+          })
+        }
+      } else {
+        this.filterManagerList = []
+      }
     }
   }
 }
 </script>
-<style rel="stylesheet/scss" lang="scss">
+<style rel="stylesheet/scss" lang="scss" scoped>
 .model-search .filter-item {
   margin-left: 10px;
 }
-
-.select-platform-container {
-  height: 100px;
-  padding: 15px 10px;
-}
-
 .item-select {
   width: 150px;
 }
-
-.left {
-  margin-left: 15%;
+.select-dialog {
+  .dialog-footer {
+    .tips {
+      position: absolute;
+      bottom: 25px;
+      left: 15px;
+      font-size: 14px;
+    }
+  }
 }
 
-.right {
-  margin-right: 15%;
-}
+.select-platform-container {
+  .left {
+    margin-left: 30px;
+  }
 
-input[type="checkbox"] {
-  display: none;
-}
+  .right {
+    margin-right: 30px;
+  }
 
-label {
-  display: inline-block;
-  width: 120px;
-  height: 30px;
+  input[type="checkbox"] {
+    display: none;
+  }
+
+  label {
+    display: block;
+    width: 120px;
+    height: 30px;
+    margin-bottom: 15px;
+  }
 }
 
 .ml-selectStatus {
