@@ -1,13 +1,14 @@
 <template>
     <el-dialog title="逾期原因" :visible.sync="dialogFormVisible">
-        <el-form :model="from">
+        <el-form :model="from" :rules="rules">
             <el-form-item label="逾期类别" :label-width="formLabelWidth">
             <el-select v-model="from.overdueType" placeholder="请选择逾期类别" @change = "changeType">
                 <el-option :key="Item.value" v-for="Item in overdueTypeList" :label='Item.label' :value="Item.value"></el-option>
             </el-select>
             </el-form-item>
-            <el-form-item label="逾期原因" :label-width="formLabelWidth" v-show="filStatus(from.overdueType)">
-              <el-input v-model="from.overdueReason" ></el-input>
+            <el-form-item label="逾期原因" prop="content" :label-width="formLabelWidth" v-show="filStatus(from.overdueType)">
+              <el-input v-model="from.overdueReason" :maxlength="50" type="textarea"
+  :rows="2" placeholder="请输入备注（0-50字）"></el-input>
             </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -22,6 +23,13 @@ import { delObjectItem,ObjectMap}  from '@/utils'
 export default {
     data(){
         return {
+            rules: {
+            content:[
+              { required: true, message: '请输入备注', trigger: 'blur' },
+              { min: 0, max: 50, message: '长度在 0 到 50 个字符', trigger: 'blur' }
+            ]
+            
+          },
         overdueTypeList:[{    //逾期类型  0-已退租(原因),1-线上交租,2-个人原因,3-其他
             value:0,
             label: '已退租'
@@ -57,7 +65,6 @@ export default {
       submit(){
           
         let params=ObjectMap(this.from)
-        console.log(params.overdueReason)
         if(this.from.overdueType!=1&&params.overdueReason==undefined){
             this.$message({
                 message: '请填写逾期原因',

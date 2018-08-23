@@ -448,19 +448,23 @@ export default {
       searchParam(){   //搜索
         let searchParams = Object.assign(this.pageItems, this.formData);
          
-        if(this.formData.startTime){
-          getRentingListApi(ObjectMap(searchParams)).then(response => {
-            console.log(response)
-            console.log(ObjectMap(searchParams))
-            this.tableData = response.data.content
-            this.listLoading = false
-            this.total = response.data.totalElements
-          }).catch()
-        }else{
+        if(!this.formData.startTime){
           this.$message({
             message: '时间区间为必选字段,请选择你要查询的时间段，点击再次查询',
             type: 'error'
          });
+          
+        }else if(!this.formData.cityId){
+           this.$message({
+            message: '城市为必选字段,请选择你要查询的城市后，点击再次查询',
+            type: 'error'
+           });
+        }else{
+         getRentingListApi(ObjectMap(searchParams)).then(response => {
+            this.tableData = response.data.content
+            this.listLoading = false
+            this.total = response.data.totalElements
+          }).catch()
         }
        },
     }

@@ -1,9 +1,9 @@
  <!-- 催租跟进弹窗 -->
 <template>
-    <el-dialog title="收货地址" :visible.sync="dialogTableVisible">
+    <el-dialog title="催租跟进" :visible.sync="dialogTableVisible">
         <el-row>
             <el-button type="primary" @click="addFllow">新增催租结果</el-button>
-            <el-button type="primary" @click="rentMessage">短信提醒</el-button>
+            <el-button type="primary" @click="rentMessage">短信催租</el-button>
             <el-button type="primary" @click="managerMessage">管家提醒</el-button>
         </el-row>
         <el-dialog
@@ -189,6 +189,7 @@ export default {
       addFollowSubmit(){
         if(this.form.resultType != 3){
              this.form.content=this.resultTypeList[this.form.resultType-1].label
+             this.addfun()
         }else{
 
           if(this.form.content==''||this.form.content==null){
@@ -197,19 +198,22 @@ export default {
                 type: 'success'
              });
           }else{
-            let params=Object.assign(this.followId,this.form)
-            
-              billFollowApi(params).then(response => {
-                  this.innerVisible=false
-                  this.getfollowList()
-                  this.$emit("searchStart")
-                  delObjectItem(this.form)
-            })
+            this.addfun()
           }
            
         }
        
         
+      },
+      addfun(){
+         let params=Object.assign(this.followId,this.form)
+            
+          billFollowApi(params).then(response => {
+            this.innerVisible=false
+            this.getfollowList()
+            this.$emit("searchStart")
+            delObjectItem(this.form)
+          })
       },
       managerMessageSubmit(){
         let dataItem = {
