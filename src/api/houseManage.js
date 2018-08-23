@@ -435,7 +435,7 @@ export function changeRoomStatusApi(params) {
 /* 分散式查询房源列表 */
 export function hostingHouseListApi(params) {
   return fetch({
-    url: '/market/fangyuan',
+    url: 'http://localhost:9528/api/market/fangyuan',
     method: 'post',
     data: {
       method: 'queryHostingHouseList',

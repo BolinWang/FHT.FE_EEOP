@@ -74,7 +74,7 @@ export default {
           prop: "operate",
           label: "操作",
           slotName: "operateEstate",
-          width: "300",
+          width: "500px",
           fixed: 'right'
         },
         {

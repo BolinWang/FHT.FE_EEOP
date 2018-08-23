@@ -833,6 +833,7 @@ export default {
       })
     },
     handleCommand(command) {
+      debugger
       let roomStatusParams = {}
       if (typeof command === 'number') {
         if (!this.selectedRooms.length) {
