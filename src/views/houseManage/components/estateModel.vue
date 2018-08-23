@@ -54,7 +54,7 @@
             </el-col>
             <el-col :span="8">
               <el-form-item label-width="0" prop="contactMobile">
-                <el-input v-model="estateModel.contactMobile" placeholder="联系电话"></el-input>
+                <el-input type="number" v-model="estateModel.contactMobile" placeholder="联系电话"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
@@ -375,7 +375,7 @@ export default {
           { required: true, message: '请输入联系人', trigger: 'change' }
         ],
         contactMobile: [
-          { required: true, pattern: /^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\d{8}$/, message: '请输入正确的手机号码', trigger: 'blur' }
+          { required: true, message: '请输入手机号码', trigger: 'blur' }
         ],
         orgId: [
           { required: true, message: '请选择一个组织，支持模糊查询', trigger: 'change' }

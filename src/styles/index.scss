@@ -205,14 +205,16 @@ a:hover {
 }
 
 /* 编辑公寓楼层 */
+.estate-model-container {
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none !important;
+    margin: 0;
+  }
+}
 .estate-floor-container {
   .el-input-group__prepend, .el-input-group__append {
     padding: 0 8px;
-  }
-  input::-webkit-outer-spin-button,
-  input::-webkit-inner-spin-button {
-      -webkit-appearance: none !important;
-      margin: 0;
   }
 }
 
