@@ -3,7 +3,7 @@
     <!-- <div>
       <hosting-room-detail></hosting-room-detail>
     </div> -->
-    <el-tabs  type="border-card">
+    <el-tabs v-model="activeName" type="border-card" @tab-click="handleClickTab">
       <el-tab-pane v-for="(item,index) in houseRentTypeList" :label="item" :key='index' :name="item">
       </el-tab-pane>
       <el-form :model="roomSearchForm" size="small" :inline="true">
@@ -30,10 +30,6 @@
           <el-button icon="el-icon-remove-outline" @click="searchHostingHouseList('clear')">清空</el-button>
         </el-form-item>
         <div class="house-rent-type-select">
-          <!-- <el-form-item class="house-search-form-group">
-            <el-button type="primary">合 租</el-button>
-            <el-button>整 租</el-button>
-          </el-form-item> -->
           <el-form-item>
             <el-dropdown class="room-options-dropdown" @command="handleCommand">
               <el-button plain size="small" style="width:120px">批量房态管理</el-button>
@@ -46,7 +42,7 @@
             <el-button style="width:120px">添加整租房源</el-button>
           </el-form-item>
 
-          <GridUnit ref="hostingHouseList" :formOptions="roomSearchForm" :showSelection="true" :url="houstingListUrl" :dataMethod="method" listField="data.houseList" totalField="data.record" :columns="colModels" :height="tableHeight" fit @selection-change="handleSelectionChange">
+          <GridUnit ref="hostingHouseList" :span-method="objectSpanMethod" :formOptions="roomSearchForm" :showSelection="true" :url="houstingListUrl" :dataMethod="method" listField="data.houseList" totalField="data.record" :columns="colModels" :height="tableHeight" fit @selection-change="handleSelectionChange">
             <template slot="operateHosting" slot-scope="scope">
               <el-row>
                 <el-button type="primary" size="mini">交租方式</el-button>
@@ -66,12 +62,28 @@
 import hostingRoomDetail from './components/hostingRoomDetail'
 import areaSelect from "@/components/AreaSelect"
 import GridUnit from "@/components/GridUnit/grid"
+import { hostingHouseListApi, hostingAddressByKeywordsApi } from '@/api/houseManage'
 export default {
   name: 'hostingList',
   components: {
     hostingRoomDetail,
     areaSelect,
     GridUnit
+  },
+  filters: {
+    renderStatusType(status) {
+      const statusMap = {
+        '已发布': 'success',
+        '发布中': 'primary',
+        '发布失败': 'danger',
+        '下架中': 'warning',
+        '未发布': 'info'
+      }
+      return statusMap[status] || 'info'
+    },
+    renderStatusValue(status) {
+      return status || '未知'
+    }
   },
   data() {
     return {
@@ -85,8 +97,10 @@ export default {
         roomCode: '',
         houseRentType: 1
       },
+      spanArr: [],
+      pos: '',
       houseRentTypeList: ['整租', '合租'],
-      activeName:['整租'],
+      activeName: '整租',
       tableHeight: 400,
       houstingListUrl: "http://localhost:9528/api/market/fangyuan",
       method: "queryHostingHouseList",
@@ -112,9 +126,25 @@ export default {
         { prop: "roomDetailAddress", label: "公寓/小区-房间" },
         { prop: "tags", label: "房间类型" },
         { prop: "roomName", label: "房间" },
-        { prop: "roomStatus", label: "房间状态" },
+        {
+          prop: "roomStatus",
+          label: "房间状态",
+          unitFilters: {
+            renderStatusType(status) {
+              const statusMap = {
+                '已出租': 'success',
+                '未出租': 'info'
+              }
+              return statusMap[status] || 'info'
+            },
+            renderStatusValue(status) {
+              return status || '未知'
+            }
+          }
+        },
         { prop: "roomCode", label: "平台房源编码" },
-        {          prop: "operate",
+        {
+          prop: "operate",
           label: "设置",
           slotName: "operateHosting",
           width: "340",
@@ -138,12 +168,16 @@ export default {
   },
   methods: {
     searchParam() {
-      this.$refs.hostingHouseList.searchHandler()
+      this.roomSearchForm.houseRentType = this.activeName === '整租' ? 1 : 2
+      // 解决watch执行顺序
+      this.$nextTick(() => {
+        this.$refs.hostingHouseList.searchHandler()
+      })
+      // this.$refs.hostingHouseList.searchHandler()
     },
-    // 切换出租类型
-    // handleClickTab(tab) {
-    //   this.searchParam('clear')
-    // },
+    handleClickTab(tab) {
+      this.searchParam('clear')
+    },
     // 查询/清空
     searchHostingHouseList(type) {
       if (type == "clear") {
@@ -158,7 +192,6 @@ export default {
     },
     // 批量房态管理
     handleCommand(command) {
-      debugger
       let roomStatusParams = {}
       if (typeof command === 'number') {
         if (!this.selectedRooms.length) {
@@ -197,6 +230,35 @@ export default {
         }
       })
     },
+    // 数据合并
+    getSpanArr(data) {
+      for (let i = 0; i < data.length; i++) {
+        if (i === 0) {
+          this.spanArr.push[i];
+          this.pos = 0;
+        }
+        else {
+          if (data[i].name === data[i - 1].name) {
+            this.spanArr[this.pos] += 1;
+            this.spanArr.push(0);
+          }
+          else {
+            this.spanArr.push(1);
+            this.pos = i;
+          }
+        }
+      }
+    },
+    objectSpanMethod({ row, column, rowIndex, columnIndex }) {
+      if(columnIndex === 0){
+        const newRow = this.spanArr[rowIndex]
+        const newCol = newRow > 0 ? 1 : 0;
+        return{
+          rowSpan:newRow,
+          colSpan:newCol
+        }
+      }
+    }
     // 添加合租房源
     // 添加整租房源
   }
