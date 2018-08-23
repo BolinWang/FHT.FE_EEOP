@@ -2,7 +2,7 @@
     <el-dialog title="逾期原因" :visible.sync="dialogFormVisible">
         <el-form :model="from">
             <el-form-item label="逾期类别" :label-width="formLabelWidth">
-            <el-select v-model="from.overdueType" placeholder="请选择逾期类别">
+            <el-select v-model="from.overdueType" placeholder="请选择逾期类别" @change = "changeType">
                 <el-option :key="Item.value" v-for="Item in overdueTypeList" :label='Item.label' :value="Item.value"></el-option>
             </el-select>
             </el-form-item>
@@ -18,7 +18,7 @@
 </template>
 <script>
 import { leaseBillApi } from '@/api/renting'
-import { delObjectItem}  from '@/utils'
+import { delObjectItem,ObjectMap}  from '@/utils'
 export default {
     data(){
         return {
@@ -41,27 +41,43 @@ export default {
           overdueReason:null,
           id:null
         },
+        orderType:'',
+        orderReason:'',
         formLabelWidth: '120px'
         }
     },
     methods:{
+      changeType(){
+        this.from.overdueType==this.orderType?this.from.overdueReason=this.orderReason:this.from.overdueReason=''
+      },
       closeDialog(){
-        dialogFormVisible = false
+        this.dialogFormVisible = false
         delObjectItem(this.from)
       },
       submit(){
+          
+        let params=ObjectMap(this.from)
+        console.log(params.overdueReason)
+        if(this.from.overdueType!=1&&params.overdueReason==undefined){
+            this.$message({
+                message: '请填写逾期原因',
+                type: 'success'
+             });
+          }else{
         let that=this
-        leaseBillApi(this.from).then(response => {
+        leaseBillApi(params).then(response => {
           that.$emit('searchCallback')
           this.dialogFormVisible = false
           delObjectItem(this.from)
         }).catch()
-       
+        }
       },
       open(dialogFormVisible,reason,type,id){
         this.dialogFormVisible = true
         this.from.overdueType = type
+        this.orderType=type
         this.from.overdueReason = reason
+        this.orderReason=reason
         this.from.id = id
        },
        filStatus(val){
