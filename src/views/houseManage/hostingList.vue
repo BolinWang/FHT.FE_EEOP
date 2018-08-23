@@ -3,7 +3,7 @@
     <!-- <div>
       <hosting-room-detail></hosting-room-detail>
     </div> -->
-    <el-tabs v-model="activeName" type="border-card" @tab-click="handleClickTab">
+    <el-tabs  type="border-card">
       <el-tab-pane v-for="(item,index) in houseRentTypeList" :label="item" :key='index' :name="item">
       </el-tab-pane>
       <el-form :model="roomSearchForm" size="small" :inline="true">
@@ -86,6 +86,7 @@ export default {
         houseRentType: 1
       },
       houseRentTypeList: ['整租', '合租'],
+      activeName:['整租'],
       tableHeight: 400,
       houstingListUrl: "http://localhost:9528/api/market/fangyuan",
       method: "queryHostingHouseList",
@@ -139,6 +140,10 @@ export default {
     searchParam() {
       this.$refs.hostingHouseList.searchHandler()
     },
+    // 切换出租类型
+    // handleClickTab(tab) {
+    //   this.searchParam('clear')
+    // },
     // 查询/清空
     searchHostingHouseList(type) {
       if (type == "clear") {
