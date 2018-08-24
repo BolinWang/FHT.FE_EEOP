@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-07-11 13:49:21
  * @Last Modified by: chudequan
- * @Last Modified time: 2018-08-23 16:28:10
+ * @Last Modified time: 2018-08-23 17:29:33
  */
 
  <template>
@@ -284,17 +284,20 @@ export default {
           platform.push(i);
         }
       }
-      let picProviderId = this.sourceInfo
-      let manage = this.filterManagerList.filter(item => item.id === this.sourceInfo)
-      let picProviderName = manage ? manage[0].label : ''
-      console.log(manage)
-      return
-      publishHouseApi({
+
+      let params = {
         platforms: platform,
-        roomCodeList: roomCodes,
-        picProviderId: picProviderId,
-        picProviderName: picProviderName
-      }, this.dialogTitle === "发布" ? 1 : 2).then(response => {
+        roomCodeList: roomCodes
+      }
+
+      if (this.dialogTitle === "发布") {
+        let manage = this.filterManagerList.filter(item => item.id === this.sourceInfo)
+        params = Object.assign(params, {
+          picProviderId: this.sourceInfo || '',
+          picProviderName: manage ? manage[0].name : ''
+        })
+      }
+      publishHouseApi(params, this.dialogTitle === "发布" ? 1 : 2).then(response => {
         this.$notify({
           title: '成功',
           message: '操作成功',
