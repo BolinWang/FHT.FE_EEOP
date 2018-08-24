@@ -194,6 +194,13 @@ export default {
         this.innerVisible = true
       },
       addFollowSubmit(){
+        if(!this.form.resultType){
+          this.$message({
+                message: '请选择催租结果',
+                type: 'success'
+             });
+             return false
+        }
         if(this.form.resultType != 3){
              this.form.content=this.resultTypeList[this.form.resultType-1].label
              this.addfun()
