@@ -47,7 +47,7 @@
         <div class="all-text">
            <div class="table-container" v-if="gridData.length">
              <div class="box" v-for="Item in gridData" :key="Item.id">
-               <div class="name-box">{{Item.gmtCreate}} {{Item.createName}}</div>
+               <div class="name-box">{{Item.gmtCreate}} {{Item.createStatus | filterCreat}}-{{Item.createName}}</div>
                 <div class="name-box">{{Item.content}}</div>
              </div>
            </div>
@@ -156,6 +156,12 @@ export default {
             element.style.display  = "none";
         });
     },
+    filters:{
+     filterCreat(val){
+       const list=['运营','飞虎队']
+       return list[val-1]
+     }
+    },
     methods:{
       closeInner(){
         this.innerVisible=false
@@ -169,6 +175,7 @@ export default {
       rentMessage(){
         rentMessageApi(this.followId).then(response =>{
            if(response.code == 0){
+             this.getfollowList()
              this.$message({
                 message: response.message,
                 type: 'success'
@@ -216,20 +223,30 @@ export default {
           })
       },
       managerMessageSubmit(){
+       
+        if(this.messageType){
+          this. messageSubmit()
+        }else{
+            this.$message.error('请选择提醒模版');
+        }
+      },
+      messageSubmit(){
         let dataItem = {
-            isOver : this.isOver,
-            messageType: this.messageType
+          isOver : this.isOver,
+          messageType: this.messageType
         }
         let params = Object.assign(dataItem,this.followId)
-        cityManagerMessageApi(params).then(response =>{
-           if(response.code == 0){
-             this.$message({
-                message: response.message,
-                type: 'success'
-             });
-             this.innerWarn=false
-           }
-        })
+          cityManagerMessageApi(params).then(response =>{
+            if(response.code == 0){
+              this.getfollowList()
+              this.$message({
+                  message: response.message,
+                  type: 'success'
+              });
+              this.innerWarn=false
+
+            }
+          })
       },
       managerMessage(){
         this.innerWarn = true
