@@ -1,9 +1,9 @@
  <!-- 催租跟进弹窗 -->
 <template>
-    <el-dialog title="收货地址" :visible.sync="dialogTableVisible">
+    <el-dialog title="催租跟进" :visible.sync="dialogTableVisible">
         <el-row>
             <el-button type="primary" @click="addFllow">新增催租结果</el-button>
-            <el-button type="primary" @click="rentMessage">短信提醒</el-button>
+            <el-button type="primary" @click="rentMessage">短信催租</el-button>
             <el-button type="primary" @click="managerMessage">管家提醒</el-button>
         </el-row>
         <el-dialog
@@ -11,19 +11,20 @@
         title="新增催租结果"
         :visible.sync="innerVisible"
         append-to-body>
-           <el-form :model="form">
+           <el-form :model="form" :rules="rules">
              <el-form-item label="催租结果" :label-width="formLabelWidth">
                <el-select v-model="form.resultType" placeholder="请选择催租结果">
                  <el-option v-for="Item in resultTypeList" :key="Item.value" :label="Item.label" :value="Item.value"></el-option>
                </el-select>
              </el-form-item>
-             <el-form-item label="备注" :label-width="formLabelWidth" v-show="filterType(form.resultType)">
-                <el-input v-model="form.content" ></el-input>
+             <el-form-item label="备注" prop="content" :label-width="formLabelWidth" v-show="filterType(form.resultType)">
+                <el-input v-model="form.content" :maxlength="50" type="textarea"
+  :rows="2" placeholder="请输入备注（0-50字）"></el-input>
             </el-form-item>
            </el-form>
             <div slot="footer" class="dialog-footer">
                <el-button type="primary" @click="addFollowSubmit">确 定</el-button>
-               <el-button @click="dialogTableVisible = false">关闭</el-button>
+               <el-button @click="closeInner">关闭</el-button>
             </div>
         </el-dialog>
         <el-dialog
@@ -68,6 +69,13 @@ import { delObjectItem}  from '@/utils'
 export default {
     data(){
         return {
+          rules: {
+            content:[
+              { required: true, message: '请输入备注', trigger: 'blur' },
+              { min: 0, max: 50, message: '长度在 0 到 50 个字符', trigger: 'blur' }
+            ]
+            
+          },
           gridData: [],
           dialogTableVisible: false,
           innerVisible: false,
@@ -149,6 +157,10 @@ export default {
         });
     },
     methods:{
+      closeInner(){
+        this.innerVisible=false
+        delObjectItem(this.form)
+      },
       filterType(type){
         if(type === 3){
          return true
@@ -177,17 +189,31 @@ export default {
       addFollowSubmit(){
         if(this.form.resultType != 3){
              this.form.content=this.resultTypeList[this.form.resultType-1].label
+             this.addfun()
+        }else{
+
+          if(this.form.content==''||this.form.content==null){
+            this.$message({
+                message: '请填写催租结果的备注',
+                type: 'success'
+             });
+          }else{
+            this.addfun()
+          }
+           
         }
        
-        let params=Object.assign(this.followId,this.form)
-        console.log(params)
-        billFollowApi(params).then(response => {
+        
+      },
+      addfun(){
+         let params=Object.assign(this.followId,this.form)
+            
+          billFollowApi(params).then(response => {
             this.innerVisible=false
             this.getfollowList()
             this.$emit("searchStart")
             delObjectItem(this.form)
-            this.form.content=''
-       })
+          })
       },
       managerMessageSubmit(){
         let dataItem = {

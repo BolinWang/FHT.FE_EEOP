@@ -4,7 +4,7 @@
 
             <el-form size="small" :inline="true" :model="formData" >
                 <el-form-item id="pad-b">
-                    <el-select size="small" style="width:120px;" v-model="formData.cityId" placeholder="城市" class="item-select" clearable>
+                    <el-select size="small" style="width:120px;" v-model="formData.cityId" placeholder="城市" class="item-select" >
                        <el-option v-for="item in cityData" :key="item.value" :label="item.label" :value="item.value">
                        </el-option>
                     </el-select>
@@ -131,15 +131,26 @@
                               width='80px'
                               >
                                 <template slot-scope="scope">
-                                    <div class="overdueReason" @click="overDue(scope.row.overdueReason,scope.row.overdueType,scope.row.id)">
-                                        <span v-if="scope.row.overdueType">{{scope.row.overdueType | filoverdueType}}</span>
-                                        <span v-else class="choose">请选择</span>
+                                    <div class="overdueReason" @click="overDue(scope.row.overdueReason,scope.row.overdueType,scope.row.id,scope.row.isOver)">
+                                       <span v-if="filterOver(scope.row.overdueType)">
+                                         <el-popover
+                                          placement="top-start"
+                                          title="原因"
+                                          width="200"
+                                          trigger="hover"
+                                          :content="scope.row.overdueReason">
+                                           <span slot="reference" >{{scope.row.overdueType | filoverdueType}}</span>
+                                        </el-popover>
+                                       </span> 
+                                       <span v-else-if="scope.row.overdueType==1">{{scope.row.overdueType | filoverdueType}}</span>
+                                       <span v-else-if='scope.row.isOver===true' class="choose">请选择</span>
+                                        <span v-else-if='scope.row.isOver===false'>-</span>
                                     </div>
                                 </template>
                             </el-table-column>
                               <el-table-column
                               width='130px'
-                            label="租客/手机号码">
+                            label="手机号码/租客">
                               <template slot-scope="scope">
                                   {{scope.row.customerName}}/{{scope.row.customerMobile}}
                               </template>
@@ -147,7 +158,7 @@
                              <el-table-column
                             label="催租跟进">
                               <template slot-scope="scope">
-                                  <span class="col-red pad" @click="goFollow(scope.row.id,scope.row.billNo,scope.row.isOver)">{{scope.row.followCount
+                                  <span class="col-red pad cursor" @click="goFollow(scope.row.id,scope.row.billNo,scope.row.isOver)">{{scope.row.followCount
 | filterText }}</span>           
                                   <el-popover
                                     placement="top-start"
@@ -176,7 +187,7 @@
 <script>
 import rentingABill from './components/overDue'
 import followUp from './components/followUp'
-import { parseTime ,delObjectItem}  from '@/utils'
+import { parseTime ,delObjectItem,ObjectMap}  from '@/utils'
 import { getRentingListApi ,exportExcelApi} from '@/api/renting'
 export default {
      components: {
@@ -265,11 +276,11 @@ export default {
         let lastM = lw.getMonth()+1;
         let lastD = lw.getDate();
         this.formData.startTime=`${lastY}-${(lastM<10 ? "0" + lastM : lastM)}-${(lastD<10 ? "0"+ lastD : lastD)} 00:00:00`;//三十天之前日期
-      
+       this.dateTime=[this.formData.startTime,this.formData.endTime]
    },
     filters: {
       filterBtn(val){
-         let resultTypeList = [  //1-已退租 2-未缴纳 3-待确认结果真实性 4-未接听
+         const resultTypeList = [  //1-已退租 2-未缴纳 3-待确认结果真实性 4-未接听
               {
                 value:1,
                 label:'已退租'
@@ -284,7 +295,7 @@ export default {
                 label:'未接听'
               }
           ]
-        return resultTypeList[val]?resultTypeList[val-1].label:''
+        return resultTypeList[val-1]?resultTypeList[val-1].label:''
       },
       filStatus(val){
         const valStatus=['未缴租','线上已缴租','线下已缴租','已撤销']
@@ -318,20 +329,26 @@ export default {
     
     },
     methods:{
+      filterOver(type){
+        if(type==1||type==null){
+          return false
+        }else{
+          return true
+        }
+      },
       exportExcel(){
-        const loading = this.$loading({
-          lock: true,
-          text: 'Loading',
-          spinner: 'el-icon-loading',
-          background: 'rgba(0, 0, 0, 0.7)'
-        });
+        // const loading = this.$loading({
+        //   lock: true,
+        //   text: 'Loading',
+        //   spinner: 'el-icon-loading',
+        //   background: 'rgba(0, 0, 0, 0.7)'
+        // });
         this.pageItems.pageSize = 9999;
         let searchParams = Object.assign(this.pageItems, this.formData);
-        exportExcelApi(this.formData).then(response => {
-            console.log(response)
-            response.data.map((item, index) => {
-          item.index = index * 1 + 1;
-        })
+        exportExcelApi(this.formData).then(response => {console.log('124')
+          response.data.map((item, index) => {
+              item.index = index * 1 + 1;
+             })
         require.ensure([], () => {
           const { export_json_to_excel } = require('@/vendor/Export2Excel')
           const tHeader = [
@@ -391,10 +408,18 @@ export default {
             // }
         })
       },
+
         formatJson(filterVal, jsonData) {
       return jsonData.map(v => filterVal.map(j => {
         return v[j]
-      }))
+      })).catch(response => {
+        
+         loading.close();
+        this.$message({
+            message: response.message,
+            type: 'error'
+         });
+      })
     },
       handleSizeChange(val) {
       this.pageItems.pageSize = val;
@@ -411,22 +436,37 @@ export default {
         this.formData=delObjectItem(this.formData)
         this.dateTime=[]
       },
-      overDue(reason,type,id){
+      overDue(reason,type,id,isOver){
+        if(isOver===true){
         this.dialogFormVisible=true
         this.$refs.rentingABill.open(this.dialogFormVisible,reason,type,id)
+        }
       },
       goFollow(id,billNo,isOver){  //跟进记录
         this.$refs.followUp.open(true,id,billNo,isOver)
       },
       searchParam(){   //搜索
         let searchParams = Object.assign(this.pageItems, this.formData);
-        getRentingListApi(searchParams).then(response => {
-          this.tableData = response.data.content
-          this.listLoading = false
-          this.total = response.data.totalElements
-          console.log(response)
-        }).catch()
-      },
+         
+        if(!this.formData.startTime){
+          this.$message({
+            message: '时间区间为必选字段,请选择你要查询的时间段，点击再次查询',
+            type: 'error'
+         });
+          
+        }else if(!this.formData.cityId){
+           this.$message({
+            message: '城市为必选字段,请选择你要查询的城市后，点击再次查询',
+            type: 'error'
+           });
+        }else{
+         getRentingListApi(ObjectMap(searchParams)).then(response => {
+            this.tableData = response.data.content
+            this.listLoading = false
+            this.total = response.data.totalElements
+          }).catch()
+        }
+       },
     }
   }
 </script>
@@ -469,6 +509,10 @@ export default {
  .choose{
      text-decoration:underline;
  }
+ .cursor{
+   cursor:pointer
+ }
+
 </style>
 
 
