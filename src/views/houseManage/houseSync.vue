@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-07-11 13:49:21
  * @Last Modified by: chudequan
- * @Last Modified time: 2018-08-23 17:29:33
+ * @Last Modified time: 2018-08-24 10:38:43
  */
 
  <template>
@@ -292,10 +292,12 @@ export default {
 
       if (this.dialogTitle === "发布") {
         let manage = this.filterManagerList.filter(item => item.id === this.sourceInfo)
-        params = Object.assign(params, {
-          picProviderId: this.sourceInfo || '',
-          picProviderName: manage ? manage[0].name : ''
-        })
+        if (manage.length) {
+          params = Object.assign(params, {
+            picProviderId: this.sourceInfo,
+            picProviderName: manage[0].name
+          })
+        }
       }
       publishHouseApi(params, this.dialogTitle === "发布" ? 1 : 2).then(response => {
         this.$notify({
@@ -329,6 +331,13 @@ export default {
         }
       } else {
         this.filterManagerList = []
+      }
+    }
+  },
+  watch: {
+    'publishSelect.mlzf': function (val) {
+      if (!val && this.dialogTitle === "发布") {
+        this.sourceInfo = ''
       }
     }
   }
