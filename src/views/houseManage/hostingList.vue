@@ -29,40 +29,37 @@
           <el-button type="primary" icon="el-icon-search" @click="searchHostingHouseList('search')" class="filter-item">查询</el-button>
           <el-button icon="el-icon-remove-outline" @click="searchHostingHouseList('clear')">清空</el-button>
         </el-form-item>
-        <div class="house-rent-type-select">
-          <el-form-item>
-            <el-dropdown class="room-options-dropdown" @command="handleCommand">
-              <el-button plain size="small" style="width:120px">批量房态管理</el-button>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item :command="1">未出租</el-dropdown-item>
-                <el-dropdown-item :command="2">已出租</el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
-            <el-button style="width:120px;margin-left:10px">添加合租房源</el-button>
-            <el-button style="width:120px">添加整租房源</el-button>
-          </el-form-item>
-
-          <GridUnit ref="hostingHouseList" :spanMethod="objectSpanMethod" :formOptions="roomSearchForm" :showSelection="true" :url="houstingListUrl" :dataMethod="method" listField="data.houseList" totalField="data.record" :columns="colModels" :height="tableHeight" fit @selection-change="handleSelectionChange" :dataHandler="dataHandler" :indexMethod="indexMethod">
-            <template slot="index" slot-scope="scope">
-              <el-table-column type="index" >
-              </el-table-column>
-            </template>
-            <template slot="operateHosting" slot-scope="scope">
-              <el-row>
-                <el-button type="primary" size="mini">交租方式</el-button>
-                <el-button type="primary" size="mini">复制到</el-button>
-                <el-button type="primary" size="mini">编辑房间</el-button>
-                <el-button type="danger" size="mini">删除</el-button>
-              </el-row>
-            </template>
-          </GridUnit>
-        </div>
+        <el-form-item>
+          <el-dropdown class="room-options-dropdown" @command="handleCommand">
+            <el-button plain size="small" style="width:120px">批量房态管理</el-button>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item :command="1">未出租</el-dropdown-item>
+              <el-dropdown-item :command="2">已出租</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+          <el-button style="width:120px;margin-left:10px">添加合租房源</el-button>
+          <el-button style="width:120px">添加整租房源</el-button>
+        </el-form-item>
       </el-form>
+      <GridUnit ref="hostingHouseList" :showRowIndex="false" :spanMethod="objectSpanMethod" :formOptions="roomSearchForm" :showSelection="true" :url="houstingListUrl" :dataMethod="method" listField="data.houseList" totalField="data.record" :columns="colModels" :height="tableHeight" @selection-change="handleSelectionChange" :dataHandler="dataHandler" :pageSizes="[50, 100, 200]" border>
+        <template slot="index" slot-scope="scope">
+          {{scope.row.index + 1}}
+        </template>
+        <template slot="operateHosting" slot-scope="scope">
+          <el-row>
+            <el-button type="primary" size="mini">交租方式</el-button>
+            <el-button type="primary" size="mini">复制到</el-button>
+            <el-button type="primary" size="mini">编辑房间</el-button>
+            <el-button type="danger" size="mini">删除</el-button>
+          </el-row>
+        </template>
+      </GridUnit>
     </el-tabs>
   </div>
 </template>
 
 <script>
+import { debounce } from "@/utils"
 import hostingRoomDetail from './components/hostingRoomDetail'
 import areaSelect from "@/components/AreaSelect"
 import GridUnit from "@/components/GridUnit/grid"
@@ -139,7 +136,7 @@ export default {
         }
       ],
       colModels: [
-        {label:'#', slotName: "index", fixed:'left'},
+        { label: '#', slotName: "index", fixed: 'left' },
         { prop: "orgName", label: "组织名称" },
         { prop: "addrRegionName", label: "房源位置" },
         { prop: "roomDetailAddress", label: "公寓/小区-房间" },
@@ -192,7 +189,6 @@ export default {
       this.$nextTick(() => {
         this.$refs.hostingHouseList.searchHandler()
       })
-      // this.$refs.hostingHouseList.searchHandler()
     },
     handleClickTab(tab) {
       this.searchParam('clear')
@@ -225,52 +221,48 @@ export default {
       else {
         roomStatusParams = command
       }
-      changeRoomStatusApi(roomStatusParams).then((res) => {
-        if (res.code === '0') {
-          let message = {}
-          if (res.data.success === roomStatusParams.roomCodes.length) {
-            message = {
-              message: res.message,
-              type: 'success'
-            }
-          } else if (res.data.fail === roomStatusParams.roomCodes.length) {
-            message = {
-              message: res.message,
-              type: 'error'
-            }
-          } else {
-            const status = roomStatusParams.roomStatus === 2 ? '已出租' : '未出租'
-            message = {
-              message: `成功${res.data.success}个房间，失败${res.data.fail}个房间，${res.data.already}个房间已经是${status}状态`,
-              type: 'success'
-            }
-          }
-          this.$message(message)
-          this.searchParam()
-        }
-      })
+      this.searchParam()
+      // changeRoomStatusApi(roomStatusParams).then((res) => {
+      //   if (res.code === '0') {
+      //     let message = {}
+      //     if (res.data.success === roomStatusParams.roomCodes.length) {
+      //       message = {
+      //         message: res.message,
+      //         type: 'success'
+      //       }
+      //     } else if (res.data.fail === roomStatusParams.roomCodes.length) {
+      //       message = {
+      //         message: res.message,
+      //         type: 'error'
+      //       }
+      //     } else {
+      //       const status = roomStatusParams.roomStatus === 2 ? '已出租' : '未出租'
+      //       message = {
+      //         message: `成功${res.data.success}个房间，失败${res.data.fail}个房间，${res.data.already}个房间已经是${status}状态`,
+      //         type: 'success'
+      //       }
+      //     }
+      //     this.$message(message)
+      //     this.searchParam()
+      //   }
+      // })
     },
     objectSpanMethod({ row, column, rowIndex, columnIndex }) {
-      // console.log(row)
       if (this.roomSearchForm.houseRentType === 2) {
-        if (columnIndex === 3 || columnIndex === 0) {
-          const newRow = row.spanArr
-          const newCol = newRow > 1 ? 1 : 0
-          return {
-            rowspan: newRow,
-            colspan: newCol
+        if (columnIndex <= 5 && columnIndex > 0) {
+          if (row.spanArr < 1) {
+            return {
+              rowspan: 0,
+              colspan: 0
+            }
+          }
+          else {
+            return {
+              rowspan: row.spanArr,
+              colspan: 1
+            }
           }
         }
-      }
-    },
-    indexMethod(index) {
-      console.log(index)
-      if (this.roomSearchForm.houseRentType === 2) {
-        // index = 1
-        return index
-      }
-      else {
-        return index + 1;
       }
     },
     dataHandler(data) {
@@ -292,6 +284,13 @@ export default {
     }
     // 添加合租房源
     // 添加整租房源
+  },
+  mounted() {
+    let changeTableSize = debounce(() => {
+      this.tableHeight = Math.max(document.body.clientHeight - 190, 250)
+    }, 100)
+    changeTableSize()
+    window.addEventListener("resize", changeTableSize)
   }
 }
 </script>
