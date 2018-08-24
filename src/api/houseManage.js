@@ -426,7 +426,7 @@ export function changeRoomStatusApi(params) {
     url: '/market/fangyuan',
     method: 'post',
     data: {
-      method: 'batchChangeLeaseStatus',
+      method: 'batchChangeLeaseStatus', 
       params
     }
   })

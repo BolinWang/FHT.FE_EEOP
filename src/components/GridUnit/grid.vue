@@ -31,6 +31,7 @@
         :sum-text="sumText"
         :summary-method="summaryMethod"
         :cell-class-name="cellClassName"
+        :span-method="spanMethod"
         style="width: 100%;"
         @select="(selection, row) => emitEventHandler('select', selection, row)"
         @select-all="selection => emitEventHandler('select-all', selection)"
@@ -48,7 +49,7 @@
         @current-change="(currentRow, oldCurrentRow) => emitEventHandler('current-change', currentRow, oldCurrentRow)"
         @header-dragend="(newWidth, oldWidth, column, event) => emitEventHandler('header-dragend', newWidth, oldWidth, column, event)"
         @expand-change="(row, expanded) => emitEventHandler('expand-change', row, expanded)" >
-        <el-table-column v-if="showRowIndex" type="index" width="40" align="center"></el-table-column>
+        <el-table-column v-if="showRowIndex" type="index" width="40" align="center" :index="indexMethod"></el-table-column>
         <el-table-column v-if="showExpand" type="expand" width="40">
           <template slot-scope="scope">
             <slot name="expandTable"></slot>
@@ -235,7 +236,8 @@
             return false
           }
           if (this.dataHandler) {
-            this.tableData = result.map(this.dataHandler)
+            // this.tableData = result.map(this.dataHandler)
+            this.tableData = this.dataHandler(result)
           } else {
             this.tableData = result
           }

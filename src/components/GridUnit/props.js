@@ -116,6 +116,14 @@ const props = {
     default: true
   },
 
+  spanMethod: {
+    type: Function
+  },
+
+  indexMethod:{
+    type: Function
+  },
+  
   /* 接口数据排列，后续可以增加本地数据操作 */
   type: {
     type: String,

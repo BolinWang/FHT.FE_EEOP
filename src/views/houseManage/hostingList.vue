@@ -4,7 +4,7 @@
       <hosting-room-detail></hosting-room-detail>
     </div> -->
     <el-tabs v-model="activeName" type="border-card" @tab-click="handleClickTab">
-      <el-tab-pane v-for="(item,index) in houseRentTypeList" :label="item" :key='index' :name="item">
+      <el-tab-pane v-for="(item, index) in houseRentTypeList" :key="index" :label="item" :name="item">
       </el-tab-pane>
       <el-form :model="roomSearchForm" size="small" :inline="true">
         <el-form-item>
@@ -26,7 +26,7 @@
           <el-input v-model="roomSearchForm.roomCode" size="small" placeholder="房源编码" style="width:120px;margin-left:10px" />
         </el-form-item>
         <el-form-item class="house-search-form-group">
-          <el-button type="primary" icon="el-icon-search" @click="searchHostingHouseList('search')">查询</el-button>
+          <el-button type="primary" icon="el-icon-search" @click="searchHostingHouseList('search')" class="filter-item">查询</el-button>
           <el-button icon="el-icon-remove-outline" @click="searchHostingHouseList('clear')">清空</el-button>
         </el-form-item>
         <div class="house-rent-type-select">
@@ -42,7 +42,11 @@
             <el-button style="width:120px">添加整租房源</el-button>
           </el-form-item>
 
-          <GridUnit ref="hostingHouseList" :span-method="objectSpanMethod" :formOptions="roomSearchForm" :showSelection="true" :url="houstingListUrl" :dataMethod="method" listField="data.houseList" totalField="data.record" :columns="colModels" :height="tableHeight" fit @selection-change="handleSelectionChange">
+          <GridUnit ref="hostingHouseList" :spanMethod="objectSpanMethod" :formOptions="roomSearchForm" :showSelection="true" :url="houstingListUrl" :dataMethod="method" listField="data.houseList" totalField="data.record" :columns="colModels" :height="tableHeight" fit @selection-change="handleSelectionChange" :dataHandler="dataHandler" :indexMethod="indexMethod">
+            <template slot="index" slot-scope="scope">
+              <el-table-column type="index" >
+              </el-table-column>
+            </template>
             <template slot="operateHosting" slot-scope="scope">
               <el-row>
                 <el-button type="primary" size="mini">交租方式</el-button>
@@ -97,8 +101,6 @@ export default {
         roomCode: '',
         houseRentType: 1
       },
-      spanArr: [],
-      pos: '',
       houseRentTypeList: ['整租', '合租'],
       activeName: '整租',
       tableHeight: 400,
@@ -112,15 +114,32 @@ export default {
       ],
       roomStatusList: [
         {
-          label: '未出租',
-          value: 1
+          label: '可用',
+          value: 2
         },
         {
-          label: '已出租',
-          value: 2
+          label: '在住',
+          value: 4
+        },
+        {
+          label: '维修',
+          value: 5
+        },
+        {
+          label: '空脏',
+          value: 6
+        },
+        {
+          label: '已出租（无租客）',
+          value: 9
+        },
+        {
+          label: '装修中',
+          value: 10
         }
       ],
       colModels: [
+        {label:'#', slotName: "index", fixed:'left'},
         { prop: "orgName", label: "组织名称" },
         { prop: "addrRegionName", label: "房源位置" },
         { prop: "roomDetailAddress", label: "公寓/小区-房间" },
@@ -202,7 +221,8 @@ export default {
           roomCodes: this.selectedRooms.map(item => item.roomCode),
           roomStatus: command
         }
-      } else {
+      }
+      else {
         roomStatusParams = command
       }
       changeRoomStatusApi(roomStatusParams).then((res) => {
@@ -230,34 +250,45 @@ export default {
         }
       })
     },
-    // 数据合并
-    getSpanArr(data) {
-      for (let i = 0; i < data.length; i++) {
-        if (i === 0) {
-          this.spanArr.push[i];
-          this.pos = 0;
-        }
-        else {
-          if (data[i].name === data[i - 1].name) {
-            this.spanArr[this.pos] += 1;
-            this.spanArr.push(0);
-          }
-          else {
-            this.spanArr.push(1);
-            this.pos = i;
+    objectSpanMethod({ row, column, rowIndex, columnIndex }) {
+      // console.log(row)
+      if (this.roomSearchForm.houseRentType === 2) {
+        if (columnIndex === 3 || columnIndex === 0) {
+          const newRow = row.spanArr
+          const newCol = newRow > 1 ? 1 : 0
+          return {
+            rowspan: newRow,
+            colspan: newCol
           }
         }
       }
     },
-    objectSpanMethod({ row, column, rowIndex, columnIndex }) {
-      if(columnIndex === 0){
-        const newRow = this.spanArr[rowIndex]
-        const newCol = newRow > 0 ? 1 : 0;
-        return{
-          rowSpan:newRow,
-          colSpan:newCol
-        }
+    indexMethod(index) {
+      console.log(index)
+      if (this.roomSearchForm.houseRentType === 2) {
+        // index = 1
+        return index
       }
+      else {
+        return index + 1;
+      }
+    },
+    dataHandler(data) {
+      let tempArr = []
+      data.forEach((item, index) => {
+        item.roomList.forEach((v, i) => {
+          let row = {
+            ...item,
+            ...v
+          }
+          if (i === 0) {
+            row.spanArr = item.roomList.length
+            row.index = index
+          }
+          tempArr.push(row)
+        })
+      })
+      return tempArr
     }
     // 添加合租房源
     // 添加整租房源
