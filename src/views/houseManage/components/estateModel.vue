@@ -743,14 +743,12 @@ export default {
         estateInfo.pictureList.forEach((item) => {
           item.src = item.imageUrl
           item.title = item.imageName
-          item.key = Math.random().toFixed(5)
         })
 
         estateInfo.roomTypeList.forEach((item) => {
           item.pictureList.forEach((n) => {
             n.src = n.imageUrl
             n.title = n.imageName
-            item.key = Math.random().toFixed(5)
           })
         })
 

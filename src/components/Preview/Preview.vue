@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-04-11 16:50:08
  * @Last Modified by: chudequan
- * @Last Modified time: 2018-08-24 10:02:07
+ * @Last Modified time: 2018-08-24 16:15:46
  */
 
 <template>
@@ -13,12 +13,10 @@
     <transition-group type="transition" :name="'flip-list'">
       <li class="preview-item clearfix" v-for="(item, index) in list"
         :key="item.sortNum"
-        :style="itemStyle"
-        @mouseenter.stop="handleMouseenter(index)"
-        @mouseleave.stop="handleMouseleave(index)">
+        :style="itemStyle">
         <img class="preview-img img-center" v-lazy="item.src">
         <span class="preview-tags" v-if="item.picTag">{{item.picTag}}</span>
-        <span class="preview-item-actions" :style="{opacity: item.opacityVal}">
+        <span class="preview-item-actions">
           <span class="preview-item__item-preview" @click="handlePreview(index)">
             <i class="el-icon-zoom-in"></i>
           </span>
@@ -94,24 +92,8 @@ export default {
   },
   mounted() {
     this.deleteFlag = this.deleteIcon
-    this.list.map((item, index) => {
-      item.opacityVal = 0
-      item.title = item.picTag || ''
-    })
   },
   methods: {
-    handleMouseenter(index) {
-      this.$set(this.list, index, {
-        ...this.list[index],
-        opacityVal: 1
-      })
-    },
-    handleMouseleave(index) {
-      this.$set(this.list, index, {
-        ...this.list[index],
-        opacityVal: 0
-      })
-    },
     async handlePreview(index) {
       if (this.list.length === 1 && this.list[0].isnoPic) {
         this.$message.warning('友情提示：暂无图片')
@@ -152,8 +134,6 @@ export default {
     },
     endDrag(e) {
       this.isDragging = false
-      this.$set(this.list[e.oldIndex], 'opacityVal', 0)
-      this.$set(this.list[e.newIndex], 'opacityVal', 0)
       this.handleEmit()
     }
   },
@@ -161,12 +141,10 @@ export default {
     picList: {
       immediate: true,
       handler: function (val) {
-        console.log(val)
         this.list = (val || []).slice()
         this.list.map((item, index) => {
           item.sortNum = item.sortNum ? item.sortNum : Math.random().toFixed(5)
           item.type = item.type || 1
-          item.opacityVal = 0
           item.title = item.picTag || ''
         })
       }
@@ -278,6 +256,11 @@ export default {
         position: static;
         font-size: inherit;
         color: inherit;
+      }
+    }
+    &:hover {
+      .preview-item-actions {
+        opacity: 1;
       }
     }
   }

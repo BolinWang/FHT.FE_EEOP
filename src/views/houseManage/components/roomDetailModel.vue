@@ -443,7 +443,6 @@ export default {
           this.type === 2 && roomData.pictureList.forEach((item) => {
             item.src = item.imageUrl
             item.title = item.imageName
-            item.key = Math.random().toFixed(5)
           })
           this.type === 2 && this.$set(this, 'roomDetailModel', roomData)
 
