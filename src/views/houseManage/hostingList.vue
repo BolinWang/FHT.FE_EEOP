@@ -38,12 +38,15 @@
           <el-button style="width:120px" @click="openRoomDetail(1)">添加整租房源</el-button>
         </el-form-item>
       </el-form>
-      <GridUnit ref="hostingHouseList" :showRowIndex="false" :spanMethod="objectSpanMethod" :formOptions="roomSearchForm" :showSelection="true" :url="houstingListUrl" :dataMethod="method" listField="data.houseList" totalField="data.record" :columns="colModels" :height="tableHeight" @selection-change="handleSelectionChange" :dataHandler="dataHandler" :pageSizes="[50, 100, 200]" border>
+      <GridUnit ref="hostingHouseList" :showRowIndex="false" :spanMethod="objectSpanMethod" :formOptions="roomSearchForm" :showSelection="true" :url="houstingListUrl" :dataMethod="method" listField="data.houseList" totalField="data.record" :columns="colModels" :height="tableHeight" @selection-change="handleSelectionChange" :dataHandler="dataHandler" :pageSizes="[50, 100, 200]" border fit>
         <template slot="index" slot-scope="scope">
           {{scope.row.index + 1}}
         </template>
         <template slot="roomStatus" slot-scope="scope">
           <el-tag :type="[2].includes(scope.row.roomStatus) ? 'success' : ([5, 6, 8, 10].includes(scope.row.roomStatus) ? 'info' : 'danger')">{{scope.row.roomStatus | setRoomStatus(roomStatusList)}}</el-tag>
+        </template>
+        <template slot="tags" slot-scope="scope">
+          <el-tag v-for="(item,index) in scope.row.tags" :key="index" :label="item">{{item}}</el-tag>
         </template>
         <template slot="operateHosting" slot-scope="scope">
           <el-row>
@@ -82,10 +85,10 @@ export default {
   filters: {
     renderStatusType(status) {
       const statusMap = {
-        '已发布': 'success',
-        '发布中': 'primary',
-        '发布失败': 'danger',
-        '下架中': 'warning',
+        '可用': 'success',
+        '在住': 'primary',
+        '维修': 'danger',
+        '空脏': 'warning',
         '未发布': 'info'
       }
       return statusMap[status] || 'info'
@@ -152,24 +155,12 @@ export default {
         { prop: "orgName", label: "组织名称" },
         { prop: "addrRegionName", label: "房源位置" },
         { prop: "roomDetailAddress", label: "公寓/小区-房间" },
-        { prop: "tags", label: "房源类型", slotName: "index" },
+        { prop: "tags", label: "房源类型", slotName: "tags" },
         { prop: "roomName", label: "房间" },
         {
           prop: "roomStatus",
           label: "房间状态",
           slotName: "roomStatus",
-          // unitFilters: {
-          //   renderStatusType(status) {
-          //     const statusMap = {
-          //       '已出租': 'success',
-          //       '未出租': 'info',
-          //     }
-          //     return statusMap[status] || 'info'
-          //   },
-          //   renderStatusValue(status) {
-          //     return status || '未知'
-          //   }
-          // }
         },
         { prop: "roomCode", label: "平台房源编码" },
         {
