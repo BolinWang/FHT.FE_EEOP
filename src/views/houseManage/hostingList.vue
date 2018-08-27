@@ -11,12 +11,12 @@
           <area-select v-model="roomSearchForm.cityArea" placeholder="请选择城市" style="width:120px" :filterable="true" :showAllLevels="false" :level="0"></area-select>
         </el-form-item>
         <el-form-item>
-          <el-select v-model="roomSearchForm.houseType" size="small" placeholder="房源类型" style="width:120px">
+          <el-select v-model="roomSearchForm.houseType" filterable clearable size="small" placeholder="房源类型" style="width:120px">
             <el-option v-for="item in houseTypeList" :key="item.value" :label="item.label" :value="item.value"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-select v-model="roomSearchForm.roomStatus" size="small" placeholder="房间状态" style="width:120px">
+          <el-select v-model="roomSearchForm.roomStatus" filterable clearable size="small" placeholder="房间状态" style="width:120px">
             <el-option v-for="statusItem in roomStatusList" :key="statusItem.value" :label="statusItem.label" :value="statusItem.value"></el-option>
           </el-select>
         </el-form-item>
@@ -44,6 +44,9 @@
       <GridUnit ref="hostingHouseList" :showRowIndex="false" :spanMethod="objectSpanMethod" :formOptions="roomSearchForm" :showSelection="true" :url="houstingListUrl" :dataMethod="method" listField="data.houseList" totalField="data.record" :columns="colModels" :height="tableHeight" @selection-change="handleSelectionChange" :dataHandler="dataHandler" :pageSizes="[50, 100, 200]" border>
         <template slot="index" slot-scope="scope">
           {{scope.row.index + 1}}
+        </template>
+        <template slot="roomStatus" slot-scope="scope">
+          <el-tag :type="[2].includes(scope.row.roomStatus) ? 'success' : ([5, 6, 8, 10].includes(scope.row.roomStatus) ? 'info' : 'danger')">{{scope.row.roomStatus | setRoomStatus(roomStatusList)}}</el-tag>
         </template>
         <template slot="operateHosting" slot-scope="scope">
           <el-row>
@@ -84,6 +87,10 @@ export default {
     },
     renderStatusValue(status) {
       return status || '未知'
+    },
+    setRoomStatus(val, statusList) {  
+      let status = statusList.filter(item => item.value === val)
+      return status.length ? status[0].label : ''
     }
   },
   data() {
@@ -145,6 +152,7 @@ export default {
         {
           prop: "roomStatus",
           label: "房间状态",
+          slotName: "roomStatus",
           unitFilters: {
             renderStatusType(status) {
               const statusMap = {
