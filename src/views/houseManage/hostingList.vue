@@ -236,30 +236,6 @@ export default {
         roomStatusParams = command
       }
       this.searchParam()
-      // changeRoomStatusApi(roomStatusParams).then((res) => {
-      //   if (res.code === '0') {
-      //     let message = {}
-      //     if (res.data.success === roomStatusParams.roomCodes.length) {
-      //       message = {
-      //         message: res.message,
-      //         type: 'success'
-      //       }
-      //     } else if (res.data.fail === roomStatusParams.roomCodes.length) {
-      //       message = {
-      //         message: res.message,
-      //         type: 'error'
-      //       }
-      //     } else {
-      //       const status = roomStatusParams.roomStatus === 2 ? '已出租' : '未出租'
-      //       message = {
-      //         message: `成功${res.data.success}个房间，失败${res.data.fail}个房间，${res.data.already}个房间已经是${status}状态`,
-      //         type: 'success'
-      //       }
-      //     }
-      //     this.$message(message)
-      //     this.searchParam()
-      //   }
-      // })
     },
     objectSpanMethod({ row, column, rowIndex, columnIndex }) {
       if (this.roomSearchForm.houseRentType === 2) {
