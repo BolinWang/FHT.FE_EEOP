@@ -8,7 +8,7 @@
           </el-form-item>
         </el-col>
         <el-col :span="7">
-          <el-form-item label="所属板块" prop="zoneId">
+          <el-form-item label="所属板块">
             <el-select v-model="hostingRoomDetail.zoneId" class="room-detail-select" :placeholder="zoneList.length ? '请选择' : '无'">
               <el-option v-for="item in zoneList" :key="item.zoneId" :label="item.zoneName" :value="item.zoneId">
               </el-option>
@@ -26,18 +26,18 @@
       </el-row>
       <el-row :gutter="20">
         <el-col :span="8">
-          <el-form-item label="楼幢" prop="">
-            <el-input v-model="hostingRoomDetail.estateName"></el-input>
+          <el-form-item label="楼幢" prop="buildingName">
+            <el-input v-model="hostingRoomDetail.buildingName"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="7">
-          <el-form-item label="单元" prop="">
-            <el-input v-model="hostingRoomDetail.estateName"></el-input>
+          <el-form-item label="单元">
+            <el-input v-model="hostingRoomDetail.unitCode"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="6">
-          <el-form-item label="室" prop="">
-            <el-input v-model="hostingRoomDetail.estateName"></el-input>
+          <el-form-item label="室" prop="roomNo">
+            <el-input v-model="hostingRoomDetail.roomNo"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
@@ -70,8 +70,8 @@
                 卫
               </el-col>
               <el-col :span="4">
-                <el-form-item label="" prop="" class="room-item-count">
-                  <el-input type="number" v-model="hostingRoomDetail.toiletCount"></el-input>
+                <el-form-item label="" prop="houseArea" class="room-item-count">
+                  <el-input type="number" v-model="hostingRoomDetail.houseArea"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="2" class="room-count-text">
@@ -112,7 +112,7 @@
       </el-row>
       <el-row :gutter="20">
         <el-col :span="6">
-          <el-form-item label="看房电话" prop="contactName">
+          <el-form-item label="看房电话">
             <el-input v-model="hostingRoomDetail.contactName" placeholder="联系人"></el-input>
           </el-form-item>
         </el-col>
@@ -125,12 +125,12 @@
           </el-form-item>
         </el-col>
         <el-col :span="4">
-          <el-form-item label-width="0" prop="contactMobile">
+          <el-form-item label-width="0">
             <el-input v-model="hostingRoomDetail.contactMobile" placeholder="联系电话"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="4">
-          <el-form-item v-if="dialogType === 2" label="房间照片" prop="">
+          <el-form-item v-if="dialogType === 2" label="房间照片">
             <el-badge :value="hostingRoomDetail.pictures ? hostingRoomDetail.pictures.length : 0">
               <el-button type="primary" size="mini" @click="openPicModel">上传照片</el-button>
             </el-badge>
@@ -139,7 +139,7 @@
       </el-row>
       <el-row :gutter="20">
         <el-col :span="13">
-          <el-form-item :label="dialogType === 1 ? '公区设施' : '房间设施'" prop="">
+          <el-form-item :label="dialogType === 1 ? '公区设施' : '房间设施'">
             <el-select class="room-detail-select" v-model="hostingRoomDetail.facilityItems" multiple placeholder="请选择">
               <el-option-group v-for="group in facilityGroup" :key="group.label" :label="group.label">
                 <el-option v-for="item in group.facilitys" :key="item.value" :label="item.label" :value="item.value">
@@ -160,14 +160,14 @@
 
       <template>
         <el-tabs class="sub-room-info-list" v-model="activeRoomName" type="border-card" editable @edit="handleTabsEdit">
-          <el-tab-pane :key="item.name" v-for="(item, index) in editableTabs" :label="item.title" :name="item.name">
+          <el-tab-pane :key="item.roomName" v-for="(item, index) in hostingRoomDetail.hostingRooms" :label="item.roomName" :name="index.toString()">
             <el-row :gutter="20">
               <el-col :span="5">
                 <el-form-item label-width="0" class="room-count">
                   <el-row>
                     <el-col :span="19">
                       <el-form-item label="房间面积" prop="" class="room-item-count">
-                        <el-input v-model="hostingRoomDetail.hostingRooms[0].roomArea"></el-input>
+                        <el-input v-model="hostingRoomDetail.hostingRooms[index].roomArea"></el-input>
                       </el-form-item>
                     </el-col>
                     <el-col :span="5" class="room-count-text">
@@ -179,7 +179,7 @@
               </el-col>
               <el-col :span="4">
                 <el-form-item label-width="0" prop="roomDirection">
-                  <el-select class="room-detail-select" v-model="hostingRoomDetail.hostingRooms[0].roomDirection" placeholder="房间朝向">
+                  <el-select class="room-detail-select" v-model="hostingRoomDetail.hostingRooms[index].roomDirection" placeholder="房间朝向">
                     <el-option v-for="item in roomDirectionList" :key="item.value" :label="item.label" :value="item.value">
                     </el-option>
                   </el-select>
@@ -187,14 +187,14 @@
               </el-col>
               <el-col :span="5">
                 <el-form-item label="房间照片" prop="">
-                  <el-badge :value="hostingRoomDetail.hostingRooms[0].pictures ? hostingRoomDetail.hostingRooms[0].pictures.length : 0">
+                  <el-badge :value="hostingRoomDetail.hostingRooms[index].pictures ? hostingRoomDetail.hostingRooms[index].pictures.length : 0">
                     <el-button type="primary" size="mini" @click="openPicModel">上传照片</el-button>
                   </el-badge>
                 </el-form-item>
               </el-col>
               <el-col :span="10">
                 <el-form-item label-width="0" prop="">
-                  <el-checkbox-group v-model="hostingRoomDetail.hostingRooms[0].roomAttributes">
+                  <el-checkbox-group v-model="hostingRoomDetail.hostingRooms[index].roomAttributes">
                     <el-checkbox label="独立卫生间" class="room-attributes"></el-checkbox>
                     <el-checkbox label="独立阳台" class="room-attributes"></el-checkbox>
                     <el-checkbox label="独立厨房" class="room-attributes"></el-checkbox>
@@ -206,7 +206,7 @@
             <el-row :gutter="20">
               <el-col :span="13">
                 <el-form-item label="房间设施" prop="">
-                  <el-select class="room-detail-select" v-model="hostingRoomDetail.hostingRooms[0].facilityItems" multiple placeholder="请选择">
+                  <el-select class="room-detail-select" v-model="hostingRoomDetail.hostingRooms[index].facilityItems" multiple placeholder="请选择">
                     <el-option-group v-for="group in roomFacilityGroup" :key="group.label" :label="group.label">
                       <el-option v-for="item in group.facilitys" :key="item.value" :label="item.label" :value="item.value">
                       </el-option>
@@ -239,7 +239,7 @@
           </el-form-item>
         </el-col>
         <el-col :span="6">
-          <el-form-item label-width="0" prop="sourceInfo">
+          <el-form-item v-show="hostingRoomDetail.tag" label-width="0" prop="sourceInfo" >
             <el-select
               v-model="hostingRoomDetail.sourceInfo"
               filterable remote
@@ -283,12 +283,53 @@ export default {
         areaCode: ['', '', ''],
         hostingRooms: [{
           roomArea: '',
-          roomAttributes: []
+          roomAttributes: [],
+          roomName: "房间A"
         }]
       },
       hostingRoomDetailRules: {
+        areaCode: [
+          {
+            required: true,
+            validator: (rule, value, callback) => {
+              if (value[0] === '') {
+                callback(new Error('请选择所在地区'))
+              } else {
+                callback()
+              }
+            },
+            trigger: 'change'
+          }
+        ],
+        address: [
+          { required: true, message: '请输入公寓/小区', trigger: 'change' }
+        ],
+        buildingName: [
+          { required: true, message: '请输入楼幢名', trigger: 'blur' }
+        ],
+        roomNo: [
+          { required: true, message: '请输入房间号', trigger: 'blur' }
+        ],
+        chamberCount: [
+          { required: true, message: '请输入室', trigger: 'blur' }
+        ],
+        boardCount: [
+          { required: true, message: '请输入厅', trigger: 'blur' }
+        ],
+        toiletCount: [
+          { required: true, message: '请输入卫', trigger: 'blur' }
+        ],
+        houseArea: [
+          { required: true, message: '请输入面积', trigger: 'blur' }
+        ],
         floorName: [
           { required: true, message: '请输入房源所在层', trigger: 'blur' }
+        ],
+        floorAmount: [
+          { required: true, message: '请输入总楼层数', trigger: 'blur' }
+        ],
+        sourceInfo: [
+          { required: true, message: '请选择一个房源提供者', trigger: 'change' }
         ]
       },
       zoneList: [],
@@ -386,17 +427,7 @@ export default {
           }]
         }
       ],
-      activeRoomName: '1',
-      editableTabs: [{
-        title: 'Tab 1',
-        name: '1',
-        content: 'Tab 1 content'
-      }, {
-        title: 'Tab 2',
-        name: '2',
-        content: 'Tab 2 content'
-      }],
-      tabIndex: 2,
+      activeRoomName: '0',
       cityManagerList: [],
       filterManagerList: []
     }
@@ -495,13 +526,12 @@ export default {
     },
     handleTabsEdit(targetName, action) {
       if (action === 'add') {
-        let newTabName = ++this.tabIndex + '';
-        this.editableTabs.push({
-          title: 'New Tab',
-          name: newTabName,
-          content: 'New Tab content'
+        let curIndex = this.hostingRoomDetail.hostingRooms.length
+        this.hostingRoomDetail.hostingRooms.push({
+          roomName: '房间' + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')[curIndex],
+          name: curIndex.toString
         });
-        this.activeRoomName = newTabName
+        this.activeRoomName = curIndex.toString
       }
       if (action === 'remove') {
         let tabs = this.editableTabs;

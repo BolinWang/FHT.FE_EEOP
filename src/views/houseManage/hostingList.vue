@@ -1,8 +1,8 @@
 <template>
   <div class="app-container">
-    <!-- <div>
+    <div>
       <hosting-room-detail></hosting-room-detail>
-    </div> -->
+    </div>
     <el-tabs v-model="activeName" type="border-card" @tab-click="handleClickTab">
       <el-tab-pane v-for="(item, index) in houseRentTypeList" :key="index" :label="item" :name="item">
       </el-tab-pane>
