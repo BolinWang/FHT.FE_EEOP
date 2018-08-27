@@ -275,6 +275,7 @@ export default {
     // 添加房源
     openRoomDetail(type) {
       this.roomDetailModelVisible = true
+      this.$refs.initRoomDetailData()
     },
     // 保存房源信息
     saveRoomDetailData(type) {
@@ -294,6 +295,14 @@ export default {
     }, 100)
     changeTableSize()
     window.addEventListener("resize", changeTableSize)
+  },
+  beforeDestroy() {
+    let dialog = document.querySelectorAll('body > .el-dialog__wrapper')
+    if (dialog) {
+      [].forEach.call(dialog, function (item, index) {
+        document.body.removeChild(item)
+      })
+    }
   }
 }
 </script>
