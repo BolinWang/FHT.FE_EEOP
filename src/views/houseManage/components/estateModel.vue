@@ -781,7 +781,7 @@ export default {
         })
       }, 0)
     },
-    returnEstateData(type) {
+    returnEstateData() {
       let estateData = false
       this.$refs.estateModel.validate((status) => {
         if (status) {

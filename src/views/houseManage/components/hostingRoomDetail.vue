@@ -165,8 +165,8 @@
               <el-form-item label-width="0" class="room-count">
                 <el-row>
                   <el-col :span="19">
-                    <el-form-item label="房间面积" prop="" class="room-item-count">
-                      <el-input v-model="hostingRoomDetail.hostingRooms[index].roomArea"></el-input>
+                    <el-form-item label="房间面积" :prop="'hostingRooms.' + index + '.roomArea'" :rules="hostingRoomDetailRules.roomDetail.roomArea" class="room-item-count">
+                      <el-input v-model="hostingRoomDetail.hostingRooms[index].roomArea" type="number"></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :span="5" class="room-count-text">
@@ -177,7 +177,7 @@
               </el-form-item>
             </el-col>
             <el-col :span="4">
-              <el-form-item label-width="0" prop="roomDirection">
+              <el-form-item label-width="0" :prop="'hostingRooms.' + index + '.roomDirection'" :rules="hostingRoomDetailRules.roomDetail.roomDirection">
                 <el-select class="room-detail-select" v-model="hostingRoomDetail.hostingRooms[index].roomDirection" placeholder="房间朝向">
                   <el-option v-for="item in roomDirectionList" :key="item.value" :label="item.label" :value="item.value">
                   </el-option>
@@ -238,7 +238,7 @@
         </el-form-item>
       </el-col>
       <el-col :span="6">
-        <el-form-item v-show="hostingRoomDetail.tag" label-width="0" prop="sourceInfo" >
+        <el-form-item v-if="hostingRoomDetail.tag" label-width="0" prop="sourceInfo" >
           <el-select
             v-model="hostingRoomDetail.sourceInfo"
             filterable remote
@@ -258,6 +258,37 @@
         </el-form-item>
       </el-col>
     </el-row>
+    <!-- 上传图片模态框 -->
+    <el-dialog
+      title="上传房间照片"
+      :visible.sync="uploadPicsModelVisible"
+      :append-to-body="true"
+      @close="uploadModelClose"
+      custom-class="upload-pics-model"
+      width="600px" >
+      <div class="previewItems">
+        <Preview
+          :pic-list="currentPicList"
+          :delete-icon="`delete`"
+          :disabled="``"
+          @emitDelete="emitDelete">
+        </Preview>
+        <label class="el-upload el-upload--picture-card uploadImage" for="uploadImages">
+          <i class="el-icon-plus"></i>
+          <input type="file" id="uploadImages" :accept="accept" multiple @change="uploadImg($event)">
+        </label>
+      </div>
+      <p class="upload-pics-info">温馨提示： </p>
+      <p class="upload-pics-info">1.请勿上传虚假、模糊、与房源信息无关、含有其他公司水印的照片； </p>
+      <p class="upload-pics-info">2.房间照片最佳组合：卧室2~6张、公共区域1~4张、厨房1~3张、卫生间1-4张； </p>
+      <p class="upload-pics-info">3.目前最多支持15张，支持JPG/JPEG/PNG，可以拖动图片进行排序，支持批量上传。</p>
+      <!-- 图片裁剪 -->
+      <ImageCropper :cropperList="cropperList" @emitCropperList="emitCropperList" @emitCropperData="emitCropperData">
+      </ImageCropper>
+      <span slot="footer">
+        <el-button @click="uploadPicsModelVisible = false" size="small" type="primary">关 闭</el-button>
+      </span>
+    </el-dialog>
   </el-form>
 </template>
 
@@ -276,7 +307,8 @@ export default {
         hostingRooms: [{
           roomArea: '',
           roomAttributes: [],
-          roomName: "房间A"
+          roomName: '房间A',
+          name: '0'
         }]
       },
       hostingRoomDetailRules: {
@@ -314,6 +346,12 @@ export default {
         houseArea: [
           { required: true, message: '请输入面积', trigger: 'blur' }
         ],
+        roomDirection: [
+          { required: true, message: '请选择房屋朝向', trigger: 'change' }
+        ],
+        decorationDegree: [
+          { required: true, message: '请选择装修程度', trigger: 'change' }
+        ],
         floorName: [
           { required: true, message: '请输入房源所在层', trigger: 'blur' }
         ],
@@ -322,7 +360,15 @@ export default {
         ],
         sourceInfo: [
           { required: true, message: '请选择一个房源提供者', trigger: 'change' }
-        ]
+        ],
+        roomDetail: {
+          roomArea: [
+            { required: true, message: '请输入房间面积', trigger: 'blur' }
+          ],
+          roomDirection: [
+            { required: true, message: '请选择房间朝向', trigger: 'change' }
+          ]
+        }
       },
       zoneList: [],
       addressList: [],
@@ -421,7 +467,10 @@ export default {
       ],
       activeRoomName: '0',
       cityManagerList: [],
-      filterManagerList: []
+      filterManagerList: [],
+      cropperList: [],
+      accept: 'image/png, image/jpeg, image/jpg',
+      currentPicList: []
     }
   },
   computed: {
@@ -521,26 +570,27 @@ export default {
         let curIndex = this.hostingRoomDetail.hostingRooms.length
         this.hostingRoomDetail.hostingRooms.push({
           roomName: '房间' + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')[curIndex],
-          name: curIndex.toString
+          name: curIndex.toString()
         });
-        this.activeRoomName = curIndex.toString
+        this.activeRoomName = curIndex.toString()
       }
       if (action === 'remove') {
-        let tabs = this.editableTabs;
+        debugger
+        let tabs = this.hostingRoomDetail.hostingRooms
         let activeName = this.activeRoomName
         if (activeName === targetName) {
           tabs.forEach((tab, index) => {
             if (tab.name === targetName) {
-              let nextTab = tabs[index + 1] || tabs[index - 1];
+              let nextTab = tabs[index + 1] || tabs[index - 1]
               if (nextTab) {
-                activeName = nextTab.name;
+                activeName = nextTab.name
               }
             }
-          });
+          })
         }
 
         this.activeRoomName = activeName
-        this.editableTabs = tabs.filter(tab => tab.name !== targetName)
+        this.hostingRoomDetail.hostingRooms = tabs.filter(tab => tab.name !== targetName)
       }
     },
     searchOrgListByKeywords(query) {
@@ -585,8 +635,120 @@ export default {
         this.filterManagerList = []
       }
     },
-  },
+    setRoomDetailData(val) {
+      // if (JSON.stringify(val) === '{}') {
 
+      // }
+      // this.$set(this, 'hostingRoomDetail', val)
+      // this.$refs.hostingRoomDetail.clearValidate()
+    },
+    returnRoomDetailData() {
+      let roomDetailData = false
+      this.$refs.hostingRoomDetail.validate((status) => {
+        if (status) {
+          roomDetailData = this.hostingRoomDetail
+        } else {
+          this.$message.error('您还有必填信息未填写完全，请全部填写好后再保存')
+          return false
+        }
+      })
+      return roomDetailData
+    },
+    // preview弹出层关闭
+    uploadModelClose() {
+      this.currentPicList = []
+    },
+    // 删除图片
+    emitDelete(val) {
+      if (this.curPicListIndex === -1) {
+        this.estateModel.pictureList = val
+      } else {
+        this.estateModel.roomTypeList[this.curPicListIndex].pictureList = val
+      }
+      this.currentPicList = val || []
+    },
+    // 上传的图片列表
+    emitCropperList(list = []) {
+      this.cropperList = list
+    },
+    // 裁剪后图片列表
+    emitCropperData(list = []) {
+      list.forEach((v, i) => {
+        v.type = 1,
+          v.imageName = v.title,
+          v.image = v.src
+      })
+      if (this.curPicListIndex === -1) {
+        this.estateModel.pictureList = [...this.estateModel.pictureList, ...list]
+      } else {
+        this.estateModel.roomTypeList[this.curPicListIndex].pictureList = [...this.estateModel.roomTypeList[this.curPicListIndex].pictureList, ...list]
+      }
+      this.currentPicList = [...this.currentPicList, ...list]
+    },
+    /* 选择图片 */
+    async uploadImg(e) {
+      if (!e.target.value) {
+        console.log('取消上传...')
+        return false
+      }
+      const uploadList = []
+      const readFileAsync = file => new Promise(resolve => {
+        let reader = new FileReader()
+        reader.onerror = function (e) {
+          console.log('读取异常....')
+        }
+        reader.onload = e => {
+          const img = (typeof e.target.result === 'object')
+            // 把Array Buffer转化为blob 如果是base64不需要
+            ? window.URL.createObjectURL(new Blob([e.target.result]))
+            : e.target.result
+          let imageName = ''
+          let type = 1
+          if (!file.name) {
+            imageName = ''
+          } else {
+            imageName = file.name.split('.')[0].length <= 30
+              ? file.name.split('.')[0]
+              : file.name.split('.')[0].substr(0, 30)
+          }
+          resolve({
+            img,
+            imageName,
+            type
+          })
+        }
+        // 转化为base64
+        // reader.readAsDataURL(file)
+        // 转化为blob
+        reader.readAsArrayBuffer(file)
+      })
+
+      const files = e.target.files
+      let picList = this.curPicListIndex === -1 ? this.estateModel.pictureList : this.estateModel.roomTypeList[this.curPicListIndex].pictureList
+      if (picList.length + files.length > 15) {
+        this.$message.error(`您已上传${picList.length}张图片，最多还能上传${15 - picList.length}张图片`)
+        e.target.value = null
+        return false
+      }
+      for (let i = 0; i < files.length; i++) {
+        if (!this.accept.includes(files[i].type)) {
+          this.$message.error(`请上传${this.accept.replace(/image\//gi, '')}的图片`)
+          e.target.value = null
+          return false
+        }
+        uploadList.push(await readFileAsync(files[i]))
+      }
+
+      this.cropperList = uploadList.map((item, kindex) => {
+        return {
+          img: item.img,
+          imageName: item.imageName,
+          type: item.type
+        }
+      })
+      e.target.value = null
+    }
+  }
 }
 </script>
 

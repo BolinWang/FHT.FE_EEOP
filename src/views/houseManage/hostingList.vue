@@ -56,11 +56,11 @@
       </GridUnit>
     </el-tabs>
     <el-dialog title="添加房源" :visible.sync="roomDetailModelVisible" width="1000px">
-      <hosting-room-detail></hosting-room-detail>
+      <hosting-room-detail ref="hostingRoomDetail"></hosting-room-detail>
       <span slot="footer" class="dialog-footer">
-        <el-button size="small" type="primary" @click="roomDetailModelVisible = false">保存并继续添加</el-button>
-        <el-button size="small" type="primary" @click="roomDetailModelVisible = false">保存并关闭</el-button>
-        <el-button size="small" @click="roomDetailModelVisible = false">取 消</el-button>
+        <el-button size="small" type="primary" @click="saveRoomDetailData('add')">保存并继续添加</el-button>
+        <el-button size="small" type="primary" @click="saveRoomDetailData('close')">保存并关闭</el-button>
+        <el-button size="small" @click="saveRoomDetailData('clear')">取 消</el-button>
       </span>
     </el-dialog>
   </div>
@@ -181,7 +181,7 @@ export default {
         { prop: "provider", label: "房源提供者" },
         { prop: "operateTime", label: "操作时间" },
       ],
-      roomDetailModelVisible: false
+      roomDetailModelVisible: true
     }
   },
   watch: {
@@ -275,6 +275,19 @@ export default {
     // 添加房源
     openRoomDetail(type) {
       this.roomDetailModelVisible = true
+    },
+    // 保存房源信息
+    saveRoomDetailData(type) {
+      if (type === 'add') {
+        let roomDetailData = this.$refs.hostingRoomDetail.returnRoomDetailData()
+        console.log(roomDetailData)
+      } else if (type === 'close') {
+        let roomDetailData = this.$refs.hostingRoomDetail.returnRoomDetailData()
+        console.log(roomDetailData)
+      } else {
+        this.$refs.hostingRoomDetail.setRoomDetailData({})
+        this.roomDetailModelVisible = false
+      }
     }
   },
   mounted() {
