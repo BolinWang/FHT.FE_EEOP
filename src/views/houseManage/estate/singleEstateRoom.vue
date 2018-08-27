@@ -856,7 +856,7 @@ export default {
             }
           } else if (res.data.fail === roomStatusParams.roomCodes.length) {
             message = {
-              message: res.message,
+              message: `失败${res.data.fail}个房间`,
               type: 'error'
             }
           } else {

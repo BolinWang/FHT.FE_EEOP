@@ -211,6 +211,8 @@ export default {
           { prop: 'tags', label: '标签', type: 'tags', width: 200 },
           { prop: 'reviewStatus', label: '审核状态', width: 110, type: 'status' },
           { prop: 'reviewRemark', label: '不符合原因', minWidth: 150, type: 'remark'},
+          { prop: 'fangyuanProviderName', label: '房源提供者', width: 90},
+          { prop: 'picProviderName', label: '照片提供者', width: 90},
           { prop: 'publishTime', label: '提交时间', width: 140, type: 'formatTime', toolTip: true },
           { prop: 'reviewTime', label: '操作时间', width: 140, type: 'formatTime', toolTip: true }
         ],
@@ -222,6 +224,8 @@ export default {
           { prop: 'tags', label: '标签', type: 'tags', width: 200},
           { prop: 'reviewStatus', label: '审核状态', width: 110, type: 'status' },
           { prop: 'reviewRemark', label: '不符合原因', minWidth: 150, type: 'remark' },
+          { prop: 'fangyuanProviderName', label: '房源提供者', width: 90},
+          { prop: 'picProviderName', label: '照片提供者', width: 90},
           { prop: 'publishTime', label: '提交时间', width: 140, type: 'formatTime', toolTip: true },
           { prop: 'reviewTime', label: '操作时间', width: 140, type: 'formatTime', toolTip: true }
         ]

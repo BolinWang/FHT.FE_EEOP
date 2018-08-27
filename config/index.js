@@ -19,8 +19,7 @@ module.exports = {
         }
       }
     },
-    // host: '0.0.0.0', // 请勿修改，localhost/IP均可访问
-    host: 'localhost', // 请勿修改，localhost/IP均可访问
+    host: '0.0.0.0', // 请勿修改，localhost/IP均可访问
     port: 9528,
     autoOpenBrowser: false,
     errorOverlay: true,
