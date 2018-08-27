@@ -11,13 +11,13 @@
         title="新增催租结果"
         :visible.sync="innerVisible"
         append-to-body>
-           <el-form :model="form" :rules="rules">
+           <el-form :model="form" >
              <el-form-item label="催租结果" :label-width="formLabelWidth">
                <el-select v-model="form.resultType" placeholder="请选择催租结果">
                  <el-option v-for="Item in resultTypeList" :key="Item.value" :label="Item.label" :value="Item.value"></el-option>
                </el-select>
              </el-form-item>
-             <el-form-item label="备注" prop="content" :label-width="formLabelWidth" v-show="filterType(form.resultType)">
+             <el-form-item label="备注"  :label-width="formLabelWidth" v-show="filterType(form.resultType)">
                 <el-input v-model="form.content" :maxlength="50" type="textarea"
   :rows="2" placeholder="请输入备注（0-50字）"></el-input>
             </el-form-item>
@@ -69,13 +69,6 @@ import { delObjectItem}  from '@/utils'
 export default {
     data(){
         return {
-          rules: {
-            content:[
-              { required: true, message: '请输入备注', trigger: 'blur' },
-              { min: 0, max: 50, message: '长度在 0 到 50 个字符', trigger: 'blur' }
-            ]
-            
-          },
           status:null,
           gridData: [],
           dialogTableVisible: false,
@@ -216,7 +209,7 @@ export default {
              });
              return false
         }
-        if(this.form.resultType != 3){
+        if(this.form.resultType != 3&&this.form.resultType != null&&this.form.resultType != ''){
              this.form.content=this.resultTypeList[this.form.resultType-1].label
              this.addfun()
         }else{
