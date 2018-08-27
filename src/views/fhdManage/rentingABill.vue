@@ -159,7 +159,7 @@
                              <el-table-column
                             label="催租跟进">
                               <template slot-scope="scope">
-                                  <span class="col-red pad cursor" @click="goFollow(scope.row.id,scope.row.billNo,scope.row.isOver)">{{scope.row.followCount
+                                  <span class="col-red pad cursor" @click="goFollow(scope.row.id,scope.row.billNo,scope.row.isOver,scope.row.status)">{{scope.row.followCount
 | filterText }}</span>           
                                   <el-popover
                                     placement="top-start"
@@ -251,13 +251,13 @@ export default {
         ],
         statusList:[{    //订单状态
            value: 0,
-           label: '未缴租'
+           label: '未交租'
         },{    //订单状态
            value: 1,
-           label: '线上已缴租'
+           label: '线上已交租'
         },{    //订单状态
            value: 2,
-           label: '线下已缴租'
+           label: '线下已交租'
         },{    //订单状态
            value: 3,
            label: '已撤销 '
@@ -300,7 +300,7 @@ export default {
         return resultTypeList[val-1]?resultTypeList[val-1].label:''
       },
       filStatus(val){
-        const valStatus=['未缴租','线上已缴租','线下已缴租','已撤销']
+        const valStatus=['未交租','线上已交租','线下已交租','已撤销']
         return valStatus[val]
       },
       filoverdueType(val){
@@ -395,8 +395,8 @@ export default {
         this.$refs.rentingABill.open(this.dialogFormVisible,reason,type,id)
         }
       },
-      goFollow(id,billNo,isOver){  //跟进记录
-        this.$refs.followUp.open(true,id,billNo,isOver)
+      goFollow(id,billNo,isOver,status){  //跟进记录
+        this.$refs.followUp.open(true,id,billNo,isOver,status)
       },
       searchParam(){   //搜索
         let searchParams = Object.assign(this.pageItems, this.formData);

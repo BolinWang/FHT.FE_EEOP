@@ -76,6 +76,7 @@ export default {
             ]
             
           },
+          status:null,
           gridData: [],
           dialogTableVisible: false,
           innerVisible: false,
@@ -148,7 +149,7 @@ export default {
         }
     },
     mounted(){
-      
+     
     },
     beforeDestroy(){
       let dia=document.querySelectorAll('body>.el-dialog__wrapper')
@@ -172,6 +173,18 @@ export default {
          return true
         }
       },
+      textStatus(){
+        console.log(this.status)
+        if(this.status == 3){
+          this.$message({
+             message: '账单已撤销，无法继续跟进.',
+             type: 'error'
+          });
+          return false
+        }else{
+          return true
+        }
+      },
       rentMessage(){
         rentMessageApi(this.followId).then(response =>{
            if(response.code == 0){
@@ -191,7 +204,9 @@ export default {
        })
       },
       addFllow(){  //新增催租记录
-        this.innerVisible = true
+        if(this.textStatus()){
+          this.innerVisible = true
+        }
       },
       addFollowSubmit(){
         if(this.form.resultType){
@@ -256,21 +271,25 @@ export default {
           })
       },
       managerMessage(){
-        this.innerWarn = true
-        if(this.isOver == true){
-          this.messageTypeList = this.messageTypeOver   //以逾期
-        }else if(this.isOver == false){
-          this.messageTypeList = this.messageTypeIs   
-        }else{
-          this.messageTypeList = messageTypes
+        if(this.textStatus()){
+          this.innerWarn = true
+          if(this.isOver == true){
+            this.messageTypeList = this.messageTypeOver   //以逾期
+          }else if(this.isOver == false){
+            this.messageTypeList = this.messageTypeIs   
+          }else{
+            this.messageTypeList = messageTypes
+          }
         }
         
+        
       },
-      open(type,id,billNo,isOver){
+      open(type,id,billNo,isOver,status){
         this.dialogTableVisible = true
         this.followId.id = id
         this.followId.billNo = billNo
         this.isOver = isOver
+        this.status = status
         this.getfollowList()
       }
       
