@@ -42,7 +42,7 @@
     </el-row>
     <el-row :gutter="20">
       <el-col :span="10">
-        <el-form-item label="户型" class="room-count" prop="tag">
+        <el-form-item label="户型" class="room-count" prop="chamberCount" :show-message="false">
           <el-row :gutter="10">
             <el-col :span="4">
               <el-form-item label="" prop="chamberCount" class="room-item-count">
@@ -131,7 +131,7 @@
       <el-col :span="4">
         <el-form-item v-if="dialogType === 2" label="房间照片">
           <el-badge :value="hostingRoomDetail.pictures ? hostingRoomDetail.pictures.length : 0">
-            <el-button type="primary" size="mini" @click="openPicModel(this.hostingRoomDetail.pictures)">上传照片</el-button>
+            <el-button type="primary" size="mini" @click="openPicModel(-1)">上传照片</el-button>
           </el-badge>
         </el-form-item>
       </el-col>
@@ -187,7 +187,7 @@
             <el-col :span="5">
               <el-form-item label="房间照片" prop="">
                 <el-badge :value="hostingRoomDetail.hostingRooms[index].pictures ? hostingRoomDetail.hostingRooms[index].pictures.length : 0">
-                  <el-button type="primary" size="mini" @click="openPicModel(hostingRoomDetail.hostingRooms[index].pictures)">上传照片</el-button>
+                  <el-button type="primary" size="mini" @click="openPicModel(index)">上传照片</el-button>
                 </el-badge>
               </el-form-item>
             </el-col>
@@ -233,7 +233,7 @@
         </el-form-item>
       </el-col>
       <el-col :span="3">
-        <el-form-item label-width="30px">
+        <el-form-item label-width="30px" prop="tag">
           <el-checkbox label="飞虎队" name="type" v-model="hostingRoomDetail.tag"></el-checkbox>
         </el-form-item>
       </el-col>
@@ -308,13 +308,15 @@ export default {
       dialogType: 1, // 1: 合租 2: 整租
       hostingRoomDetail: {
         areaCode: ['', '', ''],
+        tag: false,
         hostingRooms: [{
           roomArea: '',
           roomAttributes: [],
           roomName: '房间A',
           name: '0',
           pictures: []
-        }]
+        }],
+        pictures: []
       },
       hostingRoomDetailRules: {
         areaCode: [
@@ -373,7 +375,10 @@ export default {
           roomDirection: [
             { required: true, message: '请选择房间朝向', trigger: 'change' }
           ]
-        }
+        },
+        tag: [
+          { required: true, message: '', trigger: 'change' }
+        ]
       },
       zoneList: [],
       addressList: [],
@@ -475,6 +480,7 @@ export default {
       filterManagerList: [],
       cropperList: [],
       accept: 'image/png, image/jpeg, image/jpg',
+      curPicListIndex: -1,
       currentPicList: []
     }
   },
@@ -567,11 +573,7 @@ export default {
         }
       }
     },
-    openPicModel(list) {  // 打开上传图片列表
-      this.currentPicList = list
-      // this.curPicListIndex = index
-      this.uploadPicsModelVisible = true
-    },
+
     handleTabsEdit(targetName, action) {
       if (action === 'add') {
         let curIndex = this.hostingRoomDetail.hostingRooms.length
@@ -664,17 +666,17 @@ export default {
       })
       return roomDetailData
     },
-    // preview弹出层关闭
-    uploadModelClose() {
+    openPicModel(index) {  // 打开上传图片列表
+      this.curPicListIndex = index
+      this.currentPicList = index === -1 ? this.hostingRoomDetail.pictures : this.hostingRoomDetail.hostingRooms[index].pictures
+      this.uploadPicsModelVisible = true
+    },
+    uploadModelClose() {  // 关闭上传图片列表
+      this.curPicListIndex === -1 ? (this.hostingRoomDetail.pictures = this.currentPicList) : (this.hostingRoomDetail.hostingRooms[this.curPicListIndex].pictures = this.currentPicList)
       this.currentPicList = []
     },
     // 删除图片
     emitDelete(val) {
-      // if (this.curPicListIndex === -1) {
-      //   this.estateModel.pictureList = val
-      // } else {
-      //   this.estateModel.roomTypeList[this.curPicListIndex].pictureList = val
-      // }
       this.currentPicList = val || []
     },
     // 上传的图片列表
@@ -688,11 +690,6 @@ export default {
           v.imageName = v.title,
           v.image = v.src
       })
-      // if (this.curPicListIndex === -1) {
-      //   this.estateModel.pictureList = [...this.estateModel.pictureList, ...list]
-      // } else {
-      //   this.estateModel.roomTypeList[this.curPicListIndex].pictureList = [...this.estateModel.roomTypeList[this.curPicListIndex].pictureList, ...list]
-      // }
       this.currentPicList = [...this.currentPicList, ...list]
     },
     /* 选择图片 */
@@ -734,7 +731,6 @@ export default {
       })
 
       const files = e.target.files
-      // let picList = this.curPicListIndex === -1 ? this.estateModel.pictureList : this.estateModel.roomTypeList[this.curPicListIndex].pictureList
       let picList = this.currentPicList
       if (picList.length + files.length > 15) {
         this.$message.error(`您已上传${picList.length}张图片，最多还能上传${15 - picList.length}张图片`)

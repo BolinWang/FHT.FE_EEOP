@@ -91,6 +91,7 @@
                             </el-table-column>
                             <el-table-column
                             label="生成时间"
+                            width='140px'
                             prop="gmtCreate">
                             </el-table-column>
                             <el-table-column
@@ -109,14 +110,14 @@
                             prop="deadlineDate">
                             </el-table-column>
                             <el-table-column
-                             width='60px'
+                             width='100px'
                             label="状态">
                               <template slot-scope="scope">
-                                    <span >{{scope.row.status | filStatus}}</span>
+                                    <span :class="[scope.row.status==1?'stypeInfo':'',scope.row.status==2?'stypeInfos':'']">{{scope.row.status | filStatus}}</span>
                               </template>
                             </el-table-column>
                             <el-table-column
-                            width='80px'
+                            width='100px'
                             label="是否逾期">
                                <template slot-scope="scope">
                                   <div class="box-c">
@@ -189,6 +190,7 @@ import rentingABill from './components/overDue'
 import followUp from './components/followUp'
 import { parseTime ,delObjectItem,ObjectMap}  from '@/utils'
 import { getRentingListApi ,exportExcelApi} from '@/api/renting'
+import { getSessionId } from '@/utils/auth'
 export default {
      components: {
     rentingABill ,followUp
@@ -337,90 +339,41 @@ export default {
         }
       },
       exportExcel(){
-        // const loading = this.$loading({
-        //   lock: true,
-        //   text: 'Loading',
-        //   spinner: 'el-icon-loading',
-        //   background: 'rgba(0, 0, 0, 0.7)'
-        // });
-        this.pageItems.pageSize = 9999;
-        let searchParams = Object.assign(this.pageItems, this.formData);
-        exportExcelApi(this.formData).then(response => {console.log('124')
-          response.data.map((item, index) => {
-              item.index = index * 1 + 1;
-             })
-        require.ensure([], () => {
-          const { export_json_to_excel } = require('@/vendor/Export2Excel')
-          const tHeader = [
-            "序号", "生成时间", "账单号", "城市", "区域", "板块", "小区/公寓-房间", "房东", "房东手机号码",
-            "账单名称", "最迟支付时间", "状态", "是否逾期","支付时间",
-            "租客",
-            "租客手机号码",
-            "跟进次数",
-            "最新跟进时间",
-            "最新跟进人",
-            "跟进结果",
-            "城市管家",
-            "城市管家手机号",
-            "所在部门",
-            "上级部门"
-          ];
-          const filterVal = [
-            "index", "生成时间", "账单号", "城市", "区域", "板块", "小区/公寓-房间", "房东", "房东手机号码",
-            "账单名称", "最迟支付时间", "状态", "是否逾期","支付时间",
-            "租客",
-            "租客手机号码",
-            "跟进次数",
-            "最新跟进时间",
-            "最新跟进人",
-            "跟进结果",
-            "城市管家",
-            "城市管家手机号",
-            "所在部门",
-            "上级部门"
-          ];
-          const data = this.formatJson(filterVal, response.data || [])
-          export_json_to_excel(tHeader, data, new Date().getTime(), '催租信息表')
-          
-        })
+        const loading = this.$loading({
+          lock: true,
+          text: 'Loading',
+          spinner: 'el-icon-loading',
+          background: 'rgba(0, 0, 0, 0.7)'
+        });
+          this.formData.sessionId= getSessionId()
+          let data = this.formData
+            console.log(data)
+          const  form = document.createElement('form');
+          form.id = 'formExcel'
+          form.name = 'forms'
+          form.enctype = "application/json"
+          document.body.appendChild(form);
 
-        loading.close();
-        this.$message({
-            message: response.message,
-            type: 'success'
-         });
-            // if(response.code == 0){
-            //   let data = response.data.bytes
-            //   var blob = new Blob([data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8'}); //application/vnd.openxmlformats-officedocument.spreadsheetml.sheet这里表示xlsx类型
-            // 　　var downloadElement = document.createElement('a');
-            // 　　var href = window.URL.createObjectURL(blob); //创建下载的链接
-            // 　　downloadElement.href = href;
-            // 　　downloadElement.download = '列表.xlsx'; //下载后文件名
-            // 　　document.body.appendChild(downloadElement);
-            // 　　downloadElement.click(); //点击下载
-            // 　　document.body.removeChild(downloadElement); //下载完成移除元素
-            // 　　window.URL.revokeObjectURL(href); //释放掉blob对象 
-            //  console.log(href)
-            //   this.$message({
-            //     message: response.message,
-            //     type: 'success'
-            //  });
-            // }
-        })
+          for(let obj in data) {
+            if(data.hasOwnProperty(obj)) {
+            const input = document.createElement('input');
+            input.type='hidden';
+            input.name = obj;
+            input.value = data[obj];
+            form.appendChild(input)
+            }
+          }
+          console.log(form)
+
+          form.method = "post";//请求方式
+          form.action = process.env.BASE_API+'/flying/leaseBill/exportExcel';
+          form.submit();
+          const child=document.getElementById("formExcel");
+          document.body.removeChild(form);
+          this.$nextTick(() => { // 以服务的方式调用的 Loading 需要异步关闭
+            loading.close();
+          }); 
       },
-
-        formatJson(filterVal, jsonData) {
-      return jsonData.map(v => filterVal.map(j => {
-        return v[j]
-      })).catch(response => {
-        
-         loading.close();
-        this.$message({
-            message: response.message,
-            type: 'error'
-         });
-      })
-    },
       handleSizeChange(val) {
       this.pageItems.pageSize = val;
       this.searchParam();
@@ -448,13 +401,14 @@ export default {
       searchParam(){   //搜索
         let searchParams = Object.assign(this.pageItems, this.formData);
          
-        if(!this.formData.startTime){
-          this.$message({
-            message: '时间区间为必选字段,请选择你要查询的时间段，点击再次查询',
-            type: 'error'
-         });
+        // if(!this.formData.startTime){
+        //   this.$message({
+        //     message: '时间区间为必选字段,请选择你要查询的时间段，点击再次查询',
+        //     type: 'error'
+        //  });
           
-        }else if(!this.formData.cityId){
+        // }else 
+        if(!this.formData.cityId){
            this.$message({
             message: '城市为必选字段,请选择你要查询的城市后，点击再次查询',
             type: 'error'
@@ -512,7 +466,13 @@ export default {
  .cursor{
    cursor:pointer
  }
-
+ .stypeInfo{
+   color: #409eff;
+ }
+ .stypeInfos{
+   color: #67c23a;
+ }
+ 
 </style>
 
 
