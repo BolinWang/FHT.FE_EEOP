@@ -131,7 +131,7 @@
       <el-col :span="4">
         <el-form-item v-if="dialogType === 2" label="房间照片">
           <el-badge :value="hostingRoomDetail.pictures ? hostingRoomDetail.pictures.length : 0">
-            <el-button type="primary" size="mini" @click="openPicModel">上传照片</el-button>
+            <el-button type="primary" size="mini" @click="openPicModel(this.hostingRoomDetail.pictures)">上传照片</el-button>
           </el-badge>
         </el-form-item>
       </el-col>
@@ -187,7 +187,7 @@
             <el-col :span="5">
               <el-form-item label="房间照片" prop="">
                 <el-badge :value="hostingRoomDetail.hostingRooms[index].pictures ? hostingRoomDetail.hostingRooms[index].pictures.length : 0">
-                  <el-button type="primary" size="mini" @click="openPicModel">上传照片</el-button>
+                  <el-button type="primary" size="mini" @click="openPicModel(hostingRoomDetail.hostingRooms[index].pictures)">上传照片</el-button>
                 </el-badge>
               </el-form-item>
             </el-col>
@@ -295,9 +295,13 @@
 <script>
 import areaSelect from '@/components/AreaSelect'
 import { } from '@/api/houseManage'
+import Preview from '@/components/Preview/Preview'
+import ImageCropper from '@/components/ImageCropper/Cropper'
 export default {
   components: {
-    areaSelect
+    areaSelect,
+    Preview,
+    ImageCropper
   },
   data() {
     return {
@@ -308,7 +312,8 @@ export default {
           roomArea: '',
           roomAttributes: [],
           roomName: '房间A',
-          name: '0'
+          name: '0',
+          pictures: []
         }]
       },
       hostingRoomDetailRules: {
@@ -562,7 +567,9 @@ export default {
         }
       }
     },
-    openPicModel() {  // 打开上传图片列表
+    openPicModel(list) {  // 打开上传图片列表
+      this.currentPicList = list
+      // this.curPicListIndex = index
       this.uploadPicsModelVisible = true
     },
     handleTabsEdit(targetName, action) {
@@ -570,7 +577,10 @@ export default {
         let curIndex = this.hostingRoomDetail.hostingRooms.length
         this.hostingRoomDetail.hostingRooms.push({
           roomName: '房间' + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')[curIndex],
-          name: curIndex.toString()
+          name: curIndex.toString(),
+          roomArea: '',
+          roomAttributes: [],
+          pictures: []
         });
         this.activeRoomName = curIndex.toString()
       }
@@ -660,11 +670,11 @@ export default {
     },
     // 删除图片
     emitDelete(val) {
-      if (this.curPicListIndex === -1) {
-        this.estateModel.pictureList = val
-      } else {
-        this.estateModel.roomTypeList[this.curPicListIndex].pictureList = val
-      }
+      // if (this.curPicListIndex === -1) {
+      //   this.estateModel.pictureList = val
+      // } else {
+      //   this.estateModel.roomTypeList[this.curPicListIndex].pictureList = val
+      // }
       this.currentPicList = val || []
     },
     // 上传的图片列表
@@ -678,11 +688,11 @@ export default {
           v.imageName = v.title,
           v.image = v.src
       })
-      if (this.curPicListIndex === -1) {
-        this.estateModel.pictureList = [...this.estateModel.pictureList, ...list]
-      } else {
-        this.estateModel.roomTypeList[this.curPicListIndex].pictureList = [...this.estateModel.roomTypeList[this.curPicListIndex].pictureList, ...list]
-      }
+      // if (this.curPicListIndex === -1) {
+      //   this.estateModel.pictureList = [...this.estateModel.pictureList, ...list]
+      // } else {
+      //   this.estateModel.roomTypeList[this.curPicListIndex].pictureList = [...this.estateModel.roomTypeList[this.curPicListIndex].pictureList, ...list]
+      // }
       this.currentPicList = [...this.currentPicList, ...list]
     },
     /* 选择图片 */
@@ -724,7 +734,8 @@ export default {
       })
 
       const files = e.target.files
-      let picList = this.curPicListIndex === -1 ? this.estateModel.pictureList : this.estateModel.roomTypeList[this.curPicListIndex].pictureList
+      // let picList = this.curPicListIndex === -1 ? this.estateModel.pictureList : this.estateModel.roomTypeList[this.curPicListIndex].pictureList
+      let picList = this.currentPicList
       if (picList.length + files.length > 15) {
         this.$message.error(`您已上传${picList.length}张图片，最多还能上传${15 - picList.length}张图片`)
         e.target.value = null
@@ -767,6 +778,19 @@ export default {
   .sub-room-info-list {
     margin-bottom: 18px;
     box-shadow: 0 0;
+  }
+}
+.upload-pics-model {
+  .previewItems {
+    margin-bottom: 10px;
+    .el-upload--picture-card.uploadImage {
+      width: 122px;
+      height: 92px;
+      line-height: 98px;
+    }
+  }
+  .upload-pics-info {
+    margin: 0 0 5px;
   }
 }
 </style>
