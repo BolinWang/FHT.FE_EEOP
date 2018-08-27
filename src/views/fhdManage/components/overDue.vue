@@ -58,6 +58,13 @@ export default {
       submit(){
           
         let params=ObjectMap(this.from)
+        if(this.from.overdueType==''||this.from.overdueType==null||this.from.overdueType==undefined){
+            this.$message({
+                message: '请选择逾期类别',
+                type: 'success'
+             });
+            return false;
+        }
         if(this.from.overdueType!=1&&params.overdueReason==undefined){
             this.$message({
                 message: '请填写逾期原因',
