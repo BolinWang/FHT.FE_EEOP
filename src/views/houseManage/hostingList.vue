@@ -275,7 +275,7 @@ export default {
     // 添加房源
     openRoomDetail(type) {
       this.roomDetailModelVisible = true
-      this.$refs.initRoomDetailData()
+      this.$refs.hostingRoomDetail.initRoomDetailData()
     },
     // 保存房源信息
     saveRoomDetailData(type) {
