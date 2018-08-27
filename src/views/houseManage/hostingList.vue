@@ -9,12 +9,12 @@
         </el-form-item>
         <el-form-item>
           <el-select v-model="roomSearchForm.houseType" filterable clearable size="small" placeholder="房源类型" style="width:120px">
-            <el-option v-for="item in houseTypeList" :key="item.value" :label="item.label" :value="item.value"></el-option>
+            <el-option v-for="(item,index) in houseTypeList" :key="index" :label="item.label" :value="item.value"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item>
           <el-select v-model="roomSearchForm.roomStatus" filterable clearable size="small" placeholder="房间状态" style="width:120px">
-            <el-option v-for="statusItem in roomStatusList" :key="statusItem.value" :label="statusItem.label" :value="statusItem.value"></el-option>
+            <el-option v-for="(statusItem,index) in roomStatusList" :key="index" :label="statusItem.label" :value="statusItem.value"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item>
@@ -152,24 +152,24 @@ export default {
         { prop: "orgName", label: "组织名称" },
         { prop: "addrRegionName", label: "房源位置" },
         { prop: "roomDetailAddress", label: "公寓/小区-房间" },
-        { prop: "tags", label: "房间类型" },
+        { prop: "tags", label: "房源类型", slotName: "index" },
         { prop: "roomName", label: "房间" },
         {
           prop: "roomStatus",
           label: "房间状态",
           slotName: "roomStatus",
-          unitFilters: {
-            renderStatusType(status) {
-              const statusMap = {
-                '已出租': 'success',
-                '未出租': 'info'
-              }
-              return statusMap[status] || 'info'
-            },
-            renderStatusValue(status) {
-              return status || '未知'
-            }
-          }
+          // unitFilters: {
+          //   renderStatusType(status) {
+          //     const statusMap = {
+          //       '已出租': 'success',
+          //       '未出租': 'info',
+          //     }
+          //     return statusMap[status] || 'info'
+          //   },
+          //   renderStatusValue(status) {
+          //     return status || '未知'
+          //   }
+          // }
         },
         { prop: "roomCode", label: "平台房源编码" },
         {
@@ -280,10 +280,8 @@ export default {
     saveRoomDetailData(type) {
       if (type === 'add') {
         let roomDetailData = this.$refs.hostingRoomDetail.returnRoomDetailData()
-        console.log(roomDetailData)
       } else if (type === 'close') {
         let roomDetailData = this.$refs.hostingRoomDetail.returnRoomDetailData()
-        console.log(roomDetailData)
       } else {
         this.$refs.hostingRoomDetail.setRoomDetailData({})
         this.roomDetailModelVisible = false
