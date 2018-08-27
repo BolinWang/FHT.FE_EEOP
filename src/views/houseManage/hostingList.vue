@@ -1,8 +1,5 @@
 <template>
   <div class="app-container">
-    <div>
-      <hosting-room-detail></hosting-room-detail>
-    </div>
     <el-tabs v-model="activeName" type="border-card" @tab-click="handleClickTab">
       <el-tab-pane v-for="(item, index) in houseRentTypeList" :key="index" :label="item" :name="item">
       </el-tab-pane>
@@ -37,8 +34,8 @@
               <el-dropdown-item :command="2">已出租</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
-          <el-button style="width:120px;margin-left:10px">添加合租房源</el-button>
-          <el-button style="width:120px">添加整租房源</el-button>
+          <el-button style="width:120px;margin-left:10px" @click="openRoomDetail(2)">添加合租房源</el-button>
+          <el-button style="width:120px" @click="openRoomDetail(1)">添加整租房源</el-button>
         </el-form-item>
       </el-form>
       <GridUnit ref="hostingHouseList" :showRowIndex="false" :spanMethod="objectSpanMethod" :formOptions="roomSearchForm" :showSelection="true" :url="houstingListUrl" :dataMethod="method" listField="data.houseList" totalField="data.record" :columns="colModels" :height="tableHeight" @selection-change="handleSelectionChange" :dataHandler="dataHandler" :pageSizes="[50, 100, 200]" border>
@@ -58,6 +55,14 @@
         </template>
       </GridUnit>
     </el-tabs>
+    <el-dialog title="添加房源" :visible.sync="roomDetailModelVisible" width="1000px">
+      <hosting-room-detail></hosting-room-detail>
+      <span slot="footer" class="dialog-footer">
+        <el-button size="small" type="primary" @click="roomDetailModelVisible = false">保存并继续添加</el-button>
+        <el-button size="small" type="primary" @click="roomDetailModelVisible = false">保存并关闭</el-button>
+        <el-button size="small" @click="roomDetailModelVisible = false">取 消</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -88,7 +93,7 @@ export default {
     renderStatusValue(status) {
       return status || '未知'
     },
-    setRoomStatus(val, statusList) {  
+    setRoomStatus(val, statusList) {
       let status = statusList.filter(item => item.value === val)
       return status.length ? status[0].label : ''
     }
@@ -175,7 +180,8 @@ export default {
           fixed: 'right'        },
         { prop: "provider", label: "房源提供者" },
         { prop: "operateTime", label: "操作时间" },
-      ]
+      ],
+      roomDetailModelVisible: false
     }
   },
   watch: {
@@ -289,9 +295,11 @@ export default {
         })
       })
       return tempArr
+    },
+    // 添加房源
+    openRoomDetail(type) {
+      this.roomDetailModelVisible = true
     }
-    // 添加合租房源
-    // 添加整租房源
   },
   mounted() {
     let changeTableSize = debounce(() => {
