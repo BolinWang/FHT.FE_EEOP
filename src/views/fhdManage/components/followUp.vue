@@ -194,7 +194,7 @@ export default {
         this.innerVisible = true
       },
       addFollowSubmit(){
-        if(!this.form.resultType){
+        if(this.form.resultType){
           this.$message({
                 message: '请选择催租结果',
                 type: 'success'
