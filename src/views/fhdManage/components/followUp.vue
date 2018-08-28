@@ -18,8 +18,8 @@
                </el-select>
              </el-form-item>
              <el-form-item label="备注"  :label-width="formLabelWidth" v-show="filterType(form.resultType)">
-                <el-input v-model="form.content" :maxlength="50" type="textarea"
-  :rows="2" placeholder="请输入备注（0-50字）"></el-input>
+                <el-input v-model="form.content" :maxlength="100" type="textarea"
+  :rows="2" placeholder="请输入备注（0-100字）"></el-input>
             </el-form-item>
            </el-form>
             <div slot="footer" class="dialog-footer">
@@ -295,8 +295,9 @@ export default {
       margin-top:20px;
   }
   .box{
-          height: 68px;
+    min-height: 68px;
     padding-top: 10px;
+    padding-bottom: 10px;
     border-bottom: 1px solid #e0e0e0;
   }
   .text-empty{

@@ -7,8 +7,8 @@
             </el-select>
             </el-form-item>
             <el-form-item label="逾期原因"  :label-width="formLabelWidth" v-show="filStatus(from.overdueType)">
-              <el-input v-model="from.overdueReason" :maxlength="50" type="textarea"
-  :rows="2" placeholder="请输入备注（0-50字）"></el-input>
+              <el-input v-model="from.overdueReason" :maxlength="100" type="textarea"
+  :rows="2" placeholder="请输入备注（0-100字）"></el-input>
             </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
