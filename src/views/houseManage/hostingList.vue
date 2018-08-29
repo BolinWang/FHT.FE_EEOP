@@ -272,6 +272,20 @@ export default {
     saveRoomDetailData(type) {
       if (type === 'add') {
         let roomDetailData = this.$refs.hostingRoomDetail.returnRoomDetailData()
+        // api
+        setTimeout(() => {
+          roomDetailData.hostingRooms = [{
+            roomArea: '',
+            roomAttributes: '',
+            roomAttributesList: [],
+            roomName: '房间A',
+            name: '1',
+            pictures: [],
+            facilityItemsList: []
+          }]
+          roomDetailData.roomNo = ''
+          this.$refs.hostingRoomDetail.setRoomDetailData(roomDetailData)
+        }, 3000)
       } else if (type === 'close') {
         let roomDetailData = this.$refs.hostingRoomDetail.returnRoomDetailData()
       } else {

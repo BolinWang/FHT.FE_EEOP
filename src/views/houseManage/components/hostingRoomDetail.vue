@@ -16,10 +16,7 @@
       </el-col>
       <el-col :span="9">
         <el-form-item label="公寓/小区" prop="address">
-          <el-select class="room-detail-select" ref="addressSelect" v-model="hostingRoomDetail.address" filterable remote :clearable="true" placeholder="请搜索" :remote-method="fetchAddressList" popper-class="detail-address-options" :loading="loading" @focus="checkAddressSelect" @clear="setAddress">
-            <el-option v-for="(item, index) in addressList" :key="index" v-html="item.displayText" :value="item.formatName" @click.native="setAddress(item)">
-            </el-option>
-          </el-select>
+          <map-select :areaCode="hostingRoomDetail.areaCode" @addressChange="addressChange" :value="hostingRoomDetail.address"></map-select>
         </el-form-item>
       </el-col>
     </el-row>
@@ -129,7 +126,7 @@
         </el-form-item>
       </el-col>
       <el-col :span="4">
-        <el-form-item v-if="dialogType === 2" label="房间照片">
+        <el-form-item v-if="dialogType === 1" label="房间照片">
           <el-badge :value="hostingRoomDetail.pictures ? hostingRoomDetail.pictures.length : 0">
             <el-button type="primary" size="mini" @click="openPicModel(-1)">上传照片</el-button>
           </el-badge>
@@ -139,7 +136,7 @@
     <el-row :gutter="20">
       <el-col :span="13">
         <el-form-item :label="dialogType === 1 ? '公区设施' : '房间设施'">
-          <el-select class="room-detail-select" v-model="hostingRoomDetail.facilityItems" multiple placeholder="请选择">
+          <el-select class="room-detail-select" v-model="hostingRoomDetail.facilityItemsList" multiple placeholder="请选择">
             <el-option-group v-for="group in facilityGroup" :key="group.label" :label="group.label">
               <el-option v-for="item in group.facilitys" :key="item.value" :label="item.label" :value="item.value">
               </el-option>
@@ -157,9 +154,9 @@
       </el-col>
     </el-row>
 
-    <template>
-      <el-tabs class="sub-room-info-list" v-model="activeRoomName" type="border-card" editable @edit="handleTabsEdit">
-        <el-tab-pane :key="item.roomName" v-for="(item, index) in hostingRoomDetail.hostingRooms" :label="item.roomName" :name="index.toString()">
+    <template v-if="dialogType === 2">
+      <el-tabs class="sub-room-info-list" v-model="activeRoomName" type="border-card" :closable="hostingRoomDetail.hostingRooms.length > 1" :addable="hostingRoomDetail.hostingRooms.length < 26" @edit="handleTabsEdit">
+        <el-tab-pane :key="item.roomName" v-for="(item, index) in hostingRoomDetail.hostingRooms" :label="item.roomName" :name="item.name">
           <el-row :gutter="20">
             <el-col :span="5">
               <el-form-item label-width="0" class="room-count">
@@ -193,7 +190,7 @@
             </el-col>
             <el-col :span="10">
               <el-form-item label-width="0" prop="">
-                <el-checkbox-group v-model="hostingRoomDetail.hostingRooms[index].roomAttributes">
+                <el-checkbox-group v-model="hostingRoomDetail.hostingRooms[index].roomAttributesList">
                   <el-checkbox label="独立卫生间" class="room-attributes"></el-checkbox>
                   <el-checkbox label="独立阳台" class="room-attributes"></el-checkbox>
                   <el-checkbox label="独立厨房" class="room-attributes"></el-checkbox>
@@ -204,8 +201,8 @@
           </el-row>
           <el-row :gutter="20">
             <el-col :span="13">
-              <el-form-item label="房间设施" prop="">
-                <el-select class="room-detail-select" v-model="hostingRoomDetail.hostingRooms[index].facilityItems" multiple placeholder="请选择">
+              <el-form-item label="房间设施">
+                <el-select class="room-detail-select" v-model="hostingRoomDetail.hostingRooms[index].facilityItemsList" multiple placeholder="请选择">
                   <el-option-group v-for="group in roomFacilityGroup" :key="group.label" :label="group.label">
                     <el-option v-for="item in group.facilitys" :key="item.value" :label="item.label" :value="item.value">
                     </el-option>
@@ -234,7 +231,7 @@
       </el-col>
       <el-col :span="3">
         <el-form-item label-width="30px" prop="tag">
-          <el-checkbox label="飞虎队" name="type" v-model="hostingRoomDetail.tag"></el-checkbox>
+          <el-checkbox label="飞虎队" name="type" v-model="hostingRoomDetail.tag" @change="handleSourceInfo"></el-checkbox>
         </el-form-item>
       </el-col>
       <el-col :span="6">
@@ -294,29 +291,41 @@
 
 <script>
 import areaSelect from '@/components/AreaSelect'
-import { } from '@/api/houseManage'
+import mapSelect from './mapSelect'
+import { estateOrgListApi, estateZoneListByAreaIdApi } from '@/api/houseManage'
+import { fhdAuditApi } from '@/api/auditCenter'
 import Preview from '@/components/Preview/Preview'
 import ImageCropper from '@/components/ImageCropper/Cropper'
+import { deepClone } from '@/utils'
 export default {
   components: {
     areaSelect,
     Preview,
-    ImageCropper
+    ImageCropper,
+    mapSelect
   },
   data() {
     return {
-      dialogType: 1, // 1: 合租 2: 整租
+      dialogType: 2, // 1: 整租 2: 合租
       hostingRoomDetail: {
+        address: '',
         areaCode: ['', '', ''],
+        provinceId: '',
+        cityId: '',
+        regionId: '',
+        zoneId: '',
         tag: false,
         hostingRooms: [{
           roomArea: '',
-          roomAttributes: [],
+          roomAttributesList: [],
           roomName: '房间A',
-          name: '0',
-          pictures: []
+          name: '1',
+          pictures: [],
+          facilityItemsList: []
         }],
-        pictures: []
+        facilityItemsList: [],
+        pictures: [],
+        sourceInfo: ''
       },
       hostingRoomDetailRules: {
         areaCode: [
@@ -376,12 +385,14 @@ export default {
             { required: true, message: '请选择房间朝向', trigger: 'change' }
           ]
         },
+        orgId: [
+          { required: true, message: '请选择一个组织，支持模糊查询', trigger: 'change' }
+        ],
         tag: [
           { required: true, message: '', trigger: 'change' }
         ]
       },
       zoneList: [],
-      addressList: [],
       orgList: [],
       loading: false,
       decorationDegreeList: [
@@ -475,7 +486,8 @@ export default {
           }]
         }
       ],
-      activeRoomName: '0',
+      activeRoomName: '1',
+      tabIndex: 1,
       cityManagerList: [],
       filterManagerList: [],
       cropperList: [],
@@ -504,9 +516,14 @@ export default {
     }
   },
   methods: {
+    initRoomDetailData() {  // 初始化房源数据
+      this.$nextTick(() => {
+        this.$refs.hostingRoomDetail.clearValidate()
+      })
+    },
     searchZoneList(flag) { // 搜索板块列表
       [this.hostingRoomDetail.provinceId, this.hostingRoomDetail.cityId, this.hostingRoomDetail.regionId] = this.hostingRoomDetail.areaCode
-      if (this.tempFormData.regionId !== this.hostingRoomDetail.regionId && !flag) {
+      if (!flag) {
         this.hostingRoomDetail.address = ''
         this.hostingRoomDetail.zoneId = ''
       }
@@ -520,74 +537,25 @@ export default {
         this.zoneList = []
       }
     },
-    checkAddressSelect(e) { // 验证是否已填省市区
-      if (!this.hostingRoomDetail.areaCode[2]) {
-        this.$message.error('请先选择所在地区')
-        e.target.blur()
-      }
+    addressChange(val) {
+      this.hostingRoomDetail = Object.assign(this.hostingRoomDetail, val)
+      this.$refs['hostingRoomDetail'].validateField('address')
+      this.searchZoneList(true)
     },
-    fetchAddressList(query) { // 模糊查询公寓/小区列表
-      if (query !== '') {
-        this.loading = true
-        hostingAddressByKeywordsApi({
-          cityId: Number(this.hostingRoomDetail.areaCode[1]) || 330100,
-          keyword: query
-        }).then((res) => {
-          this.loading = false
-          this.addressList = []
-          if (res.code === '0' && res.data.list) {
-            res.data.list.forEach((item, index) => {
-              item.formatName = item.name.replace(/<span(.*?)>/g, '').replace(/<\/span>/g, '') + ' - ' + item.address
-              item.displayText = item.name + ' - ' + item.address
-            })
-            this.addressList = res.data.list
-          }
-          this.addressList.push({
-            formatName: '',
-            cityId: '-1',
-            displayText: '<span style="color: red">找不到小区？点击这里添加小区</span>'
-          })
-        })
-      } else {
-        this.addressList = []
-      }
-    },
-    setAddress(item) {
-      if (item) {
-        if (item.cityId === '-1') {
-          this.hostingRoomDetail.address = ''
-          this.mapModelVisible = true
-          this.$set(this, 'formLabelAlign', {
-            city: '',
-            name: '',
-            region: '',
-            address: ''
-          })
-        } else {
-          if (item.areaId !== this.hostingRoomDetail.areaCode[2]) {
-            this.hostingRoomDetail.areaCode = [item.provinceId, item.cityId, item.areaId]
-            this.hostingRoomDetail.zoneId = ''
-            this.searchZoneList(true)
-          }
-          this.hostingRoomDetail.regionAddressId = item ? item.regionAddressId : ''
-        }
-      }
-    },
-
     handleTabsEdit(targetName, action) {
       if (action === 'add') {
         let curIndex = this.hostingRoomDetail.hostingRooms.length
+        let newTabName = ++this.tabIndex + ''
         this.hostingRoomDetail.hostingRooms.push({
           roomName: '房间' + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')[curIndex],
-          name: curIndex.toString(),
+          name: newTabName,
           roomArea: '',
-          roomAttributes: [],
+          roomAttributesList: [],
           pictures: []
         });
-        this.activeRoomName = curIndex.toString()
+        this.activeRoomName = newTabName
       }
       if (action === 'remove') {
-        debugger
         let tabs = this.hostingRoomDetail.hostingRooms
         let activeName = this.activeRoomName
         if (activeName === targetName) {
@@ -603,9 +571,12 @@ export default {
 
         this.activeRoomName = activeName
         this.hostingRoomDetail.hostingRooms = tabs.filter(tab => tab.name !== targetName)
+        this.hostingRoomDetail.hostingRooms.forEach((item, index) => {
+          item.roomName = '房间' + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')[index]
+        })
       }
     },
-    searchOrgListByKeywords(query) {
+    searchOrgListByKeywords(query) {  // 搜索组织列表
       if (query !== '') {
         this.loading = true
         estateOrgListApi({
@@ -647,18 +618,34 @@ export default {
         this.filterManagerList = []
       }
     },
-    setRoomDetailData(val) {
-      // if (JSON.stringify(val) === '{}') {
-
-      // }
-      // this.$set(this, 'hostingRoomDetail', val)
-      // this.$refs.hostingRoomDetail.clearValidate()
+    handleSourceInfo(val) {
+      if (!val) {
+        this.hostingRoomDetail.sourceInfo = ''
+      }
     },
-    returnRoomDetailData() {
+    setRoomDetailData(val) {
+      setTimeout(() => {
+        this.$set(this, 'hostingRoomDetail', val)
+      }, 0)
+      this.$nextTick(() => {
+        this.$refs.hostingRoomDetail.clearValidate()
+      })
+    },
+    returnRoomDetailData() {  // 返回房间详情数据
       let roomDetailData = false
       this.$refs.hostingRoomDetail.validate((status) => {
         if (status) {
-          roomDetailData = this.hostingRoomDetail
+          roomDetailData = deepClone(this.hostingRoomDetail)
+          roomDetailData.facilityItems = roomDetailData.facilityItemsList.join(',')
+          roomDetailData.tag = roomDetailData.tag ? 1 : 0
+
+          const sourceInfo = roomDetailData.tag ? this.filterManagerList.filter((item) => item.id === roomDetailData.sourceInfo) : ''
+          roomDetailData.sourceInfo = sourceInfo.length ? (sourceInfo[0].id + ',' + sourceInfo[0].name) : ''
+
+          roomDetailData.hostingRooms.forEach((item, index) => {
+            item.facilityItems = item.facilityItemsList.join(',')
+            item.roomAttributes = item.roomAttributesList.join(',')
+          })
         } else {
           this.$message.error('您还有必填信息未填写完全，请全部填写好后再保存')
           return false

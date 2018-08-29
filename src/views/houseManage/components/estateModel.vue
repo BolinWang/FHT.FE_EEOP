@@ -31,7 +31,7 @@
             </el-col>
             <el-col :span="12">
               <el-form-item label="具体位置" prop="address">
-                <el-select class="estate-model-select" ref="addressSelect" v-model="estateModel.address" filterable remote :clearable="true" placeholder="请输入关键词" :remote-method="remoteMethod" popper-class="detail-address-options" :loading="loading" @focus="checkAddressSelect">
+                <el-select class="estate-model-select" v-model="estateModel.address" filterable remote :clearable="true" placeholder="请输入关键词" :remote-method="remoteMethod" popper-class="detail-address-options" :loading="loading" @focus="checkAddressSelect">
                   <el-option v-for="(item, index) in addressList" :key="index" v-html="item.displayText" :value="item.formatName" @click.native="setAddress(item)">
                   </el-option>
                 </el-select>
@@ -315,7 +315,6 @@ import ImageCropper from '@/components/ImageCropper/Cropper'
 import RoomListSelecter from '@/components/RoomListSelecter'
 import estateDeviceGroup from './estateDeviceGroup'
 import { deepClone } from '@/utils'
-import draggable from 'vuedraggable'
 import cityData from '@/components/AreaSelect/cityData'
 let tempNames = []
 export default {
@@ -325,8 +324,7 @@ export default {
     Preview,
     ImageCropper,
     estateDeviceGroup,
-    RoomListSelecter,
-    draggable
+    RoomListSelecter
   },
   props: [
     'showEstateModel',

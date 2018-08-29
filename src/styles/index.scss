@@ -239,6 +239,14 @@ a:hover {
         line-height: 32px;
         padding: 0 !important;
       }
+      .el-form-item__error {
+        width: 60px;
+      }
+    }
+    .sub-room-info-list {
+      .el-form-item__error {
+        width: 90px;
+      }
     }
   }
   &.estate-room-detail {
