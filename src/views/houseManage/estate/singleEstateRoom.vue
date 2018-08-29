@@ -791,8 +791,11 @@ export default {
         data.pictureList.forEach((item) => {
           item.src = null
         })
+      } else {
+        delete data.pictureList
+        delete data.pictureUploadList
       }
-
+      delete data.roomStatusOperateList
       saveEstateRoomApi({
         roomInfo: JSON.stringify(data)
       }, this.curType).then((res) => {
