@@ -1,5 +1,5 @@
 <template>
-  <el-form ref="hostingRoomDetail" :model="hostingRoomDetail" :rules="hostingRoomDetailRules" label-width="90px" size="small"  class="room-detail-container hosting-room-detail">
+  <el-form v-if="JSON.stringify(hostingRoomDetail) !== '{}'" ref="hostingRoomDetail" :model="hostingRoomDetail" :rules="hostingRoomDetailRules" label-width="90px" size="small"  class="room-detail-container hosting-room-detail">
     <el-row :gutter="20">
       <el-col :span="8">
         <el-form-item label="所在地区" prop="areaCode">
@@ -78,8 +78,8 @@
         </el-form-item>
       </el-col>
       <el-col :span="3">
-        <el-form-item label-width="0" prop="roomDirection">
-          <el-select class="room-detail-select" v-model="hostingRoomDetail.roomDirection" placeholder="朝向">
+        <el-form-item label-width="0" prop="houseDirection">
+          <el-select class="room-detail-select" v-model="hostingRoomDetail.houseDirection" placeholder="朝向">
             <el-option v-for="item in roomDirectionList" :key="item.value" :label="item.label" :value="item.value">
             </el-option>
           </el-select>
@@ -126,8 +126,8 @@
         </el-form-item>
       </el-col>
       <el-col :span="4">
-        <el-form-item v-if="dialogType === 1" label="房间照片">
-          <el-badge :value="hostingRoomDetail.pictures ? hostingRoomDetail.pictures.length : 0">
+        <el-form-item v-if="hostingRoomDetail.houseRentType === 1" label="房间照片">
+          <el-badge :value="hostingRoomDetail.pictures.length">
             <el-button type="primary" size="mini" @click="openPicModel(-1)">上传照片</el-button>
           </el-badge>
         </el-form-item>
@@ -135,7 +135,7 @@
     </el-row>
     <el-row :gutter="20">
       <el-col :span="13">
-        <el-form-item :label="dialogType === 1 ? '公区设施' : '房间设施'">
+        <el-form-item :label="hostingRoomDetail.houseRentType === 1 ? '公区设施' : '房间设施'">
           <el-select class="room-detail-select" v-model="hostingRoomDetail.facilityItemsList" multiple placeholder="请选择">
             <el-option-group v-for="group in facilityGroup" :key="group.label" :label="group.label">
               <el-option v-for="item in group.facilitys" :key="item.value" :label="item.label" :value="item.value">
@@ -149,12 +149,12 @@
       <el-col :span="24">
         <el-form-item label="房源描述" prop="houseDesc">
           <el-input type="textarea" v-model="hostingRoomDetail.houseDesc" placeholder="最多可输入150个字" :rows="2"></el-input>
-          <span class="estate-iontro-length-tips">{{hostingRoomDetail.houseDesc ? hostingRoomDetail.houseDesc.length : 0}}/150</span>
+          <span class="estate-iontro-length-tips">{{hostingRoomDetail.houseDesc.length}}/150</span>
         </el-form-item>
       </el-col>
     </el-row>
 
-    <template v-if="dialogType === 2">
+    <template v-if="hostingRoomDetail.houseRentType === 2">
       <el-tabs class="sub-room-info-list" v-model="activeRoomName" type="border-card" :closable="hostingRoomDetail.hostingRooms.length > 1" :addable="hostingRoomDetail.hostingRooms.length < 26" @edit="handleTabsEdit">
         <el-tab-pane :key="item.roomName" v-for="(item, index) in hostingRoomDetail.hostingRooms" :label="item.roomName" :name="item.name">
           <el-row :gutter="20">
@@ -306,27 +306,7 @@ export default {
   },
   data() {
     return {
-      dialogType: 2, // 1: 整租 2: 合租
-      hostingRoomDetail: {
-        address: '',
-        areaCode: ['', '', ''],
-        provinceId: '',
-        cityId: '',
-        regionId: '',
-        zoneId: '',
-        tag: false,
-        hostingRooms: [{
-          roomArea: '',
-          roomAttributesList: [],
-          roomName: '房间A',
-          name: '1',
-          pictures: [],
-          facilityItemsList: []
-        }],
-        facilityItemsList: [],
-        pictures: [],
-        sourceInfo: ''
-      },
+      hostingRoomDetail: {},
       hostingRoomDetailRules: {
         areaCode: [
           {
@@ -362,7 +342,7 @@ export default {
         houseArea: [
           { required: true, message: '请输入面积', trigger: 'blur' }
         ],
-        roomDirection: [
+        houseDirection: [
           { required: true, message: '请选择房屋朝向', trigger: 'change' }
         ],
         decorationDegree: [
@@ -516,11 +496,6 @@ export default {
     }
   },
   methods: {
-    initRoomDetailData() {  // 初始化房源数据
-      this.$nextTick(() => {
-        this.$refs.hostingRoomDetail.clearValidate()
-      })
-    },
     searchZoneList(flag) { // 搜索板块列表
       [this.hostingRoomDetail.provinceId, this.hostingRoomDetail.cityId, this.hostingRoomDetail.regionId] = this.hostingRoomDetail.areaCode
       if (!flag) {
@@ -624,9 +599,10 @@ export default {
       }
     },
     setRoomDetailData(val) {
-      setTimeout(() => {
-        this.$set(this, 'hostingRoomDetail', val)
-      }, 0)
+      if (val.houseRentType === 2) {
+        this.tabIndex = val.hostingRooms.length
+      }
+      this.$set(this, 'hostingRoomDetail', val)
       this.$nextTick(() => {
         this.$refs.hostingRoomDetail.clearValidate()
       })

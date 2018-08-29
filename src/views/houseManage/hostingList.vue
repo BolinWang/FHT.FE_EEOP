@@ -50,9 +50,9 @@
         </template>
         <template slot="operateHosting" slot-scope="scope">
           <el-row>
-            <el-button type="primary" size="mini">交租方式</el-button>
+            <el-button type="primary" size="mini" @click="openRentPayModel(scope.row)">交租方式</el-button>
             <el-button type="primary" size="mini">复制到</el-button>
-            <el-button type="primary" size="mini">编辑房间</el-button>
+            <el-button type="primary" size="mini" @click="openRoomDetail(scope.row)">编辑房间</el-button>
             <el-button type="danger" size="mini">删除</el-button>
           </el-row>
         </template>
@@ -66,6 +66,9 @@
         <el-button size="small" @click="saveRoomDetailData('clear')">取 消</el-button>
       </span>
     </el-dialog>
+    <el-dialog title="交租方式">
+
+    </el-dialog>
   </div>
 </template>
 
@@ -74,7 +77,7 @@ import { debounce } from "@/utils"
 import hostingRoomDetail from './components/hostingRoomDetail'
 import areaSelect from "@/components/AreaSelect"
 import GridUnit from "@/components/GridUnit/grid"
-import { hostingHouseListApi, hostingAddressByKeywordsApi } from '@/api/houseManage'
+import { hostingHouseListApi, hostingRoomDetailApi } from '@/api/houseManage'
 export default {
   name: 'hostingList',
   components: {
@@ -172,7 +175,7 @@ export default {
         { prop: "provider", label: "房源提供者" },
         { prop: "operateTime", label: "操作时间" },
       ],
-      roomDetailModelVisible: true
+      roomDetailModelVisible: false
     }
   },
   watch: {
@@ -263,10 +266,82 @@ export default {
       })
       return tempArr
     },
-    // 添加房源
-    openRoomDetail(type) {
-      this.roomDetailModelVisible = true
-      this.$refs.hostingRoomDetail.initRoomDetailData()
+    // 添加修改房间信息
+    openRoomDetail(params) {
+      if (typeof (params) === 'number') {
+        this.roomDetailModelVisible = true
+        this.$nextTick(() => {
+          let roomDetailData = {
+            areaCode: ['', '', ''],
+            provinceId: null,
+            cityId: null,
+            regionId: null,
+            zoneId: null,
+            zoneName: '',
+            address: '',
+            buildingName: '',
+            unitCode: '',
+            roomNo: '',
+            chamberCount: null,
+            boardCount: null,
+            toiletCount: null,
+            houseArea: null,
+            houseDirection: null,
+            decorationDegree: null,
+            floorName: '',
+            floorAmount: null,
+            contactName: '',
+            contactGender: 1,
+            contactMobile: null,
+            facilityItemsList: [],
+            houseDesc: '',
+            orgId: '',
+            adminUserId: null,
+            accountName: '',
+            tag: false,
+            sourceInfo: '',
+            houseRentType: params
+          }
+          if (params === 1) {
+            roomDetailData.pictures = []
+          } else {
+            roomDetailData.hostingRooms = [{
+              roomArea: '',
+              roomAttributesList: [],
+              roomName: '房间A',
+              name: '1',
+              pictures: [],
+              facilityItemsList: []
+            }]
+          }
+          console.log(roomDetailData)
+          this.$refs.hostingRoomDetail.setRoomDetailData(roomDetailData)
+        })
+      } else if (typeof (params) === 'object') {
+        hostingRoomDetailApi({
+          fangyuanCode: params.fangyuanCode
+        }).then((res) => {
+          if (res.code === '0') {
+
+            let roomDetailInfo = res.data
+            roomDetailInfo.areaCode = [roomDetailInfo.provinceId, roomDetailInfo.cityId, roomDetailInfo.regionId]
+            roomDetailInfo.address = roomDetailInfo.subdistrictName ? (roomDetailInfo.subdistrictName + ' - ' + roomDetailInfo.subdistrictAddress) : ''
+            roomDetailInfo.facilityItemsList = roomDetailInfo.facilityItems ? roomDetailInfo.facilityItems.split(',') : []
+            roomDetailInfo.tag = roomDetailInfo.tag === 1 ? true : false
+            roomDetailInfo.hostingRooms.forEach((item, index) => {
+              item.name = ++index + ''
+              item.facilityItemsList = item.facilityItems ? item.facilityItems.split(',') : []
+              item.roomAttributesList = item.roomAttributes ? item.roomAttributes.split(',') : []
+            })
+
+            console.log(roomDetailInfo)
+            this.roomDetailModelVisible = true
+            this.$nextTick(() => {
+              this.$refs.hostingRoomDetail.setRoomDetailData(res.data)
+            })
+          }
+        })
+      }
     },
     // 保存房源信息
     saveRoomDetailData(type) {
@@ -292,6 +367,10 @@ export default {
         this.$refs.hostingRoomDetail.setRoomDetailData({})
         this.roomDetailModelVisible = false
       }
+    },
+    // 编辑交租方式
+    openRentPayModel(row) {
+
     }
   },
   mounted() {

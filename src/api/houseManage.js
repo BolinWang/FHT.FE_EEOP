@@ -426,7 +426,7 @@ export function changeRoomStatusApi(params) {
     url: '/market/fangyuan',
     method: 'post',
     data: {
-      method: 'batchChangeLeaseStatus', 
+      method: 'batchChangeLeaseStatus',
       params
     }
   })
@@ -444,13 +444,13 @@ export function hostingHouseListApi(params) {
   })
 }
 
-/* 分散式模糊查询小区，公寓 */
-export function hostingAddressByKeywordsApi(params) {
+/* 分散式查询房间详情 */
+export function hostingRoomDetailApi(params) {
   return fetch({
-    url: '/market/fangyuan',
+    url: 'http://localhost:9528/api/market/fangyuan',
     method: 'post',
     data: {
-      method: 'searchAddressByKeyword',
+      method: 'queryHostingHouseInfo',
       params
     }
   })

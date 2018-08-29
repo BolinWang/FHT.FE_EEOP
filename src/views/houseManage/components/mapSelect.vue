@@ -80,9 +80,7 @@ export default {
       searchResult: [],
       map: null,
       local: null,
-      mapSelectForm: {
-
-      },
+      mapSelectForm: {},
       mapSelectFormRules: {
         region: [
           { required: true, message: '请选择所在区域', trigger: 'change' }
@@ -148,7 +146,7 @@ export default {
             this.$emit('addressChange', {
               zoneId: '',
               areaCode: [item.provinceId, item.cityId, item.areaId],
-              address: item.displayText
+              address: item.formatName
             })
           }
           this.regionAddressId = item ? item.regionAddressId : ''
@@ -190,10 +188,10 @@ export default {
       }
       self.local = new BMap.LocalSearch(self.map, options)
     },
-    searchPositionByKeywords() {
+    searchPositionByKeywords() {  // 关键字搜索小区列表
       this.local.search(this.searchKeywords)
     },
-    setMapPosition(position, o) {
+    setMapPosition(position, o) { // 设置地图中心位置
       if (o) {
         this.$set(this, 'mapSelectForm', Object.assign(this.mapSelectForm, {
           baiduUid: o.uid,
@@ -245,7 +243,7 @@ export default {
       });
       this.$refs.popover.doShow()
     },
-    closeMapModel(type) {
+    closeMapModel(type) { // 关闭地图模态框
       if (type === 'save') {
         this.$refs.mapSelectForm.validate((status) => {
           if (status) {
@@ -260,7 +258,7 @@ export default {
         this.mapModelVisible = false
       }
     },
-    addEstateSubdistrict(status) {
+    addEstateSubdistrict(status) {  // 新增小区
       status = status || 0
       let source = 1
       if (status === 0) {
@@ -323,8 +321,11 @@ export default {
         this.$refs.popover.doClose()
       }
     },
-    value (val) {
-      this.specificAddress = val
+    value: {
+      immediate: true,
+      handler: function (val) {
+        this.specificAddress = val
+      }
     },
     'mapSelectForm.region': function (val, oldVal) {
       if (val !== oldVal && val !== undefined) {
