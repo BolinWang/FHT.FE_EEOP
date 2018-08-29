@@ -781,7 +781,7 @@ export default {
         return
       }
       data.fangyuanCode = this.fangyuanCode
-      console.log(data)
+
       if (this.curType === 2) {
         data.pictureUploadList = data.pictureList.filter(n => n.image)
         data.pictureList = data.pictureList.filter(n => n.imageUrl)
@@ -791,8 +791,12 @@ export default {
         data.pictureList.forEach((item) => {
           item.src = null
         })
+      } else {
+        delete data.pictureList
+        delete data.pictureUploadList
       }
-
+      delete data.roomStatusOperateList
+      console.log(data)
       saveEstateRoomApi({
         roomInfo: JSON.stringify(data)
       }, this.curType).then((res) => {

@@ -11,15 +11,15 @@
         title="新增催租结果"
         :visible.sync="innerVisible"
         append-to-body>
-           <el-form :model="form" :rules="rules">
+           <el-form :model="form" >
              <el-form-item label="催租结果" :label-width="formLabelWidth">
                <el-select v-model="form.resultType" placeholder="请选择催租结果">
                  <el-option v-for="Item in resultTypeList" :key="Item.value" :label="Item.label" :value="Item.value"></el-option>
                </el-select>
              </el-form-item>
-             <el-form-item label="备注" prop="content" :label-width="formLabelWidth" v-show="filterType(form.resultType)">
-                <el-input v-model="form.content" :maxlength="50" type="textarea"
-  :rows="2" placeholder="请输入备注（0-50字）"></el-input>
+             <el-form-item label="备注"  :label-width="formLabelWidth" v-show="filterType(form.resultType)">
+                <el-input v-model="form.content" :maxlength="100" type="textarea"
+  :rows="2" placeholder="请输入备注（0-100字）"></el-input>
             </el-form-item>
            </el-form>
             <div slot="footer" class="dialog-footer">
@@ -69,13 +69,7 @@ import { delObjectItem}  from '@/utils'
 export default {
     data(){
         return {
-          rules: {
-            content:[
-              { required: true, message: '请输入备注', trigger: 'blur' },
-              { min: 0, max: 50, message: '长度在 0 到 50 个字符', trigger: 'blur' }
-            ]
-            
-          },
+          status:null,
           gridData: [],
           dialogTableVisible: false,
           innerVisible: false,
@@ -148,7 +142,7 @@ export default {
         }
     },
     mounted(){
-      
+     
     },
     beforeDestroy(){
       let dia=document.querySelectorAll('body>.el-dialog__wrapper')
@@ -172,6 +166,18 @@ export default {
          return true
         }
       },
+      textStatus(){
+        console.log(this.status)
+        if(this.status == 3){
+          this.$message({
+             message: '账单已撤销，无法继续跟进.',
+             type: 'error'
+          });
+          return false
+        }else{
+          return true
+        }
+      },
       rentMessage(){
         rentMessageApi(this.followId).then(response =>{
            if(response.code == 0){
@@ -191,17 +197,19 @@ export default {
        })
       },
       addFllow(){  //新增催租记录
-        this.innerVisible = true
+        if(this.textStatus()){
+          this.innerVisible = true
+        }
       },
       addFollowSubmit(){
-        if(this.form.resultType){
+        if(!this.form.resultType){
           this.$message({
                 message: '请选择催租结果',
                 type: 'success'
              });
              return false
         }
-        if(this.form.resultType != 3){
+        if(this.form.resultType != 3&&this.form.resultType != null&&this.form.resultType != ''){
              this.form.content=this.resultTypeList[this.form.resultType-1].label
              this.addfun()
         }else{
@@ -256,21 +264,25 @@ export default {
           })
       },
       managerMessage(){
-        this.innerWarn = true
-        if(this.isOver == true){
-          this.messageTypeList = this.messageTypeOver   //以逾期
-        }else if(this.isOver == false){
-          this.messageTypeList = this.messageTypeIs   
-        }else{
-          this.messageTypeList = messageTypes
+        if(this.textStatus()){
+          this.innerWarn = true
+          if(this.isOver == true){
+            this.messageTypeList = this.messageTypeOver   //以逾期
+          }else if(this.isOver == false){
+            this.messageTypeList = this.messageTypeIs   
+          }else{
+            this.messageTypeList = messageTypes
+          }
         }
         
+        
       },
-      open(type,id,billNo,isOver){
+      open(type,id,billNo,isOver,status){
         this.dialogTableVisible = true
         this.followId.id = id
         this.followId.billNo = billNo
         this.isOver = isOver
+        this.status = status
         this.getfollowList()
       }
       
@@ -283,8 +295,9 @@ export default {
       margin-top:20px;
   }
   .box{
-          height: 68px;
+    min-height: 68px;
     padding-top: 10px;
+    padding-bottom: 10px;
     border-bottom: 1px solid #e0e0e0;
   }
   .text-empty{
