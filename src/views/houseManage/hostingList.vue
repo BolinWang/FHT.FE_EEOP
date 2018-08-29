@@ -66,8 +66,16 @@
         <el-button size="small" @click="saveRoomDetailData('clear')">取 消</el-button>
       </span>
     </el-dialog>
-    <el-dialog title="交租方式">
-
+    <el-dialog title="交租方式" :visible.sync="rentPayModelVisible" width="1000px">
+      <el-tabs type="border-card">
+        <el-tab-pane :label="item.roomName" v-for="(item, index) in rentPayList" :key="index">
+          {{item.roomName}}
+        </el-tab-pane>
+      </el-tabs>
+      <span slot="footer">
+        <el-button type="primary" size="small" @click="saveRentPay">保 存</el-button>
+        <el-button @click="rentPayModelVisible = false" size="small">取 消</el-button>
+      </span>
     </el-dialog>
   </div>
 </template>
@@ -77,7 +85,7 @@ import { debounce } from "@/utils"
 import hostingRoomDetail from './components/hostingRoomDetail'
 import areaSelect from "@/components/AreaSelect"
 import GridUnit from "@/components/GridUnit/grid"
-import { hostingHouseListApi, hostingRoomDetailApi } from '@/api/houseManage'
+import { hostingHouseListApi, hostingRoomDetailApi, hostingRoomRentTypeApi } from '@/api/houseManage'
 export default {
   name: 'hostingList',
   components: {
@@ -176,7 +184,9 @@ export default {
         { prop: "provider", label: "房源提供者",width:100 },
         { prop: "operateTime", label: "操作时间", width:130 },
       ],
-      roomDetailModelVisible: false
+      roomDetailModelVisible: false,
+      rentPayModelVisible: false,
+      rentPayList: []
     }
   },
   watch: {
@@ -371,6 +381,15 @@ export default {
     },
     // 编辑交租方式
     openRentPayModel(row) {
+      hostingRoomRentTypeApi({
+        fangyuanCode: row.fangyuanCode
+      }).then((res) => {
+        console.log(res)
+        // this.
+      })
+    },
+    // 保存交租方式
+    saveRentPay() {
 
     }
   },

@@ -456,3 +456,14 @@ export function hostingRoomDetailApi(params) {
   })
 }
 
+/* 分散式查询交租方式 */
+export function hostingRoomRentTypeApi(params) {
+  return fetch({
+    url: 'http://localhost:9528/api/market/fangyuan',
+    method: 'post',
+    data: {
+      method: 'queryHostingRoomRentType',
+      params
+    }
+  })
+}
