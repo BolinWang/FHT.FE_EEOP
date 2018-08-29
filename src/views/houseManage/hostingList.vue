@@ -154,16 +154,17 @@ export default {
         }
       ],
       colModels: [
-        { label: '#', slotName: "index", fixed: 'left' },
-        { prop: "orgName", label: "组织名称" },
-        { prop: "addrRegionName", label: "房源位置" },
-        { prop: "roomDetailAddress", label: "公寓/小区-房间" },
-        { prop: "tags", label: "房源类型", slotName: "tags" },
-        { prop: "roomName", label: "房间" },
+        { label: '#', slotName: "index", fixed: 'left', width:50, align:'center' },
+        { prop: "orgName", label: "组织名称",width:100 },
+        { prop: "addrRegionName", label: "房源位置", width:180 },
+        { prop: "roomDetailAddress", label: "公寓/小区-房间", width:180 },
+        { prop: "tags", label: "房源类型", slotName: "tags", width:130 },
+        { prop: "roomName", label: "房间", width:60 },
         {
           prop: "roomStatus",
           label: "房间状态",
           slotName: "roomStatus",
+          width:130
         },
         { prop: "roomCode", label: "平台房源编码" },
         {
@@ -172,8 +173,8 @@ export default {
           slotName: "operateHosting",
           width: "340",
           fixed: 'right'        },
-        { prop: "provider", label: "房源提供者" },
-        { prop: "operateTime", label: "操作时间" },
+        { prop: "provider", label: "房源提供者",width:100 },
+        { prop: "operateTime", label: "操作时间", width:130 },
       ],
       roomDetailModelVisible: false
     }
