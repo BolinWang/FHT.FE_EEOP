@@ -86,41 +86,35 @@
                             </el-table-column>
                             <el-table-column
                             label="小区／公寓-房间"
-                            width='120px'
                             prop="roomAddress">
                             </el-table-column>
                             <el-table-column
                             label="生成时间"
-                            width='136px'
                             prop="gmtCreate">
                             </el-table-column>
                             <el-table-column
                             label="账单名称"
-                             width='100px'
                             prop="billName">
                             </el-table-column>
                             <el-table-column
                             label="账单金额"
-                            width='80px'
                             prop="billFee">
                             </el-table-column>
                              <el-table-column
                             label="最迟支付时间"
-                             width='100px'
                             prop="deadlineDate">
                             </el-table-column>
                             <el-table-column
-                             width='100px'
                             label="状态">
                               <template slot-scope="scope">
                                     <span :class="[scope.row.status==1?'stypeInfo':'',scope.row.status==2?'stypeInfos':'']">{{scope.row.status | filStatus}}</span>
                               </template>
                             </el-table-column>
                             <el-table-column
-                            width='100px'
+                            min-width='100px'
                             label="是否逾期">
                                <template slot-scope="scope">
-                                  <div class="box-c">
+                                  <div>
                                       <span v-if='scope.row.isOver===false'>尚未逾期</span>
                                       <span v-else-if='scope.row.isOver===true'>已逾期<span class="col-red">{{scope.row.overDays}}</span>天</span>
                                       <span v-else>-</span>  
@@ -129,7 +123,6 @@
                             </el-table-column>
                               <el-table-column
                               label="逾期原因"
-                              width='80px'
                               >
                                 <template slot-scope="scope">
                                     <div class="overdueReason" @click="overDue(scope.row.overdueReason,scope.row.overdueType,scope.row.id,scope.row.isOver)">
@@ -150,13 +143,13 @@
                                 </template>
                             </el-table-column>
                               <el-table-column
-                              width='140px'
                             label="手机号码/租客">
                               <template slot-scope="scope">
                                   {{scope.row.customerName}}/{{scope.row.customerMobile}}
                               </template>
                             </el-table-column>
                              <el-table-column
+                             min-width="170"
                             label="催租跟进">
                               <template slot-scope="scope">
                                   <span class="col-red pad cursor" @click="goFollow(scope.row.id,scope.row.billNo,scope.row.isOver,scope.row.status)">{{scope.row.followCount

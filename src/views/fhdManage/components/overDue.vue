@@ -23,16 +23,16 @@ import { delObjectItem,ObjectMap}  from '@/utils'
 export default {
     data(){
         return {
-        overdueTypeList:[{    //逾期类型  0-已退租(原因),1-线上交租,2-个人原因,3-其他
+        overdueTypeList:[{    
             value:0,
             label: '已退租'
-        },{    //逾期类型  0-已退租(原因),1-线上交租,2-个人原因,3-其他
+        },{    
             value:1,
-            label: '线上交租'
-        },{    //逾期类型  0-已退租(原因),1-线上交租,2-个人原因,3-其他
+            label: '线下交租'
+        },{    
             value:2,
             label: '个人原因'
-        },{    //逾期类型  0-已退租(原因),1-线上交租,2-个人原因,3-其他
+        },{    
             value:3,
             label: '其他'
         }],
