@@ -84,7 +84,7 @@
       </template>
       <el-row :gutter="20">
         <el-col :span="12">
-          <el-form-item label="室厅卫" class="room-count" prop="tag">
+          <el-form-item label="室厅卫" class="room-count" prop="chamberCount" :show-message="false">
             <el-row :gutter="10">
               <el-col :span="6">
                 <el-form-item label="" prop="chamberCount" class="room-item-count">
@@ -241,9 +241,6 @@ export default {
         ],
         bedCount: [
           { required: true, message: '请输入房间床数', trigger: 'change' }
-        ],
-        tag: [
-          { required: true, message: '', trigger: 'change' }
         ]
       },
       decorationDegreeList: [
