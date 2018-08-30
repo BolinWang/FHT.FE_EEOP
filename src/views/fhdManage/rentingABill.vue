@@ -91,7 +91,7 @@
                             </el-table-column>
                             <el-table-column
                             label="生成时间"
-                            width='140px'
+                            width='136px'
                             prop="gmtCreate">
                             </el-table-column>
                             <el-table-column
@@ -150,7 +150,7 @@
                                 </template>
                             </el-table-column>
                               <el-table-column
-                              width='130px'
+                              width='140px'
                             label="手机号码/租客">
                               <template slot-scope="scope">
                                   {{scope.row.customerName}}/{{scope.row.customerMobile}}
