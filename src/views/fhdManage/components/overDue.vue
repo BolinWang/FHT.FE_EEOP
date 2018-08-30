@@ -56,9 +56,8 @@ export default {
         delObjectItem(this.from)
       },
       submit(){
-          
         let params=ObjectMap(this.from)
-        if(this.from.overdueType==''||this.from.overdueType==null||this.from.overdueType==undefined){
+        if(this.from.overdueType === ''||this.from.overdueType === null||this.from.overdueType === undefined){
             this.$message({
                 message: '请选择逾期类别',
                 type: 'success'

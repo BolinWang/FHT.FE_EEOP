@@ -214,7 +214,7 @@ export default {
              this.addfun()
         }else{
 
-          if(this.form.content==''||this.form.content==null){
+          if(this.form.content===''||this.form.content===null){
             this.$message({
                 message: '请填写催租结果的备注',
                 type: 'success'
