@@ -1,31 +1,30 @@
+/*
+ * @Author: ghost
+ * @Date: 2018-08-31 14:55:54
+ * @Last Modified by: ghost
+ * @Last Modified time: 2018-08-31 14:55:54
+ */
 <template>
  <div class="container">
      <div class="model-search clearfix">
         <el-form size="small" :inline="true" :model="formData" >
-           <el-date-picker
-             v-model="dateTime"
-             size="small" 
-             type="datetimerange" 
-             class="filter-item" 
-             ange-separator="至" 
-             start-placeholder="开始日期" 
-             end-placeholder="结束日期" 
-             style="width:300px"
-             @change="searchParam"
-             >
+          <el-date-picker
+            type="date"
+            class="filter-item"
+            placeholder="选择日期">
           </el-date-picker>
-          <el-input v-model="formData.customerKeyword" 
-           size="small" 
-           placeholder="房东／房东手机号码" 
-           style="width:180px;" 
-           @keydown.native.enter="searchParam" 
+          <el-input v-model="formData.customerKeyword"
+           size="small"
+           placeholder="房东／房东手机号码"
+           style="width:180px;"
+           @keydown.native.enter="searchParam"
            class="filter-item">
            </el-input>
-           <el-input v-model="formData.customerKeyword" 
-            size="small" 
-            placeholder="城市管家／手机号码" 
-            style="width:180px;" 
-            @keydown.native.enter="searchParam" 
+           <el-input v-model="formData.customerKeyword"
+            size="small"
+            placeholder="城市管家／手机号码"
+            style="width:180px;"
+            @keydown.native.enter="searchParam"
             class="filter-item">
             </el-input>
             <el-select size="small" style="width:180px;" v-model="formData.cityId" placeholder="机构类型" class="filter-item" >
@@ -41,7 +40,7 @@
         <el-table
           :data="tableData4"
           style="width: 100%"
-          size="small" 
+          size="small"
           :max-height="tableHeight">
            <el-table-column
             type="index"
@@ -166,7 +165,7 @@ export default {
   data(){
     return {
       formData:{
-        
+
       },
       organList:[{
         value:1,
@@ -175,6 +174,7 @@ export default {
         value:2,
         label:'企业'
       }],
+      tableHeight:300,
       tableData4: [{
           date: '2016-05-03 11:10:00',
           name: '王小虎',
@@ -228,14 +228,19 @@ export default {
     }
   },
   mounted(){
-     let temp_height = document.body.clientHeight - 150
+     let temp_height = document.body.clientHeight - 170
         this.tableHeight = temp_height > 300 ? temp_height : 300;
         window.onresize = () => {
         return (() => {
-            temp_height = document.body.clientHeight - 150;
+            temp_height = document.body.clientHeight - 170;
             this.tableHeight = this.tableHeight = temp_height > 300 ? temp_height : 300;
         })()
-      }   
+      }
+  },
+  methods: {
+    searchParam(){
+
+    },
   }
 }
 </script>
