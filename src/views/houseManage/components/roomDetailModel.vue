@@ -163,7 +163,7 @@
     </el-form>
     <el-dialog title="上传照片" :visible.sync="uploadPicsModelVisible" width="600px" :append-to-body="true" custom-class="upload-pics-model">
       <div class="previewItems">
-        <preview :pic-list="roomDetailModel.pictureList" :delete-icon="`delete`" @emitDelete="emitDelete">
+        <preview :pic-list="roomDetailModel.pictureList" :delete-icon="`delete`" :disabled="``" @emitDelete="emitDelete">
         </preview>
         <label class="el-upload el-upload--picture-card uploadImage" for="uploadImages">
           <i class="el-icon-plus"></i>
@@ -344,6 +344,7 @@ export default {
         v.type = 1
         v.imageName = v.title
         v.image = v.src
+        v.key = v.key || Math.random().toFixed(5)
       })
       let picList = [...this.roomDetailModel.pictureList, ...list]
       this.$set(this.roomDetailModel, 'pictureList', picList)
@@ -440,6 +441,7 @@ export default {
           this.type === 2 && roomData.pictureList.forEach((item) => {
             item.src = item.imageUrl
             item.title = item.imageName
+            item.key = Math.random().toFixed(5)
           })
           this.type === 2 && this.$set(this, 'roomDetailModel', roomData)
 

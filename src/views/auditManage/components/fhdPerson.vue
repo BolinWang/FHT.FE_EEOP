@@ -194,12 +194,14 @@ export default {
       deep: true
     },
     fhdPersonData: {
-      handler(val) {
+      handler(val, oldVal) {
         val.reason = val.status === 1 ? '' : val.reason
         if (this.temp.status === 0) {
-          store.dispatch('UpdateFhdData', {
-            data: val,
-            rowData: this.temp
+          this.$nextTick(() => {
+            store.dispatch('UpdateFhdData', {
+              data: val,
+              rowData: this.temp
+            })
           })
         }
       },

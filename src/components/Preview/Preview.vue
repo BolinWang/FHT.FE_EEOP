@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-04-11 16:50:08
  * @Last Modified by: chudequan
- * @Last Modified time: 2018-08-24 16:15:46
+ * @Last Modified time: 2018-08-31 15:32:17
  */
 
 <template>
@@ -12,7 +12,7 @@
     @end="endDrag">
     <transition-group type="transition" :name="'flip-list'">
       <li class="preview-item clearfix" v-for="(item, index) in list"
-        :key="item.sortNum"
+        :key="item.key || item.sortNum"
         :style="itemStyle">
         <img class="preview-img img-center" v-lazy="item.src">
         <span class="preview-tags" v-if="item.picTag">{{item.picTag}}</span>
@@ -91,6 +91,12 @@ export default {
     }
   },
   mounted() {
+    // this.list = (this.picList || []).slice()
+    // this.list.map((item, index) => {
+    //   item.sortNum = item.sortNum !== undefined ? item.sortNum : Math.random().toFixed(5)
+    //   item.type = item.type || 1
+    //   item.title = item.picTag || ''
+    // })
     this.deleteFlag = this.deleteIcon
   },
   methods: {
@@ -143,7 +149,8 @@ export default {
       handler: function (val) {
         this.list = (val || []).slice()
         this.list.map((item, index) => {
-          item.sortNum = item.sortNum ? item.sortNum : Math.random().toFixed(5)
+          // item.sortNum = item.sortNum !== undefined ? item.sortNum : Math.random().toFixed(5)
+          item.sortNum = index
           item.type = item.type || 1
           item.title = item.picTag || ''
         })
