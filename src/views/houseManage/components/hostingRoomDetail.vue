@@ -596,6 +596,7 @@ export default {
     handleSourceInfo(val) {
       if (!val) {
         this.hostingRoomDetail.sourceInfo = ''
+        this.filterManagerList = []
       }
     },
     setRoomDetailData(val) {

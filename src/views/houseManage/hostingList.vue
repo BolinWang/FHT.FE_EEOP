@@ -66,10 +66,10 @@
         <el-button size="small" @click="saveRoomDetailData('clear')">取 消</el-button>
       </span>
     </el-dialog>
-    <el-dialog title="交租方式" :visible.sync="rentPayModelVisible" width="1000px">
+    <el-dialog title="交租方式" :visible.sync="rentPayModelVisible" :width="curRoomFinanceType !== 2 ? '1000px' : '700px'">
       <el-tabs type="border-card">
         <el-tab-pane :label="item.roomName" v-for="(item, index) in rentPayList" :key="index">
-          {{item.roomName}}
+          <rent-pay-way ref="rentPayWay" :list="rentPayList[index].roomRentTypeList" :curRoomFinanceType="curRoomFinanceType" :baseRentTypeList="baseRentTypeList"></rent-pay-way>
         </el-tab-pane>
       </el-tabs>
       <span slot="footer">
@@ -83,6 +83,7 @@
 <script>
 import { debounce } from "@/utils"
 import hostingRoomDetail from './components/hostingRoomDetail'
+import rentPayWay from './components/rentPayWay'
 import areaSelect from "@/components/AreaSelect"
 import GridUnit from "@/components/GridUnit/grid"
 import { hostingHouseListApi, hostingRoomDetailApi, hostingRoomRentTypeApi } from '@/api/houseManage'
@@ -90,6 +91,7 @@ export default {
   name: 'hostingList',
   components: {
     hostingRoomDetail,
+    rentPayWay,
     areaSelect,
     GridUnit
   },
@@ -162,17 +164,17 @@ export default {
         }
       ],
       colModels: [
-        { label: '#', slotName: "index", fixed: 'left', width:50, align:'center' },
-        { prop: "orgName", label: "组织名称",width:100 },
-        { prop: "addrRegionName", label: "房源位置", width:180 },
-        { prop: "roomDetailAddress", label: "公寓/小区-房间", width:180 },
-        { prop: "tags", label: "房源类型", slotName: "tags", width:130 },
-        { prop: "roomName", label: "房间", width:60 },
+        { label: '#', slotName: "index", fixed: 'left', width: 50, align: 'center' },
+        { prop: "orgName", label: "组织名称", width: 100 },
+        { prop: "addrRegionName", label: "房源位置", width: 180 },
+        { prop: "roomDetailAddress", label: "公寓/小区-房间", width: 180 },
+        { prop: "tags", label: "房源类型", slotName: "tags", width: 130 },
+        { prop: "roomName", label: "房间", width: 60 },
         {
           prop: "roomStatus",
           label: "房间状态",
           slotName: "roomStatus",
-          width:130
+          width: 130
         },
         { prop: "roomCode", label: "平台房源编码" },
         {
@@ -181,12 +183,14 @@ export default {
           slotName: "operateHosting",
           width: "340",
           fixed: 'right'        },
-        { prop: "provider", label: "房源提供者",width:100 },
-        { prop: "operateTime", label: "操作时间", width:130 },
+        { prop: "provider", label: "房源提供者", width: 100 },
+        { prop: "operateTime", label: "操作时间", width: 130 },
       ],
       roomDetailModelVisible: false,
       rentPayModelVisible: false,
-      rentPayList: []
+      rentPayList: [],
+      baseRentTypeList: [],
+      curRoomFinanceType: 1
     }
   },
   watch: {
@@ -385,12 +389,27 @@ export default {
         fangyuanCode: row.fangyuanCode
       }).then((res) => {
         console.log(res)
-        // this.
+        this.curRoomFinanceType = res.data.houseFinanceType
+        this.rentPayList = res.data.hostingRoomRentType
+        this.baseRentTypeList = res.data.baseRentTypeList
+        this.rentPayModelVisible = true
       })
     },
     // 保存交租方式
     saveRentPay() {
-
+      let tempRentPayList = []
+      for (let n in this.$refs.rentPayWay) {
+        let list = this.$refs.rentPayWay[n].returnRentPayList()
+        if (!list) {
+          this.$message.error(`${this.rentPayList[n].roomName}的交租方式还未填写完`)
+          return false
+        }
+        tempRentPayList.push(list)
+      }
+      if (tempRentPayList.length === this.rentPayList.length) {
+        console.log(111111)
+        // 保存
+      }
     }
   },
   mounted() {
