@@ -743,12 +743,14 @@ export default {
         estateInfo.pictureList.forEach((item) => {
           item.src = item.imageUrl
           item.title = item.imageName
+          item.key = Math.random().toFixed(5)
         })
 
         estateInfo.roomTypeList.forEach((item) => {
           item.pictureList.forEach((n) => {
             n.src = n.imageUrl
             n.title = n.imageName
+            item.key = Math.random().toFixed(5)
           })
         })
 
@@ -945,7 +947,8 @@ export default {
       list.forEach((v, i) => {
         v.type = 1,
         v.imageName = v.title,
-        v.image = v.src
+        v.image = v.src,
+        v.key = v.key || Math.random().toFixed(5)
       })
       let picList = this.curPicListIndex === -1 ? this.estateModel.pictureList : this.estateModel.roomTypeList[this.curPicListIndex].pictureList
       if (this.curPicListIndex === -1) {
