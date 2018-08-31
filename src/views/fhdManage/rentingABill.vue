@@ -11,20 +11,20 @@
                      <el-input v-model="formData.address"  placeholder="请输入小区／公寓名称" style="width:180px;"  @keydown.native.enter="searchParam" class="filter-item"></el-input>
                     <el-date-picker
                       v-model="dateTime"
-                      size="small" 
-                      type="datetimerange" 
-                      class="filter-item" 
-                      range-separator="至" 
-                      start-placeholder="开始日期" 
-                      end-placeholder="结束日期" 
+                      size="small"
+                      type="datetimerange"
+                      class="filter-item"
+                      range-separator="至"
+                      start-placeholder="开始日期"
+                      end-placeholder="结束日期"
                       style="width:360px"
                       @change="searchParam"
                       >
                     </el-date-picker>
-                    <el-input v-model="formData.customerKeyword" 
-                      placeholder="租客／租客手机号码" 
-                      style="width:180px;" 
-                      @keydown.native.enter="searchParam" 
+                    <el-input v-model="formData.customerKeyword"
+                      placeholder="租客／租客手机号码"
+                      style="width:180px;"
+                      @keydown.native.enter="searchParam"
                       class="filter-item">
                     </el-input>
                     <el-select size="small" style="width:120px;" v-model="formData.overType" placeholder="逾期状态" class="filter-item"  clearable>
@@ -37,11 +37,11 @@
                     <el-option v-for="item in statusList" :key="item.value" :label="item.label" :value="item.value" >
                     </el-option>
                   </el-select>
-                  <el-input  
-                  placeholder="房东／房东手机号码" 
-                  style="width:180px;" 
-                  v-model='formData.orgKeyword'  
-                  @keydown.native.enter="searchParam" 
+                  <el-input
+                  placeholder="房东／房东手机号码"
+                  style="width:180px;"
+                  v-model='formData.orgKeyword'
+                  @keydown.native.enter="searchParam"
                   class="filter-item">
                   </el-input>
                   <el-input  v-model='formData.managerKeyword' placeholder="城市管家／城市管家手机号码" style="width:220px;"  @keydown.native.enter="searchParam" class="filter-item"></el-input>
@@ -117,7 +117,7 @@
                                   <div>
                                       <span v-if='scope.row.isOver===false'>尚未逾期</span>
                                       <span v-else-if='scope.row.isOver===true'>已逾期<span class="col-red">{{scope.row.overDays}}</span>天</span>
-                                      <span v-else>-</span>  
+                                      <span v-else>-</span>
                                   </div>
                                </template>
                             </el-table-column>
@@ -135,7 +135,7 @@
                                           :content="scope.row.overdueReason">
                                            <span slot="reference" >{{scope.row.overdueType | filoverdueType}}</span>
                                         </el-popover>
-                                       </span> 
+                                       </span>
                                        <span v-else-if="scope.row.overdueType==1">{{scope.row.overdueType | filoverdueType}}</span>
                                        <span v-else-if='scope.row.isOver===true' class="choose">请选择</span>
                                         <span v-else-if='scope.row.isOver===false'>-</span>
@@ -153,7 +153,7 @@
                             label="催租跟进">
                               <template slot-scope="scope">
                                   <span class="col-red pad cursor" @click="goFollow(scope.row.id,scope.row.billNo,scope.row.isOver,scope.row.status)">{{scope.row.followCount
-| filterText }}</span>           
+| filterText }}</span>
                                   <el-popover
                                     placement="top-start"
                                     width="200"
@@ -189,7 +189,7 @@ export default {
     rentingABill ,followUp
   },
     data() {
-      return { 
+      return {
          fullscreenLoading: false,
         pageItems: {   //pageSize对象
           pageNo: 1,
@@ -205,7 +205,7 @@ export default {
                 }, {
                 value: '选项2',
                 label: '租客'
-            }, 
+            },
           ],
         formData:{
             cityId:310100,   //城市Id
@@ -213,7 +213,7 @@ export default {
             endTime:'',    //结束时间
             customerKeyword:"",  //租客姓名／手机号
             overType:null,      //订单逾期状态
-            address:"",     //小区或公寓名称  
+            address:"",     //小区或公寓名称
             status:0,      //订单状态
             orgKeyword:"",   //房东姓名／房东手机号
             managerKeyword:'',  //城市管家
@@ -227,9 +227,9 @@ export default {
                 }, {
                 value: 310100,
                 label: '上海'
-            }, 
+            },
           ],
-          
+
           dateTime:[], //时间数组
         overTypeList:[{   //逾期状态
             value: 0,
@@ -255,7 +255,7 @@ export default {
            value: 3,
            label: '已撤销 '
         }],
-        
+
       }
     },
     created(){
@@ -264,7 +264,7 @@ export default {
         let nowY = myDate.getFullYear();
         let nowM = myDate.getMonth()+1;
         let nowD = myDate.getDate();
-        this.formData.endTime = `${nowY}-${(nowM<10 ? "0" + nowM : nowM)}-${(nowD<10 ? "0"+ nowD : nowD)} 00:00:00`;//当前日期 
+        this.formData.endTime = `${nowY}-${(nowM<10 ? "0" + nowM : nowM)}-${(nowD<10 ? "0"+ nowD : nowD)} 00:00:00`;//当前日期
         //获取三十天前日期
         let lw = new Date(myDate - 1000 * 60 * 60 * 24 * 30);//最后一个数字30可改，30天的意思
         let lastY = lw.getFullYear();
@@ -297,7 +297,7 @@ export default {
         return valStatus[val]
       },
       filoverdueType(val){
-        const valoverType=['已退租','线上交租','个人原因','其他']
+        const valoverType=['已退租','线下交租','个人原因','其他']
         return valoverType[val]
       },
       filterText(val){
@@ -321,7 +321,7 @@ export default {
         this.formData.startTime = val[0] ? parseTime(val[0]) : '';
         this.formData.endTime = val[1] ? parseTime(val[1]) : '';
       },
-    
+
     },
     methods:{
       filterOver(type){
@@ -365,7 +365,7 @@ export default {
           document.body.removeChild(form);
           this.$nextTick(() => { // 以服务的方式调用的 Loading 需要异步关闭
             loading.close();
-          }); 
+          });
       },
       handleSizeChange(val) {
       this.pageItems.pageSize = val;
@@ -393,14 +393,6 @@ export default {
       },
       searchParam(){   //搜索
         let searchParams = Object.assign(this.pageItems, this.formData);
-         
-        // if(!this.formData.startTime){
-        //   this.$message({
-        //     message: '时间区间为必选字段,请选择你要查询的时间段，点击再次查询',
-        //     type: 'error'
-        //  });
-          
-        // }else 
         if(!this.formData.cityId){
            this.$message({
             message: '城市为必选字段,请选择你要查询的城市后，点击再次查询',
@@ -465,7 +457,7 @@ export default {
  .stypeInfos{
    color: #67c23a;
  }
- 
+
 </style>
 
 
