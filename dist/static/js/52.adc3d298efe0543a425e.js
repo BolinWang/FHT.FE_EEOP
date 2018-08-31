@@ -1,0 +1,1 @@
+webpackJsonp([52],{"4lkU":function(n,t,e){var l=e("Alxp")(null,e("wX5P"),null,null,null);n.exports=l.exports},wX5P:function(n,t){n.exports={render:function(){var n=this.$createElement;return(this._self._c||n)("div",{staticClass:"container"},[this._v("\n    黑名单\n")])},staticRenderFns:[]}}});
