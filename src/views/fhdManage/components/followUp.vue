@@ -113,6 +113,9 @@ export default {
               },{
                 value:4, 
                 label:'租客已退房信息确认'
+              },{
+                 value:5, 
+                label:'线下交租确认信息'
               }
          ],
          messageTypeIs:[  //租客账单交租提醒、租客已退房信息确认  未逾期
@@ -122,6 +125,9 @@ export default {
               },{
                 value:4, 
                 label:'租客已退房信息确认'
+              },{
+                value:5, 
+                label:'线下交租确认信息'
               }
          ],
          messageTypeOver:[  
@@ -131,7 +137,10 @@ export default {
               },{
                 value:3, 
                 label:'租客已退房（账单已逾期）信息确认'  
-             }
+             },{
+                value:5, 
+                label:'线下交租确认信息'
+              }
          ],
         form: {
           resultType: null,

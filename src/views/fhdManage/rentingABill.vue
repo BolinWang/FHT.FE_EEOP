@@ -52,7 +52,7 @@
             </el-form>
             <div class="table-box">
                 <div class="model-table"  style="margin-top: 0;">
-                    <el-table :data="tableData" v-loading.body="listLoading"  :max-height="tableHeight" size="small" fit stripe highlight-current-row>
+                    <el-table :data="tableData" v-loading.body="listLoading" style="width: 100%"  :max-height="tableHeight" size="small" fit stripe highlight-current-row>
                         <el-table-column type="index" width="50" align="center"></el-table-column>
                          <el-table-column type="expand">
                             <template slot-scope="props">
