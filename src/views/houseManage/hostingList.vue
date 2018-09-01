@@ -26,17 +26,19 @@
           <el-button type="primary" icon="el-icon-search" @click="searchHostingHouseList('search')" class="filter-item">查询</el-button>
           <el-button icon="el-icon-remove-outline" @click="searchHostingHouseList('clear')">清空</el-button>
         </el-form-item>
-        <el-form-item>
-          <el-dropdown class="room-options-dropdown" @command="handleCommand">
-            <el-button plain size="small" style="width:120px">批量房态管理</el-button>
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item :command="1">未出租</el-dropdown-item>
-              <el-dropdown-item :command="2">已出租</el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
-          <el-button style="width:120px;margin-left:10px" @click="openRoomDetail(2)">添加合租房源</el-button>
-          <el-button style="width:120px" @click="openRoomDetail(1)">添加整租房源</el-button>
-        </el-form-item>
+        <div>
+          <el-form-item>
+            <el-dropdown class="room-options-dropdown" @command="handleCommand">
+              <el-button plain size="small" style="width:120px">批量房态管理</el-button>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item :command="1">未出租</el-dropdown-item>
+                <el-dropdown-item :command="2">已出租</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+            <el-button style="width:120px;margin-left:10px" @click="openRoomDetail(2)">添加合租房源</el-button>
+            <el-button style="width:120px" @click="openRoomDetail(1)">添加整租房源</el-button>
+          </el-form-item>
+        </div>
       </el-form>
       <GridUnit ref="hostingHouseList" :showRowIndex="false" :spanMethod="objectSpanMethod" :formOptions="roomSearchForm" :showSelection="true" :url="houstingListUrl" :dataMethod="method" listField="data.houseList" totalField="data.record" :columns="colModels" :height="tableHeight" @selection-change="handleSelectionChange" :dataHandler="dataHandler" :pageSizes="[50, 100, 200]" border fit>
         <template slot="index" slot-scope="scope">
@@ -51,7 +53,7 @@
         <template slot="operateHosting" slot-scope="scope">
           <el-row>
             <el-button type="primary" size="mini" @click="openRentPayModel(scope.row)">交租方式</el-button>
-            <el-button type="primary" size="mini">复制到</el-button>
+            <el-button type="primary" size="mini" @click="openCopyItemsModel(scope.row)">复制到</el-button>
             <el-button type="primary" size="mini" @click="openRoomDetail(scope.row)">编辑房间</el-button>
             <el-button type="danger" size="mini">删除</el-button>
           </el-row>
@@ -67,32 +69,78 @@
       </span>
     </el-dialog>
     <el-dialog title="交租方式" :visible.sync="rentPayModelVisible" :width="curRoomFinanceType !== 2 ? '1000px' : '700px'">
-      <el-tabs type="border-card">
+      <el-tabs type="border-card" v-if="activeName === '合租'">
         <el-tab-pane :label="item.roomName" v-for="(item, index) in rentPayList" :key="index">
           <rent-pay-way ref="rentPayWay" :list="rentPayList[index].roomRentTypeList" :curRoomFinanceType="curRoomFinanceType" :baseRentTypeList="baseRentTypeList"></rent-pay-way>
         </el-tab-pane>
       </el-tabs>
+      <rent-pay-way v-else-if="activeName === '整租' && rentPayList.length" ref="rentPayWay" :list="rentPayList[0].roomRentTypeList" :curRoomFinanceType="curRoomFinanceType" :baseRentTypeList="baseRentTypeList"></rent-pay-way>
       <span slot="footer">
-        <el-button type="primary" size="small" @click="saveRentPay">保 存</el-button>
+        <el-button type="primary" size="small" @click="checkAndSaveRentPay">保 存</el-button>
         <el-button @click="rentPayModelVisible = false" size="small">取 消</el-button>
+      </span>
+    </el-dialog>
+    <el-dialog title="复制到" :visible.sync="copyItemsModelVisible" width="700px" class="copy-items-model">
+      <room-list-selecter ref="copyItemTo" :roomList="copyItemRoomList" :visible="copyItemsModelVisible">
+        <el-card class="head-card">
+          <div slot="header" class="clearfix">
+            <el-tooltip class="item" effect="dark" placement="top-start">
+              <div slot="content">选择复制您要的内容，再选择您要编辑的房间，<br/>这样可以方便您快速批量编辑同类房源</div>
+              <span class="head-card-title">复制项目
+                <i class="el-icon-warning"></i>
+              </span>
+            </el-tooltip>
+            <div class="check-all">
+              <el-form :inline="true" size="mini">
+                <el-form-item :label="checkAllCopyItem ? '取消全选' : '全选'">
+                  <el-switch v-model="checkAllCopyItem" @change="handleCheckAllChange"></el-switch>
+                </el-form-item>
+              </el-form>
+            </div>
+          </div>
+          <el-checkbox-group v-model="checkedCopyList">
+            <div class="head-check-options" :class="[v.showRoomSelect ? 'especial' : '']" v-for="v in copyOptions" :key="v.val">
+              <el-select v-if="v.showRoomSelect" size="mini" v-model="copyItemsParams.rentTypeRoomCode">
+                <el-option
+                  v-for="item in roomSelectList"
+                  :key="item.roomCode"
+                  :label="item.roomName"
+                  :value="item.roomCode">
+                </el-option>
+              </el-select>
+              <el-checkbox :label="v.val" @change="handleOptionsChange">
+                <div class="label">
+                  {{v.label}}
+                </div>
+              </el-checkbox>
+            </div>
+          </el-checkbox-group>
+        </el-card>
+        <span slot="card-title">请选择要复制到的房间号</span>
+      </room-list-selecter>
+      <span slot="footer">
+        <el-button size="small" type="primary" @click="saveCopyItems">确 定</el-button>
+        <el-button size="small" @click="copyItemsModelVisible = false">取 消</el-button>
       </span>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { debounce } from "@/utils"
+import { debounce, deepClone } from "@/utils"
 import hostingRoomDetail from './components/hostingRoomDetail'
 import rentPayWay from './components/rentPayWay'
 import areaSelect from "@/components/AreaSelect"
+import RoomListSelecter from '@/components/RoomListSelecter'
 import GridUnit from "@/components/GridUnit/grid"
-import { hostingHouseListApi, hostingRoomDetailApi, hostingRoomRentTypeApi } from '@/api/houseManage'
+import { hostingHouseListApi, hostingRoomDetailApi, hostingRoomRentTypeApi, saveEstateRoomRentPayWayApi, hostingCopyItemsRoomsApi, hostingSaveCopyItemsApi } from '@/api/houseManage'
 export default {
   name: 'hostingList',
   components: {
     hostingRoomDetail,
     rentPayWay,
     areaSelect,
+    RoomListSelecter,
     GridUnit
   },
   filters: {
@@ -190,7 +238,54 @@ export default {
       rentPayModelVisible: false,
       rentPayList: [],
       baseRentTypeList: [],
-      curRoomFinanceType: 1
+      curRoomFinanceType: 1,
+      copyItemsModelVisible: false,
+      copyOptions: [
+        {
+          label: '收租方式',
+          val: 2
+        },
+        {
+          label: '线下支付方式',
+          val: 3
+        },
+        {
+          label: '平台模式',
+          val: 4
+        },
+        {
+          label: '合同模式',
+          val: 5
+        },
+        {
+          label: '能耗费用',
+          val: 6
+        },
+        {
+          label: '交租方式',
+          val: 1,
+          showRoomSelect: true
+        },
+        {
+          label: '房源照片',
+          val: 7,
+          showRoomSelect: true
+        }
+      ],
+      checkAllCopyItem: false,
+      checkedCopyList: [],
+      copyItemRoomList: {},
+      roomSelectList: [],
+      copyItemsParams: {
+        rentTypeRoomCode: '',
+        pictureRoomCode: ''
+      },
+      selectedCopyItemsRooms: []
+    }
+  },
+  computed: {
+    allCheckedOptionsList() {
+      return this.copyOptions.map((item) => item.val)
     }
   },
   watch: {
@@ -379,7 +474,7 @@ export default {
       } else if (type === 'close') {
         let roomDetailData = this.$refs.hostingRoomDetail.returnRoomDetailData()
       } else {
-        this.$refs.hostingRoomDetail.setRoomDetailData({})
+        // this.$refs.hostingRoomDetail.setRoomDetailData({})
         this.roomDetailModelVisible = false
       }
     },
@@ -395,26 +490,90 @@ export default {
         this.rentPayModelVisible = true
       })
     },
-    // 保存交租方式
-    saveRentPay() {
-      let tempRentPayList = []
-      for (let n in this.$refs.rentPayWay) {
-        let list = this.$refs.rentPayWay[n].returnRentPayList()
+    // 检查和保存交租方式
+    checkAndSaveRentPay() {
+      if (this.activeName === '整租') {
+        let list = this.$refs.rentPayWay.returnRentPayList()
         if (!list) {
-          this.$message.error(`${this.rentPayList[n].roomName}的交租方式还未填写完`)
+          this.$message.error(`请填写完交租方式再保存`)
           return false
         }
-        tempRentPayList.push(list)
+        this.saveEstateRoomRentPayWay(this.rentPayList[0].roomCode, list)
+      } else {
+        let tempRentPayList = []
+        for (let n in this.$refs.rentPayWay) {
+          let list = this.$refs.rentPayWay[n].returnRentPayList()
+          if (!list) {
+            this.$message.error(`${this.rentPayList[n].roomName}的交租方式还未填写完`)
+            return false
+          }
+          tempRentPayList[n] = deepClone(this.rentPayList[n])
+          tempRentPayList[n].roomRentTypeList = list
+        }
+        if (tempRentPayList.length === this.rentPayList.length) {
+          tempRentPayList.forEach((item, index) => {
+            this.saveEstateRoomRentPayWay(item.roomCode, item.roomRentTypeList)
+          })
+        }
       }
-      if (tempRentPayList.length === this.rentPayList.length) {
-        console.log(111111)
-        // 保存
+    },
+    // 保存交租方式
+    saveEstateRoomRentPayWay(roomCode, roomRentTypeList) {
+      saveEstateRoomRentPayWayApi({
+        roomCode: roomCode,
+        roomRentTypeList: roomRentTypeList
+      }).then((res) => {
+        if (res.code === '0') {
+          _this.$message({
+            message: res.message,
+            type: 'success'
+          })
+          _this.rentPayModelVisible = false
+        }
+      })
+    },
+    // 打开复制到模态框
+    openCopyItemsModel(row) {
+      hostingCopyItemsRoomsApi({
+        fangyuanCode: row.fangyuanCode
+      }).then((res) => {
+        this.copyItemsRooms = res.data
+        let aaa = this.$refs.hostingHouseList.tableData.filter((item) => item.fangyuanCode === row.fangyuanCode)
+        this.roomSelectList = aaa ? aaa[0].roomList : []
+        this.copyItemsParams.rentTypeRoomCode = this.roomSelectList[0].roomCode
+        this.copyItemsParams.pictureRoomCode = this.roomSelectList[0].roomCode
+        this.checkedCopyList = []
+        this.handleOptionsChange()
+        this.copyItemsModelVisible = true
+      })
+    },
+    // 保存复制到
+    saveCopyItems() {
+      let params = {
+        fromFangyuanCode: '',
+        toFangyuanCodes: this.selectedCopyItemsRooms,
+        items: this.checkedCopyList
       }
-    }
+      if (this.checkedCopyList.includes(1)) {
+        params.rentTypeRoomCode = this.copyItemsParams.rentTypeRoomCode
+      }
+      if (this.checkedCopyList.includes(7)) {
+        params.pictureRoomCode = this.copyItemsParams.pictureRoomCode
+      }
+      hostingSaveCopyItemsApi(params).then((res) => {
+
+      })
+    },
+    handleCheckAllChange(val) {
+      this.checkedCopyList = val ? this.allCheckedOptionsList : []
+    },
+    handleOptionsChange() {
+      this.checkAllCopyItem = this.checkedCopyList.length === this.allCheckedOptionsList.length
+    },
   },
   mounted() {
     let changeTableSize = debounce(() => {
-      this.tableHeight = Math.max(document.body.clientHeight - 190, 250)
+      this.tableHeight = Math.max(document.body.clientHeight - 340, 250)
     }, 100)
     changeTableSize()
     window.addEventListener("resize", changeTableSize)
@@ -431,5 +590,43 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.copy-items-model {
+  .head-card {
+    box-shadow: 0 0;
+    margin-bottom: 20px;
+    .head-card-title {
+      i {
+        margin-left: 5px;
+        color: #409eff;
+      }
+    }
+    .check-all {
+      float: right;
+      position: relative;
+      .el-form-item {
+        margin-bottom: 0;
+      }
+    }
+    .head-check-options {
+      display: inline-block;
+      width: 20%;
+      &.especial {
+        position: relative;
+        width: 40%;
+        .el-select {
+          position: absolute;
+          top: 0;
+          left: 24px;
+          width: 40%;
+          z-index: 10;
+        }
+        .label {
+          width: 165px;
+          text-align: right;
+        }
+      }
+    }
+  }
+}
 </style>
 

@@ -651,8 +651,11 @@ export default {
     emitCropperData(list = []) {
       list.forEach((v, i) => {
         v.type = 1,
-          v.imageName = v.title,
-          v.image = v.src
+        v.imageName = v.title,
+        v.image = v.src
+        if (v.isBase64 === undefined) {
+          v.isBase64 = 1
+        }
       })
       this.currentPicList = [...this.currentPicList, ...list]
     },

@@ -540,7 +540,6 @@ export default {
         }
       })
       return estateData
-      // return this.estateModel
     },
     checkSaveStatus(status) {
       if (this.type === '新建公寓') {
@@ -696,9 +695,12 @@ export default {
     // 裁剪后图片列表
     emitCropperData(list = []) {
       list.forEach((v, i) => {
-        v.type = 1,
-        v.imageName = v.title,
+        v.type = 1
+        v.imageName = v.title
         v.image = v.src
+        if (v.isBase64 === undefined) {
+          v.isBase64 = 1
+        }
       })
       let picList = this.curPicListIndex === -1 ? this.estateModel.pictureList : this.estateModel.roomTypeList[this.curPicListIndex].pictureList
       if (this.curPicListIndex === -1) {

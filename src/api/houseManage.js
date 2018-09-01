@@ -467,3 +467,27 @@ export function hostingRoomRentTypeApi(params) {
     }
   })
 }
+
+/* 分散式查询复制到房源列表 */
+export function hostingCopyItemsRoomsApi(params) {
+  return fetch({
+    url: 'http://localhost:9528/api/market/fangyuan',
+    method: 'post',
+    data: {
+      method: 'queryAllHostingHouse',
+      params
+    }
+  })
+}
+
+/* 分散式保存复制到 */
+export function hostingSaveCopyItemsApi(params) {
+  return fetch({
+    url: 'http://localhost:9528/api/market/fangyuan',
+    method: 'post',
+    data: {
+      method: 'hostingCopyTo',
+      params
+    }
+  })
+}

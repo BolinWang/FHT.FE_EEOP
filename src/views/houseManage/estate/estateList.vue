@@ -137,26 +137,6 @@ export default {
       if (!estateInfo) {
         return
       }
-      estateInfo.pictureUploadList = estateInfo.pictureList.filter(n => n.image)
-      estateInfo.pictureList = estateInfo.pictureList.filter(n => n.imageUrl !== undefined)
-      estateInfo.pictureUploadList.forEach((item) => {
-        item.src = null
-      })
-      estateInfo.pictureList.forEach((item) => {
-        item.src = null
-      })
-
-      estateInfo.roomTypeList.forEach((item, index) => {
-        item.pictureUploadList = item.pictureList.filter(n => n.image)
-        item.pictureList = item.pictureList.filter(n => n.imageUrl)
-        item.pictureUploadList.forEach((n) => {
-          n.src = null
-        })
-        item.pictureList.forEach((n) => {
-          n.src = null
-        })
-      })
-
       let api = null
       if (this.estateModelTitle === '新建公寓') {
         estateInfo.tag = estateInfo.tag === true ? 1 : 0
@@ -176,6 +156,7 @@ export default {
             break
         }
       }
+      console.log(estateInfo)
       api({
         estateInfo: JSON.stringify(estateInfo)
       }).then((res) => {
