@@ -456,6 +456,30 @@ export function hostingRoomDetailApi(params) {
   })
 }
 
+/* 分散式新增房间保存 */
+export function hostingSaveHouseInfoApi(params) {
+  return fetch({
+    url: 'http://localhost:9528/api/market/fangyuan',
+    method: 'post',
+    data: {
+      method: 'saveHostingHouseInfo',
+      params
+    }
+  })
+}
+
+/* 分散式编辑房间保存 */
+export function hostingEditHouseInfoApi(params) {
+  return fetch({
+    url: 'http://localhost:9528/api/market/fangyuan',
+    method: 'post',
+    data: {
+      method: 'editHostingHouseInfo',
+      params
+    }
+  })
+}
+
 /* 分散式查询交租方式 */
 export function hostingRoomRentTypeApi(params) {
   return fetch({

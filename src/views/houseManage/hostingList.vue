@@ -81,7 +81,7 @@
       </span>
     </el-dialog>
     <el-dialog title="复制到" :visible.sync="copyItemsModelVisible" width="700px" class="copy-items-model">
-      <room-list-selecter ref="copyItemTo" :roomList="copyItemRoomList" :visible="copyItemsModelVisible">
+      <room-list-selecter ref="copyItemTo" :roomList="copyItemsRooms" :visible="copyItemsModelVisible">
         <el-card class="head-card">
           <div slot="header" class="clearfix">
             <el-tooltip class="item" effect="dark" placement="top-start">
@@ -133,7 +133,7 @@ import rentPayWay from './components/rentPayWay'
 import areaSelect from "@/components/AreaSelect"
 import RoomListSelecter from '@/components/RoomListSelecter'
 import GridUnit from "@/components/GridUnit/grid"
-import { hostingHouseListApi, hostingRoomDetailApi, hostingRoomRentTypeApi, saveEstateRoomRentPayWayApi, hostingCopyItemsRoomsApi, hostingSaveCopyItemsApi } from '@/api/houseManage'
+import { hostingHouseListApi, hostingRoomDetailApi, hostingRoomRentTypeApi, saveEstateRoomRentPayWayApi, hostingCopyItemsRoomsApi, hostingSaveCopyItemsApi, hostingSaveHouseInfoApi, hostingEditHouseInfoApi } from '@/api/houseManage'
 export default {
   name: 'hostingList',
   components: {
@@ -274,13 +274,15 @@ export default {
       ],
       checkAllCopyItem: false,
       checkedCopyList: [],
-      copyItemRoomList: {},
+      copyItemsRooms: [],
+      copyItemRoomList: [],
       roomSelectList: [],
       copyItemsParams: {
         rentTypeRoomCode: '',
         pictureRoomCode: ''
       },
-      selectedCopyItemsRooms: []
+      selectedCopyItemsRooms: [],
+      curFangyuanCode: ''
     }
   },
   computed: {
@@ -432,7 +434,6 @@ export default {
           fangyuanCode: params.fangyuanCode
         }).then((res) => {
           if (res.code === '0') {
-
             let roomDetailInfo = res.data
             roomDetailInfo.areaCode = [roomDetailInfo.provinceId, roomDetailInfo.cityId, roomDetailInfo.regionId]
             roomDetailInfo.address = roomDetailInfo.subdistrictName ? (roomDetailInfo.subdistrictName + ' - ' + roomDetailInfo.subdistrictAddress) : ''
@@ -443,11 +444,11 @@ export default {
               item.facilityItemsList = item.facilityItems ? item.facilityItems.split(',') : []
               item.roomAttributesList = item.roomAttributes ? item.roomAttributes.split(',') : []
             })
-
+            roomDetailInfo.isEditFlag = true
             console.log(roomDetailInfo)
             this.roomDetailModelVisible = true
             this.$nextTick(() => {
-              this.$refs.hostingRoomDetail.setRoomDetailData(res.data)
+              this.$refs.hostingRoomDetail.setRoomDetailData(roomDetailInfo)
             })
           }
         })
@@ -455,28 +456,39 @@ export default {
     },
     // 保存房源信息
     saveRoomDetailData(type) {
-      if (type === 'add') {
-        let roomDetailData = this.$refs.hostingRoomDetail.returnRoomDetailData()
-        // api
-        setTimeout(() => {
-          roomDetailData.hostingRooms = [{
-            roomArea: '',
-            roomAttributes: '',
-            roomAttributesList: [],
-            roomName: '房间A',
-            name: '1',
-            pictures: [],
-            facilityItemsList: []
-          }]
-          roomDetailData.roomNo = ''
-          this.$refs.hostingRoomDetail.setRoomDetailData(roomDetailData)
-        }, 3000)
-      } else if (type === 'close') {
-        let roomDetailData = this.$refs.hostingRoomDetail.returnRoomDetailData()
-      } else {
-        // this.$refs.hostingRoomDetail.setRoomDetailData({})
+      if (type === 'clear') {
         this.roomDetailModelVisible = false
+        return false
       }
+      let roomDetailData = this.$refs.hostingRoomDetail.returnRoomDetailData()
+      if (!roomDetailData) {
+        return false
+      }
+      let api = roomDetailData.isEditFlag ? hostingEditHouseInfoApi : hostingSaveHouseInfoApi
+      api({
+        hostingHouseInfo: roomDetailData
+      }).then((res) => {
+        if (res.code === '0') {
+          this.$message({
+            message: res.message,
+            type: 'success'
+          })
+          if (type === 'add') {
+            roomDetailData.hostingRooms = [{
+              roomArea: '',
+              roomAttributes: '',
+              roomAttributesList: [],
+              roomName: '房间A',
+              name: '1',
+              pictures: [],
+              facilityItemsList: []
+            }]
+            roomDetailData.roomNo = ''
+            this.$refs.hostingRoomDetail.setRoomDetailData(roomDetailData)
+          }
+          this.roomDetailModelVisible = false
+        }
+      })
     },
     // 编辑交租方式
     openRentPayModel(row) {
@@ -534,12 +546,13 @@ export default {
     },
     // 打开复制到模态框
     openCopyItemsModel(row) {
+      this.curFangyuanCode = row.fangyuanCode
       hostingCopyItemsRoomsApi({
         fangyuanCode: row.fangyuanCode
       }).then((res) => {
         this.copyItemsRooms = res.data
-        let aaa = this.$refs.hostingHouseList.tableData.filter((item) => item.fangyuanCode === row.fangyuanCode)
-        this.roomSelectList = aaa ? aaa[0].roomList : []
+        let selectedRows = this.$refs.hostingHouseList.tableData.filter((item) => item.fangyuanCode === row.fangyuanCode)
+        this.roomSelectList = selectedRows ? selectedRows[0].roomList : []
         this.copyItemsParams.rentTypeRoomCode = this.roomSelectList[0].roomCode
         this.copyItemsParams.pictureRoomCode = this.roomSelectList[0].roomCode
         this.checkedCopyList = []
@@ -550,8 +563,8 @@ export default {
     // 保存复制到
     saveCopyItems() {
       let params = {
-        fromFangyuanCode: '',
-        toFangyuanCodes: this.selectedCopyItemsRooms,
+        fromFangyuanCode: this.curFangyuanCode,
+        toFangyuanCodes: this.$refs.copyItemTo.returnCheckedList(),
         items: this.checkedCopyList
       }
       if (this.checkedCopyList.includes(1)) {
@@ -561,7 +574,13 @@ export default {
         params.pictureRoomCode = this.copyItemsParams.pictureRoomCode
       }
       hostingSaveCopyItemsApi(params).then((res) => {
-
+        if (res.code === '0') {
+          this.$message({
+            message: res.message,
+            type: 'success'
+          })
+          this.copyItemsModelVisible = false
+        }
       })
     },
     handleCheckAllChange(val) {

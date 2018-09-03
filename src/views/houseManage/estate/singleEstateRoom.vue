@@ -392,6 +392,7 @@ export default {
           this.copyItemRoomList = res.data
           this.checkedCopyList = []
           this.copyItemToModelVisible = true
+          this.handleOptionsChange()
         }
       })
     },
@@ -406,6 +407,7 @@ export default {
           this.$set(this, 'baseRentTypeList', res.data.baseRentTypeList)
         }
         this.rentPayModelVisible = true
+
         // this.$nextTick(() => {
         //   this.$refs.defaultRentPayForm.clearValidate()
         //   this.$refs.financeRentPayForm.clearValidate()
