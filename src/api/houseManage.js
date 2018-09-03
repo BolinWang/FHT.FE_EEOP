@@ -435,7 +435,7 @@ export function changeRoomStatusApi(params) {
 /* 分散式查询房源列表 */
 export function hostingHouseListApi(params) {
   return fetch({
-    url: 'http://localhost:9528/api/market/fangyuan',
+    url: '/market/fangyuan',
     method: 'post',
     data: {
       method: 'queryHostingHouseList',
@@ -447,7 +447,7 @@ export function hostingHouseListApi(params) {
 /* 分散式查询房间详情 */
 export function hostingRoomDetailApi(params) {
   return fetch({
-    url: 'http://localhost:9528/api/market/fangyuan',
+    url: '/market/fangyuan',
     method: 'post',
     data: {
       method: 'queryHostingHouseInfo',
@@ -459,7 +459,7 @@ export function hostingRoomDetailApi(params) {
 /* 分散式新增房间保存 */
 export function hostingSaveHouseInfoApi(params) {
   return fetch({
-    url: 'http://localhost:9528/api/market/fangyuan',
+    url: '/market/fangyuan',
     method: 'post',
     data: {
       method: 'saveHostingHouseInfo',
@@ -471,7 +471,7 @@ export function hostingSaveHouseInfoApi(params) {
 /* 分散式编辑房间保存 */
 export function hostingEditHouseInfoApi(params) {
   return fetch({
-    url: 'http://localhost:9528/api/market/fangyuan',
+    url: '/market/fangyuan',
     method: 'post',
     data: {
       method: 'editHostingHouseInfo',
@@ -483,7 +483,7 @@ export function hostingEditHouseInfoApi(params) {
 /* 分散式查询交租方式 */
 export function hostingRoomRentTypeApi(params) {
   return fetch({
-    url: 'http://localhost:9528/api/market/fangyuan',
+    url: '/market/fangyuan',
     method: 'post',
     data: {
       method: 'queryHostingRoomRentType',
@@ -495,7 +495,7 @@ export function hostingRoomRentTypeApi(params) {
 /* 分散式查询复制到房源列表 */
 export function hostingCopyItemsRoomsApi(params) {
   return fetch({
-    url: 'http://localhost:9528/api/market/fangyuan',
+    url: '/market/fangyuan',
     method: 'post',
     data: {
       method: 'queryAllHostingHouse',
@@ -507,7 +507,7 @@ export function hostingCopyItemsRoomsApi(params) {
 /* 分散式保存复制到 */
 export function hostingSaveCopyItemsApi(params) {
   return fetch({
-    url: 'http://localhost:9528/api/market/fangyuan',
+    url: '/market/fangyuan',
     method: 'post',
     data: {
       method: 'hostingCopyTo',

@@ -60,7 +60,7 @@
         </template>
       </GridUnit>
     </el-tabs>
-    <el-dialog title="添加房源" :visible.sync="roomDetailModelVisible" width="1000px">
+    <el-dialog :title="isEditFlag ? '编辑房间' : '添加房源'" :visible.sync="roomDetailModelVisible" width="1000px">
       <hosting-room-detail ref="hostingRoomDetail"></hosting-room-detail>
       <span slot="footer" class="dialog-footer">
         <el-button size="small" type="primary" @click="saveRoomDetailData('add')">保存并继续添加</el-button>
@@ -177,8 +177,8 @@ export default {
       houseRentTypeList: ['整租', '合租'],
       activeName: '整租',
       tableHeight: 400,
-      houstingListUrl: "http://localhost:9528/api/market/fangyuan",
-      method: "queryHostingHouseList",
+      houstingListUrl: "/market/fangyuan",
+      method: "queryHostingList",
       selectedRooms: [],
       houseTypeList: [
         { label: '普通', value: 1 },
@@ -216,13 +216,12 @@ export default {
         { prop: "orgName", label: "组织名称", width: 100 },
         { prop: "addrRegionName", label: "房源位置", width: 180 },
         { prop: "roomDetailAddress", label: "公寓/小区-房间", width: 180 },
-        { prop: "tags", label: "房源类型", slotName: "tags", width: 130 },
-        { prop: "roomName", label: "房间", width: 60 },
+        { prop: "tags", label: "房源类型", slotName: "tags" },
+        { prop: "roomName", label: "房间" },
         {
           prop: "roomStatus",
           label: "房间状态",
-          slotName: "roomStatus",
-          width: 130
+          slotName: "roomStatus"
         },
         { prop: "roomCode", label: "平台房源编码" },
         {
@@ -230,7 +229,8 @@ export default {
           label: "设置",
           slotName: "operateHosting",
           width: "340",
-          fixed: 'right'        },
+          fixed: 'right'
+        },
         { prop: "provider", label: "房源提供者", width: 100 },
         { prop: "operateTime", label: "操作时间", width: 130 },
       ],
@@ -282,7 +282,8 @@ export default {
         pictureRoomCode: ''
       },
       selectedCopyItemsRooms: [],
-      curFangyuanCode: ''
+      curFangyuanCode: '',
+      isEditFlag: false
     }
   },
   computed: {
@@ -361,10 +362,14 @@ export default {
         }
       }
     },
+    // 处理表格数据
     dataHandler(data) {
       let tempArr = []
       data.forEach((item, index) => {
         item.roomList.forEach((v, i) => {
+          if (this.activeName === '整租') {
+            v.roomName = '整套房间'
+          }
           let row = {
             ...item,
             ...v
@@ -434,15 +439,21 @@ export default {
           fangyuanCode: params.fangyuanCode
         }).then((res) => {
           if (res.code === '0') {
+            this.isEditFlag = true
             let roomDetailInfo = res.data
             roomDetailInfo.areaCode = [roomDetailInfo.provinceId, roomDetailInfo.cityId, roomDetailInfo.regionId]
             roomDetailInfo.address = roomDetailInfo.subdistrictName ? (roomDetailInfo.subdistrictName + ' - ' + roomDetailInfo.subdistrictAddress) : ''
             roomDetailInfo.facilityItemsList = roomDetailInfo.facilityItems ? roomDetailInfo.facilityItems.split(',') : []
             roomDetailInfo.tag = roomDetailInfo.tag === 1 ? true : false
+            roomDetailInfo.houseDesc = roomDetailInfo.houseDesc || ''
+            if (roomDetailInfo.houseRentType === 1) {
+              roomDetailInfo.pictures = roomDetailInfo.pictures || []
+            }
             roomDetailInfo.hostingRooms.forEach((item, index) => {
               item.name = ++index + ''
               item.facilityItemsList = item.facilityItems ? item.facilityItems.split(',') : []
               item.roomAttributesList = item.roomAttributes ? item.roomAttributes.split(',') : []
+              item.pictures = item.pictures || []
             })
             roomDetailInfo.isEditFlag = true
             console.log(roomDetailInfo)
@@ -466,7 +477,7 @@ export default {
       }
       let api = roomDetailData.isEditFlag ? hostingEditHouseInfoApi : hostingSaveHouseInfoApi
       api({
-        hostingHouseInfo: roomDetailData
+        hostingHouseInfo: JSON.stringify(roomDetailData)
       }).then((res) => {
         if (res.code === '0') {
           this.$message({
@@ -531,6 +542,7 @@ export default {
     },
     // 保存交租方式
     saveEstateRoomRentPayWay(roomCode, roomRentTypeList) {
+      let _this = this
       saveEstateRoomRentPayWayApi({
         roomCode: roomCode,
         roomRentTypeList: roomRentTypeList

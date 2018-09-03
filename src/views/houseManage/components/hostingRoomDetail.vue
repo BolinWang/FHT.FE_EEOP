@@ -603,6 +603,14 @@ export default {
       if (val.houseRentType === 2) {
         this.tabIndex = val.hostingRooms.length
       }
+      if (val.isEditFlag) {
+        this.orgList = [
+          {
+            orgId: val.orgId,
+            orgName: val.orgName
+          }
+        ]
+      }
       this.$set(this, 'hostingRoomDetail', val)
       this.$nextTick(() => {
         this.$refs.hostingRoomDetail.clearValidate()
