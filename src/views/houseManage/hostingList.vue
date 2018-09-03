@@ -366,7 +366,7 @@ export default {
     },
     objectSpanMethod({ row, column, rowIndex, columnIndex }) {
       if (this.roomSearchForm.houseRentType === 2) {
-        if (columnIndex <= 5 && columnIndex > 0) {
+        if (columnIndex <= 5 && columnIndex > 0 ||columnIndex === 11) {
           if (row.spanArr < 1) {
             return {
               rowspan: 0,
