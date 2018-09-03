@@ -288,6 +288,9 @@ export default {
               },{
                 value:4,
                 label:'未接听'
+              },{
+                value:5,
+                label:'飞虎队跟进'
               }
           ]
         return resultTypeList[val-1]?resultTypeList[val-1].label:''
