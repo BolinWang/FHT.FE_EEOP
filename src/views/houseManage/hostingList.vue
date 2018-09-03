@@ -31,8 +31,8 @@
             <el-dropdown class="room-options-dropdown" @command="handleCommand">
               <el-button plain size="small" style="width:120px">批量房态管理</el-button>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item :command="1">未出租</el-dropdown-item>
-                <el-dropdown-item :command="2">已出租</el-dropdown-item>
+                <el-dropdown-item :command="2">空房</el-dropdown-item>
+                <el-dropdown-item :command="9">已出租无租客</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
             <el-button style="width:120px;margin-left:10px" @click="openRoomDetail(2)">添加合租房源</el-button>
@@ -101,11 +101,7 @@
           <el-checkbox-group v-model="checkedCopyList">
             <div class="head-check-options" :class="[v.showRoomSelect ? 'especial' : '']" v-for="v in copyOptions" :key="v.val">
               <el-select v-if="v.showRoomSelect" size="mini" v-model="copyItemsParams.rentTypeRoomCode">
-                <el-option
-                  v-for="item in roomSelectList"
-                  :key="item.roomCode"
-                  :label="item.roomName"
-                  :value="item.roomCode">
+                <el-option v-for="item in roomSelectList" :key="item.roomCode" :label="item.roomName" :value="item.roomCode">
                 </el-option>
               </el-select>
               <el-checkbox :label="v.val" @change="handleOptionsChange">
@@ -133,7 +129,7 @@ import rentPayWay from './components/rentPayWay'
 import areaSelect from "@/components/AreaSelect"
 import RoomListSelecter from '@/components/RoomListSelecter'
 import GridUnit from "@/components/GridUnit/grid"
-import { hostingHouseListApi, hostingRoomDetailApi, hostingRoomRentTypeApi, saveEstateRoomRentPayWayApi, hostingCopyItemsRoomsApi, hostingSaveCopyItemsApi, hostingSaveHouseInfoApi, hostingEditHouseInfoApi } from '@/api/houseManage'
+import { hostingHouseListApi, hostingRoomDetailApi, hostingRoomRentTypeApi, saveEstateRoomRentPayWayApi, hostingCopyItemsRoomsApi, hostingSaveCopyItemsApi, hostingSaveHouseInfoApi, hostingEditHouseInfoApi, changeRoomStatusApi } from '@/api/houseManage'
 export default {
   name: 'hostingList',
   components: {
@@ -336,13 +332,37 @@ export default {
         }
         roomStatusParams = {
           roomCodes: this.selectedRooms.map(item => item.roomCode),
-          roomStatus: command
+          roomStatus: command,
+          resource: this.roomSearchForm.houseRentType
         }
       }
       else {
         roomStatusParams = command
       }
-      this.searchParam()
+      changeRoomStatusApi(roomStatusParams).then((res) => {
+        if (res.code === '0') {
+          let message = {}
+          if (res.data.success === roomStatusParams.roomCodes.length) {
+            message = {
+              message: res.message,
+              type: 'success'
+            }
+          } else if (res.data.fail === roomStatusParams.roomCodes.length) {
+            message = {
+              message: `失败${res.data.fail}个房间`,
+              type: 'error'
+            }
+          } else {
+            const status = roomStatusParams.roomStatus === 2 ? '空房' : '已出租无租客'
+            message = {
+              message: `成功${res.data.success}个房间，失败${res.data.fail}个房间，${res.data.already}个房间已经是${status}状态`,
+              type: 'success'
+            }
+          }
+          this.$message(message)
+          this.searchParam()
+        }
+      })
     },
     objectSpanMethod({ row, column, rowIndex, columnIndex }) {
       if (this.roomSearchForm.houseRentType === 2) {
