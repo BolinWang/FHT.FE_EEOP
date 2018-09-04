@@ -20,7 +20,7 @@
         <el-form-item>
           <el-input v-model="roomSearchForm.orgName" size="small" placeholder="组织名称" style="width:120px" />
           <el-input v-model="roomSearchForm.subdistrictName" size="small" placeholder="公寓/小区" style="width:120px;margin-left:10px" />
-          <el-input v-model="roomSearchForm.roomCode" size="small" placeholder="房源编码" style="width:120px;margin-left:10px" />
+          <el-input v-model="roomSearchForm.roomCode" type="number" size="small" placeholder="房源编码" style="width:120px;margin-left:10px" />
         </el-form-item>
         <el-form-item class="house-search-form-group">
           <el-button type="primary" icon="el-icon-search" @click="searchHostingHouseList('search')" class="filter-item">查询</el-button>
@@ -309,7 +309,7 @@ export default {
     },
     handleClickTab(tab) {
       this.searchParam('clear')
-      this.roomSearchForm={
+      this.roomSearchForm = {
         cityId: '',
         cityArea: [],
         houseType: '',
@@ -317,7 +317,7 @@ export default {
         orgName: '',
         subdistrictName: '',
         roomCode: '',
-        houseRentType: this.activeName === "整租" ? 1 :2
+        houseRentType: this.activeName === "整租" ? 1 : 2
       }
     },
     // 查询/清空
@@ -374,18 +374,30 @@ export default {
         }
       })
     },
-    // 删除房间
+    //删除房间
     deleteRoom(row) {
-      estateDeleteEstateApi({
-        fangyuanCode: row.fangyuanCode
-      }).then((res) => {
-        if (res.code === "0") {
-          this.$message({
-            message: res.message,
-            type: 'success'
-          })
-          this.searchParam()
-        }
+      const h = this.$createElement
+      this.$msgbox({
+        title: "确认消息",
+        message: h('p', null, [
+          h('span', null, '确定删除整套房间吗？ '),
+          h('span', { style: 'color: red' }, '删除单个房间请在【公寓详情】里面删除')
+        ]),
+        showCancelButton: true,
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(action => {
+        estateDeleteEstateApi({
+          fangyuanCode: row.fangyuanCode
+        }).then((res) => {
+          if (res.code === "0") {
+            this.$message({
+              message: res.message,
+              type: 'success'
+            })
+            this.searchParam()
+          }
+        })
       })
     },
     objectSpanMethod({ row, column, rowIndex, columnIndex }) {
