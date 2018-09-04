@@ -381,7 +381,7 @@ export default {
         title: "确认消息",
         message: h('p', null, [
           h('span', null, '确定删除整套房间吗？ '),
-          h('span', { style: 'color: red' }, '删除单个房间请在【公寓详情】里面删除')
+          h('span', { style: 'color: red' }, '若删除单个房间请在【公寓详情】里面删除')
         ]),
         showCancelButton: true,
         confirmButtonText: '确定',
@@ -400,6 +400,7 @@ export default {
         })
       })
     },
+    // 表格数据合并
     objectSpanMethod({ row, column, rowIndex, columnIndex }) {
       if (this.roomSearchForm.houseRentType === 2) {
         if (columnIndex <= 5 && columnIndex > 0 || columnIndex === 11) {
@@ -418,7 +419,7 @@ export default {
         }
       }
     },
-    // 处理表格数据
+    // 表格数据
     dataHandler(data) {
       let tempArr = []
       data.forEach((item, index) => {
@@ -711,6 +712,15 @@ export default {
       }
     }
   }
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none !important;
+  margin: 0;
+}
+input{
+    -moz-appearance:textfield;
 }
 </style>
 
