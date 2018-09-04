@@ -155,13 +155,14 @@
                                   <span class="col-red pad cursor" @click="goFollow(scope.row.id,scope.row.billNo,scope.row.isOver,scope.row.status)">{{scope.row.followCount
 | filterText }}</span>
                                   <el-popover
+                                    v-if="scope.row.followType == 3 || scope.row.followType == 5"
                                     placement="top-start"
                                     width="200"
                                     trigger="hover"
-                                    :disabled='scope.row.followType != 3'
                                     :content="scope.row.content">
                                     <el-button slot="reference" v-show="scope.row.followType" size="mini" type="info" plain>{{scope.row.followType | filterBtn}}</el-button>
                                   </el-popover>
+                                   <el-button v-else slot="reference" v-show="scope.row.followType" size="mini" type="info" plain>{{scope.row.followType | filterBtn}}</el-button>
                               </template>
                             </el-table-column>
                     </el-table>
