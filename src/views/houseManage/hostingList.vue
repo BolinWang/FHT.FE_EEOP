@@ -55,7 +55,7 @@
             <el-button type="primary" size="mini" @click="openRentPayModel(scope.row)">交租方式</el-button>
             <el-button type="primary" size="mini" @click="openCopyItemsModel(scope.row)">复制到</el-button>
             <el-button type="primary" size="mini" @click="openRoomDetail(scope.row)">编辑房间</el-button>
-            <el-button type="danger" size="mini">删除</el-button>
+            <el-button type="danger" size="mini" @click="deleteRoom(scope.row)">删除</el-button>
           </el-row>
         </template>
       </GridUnit>
@@ -129,7 +129,7 @@ import rentPayWay from './components/rentPayWay'
 import areaSelect from "@/components/AreaSelect"
 import RoomListSelecter from '@/components/RoomListSelecter'
 import GridUnit from "@/components/GridUnit/grid"
-import { hostingHouseListApi, hostingRoomDetailApi, hostingRoomRentTypeApi, saveEstateRoomRentPayWayApi, hostingCopyItemsRoomsApi, hostingSaveCopyItemsApi, hostingSaveHouseInfoApi, hostingEditHouseInfoApi, changeRoomStatusApi } from '@/api/houseManage'
+import { hostingHouseListApi, hostingRoomDetailApi, hostingRoomRentTypeApi, saveEstateRoomRentPayWayApi, hostingCopyItemsRoomsApi, hostingSaveCopyItemsApi, hostingSaveHouseInfoApi, hostingEditHouseInfoApi, changeRoomStatusApi, estateDeleteEstateApi } from '@/api/houseManage'
 export default {
   name: 'hostingList',
   components: {
@@ -290,7 +290,7 @@ export default {
   watch: {
     roomSearchForm: {
       handler: function (val) {
-        if (roomSearchForm.cityArea && roomSearchForm.cityArea[1]) {
+        if (this.roomSearchForm.cityArea && this.roomSearchForm.cityArea[1]) {
           this.roomSearchForm.cityId = roomSearchForm.cityArea[1]
         }
         else {
@@ -309,6 +309,16 @@ export default {
     },
     handleClickTab(tab) {
       this.searchParam('clear')
+      this.roomSearchForm={
+        cityId: '',
+        cityArea: [],
+        houseType: '',
+        roomStatus: '',
+        orgName: '',
+        subdistrictName: '',
+        roomCode: '',
+        houseRentType: this.activeName === "整租" ? 1 :2
+      }
     },
     // 查询/清空
     searchHostingHouseList(type) {
@@ -364,9 +374,23 @@ export default {
         }
       })
     },
+    // 删除房间
+    deleteRoom(row) {
+      estateDeleteEstateApi({
+        fangyuanCode: row.fangyuanCode
+      }).then((res) => {
+        if (res.code === "0") {
+          this.$message({
+            message: res.message,
+            type: 'success'
+          })
+          this.searchParam()
+        }
+      })
+    },
     objectSpanMethod({ row, column, rowIndex, columnIndex }) {
       if (this.roomSearchForm.houseRentType === 2) {
-        if (columnIndex <= 5 && columnIndex > 0) {
+        if (columnIndex <= 5 && columnIndex > 0 || columnIndex === 11) {
           if (row.spanArr < 1) {
             return {
               rowspan: 0,
@@ -452,7 +476,6 @@ export default {
               facilityItemsList: []
             }]
           }
-          console.log(roomDetailData)
           this.$refs.hostingRoomDetail.setRoomDetailData(roomDetailData)
         })
       } else if (typeof (params) === 'object') {
@@ -477,7 +500,6 @@ export default {
               item.pictures = item.pictures || []
             })
             roomDetailInfo.isEditFlag = true
-            console.log(roomDetailInfo)
             this.roomDetailModelVisible = true
             this.$nextTick(() => {
               this.$refs.hostingRoomDetail.setRoomDetailData(roomDetailInfo)
@@ -532,7 +554,6 @@ export default {
       hostingRoomRentTypeApi({
         fangyuanCode: row.fangyuanCode
       }).then((res) => {
-        console.log(res)
         this.curRoomFinanceType = res.data.houseFinanceType
         this.rentPayList = res.data.hostingRoomRentType
         this.baseRentTypeList = res.data.baseRentTypeList
