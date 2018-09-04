@@ -231,7 +231,7 @@
       </el-col>
       <el-col :span="3">
         <el-form-item label-width="30px" prop="tag">
-          <el-checkbox v-if="hostingRoomDetail.tag || !hostingRoomDetail.isEditFlag" label="飞虎队" name="type" v-model="hostingRoomDetail.tag" @change="handleSourceInfo" :disabled="hostingRoomDetail.isEditFlag && hostingRoomDetail.tag"></el-checkbox>
+          <el-checkbox label="飞虎队" name="type" v-model="hostingRoomDetail.tag" @change="handleSourceInfo"></el-checkbox>
         </el-form-item>
       </el-col>
       <el-col :span="6">
