@@ -7,7 +7,7 @@
         </el-form-item>
       </el-col>
       <el-col :span="7">
-        <el-form-item label="所属板块">
+        <el-form-item label="所属板块" prop="zoneId">
           <el-select v-model="hostingRoomDetail.zoneId" class="room-detail-select" :placeholder="zoneList.length ? '请选择' : '无'">
             <el-option v-for="item in zoneList" :key="item.zoneId" :label="item.zoneName" :value="item.zoneId">
             </el-option>
@@ -108,7 +108,7 @@
     </el-row>
     <el-row :gutter="20">
       <el-col :span="6">
-        <el-form-item label="看房电话">
+        <el-form-item label="看房电话" prop="contactName">
           <el-input v-model="hostingRoomDetail.contactName" placeholder="联系人"></el-input>
         </el-form-item>
       </el-col>
@@ -121,7 +121,7 @@
         </el-form-item>
       </el-col>
       <el-col :span="4">
-        <el-form-item label-width="0">
+        <el-form-item label-width="0" prop="contactMobile">
           <el-input v-model="hostingRoomDetail.contactMobile" placeholder="联系电话"></el-input>
         </el-form-item>
       </el-col>
@@ -231,7 +231,7 @@
       </el-col>
       <el-col :span="3">
         <el-form-item label-width="30px" prop="tag">
-          <el-checkbox label="飞虎队" name="type" v-model="hostingRoomDetail.tag" @change="handleSourceInfo"></el-checkbox>
+          <el-checkbox v-if="hostingRoomDetail.tag || !hostingRoomDetail.isEditFlag" label="飞虎队" name="type" v-model="hostingRoomDetail.tag" @change="handleSourceInfo" :disabled="hostingRoomDetail.isEditFlag && hostingRoomDetail.tag"></el-checkbox>
         </el-form-item>
       </el-col>
       <el-col :span="6">
@@ -321,6 +321,9 @@ export default {
             trigger: 'change'
           }
         ],
+        zoneId: [
+          { required: true, message: '请选择所属板块', trigger: 'blur' }
+        ],
         address: [
           { required: true, message: '请输入公寓/小区', trigger: 'change' }
         ],
@@ -353,6 +356,12 @@ export default {
         ],
         floorAmount: [
           { required: true, message: '请输入总楼层数', trigger: 'blur' }
+        ],
+        contactName: [
+          { required: true, message: '请输入联系人姓名', trigger: 'blur' }
+        ],
+        contactMobile: [
+          { required: true, message: '请输入联系人电话', trigger: 'blur' }
         ],
         sourceInfo: [
           { required: true, message: '请选择一个房源提供者', trigger: 'change' }
@@ -610,8 +619,21 @@ export default {
             orgName: val.orgName
           }
         ]
+        val.tag = val.tag ? true : false
+        if (val.sourceInfo) {
+          this.filterManagerList = [
+            {
+              id: val.sourceInfo.split(',')[0],
+              name: val.sourceInfo.split(',')[1]
+            }
+          ]
+          val.sourceInfo = val.sourceInfo.split(',')[0]
+        }
       }
       this.$set(this, 'hostingRoomDetail', val)
+      if (val.isEditFlag) {
+        this.searchZoneList(true)
+      }
       this.$nextTick(() => {
         this.$refs.hostingRoomDetail.clearValidate()
       })
@@ -626,11 +648,12 @@ export default {
 
           const sourceInfo = roomDetailData.tag ? this.filterManagerList.filter((item) => item.id === roomDetailData.sourceInfo) : ''
           roomDetailData.sourceInfo = sourceInfo.length ? (sourceInfo[0].id + ',' + sourceInfo[0].name) : ''
-
-          roomDetailData.hostingRooms.forEach((item, index) => {
-            item.facilityItems = item.facilityItemsList.join(',')
-            item.roomAttributes = item.roomAttributesList.join(',')
-          })
+          if (roomDetailData.houseRentType === 2) {
+            roomDetailData.hostingRooms.forEach((item, index) => {
+              item.facilityItems = item.facilityItemsList.join(',')
+              item.roomAttributes = item.roomAttributesList.join(',')
+            })
+          }
         } else {
           this.$message.error('您还有必填信息未填写完全，请全部填写好后再保存')
           return false
