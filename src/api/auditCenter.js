@@ -207,7 +207,7 @@ export const fhdAuditApi = {
       url: fhdAuditApi.defaultOptions.requestUrl,
       method: 'post',
       data: {
-        method: defaultOptions.method,
+        method: fhdAuditApi.defaultOptions.method,
         params
       }
     })
