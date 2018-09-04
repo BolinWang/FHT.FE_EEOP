@@ -63,8 +63,8 @@
     <el-dialog :title="isEditFlag ? '编辑房间' : '添加房源'" :visible.sync="roomDetailModelVisible" width="1000px">
       <hosting-room-detail ref="hostingRoomDetail"></hosting-room-detail>
       <span slot="footer" class="dialog-footer">
-        <el-button size="small" type="primary" @click="saveRoomDetailData('add')">保存并继续添加</el-button>
-        <el-button size="small" type="primary" @click="saveRoomDetailData('close')">保存并关闭</el-button>
+        <el-button size="small" type="primary" @click="saveRoomDetailData('add')" v-if="!isEditFlag">保存并继续添加</el-button>
+        <el-button size="small" type="primary" @click="saveRoomDetailData('close')">{{isEditFlag ? '保 存' : '保存并关闭'}}</el-button>
         <el-button size="small" @click="saveRoomDetailData('clear')">取 消</el-button>
       </span>
     </el-dialog>
@@ -453,6 +453,7 @@ export default {
             zoneId: null,
             zoneName: '',
             address: '',
+            regionAddressId: '',
             buildingName: '',
             unitCode: '',
             roomNo: '',
@@ -540,19 +541,24 @@ export default {
             type: 'success'
           })
           if (type === 'add') {
-            roomDetailData.hostingRooms = [{
-              roomArea: '',
-              roomAttributes: '',
-              roomAttributesList: [],
-              roomName: '房间A',
-              name: '1',
-              pictures: [],
-              facilityItemsList: []
-            }]
+            if (roomDetailData.houseRentType === 1) {
+              roomDetailData.pictures = []
+            } else {
+              roomDetailData.hostingRooms = [{
+                roomArea: '',
+                roomAttributes: '',
+                roomAttributesList: [],
+                roomName: '房间A',
+                name: '1',
+                pictures: [],
+                facilityItemsList: []
+              }]
+            }
             roomDetailData.roomNo = ''
             this.$refs.hostingRoomDetail.setRoomDetailData(roomDetailData)
+          } else {
+            this.roomDetailModelVisible = false
           }
-          this.roomDetailModelVisible = false
         }
       })
     },

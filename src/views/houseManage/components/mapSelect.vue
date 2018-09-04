@@ -146,7 +146,8 @@ export default {
             this.$emit('addressChange', {
               zoneId: '',
               areaCode: [item.provinceId, item.cityId, item.areaId],
-              address: item.formatName
+              address: item.formatName,
+              regionAddressId: item.regionAddressId || ''
             })
           }
           this.regionAddressId = item ? item.regionAddressId : ''
