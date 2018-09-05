@@ -40,7 +40,7 @@
           </el-form-item>
         </div>
       </el-form>
-      <GridUnit ref="hostingHouseList" :showRowIndex="false" :spanMethod="objectSpanMethod" :formOptions="roomSearchForm" :showSelection="true" :url="houstingListUrl" :dataMethod="method" listField="data.houseList" totalField="data.record" :columns="colModels" :height="tableHeight" @selection-change="handleSelectionChange" :dataHandler="dataHandler" :pageSizes="[50, 100, 200]" border fit>
+      <GridUnit ref="hostingHouseList" :showRowIndex="false" :spanMethod="objectSpanMethod" :formOptions="roomSearchForm" :url="houstingListUrl" :dataMethod="method" listField="data.houseList" totalField="data.record" :columns="colModels" :height="tableHeight" @selection-change="handleSelectionChange" :dataHandler="dataHandler" :pageSizes="[50, 100, 200]" border fit>
         <template slot="index" slot-scope="scope">
           {{scope.row.index + 1}}
         </template>
@@ -403,7 +403,7 @@ export default {
     // 表格数据合并
     objectSpanMethod({ row, column, rowIndex, columnIndex }) {
       if (this.roomSearchForm.houseRentType === 2) {
-        if (columnIndex <= 5 && columnIndex > 0 || columnIndex === 11) {
+        if (columnIndex < 5 || columnIndex === 11) {
           if (row.spanArr < 1) {
             return {
               rowspan: 0,
@@ -511,6 +511,7 @@ export default {
               item.facilityItemsList = item.facilityItems ? item.facilityItems.split(',') : []
               item.roomAttributesList = item.roomAttributes ? item.roomAttributes.split(',') : []
               item.pictures = item.pictures || []
+              item.needCheck = true
             })
             roomDetailInfo.isEditFlag = true
             this.roomDetailModelVisible = true

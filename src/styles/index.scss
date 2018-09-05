@@ -247,6 +247,11 @@ a:hover {
       .el-form-item__error {
         width: 90px;
       }
+      .sub-room-info-list {
+        .el-icon-close {
+          display: none;
+        }
+      }
     }
   }
   &.estate-room-detail {

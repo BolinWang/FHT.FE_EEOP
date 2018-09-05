@@ -79,13 +79,13 @@
             </el-col>
           </el-row>
           <el-row :gutter="20">
-            <el-col :span="6" v-if="type === '新建公寓'">
+            <el-col :span="6">
               <el-form-item>
                 <el-checkbox label="飞虎队" name="type" v-model="estateModel.tag" @change="handleSourceInfo"></el-checkbox>
               </el-form-item>
             </el-col>
             <el-col :span="6">
-              <el-form-item label-width="0" prop="sourceInfo" v-if="type === '新建公寓' && estateModel.tag">
+              <el-form-item label-width="0" prop="sourceInfo" v-if="estateModel.tag">
                 <el-select
                   v-model="estateModel.sourceInfo"
                   filterable remote
@@ -487,16 +487,24 @@ export default {
         estateInfo.tag = estateInfo.tag === 1 ? true : false
         estateInfo.address = estateInfo.subdistrictName ? (estateInfo.subdistrictName + ' - ' + estateInfo.subdistrictAddress) : ''
         estateInfo.floors.forEach((item) => { item.forbbidenEdit = true })
-
+        if (estateInfo.sourceInfo) {
+          this.filterManagerList = [
+            {
+              id: estateInfo.sourceInfo.split(',')[0],
+              name: estateInfo.sourceInfo.split(',')[1]
+            }
+          ]
+          estateInfo.sourceInfo = estateInfo.sourceInfo.split(',')[0]
+        }
         estateInfo.pictureList.forEach((item) => {
-          item.src = item.imageUrl
           item.title = item.imageName
+          item.isBase64 = 0
         })
 
         estateInfo.roomTypeList.forEach((item) => {
           item.pictureList.forEach((n) => {
-            n.src = n.imageUrl
             n.title = n.imageName
+            item.isBase64 = 0
           })
         })
 
@@ -533,7 +541,10 @@ export default {
       let estateData = false
       this.$refs.estateModel.validate((status) => {
         if (status) {
-          estateData = this.estateModel
+          let roomDetailData = deepClone(this.estateModel)
+          const sourceInfo = roomDetailData.tag ? this.filterManagerList.filter((item) => item.id === roomDetailData.sourceInfo) : ''
+          roomDetailData.sourceInfo = sourceInfo.length ? (sourceInfo[0].id + ',' + sourceInfo[0].name) : ''
+          estateData = roomDetailData
         } else {
           this.$message.error('您还有必填信息未填写完全，请全部填写好后再保存')
           return false
