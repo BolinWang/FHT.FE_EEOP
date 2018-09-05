@@ -77,6 +77,8 @@
       <template slot="operateRoom" slot-scope="scope">
         <el-button type="primary" size="mini" @click="openRoomDetailModel(2, scope.row)">编辑房间</el-button>
       </template>
+      <el-table-column slot="selection" type="selection">
+      </el-table-column>
     </grid-unit>
 
     <el-dialog class="copy-item-to-model" title="复制到" :visible.sync="copyItemToModelVisible" width="700px">
@@ -439,6 +441,7 @@ export default {
       tableHeight: 500,
       reqMethod: 'queryEstateRoomList',
       colModels: [
+        { slot: 'selection' },
         { prop: "roomTypeName", label: "房间类型" },
         {
           prop: "floorId",

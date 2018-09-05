@@ -1,8 +1,8 @@
 /*
  * @Author: FT.FE.Bolin
  * @Date: 2018-07-11 13:49:21
- * @Last Modified by: chudequan
- * @Last Modified time: 2018-08-24 10:38:43
+ * @Last Modified by: FT.FE.Bolin
+ * @Last Modified time: 2018-09-05 11:33:58
  */
 
  <template>
@@ -85,6 +85,8 @@
             {{scope.row.idlefishStatus || scope.row.publishStatus | renderStatusValue}}
           </el-tag>
         </template>
+        <el-table-column slot="selection" type="selection">
+        </el-table-column>
       </GridUnit>
     </el-tabs>
   </div>
@@ -129,6 +131,7 @@ export default {
       },
       selectedItems: [],
       colModels: [
+        { slot: 'selection' },
         { prop: 'organizationName', label: '组织名称' },
         { prop: 'address', label: '房源位置', width: 200 },
         { prop: 'roomName', label: '公寓/小区-房间', width: 200 },

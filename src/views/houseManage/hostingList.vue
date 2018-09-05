@@ -51,6 +51,8 @@
                 <el-button type="danger" size="mini">删除</el-button>
               </el-row>
             </template>
+            <el-table-column slot="selection" type="selection">
+            </el-table-column>
           </GridUnit>
         </div>
       </el-form>
@@ -121,6 +123,7 @@ export default {
         }
       ],
       colModels: [
+        { slot: 'selection' },
         { prop: "orgName", label: "组织名称" },
         { prop: "addrRegionName", label: "房源位置" },
         { prop: "roomDetailAddress", label: "公寓/小区-房间" },
