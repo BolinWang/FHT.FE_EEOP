@@ -40,7 +40,7 @@
           </el-form-item>
         </div>
       </el-form>
-      <GridUnit ref="hostingHouseList" :showRowIndex="false" :spanMethod="objectSpanMethod" :formOptions="roomSearchForm" :url="houstingListUrl" :dataMethod="method" listField="data.houseList" totalField="data.record" :columns="colModels" :height="tableHeight" @selection-change="handleSelectionChange" :dataHandler="dataHandler" :pageSizes="[50, 100, 200]" border fit>
+      <GridUnit ref="hostingHouseList" :showRowIndex="false" :spanMethod="objectSpanMethod" :formOptions="roomSearchForm" :url="houstingListUrl" :dataMethod="method" listField="data.houseList" totalField="data.record" :columns="colModels" :height="tableHeight" :showSelection="true" @selection-change="handleSelectionChange" :dataHandler="dataHandler" :pageSizes="[50, 100, 200]" border >
         <template slot="index" slot-scope="scope">
           {{scope.row.index + 1}}
         </template>
@@ -58,6 +58,8 @@
             <el-button type="danger" size="mini" @click="deleteRoom(scope.row)">删除</el-button>
           </el-row>
         </template>
+        <el-table-column slot="selection" type="selection">
+        </el-table-column>
       </GridUnit>
     </el-tabs>
     <el-dialog :title="isEditFlag ? '编辑房间' : '添加房源'" :visible.sync="roomDetailModelVisible" width="1000px">
@@ -213,6 +215,7 @@ export default {
         { prop: "addrRegionName", label: "房源位置", width: 180 },
         { prop: "roomDetailAddress", label: "公寓/小区-房间", width: 180 },
         { prop: "tags", label: "房源类型", slotName: "tags" },
+        { slot: 'selection' },
         { prop: "roomName", label: "房间" },
         {
           prop: "roomStatus",

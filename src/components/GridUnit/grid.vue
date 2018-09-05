@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-04-11 16:47:22
  * @Last Modified by: chudequan
- * @Last Modified time: 2018-09-04 18:39:43
+ * @Last Modified time: 2018-09-05 13:52:32
  */
 <template>
   <div class="model-table-pagenation">
@@ -56,68 +56,73 @@
             <slot name="expandForm"></slot>
           </template>
         </el-table-column>
-        <el-table-column v-if="showSelection" type="selection" width="40"></el-table-column>
-        <el-table-column
-          v-for="(column, columnIndex) in columns" :key="columnIndex"
-          :column-key="column.columnKey"
-          :prop="column.prop"
-          :label="column.label"
-          :width="column.minWidth ? '-' : (column.width || `auto`)"
-          :minWidth="column.minWidth || column.width || 100"
-          :fixed="column.fixed"
-          :render-header="column.renderHeader"
-          :sortable="column.sortable"
-          :sort-method="column.method"
-          :resizable="column.resizable"
-          :formatter="column.formatter"
-          :show-overflow-tooltip="column.showOverflowTooltip || true"
-          :align="column.align || `left`"
-          :header-align="column.headerAlign || column.align"
-          :class-name="column.className"
-          :label-class-name="column.labelClassName"
-          :selectable="column.selectable"
-          :reserve-selection="column.reserveSelection"
-          :filters="column.filters"
-          :filter-placement="column.filterPlacement"
-          :filter-multiple="column.filterMultiple"
-          :filter-method="column.filterMethod"
-          :filtered-value="column.filteredValue">
-          <template slot-scope="scope">
-            <!-- 全局过滤器 -->
-            <span v-if="column.filter">
-              <i v-if="column.filter === 'parseTime'
-                && scope.row[column.prop]
-                && scope.row[column.prop] != ''" class="el-icon-time">
-              </i>
-              {{ Vue.filter(column['filter'])(scope.row[column.prop]) }}
-            </span>
-            <!-- 图片 -->
-            <div v-else-if="column.type === 'img'" style="display: flex;">
-              <img v-lazy="scope.row[column.prop]"
-                width="40" height="40" class="image preview-img image-center"
-                @click="previewImage(scope.row[column.prop])" />
-            </div>
-            <!-- 链接 -->
-            <a v-else-if="column.type === 'link'" :href="scope.row[column.prop]" target="_blank" style="color:#409eff">
-              {{scope.row[column.prop]}}
-            </a>
-            <!-- tags渲染
-              * renderStatusType： 渲染tag type
-              * renderStatusValue： 渲染tag 内容
-            -->
-            <el-tag v-else-if="column.type === 'status' && column.unitFilters"
-              :type="column.unitFilters.renderStatusType(scope.row[column.prop])">
-              {{column.unitFilters.renderStatusValue(scope.row[column.prop])}}
-            </el-tag>
-            <!-- slot插槽 基本上是适配操作列的 -->
-            <span v-else-if="column.slotName">
-              <slot :name="column.slotName" :row="scope.row" :$index="scope.$index" />
-            </span>
-            <span v-else>
-              {{ column.render ? column.render(scope.row) : scope.row[column.prop] }}
-            </span>
-          </template>
-        </el-table-column>
+        <!-- <el-table-column v-if="showSelection" type="selection" width="40"></el-table-column> -->
+        <template
+          v-for="(column, columnIndex) in columns">
+          <slot v-if="column.slot && showSelection" :name="column.slot" />
+          <el-table-column
+            v-if="!column.slot"
+            :key="columnIndex"
+            :column-key="column.columnKey"
+            :prop="column.prop"
+            :label="column.label"
+            :width="column.minWidth ? '-' : (column.width || `auto`)"
+            :minWidth="column.minWidth || column.width || 100"
+            :fixed="column.fixed"
+            :render-header="column.renderHeader"
+            :sortable="column.sortable"
+            :sort-method="column.method"
+            :resizable="column.resizable"
+            :formatter="column.formatter"
+            :show-overflow-tooltip="column.showOverflowTooltip || true"
+            :align="column.align || `left`"
+            :header-align="column.headerAlign || column.align"
+            :class-name="column.className"
+            :label-class-name="column.labelClassName"
+            :selectable="column.selectable"
+            :reserve-selection="column.reserveSelection"
+            :filters="column.filters"
+            :filter-placement="column.filterPlacement"
+            :filter-multiple="column.filterMultiple"
+            :filter-method="column.filterMethod"
+            :filtered-value="column.filteredValue">
+            <template slot-scope="scope">
+              <!-- 全局过滤器 -->
+              <span v-if="column.filter">
+                <i v-if="column.filter === 'parseTime'
+                  && scope.row[column.prop]
+                  && scope.row[column.prop] != ''" class="el-icon-time">
+                </i>
+                {{ Vue.filter(column['filter'])(scope.row[column.prop]) }}
+              </span>
+              <!-- 图片 -->
+              <div v-else-if="column.type === 'img'" style="display: flex;">
+                <img v-lazy="scope.row[column.prop]"
+                  width="40" height="40" class="image preview-img image-center"
+                  @click="previewImage(scope.row[column.prop])" />
+              </div>
+              <!-- 链接 -->
+              <a v-else-if="column.type === 'link'" :href="scope.row[column.prop]" target="_blank" style="color:#409eff">
+                {{scope.row[column.prop]}}
+              </a>
+              <!-- tags渲染
+                * renderStatusType： 渲染tag type
+                * renderStatusValue： 渲染tag 内容
+              -->
+              <el-tag v-else-if="column.type === 'status' && column.unitFilters"
+                :type="column.unitFilters.renderStatusType(scope.row[column.prop])">
+                {{column.unitFilters.renderStatusValue(scope.row[column.prop])}}
+              </el-tag>
+              <!-- slot插槽 基本上是适配操作列的 -->
+              <span v-else-if="column.slotName">
+                <slot :name="column.slotName" :row="scope.row" :$index="scope.$index" />
+              </span>
+              <span v-else>
+                {{ column.render ? column.render(scope.row) : scope.row[column.prop] }}
+              </span>
+            </template>
+          </el-table-column>
+        </template>
       </el-table>
     </div>
     <div v-if="showPagination" class="model-pagenation">
