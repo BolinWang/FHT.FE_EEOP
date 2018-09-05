@@ -643,6 +643,22 @@ export default {
             })
           }
         } else {
+          if (this.hostingRoomDetail.houseRentType === 2) {
+            for (let index = 0; index < this.hostingRoomDetail.hostingRooms.length; index++) {
+              this.$refs.hostingRoomDetail.validateField('hostingRooms.' + index + '.roomArea', (msg) => {
+                if (msg) {
+                  this.activeRoomName = this.hostingRoomDetail.hostingRooms[index].name
+                  return false
+                }
+              })
+              this.$refs.hostingRoomDetail.validateField('hostingRooms.' + index + '.roomDirection', (msg) => {
+                if (msg) {
+                  this.activeRoomName = this.hostingRoomDetail.hostingRooms[index].name
+                  return false
+                }
+              })
+            }
+          }
           this.$message.error('您还有必填信息未填写完全，请全部填写好后再保存')
           return false
         }
