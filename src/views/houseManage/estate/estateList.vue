@@ -133,10 +133,10 @@ export default {
       }
     },
     saveEstateData(type) {
-      let estateInfo = deepClone(this.$refs.estateModel.returnEstateData(type))
-      if (!estateInfo) {
+      if (!this.$refs.estateModel.returnEstateData(type)) {
         return
       }
+      let estateInfo = deepClone(this.$refs.estateModel.returnEstateData(type))
       estateInfo.pictureUploadList = estateInfo.pictureList.filter(n => n.image)
       estateInfo.pictureList = estateInfo.pictureList.filter(n => n.imageUrl !== undefined)
       estateInfo.pictureUploadList.forEach((item) => {
