@@ -205,6 +205,10 @@ export default {
           value: 6
         },
         {
+          label: '保留',
+          value: 7
+        },
+        {
           label: '预定',
           value: 8
         },

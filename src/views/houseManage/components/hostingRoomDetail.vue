@@ -194,10 +194,10 @@
             <el-col :span="10">
               <el-form-item label-width="0" prop="">
                 <el-checkbox-group v-model="hostingRoomDetail.hostingRooms[index].roomAttributesList">
-                  <el-checkbox label="独立卫生间" class="room-attributes"></el-checkbox>
-                  <el-checkbox label="独立阳台" class="room-attributes"></el-checkbox>
-                  <el-checkbox label="独立厨房" class="room-attributes"></el-checkbox>
-                  <el-checkbox label="飘窗" class="room-attributes"></el-checkbox>
+                  <el-checkbox :label="1" class="room-attributes">独立卫生间</el-checkbox>
+                  <el-checkbox :label="2" class="room-attributes">独立阳台</el-checkbox>
+                  <el-checkbox :label="3" class="room-attributes">独立厨房</el-checkbox>
+                  <el-checkbox :label="4" class="room-attributes">飘窗</el-checkbox>
                 </el-checkbox-group>
               </el-form-item>
             </el-col>
@@ -221,7 +221,7 @@
     <el-row :gutter="20">
       <el-col :span="8">
         <el-form-item label-width="110px" label="房源管理权限" prop="orgId">
-          <el-select class="estate-model-select" v-model="hostingRoomDetail.orgId" filterable remote :clearable="true" placeholder="组织名称" :remote-method="searchOrgListByKeywords" :loading="loading" @clear="setOrg">
+          <el-select class="estate-model-select" v-model="hostingRoomDetail.orgId" filterable remote :clearable="true" placeholder="组织名称" :remote-method="searchOrgListByKeywords" :loading="loading" @clear="setOrg" :disabled="hostingRoomDetail.isEditFlag">
             <el-option v-for="item in orgList" :key="item.ordId" :value="item.orgId" :label="item.orgName" @click.native="setOrg(item)">
             </el-option>
           </el-select>
@@ -345,6 +345,9 @@ export default {
         ],
         contactMobile: [
           { required: true, message: '请输入联系人电话', trigger: 'blur' }
+        ],
+        houseDesc: [
+          { max: 150, message: '长度不能超过150个字符', trigger: 'change' }
         ],
         sourceInfo: [
           { required: true, message: '请选择一个房源提供者', trigger: 'change' }

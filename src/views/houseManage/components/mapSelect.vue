@@ -144,14 +144,12 @@ export default {
             address: ''
           })
         } else {
-          if (item.areaId !== this.areaCode[2]) {
-            this.$emit('addressChange', {
-              zoneId: '',
-              areaCode: [item.provinceId, item.cityId, item.areaId],
-              address: item.formatName,
-              regionAddressId: item.regionAddressId || ''
-            })
-          }
+          this.$emit('addressChange', {
+            zoneId: '',
+            areaCode: [item.provinceId, item.cityId, item.areaId],
+            address: item.formatName,
+            regionAddressId: item.regionAddressId || ''
+          })
           this.regionAddressId = item ? item.regionAddressId : ''
         }
         this.addressList = []
