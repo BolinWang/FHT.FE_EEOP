@@ -341,26 +341,6 @@ export default {
   computed: {
     allCheckedOptionsList() {
       return this.copyOptions.map((item) => item.val)
-    },
-    defaultRentPayForm() {
-      return {
-        financeRentPayList: this.rentPayList.filter((item) => item.type === 2),
-        defaultRentPayList: this.rentPayList.filter((item) => item.type === 1),
-        rules: {
-          rentPrice: [
-            { required: true, message: '请输入房价', trigger: 'blur' }
-          ],
-          depositPrice: [
-            { required: true, message: '请输入押金', trigger: 'blur' }
-          ],
-          serviceChargePrice: [
-            { required: true, message: '请输入服务费', trigger: 'blur' }
-          ],
-          serviceChargeRatio: [
-            { required: true, message: '请输入租金百分比', trigger: 'blur' }
-          ]
-        }
-      }
     }
   },
   methods: {
@@ -410,11 +390,6 @@ export default {
           this.$set(this, 'baseRentTypeList', res.data.baseRentTypeList)
         }
         this.rentPayModelVisible = true
-
-        // this.$nextTick(() => {
-        //   this.$refs.defaultRentPayForm.clearValidate()
-        //   this.$refs.financeRentPayForm.clearValidate()
-        // })
       })
     },
     handleCheckAllChange(val) {
@@ -628,13 +603,6 @@ export default {
         .catch(_ => {})
       } else {
         done()
-      }
-    }
-  },
-  watch: {
-    defaultRentPayList(val) {
-      if (val) {
-        this.defaultRentPayForm.defaultRentPayList = val
       }
     }
   },

@@ -61,9 +61,6 @@
         <el-table-column slot="selection" type="selection" width="50px" align="center" class-name="room-list-selection-td">
         </el-table-column>
       </GridUnit>
-      <!-- <div>
-        在部署一下看看啊
-      </div> -->
     </el-tabs>
     <el-dialog :title="isEditFlag ? '编辑房间' : '添加房源'" :visible.sync="roomDetailModelVisible" width="1000px">
       <hosting-room-detail ref="hostingRoomDetail"></hosting-room-detail>
@@ -389,7 +386,7 @@ export default {
           this.$message(message)
           this.searchParam()
         }
-      })
+      }).catch(err => { console.log(err) })
     },
     //删除房间
     deleteRoom(row) {
@@ -415,7 +412,7 @@ export default {
             })
             this.searchParam()
           }
-        })
+        }).catch(err => { console.log(err) })
       })
     },
     // 表格数据合并
@@ -441,9 +438,7 @@ export default {
     dataHandler(data) {
       console.log(data)
       let tempArr = []
-      if (this.activeName === '整租') {
-        data = data.filter( item => item.roomList.length > 0 )
-      }
+      data = data.filter( item => item.roomList.length > 0 )
       data.forEach((item, index) => {
         item.roomList.forEach((v, i) => {
           if (this.activeName === '整租') {
@@ -679,7 +674,7 @@ export default {
           })
           this.rentPayModelVisible = false
         }
-      })
+      }).catch(err => { console.log(err) })
     },
     // 打开复制到模态框
     openCopyItemsModel(row) {
@@ -718,7 +713,7 @@ export default {
           })
           this.copyItemsModelVisible = false
         }
-      })
+      }).catch(err => { console.log(err) })
     },
     handleCheckAllChange(val) {
       this.checkedCopyList = val ? this.allCheckedOptionsList : []
