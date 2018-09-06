@@ -61,6 +61,9 @@
         <el-table-column slot="selection" type="selection" width="50px" align="center" class-name="room-list-selection-td">
         </el-table-column>
       </GridUnit>
+      <!-- <div>
+        在部署一下看看啊
+      </div> -->
     </el-tabs>
     <el-dialog :title="isEditFlag ? '编辑房间' : '添加房源'" :visible.sync="roomDetailModelVisible" width="1000px">
       <hosting-room-detail ref="hostingRoomDetail"></hosting-room-detail>
