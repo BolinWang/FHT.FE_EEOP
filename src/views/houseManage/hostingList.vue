@@ -60,6 +60,9 @@
         </template>
         <el-table-column slot="selection" type="selection" width="50px" align="center" class-name="room-list-selection-td">
         </el-table-column>
+        <template slot="operateRecordStr" slot-scope="scope">
+          <p>{{scope.row.operator}} {{scope.row.operateTime}}</p>
+        </template>
       </GridUnit>
     </el-tabs>
     <el-dialog :title="isEditFlag ? '编辑房间' : '添加房源'" :visible.sync="roomDetailModelVisible" width="1000px">
@@ -243,8 +246,12 @@ export default {
           width: "340",
           fixed: 'right'
         },
-        { prop: "operator", label: "房源提供者", width: 100 },
-        { prop: "operateTime", label: "操作时间", width: 130 },
+        { prop: "provider", label: "房源提供者", width: 100 },
+        {
+          prop: "operateRecord",
+          label: "操作记录",
+          slotName: "operateRecordStr",
+        }
       ],
       roomDetailModelVisible: false,
       rentPayModelVisible: false,
