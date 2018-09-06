@@ -20,7 +20,7 @@
         <el-form-item>
           <el-input v-model="roomSearchForm.orgName" size="small" placeholder="组织名称" style="width:120px" />
           <el-input v-model="roomSearchForm.subdistrictName" size="small" placeholder="公寓/小区" style="width:120px;margin-left:10px" />
-          <el-input v-model="roomSearchForm.roomCode" type="number" size="small" placeholder="房源编码" style="width:120px;margin-left:10px" />
+          <el-input v-model="roomSearchForm.roomCode" size="small" placeholder="房源编码" style="width:120px;margin-left:10px" class="deal" />
         </el-form-item>
         <el-form-item class="house-search-form-group">
           <el-button type="primary" icon="el-icon-search" @click="searchHostingHouseList('search')" class="filter-item">查询</el-button>
@@ -40,7 +40,7 @@
           </el-form-item>
         </div>
       </el-form>
-      <GridUnit ref="hostingHouseList" :showRowIndex="false" :spanMethod="objectSpanMethod" :formOptions="roomSearchForm" :url="houstingListUrl" :dataMethod="method" listField="data.houseList" totalField="data.record" :columns="colModels" :height="tableHeight" :showSelection="true" @selection-change="handleSelectionChange" :dataHandler="dataHandler" :pageSizes="[50, 100, 200]" :border="activeName === '合租'" >
+      <GridUnit ref="hostingHouseList" :showRowIndex="false" :spanMethod="objectSpanMethod" :formOptions="roomSearchForm" :url="houstingListUrl" :dataMethod="method" listField="data.houseList" totalField="data.record" :columns="colModels" :height="tableHeight" :showSelection="true" @selection-change="handleSelectionChange" :dataHandler="dataHandler" :pageSizes="[50, 100, 200]" :border="activeName === '合租'">
         <template slot="index" slot-scope="scope">
           {{scope.row.index + 1}}
         </template>
@@ -58,7 +58,7 @@
             <el-button type="danger" size="mini" @click="deleteRoom(scope.row)">删除</el-button>
           </el-row>
         </template>
-        <el-table-column slot="selection" type="selection" width="50px" align="center">
+        <el-table-column slot="selection" type="selection" width="50px" align="center" class-name="room-list-selection-td">
         </el-table-column>
       </GridUnit>
     </el-tabs>
@@ -189,6 +189,10 @@ export default {
           value: 2
         },
         {
+          label: '下单未入住',
+          value: 3
+        },
+        {
           label: '在住',
           value: 4
         },
@@ -199,6 +203,10 @@ export default {
         {
           label: '空脏',
           value: 6
+        },
+        {
+          label: '预定',
+          value: 8
         },
         {
           label: '已出租（无租客）',
@@ -383,11 +391,12 @@ export default {
     //删除房间
     deleteRoom(row) {
       const h = this.$createElement
+      const message = this.roomSearchForm.houseRentType === 1 ? '' : '若删除单个房间请在【编辑房间】里面删除'
       this.$msgbox({
         title: "确认消息",
         message: h('p', null, [
           h('span', null, '确定删除整套房间吗？ '),
-          h('span', { style: 'color: red' }, '若删除单个房间请在【公寓详情】里面删除')
+          h('span', { style: 'color: red' }, message)
         ]),
         showCancelButton: true,
         confirmButtonText: '确定',
@@ -713,7 +722,7 @@ export default {
     },
     handleOptionsChange() {
       this.checkAllCopyItem = this.checkedCopyList.length === this.allCheckedOptionsList.length
-    },
+    }
   },
   mounted() {
     let changeTableSize = debounce(() => {
@@ -774,14 +783,6 @@ export default {
 }
 .romm-type-tags + .romm-type-tags {
   margin-left: 5px;
-}
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-  -webkit-appearance: none !important;
-  margin: 0;
-}
-input{
-    -moz-appearance:textfield;
 }
 </style>
 

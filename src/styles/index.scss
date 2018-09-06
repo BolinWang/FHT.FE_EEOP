@@ -217,6 +217,12 @@ a:hover {
     padding: 0 8px;
   }
 }
+/* 分散式房间列表选择列 */
+.room-list-selection-td {
+  .cell {
+    padding-left: 14px !important;
+  }
+}
 
 /* 编辑分散式房源 */
 .room-detail-container {

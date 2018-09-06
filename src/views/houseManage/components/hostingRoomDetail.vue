@@ -511,6 +511,9 @@ export default {
     },
     handleTabsEdit(targetName, action) {
       if (action === 'add') {
+        if (this.hostingRoomDetail.hostingRooms.length > 25) {
+          return
+        }
         let curIndex = this.hostingRoomDetail.hostingRooms.length
         let newTabName = ++this.tabIndex + ''
         this.hostingRoomDetail.hostingRooms.push({
