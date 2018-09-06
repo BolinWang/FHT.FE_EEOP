@@ -40,7 +40,7 @@
           </el-form-item>
         </div>
       </el-form>
-      <GridUnit ref="hostingHouseList" :showRowIndex="false" :spanMethod="objectSpanMethod" :formOptions="roomSearchForm" :url="houstingListUrl" :dataMethod="method" listField="data.houseList" totalField="data.record" :columns="colModels" :height="tableHeight" :showSelection="true" @selection-change="handleSelectionChange" :dataHandler="dataHandler" :pageSizes="[50, 100, 200]" border >
+      <GridUnit ref="hostingHouseList" :showRowIndex="false" :spanMethod="objectSpanMethod" :formOptions="roomSearchForm" :url="houstingListUrl" :dataMethod="method" listField="data.houseList" totalField="data.record" :columns="colModels" :height="tableHeight" :showSelection="true" @selection-change="handleSelectionChange" :dataHandler="dataHandler" :pageSizes="[50, 100, 200]" :border="activeName === '合租'" >
         <template slot="index" slot-scope="scope">
           {{scope.row.index + 1}}
         </template>
@@ -48,7 +48,7 @@
           <el-tag :type="[2].includes(scope.row.roomStatus) ? 'success' : ([5, 6, 8, 10].includes(scope.row.roomStatus) ? 'info' : 'danger')">{{scope.row.roomStatus | setRoomStatus(roomStatusList)}}</el-tag>
         </template>
         <template slot="tags" slot-scope="scope">
-          <el-tag v-for="(item,index) in scope.row.tags" :key="index" :label="item">{{item}}</el-tag>
+          <el-tag class="romm-type-tags" v-for="(item,index) in scope.row.tags" :key="index" :label="item">{{item}}</el-tag>
         </template>
         <template slot="operateHosting" slot-scope="scope">
           <el-row>
@@ -58,7 +58,7 @@
             <el-button type="danger" size="mini" @click="deleteRoom(scope.row)">删除</el-button>
           </el-row>
         </template>
-        <el-table-column slot="selection" type="selection">
+        <el-table-column slot="selection" type="selection" width="50px" align="center">
         </el-table-column>
       </GridUnit>
     </el-tabs>
@@ -71,14 +71,14 @@
       </span>
     </el-dialog>
     <el-dialog title="交租方式" :visible.sync="rentPayModelVisible" :width="curRoomFinanceType !== 2 ? '1030px' : '730px'">
-      <el-tabs type="border-card" v-if="activeName === '合租'">
-        <el-tab-pane :label="item.roomName" v-for="(item, index) in rentPayList" :key="index">
+      <el-tabs type="border-card" v-if="activeName === '合租'" v-model="activeRentPayTabName" @tab-click="checkRentPaySaveStatus">
+        <el-tab-pane :label="item.roomName" v-for="(item, index) in rentPayList" :key="index" :name="index.toString()">
           <rent-pay-way ref="rentPayWay" :list="rentPayList[index].roomRentTypeList" :curRoomFinanceType="curRoomFinanceType" :baseRentTypeList="baseRentTypeList"></rent-pay-way>
         </el-tab-pane>
       </el-tabs>
       <rent-pay-way v-else-if="activeName === '整租' && rentPayList.length" ref="rentPayWay" :list="rentPayList[0].roomRentTypeList" :curRoomFinanceType="curRoomFinanceType" :baseRentTypeList="baseRentTypeList"></rent-pay-way>
       <span slot="footer">
-        <el-button type="primary" size="small" @click="checkAndSaveRentPay">保 存</el-button>
+        <el-button type="primary" size="small" @click="saveEstateRoomRentPayWay">保 存</el-button>
         <el-button @click="rentPayModelVisible = false" size="small">取 消</el-button>
       </span>
     </el-dialog>
@@ -101,8 +101,8 @@
             </div>
           </div>
           <el-checkbox-group v-model="checkedCopyList">
-            <div class="head-check-options" :class="[v.showRoomSelect ? 'especial' : '']" v-for="v in copyOptions" :key="v.val">
-              <el-select v-if="v.showRoomSelect" size="mini" v-model="copyItemsParams.rentTypeRoomCode">
+            <div class="head-check-options" :class="[v.showRoomSelect && activeName === '合租' ? 'especial' : '']" v-for="v in copyOptions" :key="v.val">
+              <el-select v-if="v.showRoomSelect && activeName === '合租'" size="mini" v-model="copyItemsParams.rentTypeRoomCode">
                 <el-option v-for="item in roomSelectList" :key="item.roomCode" :label="item.roomName" :value="item.roomCode">
                 </el-option>
               </el-select>
@@ -211,16 +211,17 @@ export default {
       ],
       colModels: [
         { label: '#', slotName: "index", fixed: 'left', width: 50, align: 'center' },
-        { prop: "orgName", label: "组织名称", width: 100 },
+        { prop: "orgName", label: "组织名称", width: 200 },
         { prop: "addrRegionName", label: "房源位置", width: 180 },
         { prop: "roomDetailAddress", label: "公寓/小区-房间", width: 180 },
-        { prop: "tags", label: "房源类型", slotName: "tags" },
+        { prop: "tags", label: "房源类型", slotName: "tags", width: 130 },
         { slot: 'selection' },
         { prop: "roomName", label: "房间" },
         {
           prop: "roomStatus",
           label: "房间状态",
-          slotName: "roomStatus"
+          slotName: "roomStatus",
+          width: 150
         },
         { prop: "roomCode", label: "平台房源编码" },
         {
@@ -230,11 +231,14 @@ export default {
           width: "340",
           fixed: 'right'
         },
-        { prop: "provider", label: "房源提供者", width: 100 },
+        { prop: "operator", label: "房源提供者", width: 100 },
         { prop: "operateTime", label: "操作时间", width: 130 },
       ],
       roomDetailModelVisible: false,
       rentPayModelVisible: false,
+      activeRentPayTabName: '0',
+      tempRentPayTabName: '0',
+      tempRentPayList: [],
       rentPayList: [],
       baseRentTypeList: [],
       curRoomFinanceType: 1,
@@ -369,7 +373,6 @@ export default {
             const status = roomStatusParams.roomStatus === 2 ? '空房' : '已出租无租客'
             message = {
               message: `成功${res.data.success}个房间，失败${res.data.fail}个房间，${res.data.already}个房间已经是${status}状态`,
-              type: 'success'
             }
           }
           this.$message(message)
@@ -424,7 +427,11 @@ export default {
     },
     // 表格数据
     dataHandler(data) {
+      console.log(data)
       let tempArr = []
+      if (this.activeName === '整租') {
+        data = data.filter( item => item.roomList.length > 0 )
+      }
       data.forEach((item, index) => {
         item.roomList.forEach((v, i) => {
           if (this.activeName === '整租') {
@@ -536,6 +543,7 @@ export default {
         return false
       }
       let api = roomDetailData.isEditFlag ? hostingEditHouseInfoApi : hostingSaveHouseInfoApi
+      console.log(roomDetailData)
       api({
         hostingHouseInfo: JSON.stringify(roomDetailData)
       }).then((res) => {
@@ -575,48 +583,89 @@ export default {
         this.rentPayList = res.data.hostingRoomRentType
         this.baseRentTypeList = res.data.baseRentTypeList
         this.rentPayModelVisible = true
+        if (this.activeName === '合租') {
+          this.activeRentPayTabName = '0'
+          this.tempRentPayTabName = '0'
+          this.tempRentPayList = res.data.hostingRoomRentType[0].roomRentTypeList
+        }
       })
     },
-    // 检查和保存交租方式
-    checkAndSaveRentPay() {
-      if (this.activeName === '整租') {
-        let list = this.$refs.rentPayWay.returnRentPayList()
-        if (!list) {
-          this.$message.error(`请填写完交租方式再保存`)
-          return false
-        }
-        this.saveEstateRoomRentPayWay(this.rentPayList[0].roomCode, list)
+    // 检查有无修改交租方式
+    checkRentPaySaveStatus() {
+      let activeTabName = this.activeRentPayTabName
+      let list = this.$refs.rentPayWay[Number(this.tempRentPayTabName)].returnRentPayList()
+      if (!list || JSON.stringify(this.tempRentPayList) != JSON.stringify(list)) {
+        this.$nextTick(() => {
+          this.activeRentPayTabName = this.tempRentPayTabName
+        })
+        this.$confirm('切换房间会放弃当前的修改，是否确认切换？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$refs.rentPayWay[Number(this.tempRentPayTabName)].resetForm(this.rentPayList[Number(this.tempRentPayTabName)].roomRentTypeList)
+          this.activeRentPayTabName = activeTabName
+          this.tempRentPayTabName = activeTabName
+          this.tempRentPayList = this.rentPayList[Number(activeTabName)].roomRentTypeList
+        }).catch((err) => { console.log(err) })
       } else {
-        let tempRentPayList = []
-        for (let n in this.$refs.rentPayWay) {
-          let list = this.$refs.rentPayWay[n].returnRentPayList()
-          if (!list) {
-            this.$message.error(`${this.rentPayList[n].roomName}的交租方式还未填写完`)
-            return false
-          }
-          tempRentPayList[n] = deepClone(this.rentPayList[n])
-          tempRentPayList[n].roomRentTypeList = list
-        }
-        if (tempRentPayList.length === this.rentPayList.length) {
-          tempRentPayList.forEach((item, index) => {
-            this.saveEstateRoomRentPayWay(item.roomCode, item.roomRentTypeList)
-          })
-        }
+        this.tempRentPayTabName = activeTabName
+        this.tempRentPayList = this.rentPayList[Number(activeTabName)].roomRentTypeList
       }
     },
+    // 检查和保存交租方式
+    // checkAndSaveRentPay() {
+    //   if (this.activeName === '整租') {
+    //     let list = this.$refs.rentPayWay.returnRentPayList()
+    //     if (!list) {
+    //       this.$message.error(`请填写完交租方式再保存`)
+    //       return false
+    //     }
+    //     this.saveEstateRoomRentPayWay(this.rentPayList[0].roomCode, list)
+    //   } else {
+    //     let tempRentPayList = []
+    //     for (let n in this.$refs.rentPayWay) {
+    //       let list = this.$refs.rentPayWay[n].returnRentPayList()
+    //       if (!list) {
+    //         this.$message.error(`${this.rentPayList[n].roomName}的交租方式还未填写完`)
+    //         return false
+    //       }
+    //       tempRentPayList[n] = deepClone(this.rentPayList[n])
+    //       tempRentPayList[n].roomRentTypeList = list
+    //     }
+    //     if (tempRentPayList.length === this.rentPayList.length) {
+    //       Promise.all(tempRentPayList.map((item, index) => {
+    //         return saveEstateRoomRentPayWayApi({
+    //           roomCode: item.roomCode,
+    //           roomRentTypeList: item.roomRentTypeList
+    //         })
+    //       })).then((resArr) => {
+    //         for (let i = 0; i < resArr.length; i++) {
+    //           // if (resArr[i].code) {
+
+    //           // }
+    //         }
+    //       }).catch(err => { console.log(err) })
+    //     }
+    //   }
+    // },
     // 保存交租方式
-    saveEstateRoomRentPayWay(roomCode, roomRentTypeList) {
-      let _this = this
+    saveEstateRoomRentPayWay() {
+      let list = this.activeName === '整租' ? this.$refs.rentPayWay.returnRentPayList() : this.$refs.rentPayWay[Number(this.activeRentPayTabName)].returnRentPayList()
+      if (!list) {
+        this.$message.error(`请填写完交租方式再保存`)
+        return false
+      }
       saveEstateRoomRentPayWayApi({
-        roomCode: roomCode,
-        roomRentTypeList: roomRentTypeList
+        roomCode: this.rentPayList[this.activeName === '整租' ? 0 : Number(this.activeRentPayTabName)].roomCode,
+        roomRentTypeList: list
       }).then((res) => {
         if (res.code === '0') {
-          _this.$message({
+          this.$message({
             message: res.message,
             type: 'success'
           })
-          _this.rentPayModelVisible = false
+          this.rentPayModelVisible = false
         }
       })
     },
@@ -723,7 +772,9 @@ export default {
     }
   }
 }
-
+.romm-type-tags + .romm-type-tags {
+  margin-left: 5px;
+}
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none !important;

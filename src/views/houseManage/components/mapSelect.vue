@@ -1,9 +1,11 @@
 <template>
   <div>
-    <el-select class="map-address-select" v-model="specificAddress" filterable remote :clearable="true" placeholder="请输入关键词" :remote-method="fetchAddressList" popper-class="detail-address-options" :loading="loading" @focus="checkAddressSelect">
-      <el-option v-for="(item, index) in addressList" :key="index" v-html="item.displayText" :value="item.formatName" @click.native="setAddress(item)">
-      </el-option>
-    </el-select>
+    <el-tooltip :disabled="!specificAddress" class="item" effect="dark" :content="specificAddress" placement="top-start">
+      <el-select class="map-address-select" v-model="specificAddress" filterable remote :clearable="true" placeholder="请输入关键词" :remote-method="fetchAddressList" popper-class="detail-address-options" :loading="loading" @focus="checkAddressSelect">
+        <el-option v-for="(item, index) in addressList" :key="index" v-html="item.displayText" :value="item.formatName" @click.native="setAddress(item)">
+        </el-option>
+      </el-select>
+    </el-tooltip>
     <el-dialog title="地图选择小区" :visible.sync="mapModelVisible" width="700px" :append-to-body="true">
       <el-card class="map-selected-tips" :body-style="{padding: '10px'}">
         <p>1. 如果搜索的内容在右侧列表中小区名称不对（例如：天天超市），点击后可以自定义小区名称、具体位置、所在区域。</p>

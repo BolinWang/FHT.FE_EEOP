@@ -336,6 +336,13 @@ export default {
         }
       })
       return list
+    },
+    resetForm(list) {
+      this.$nextTick(() => {
+        this.$refs.financeRentPayForm.clearValidate()
+        this.$refs.defaultRentPayForm.clearValidate()
+      })
+      this.rentPayList = list.slice()
     }
   },
   watch: {
@@ -343,6 +350,10 @@ export default {
       immediate: true,
       handler: function (val) {
         this.rentPayList = val.slice()
+        this.$nextTick(() => {
+          this.$refs.financeRentPayForm.clearValidate()
+          this.$refs.defaultRentPayForm.clearValidate()
+        })
       }
     }
   }

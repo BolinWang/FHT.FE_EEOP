@@ -247,10 +247,11 @@ a:hover {
       .el-form-item__error {
         width: 90px;
       }
-      .sub-room-info-list {
-        .el-icon-close {
-          display: none;
-        }
+      .el-icon-close {
+        display: none;
+      }
+      .el-tabs__new-tab {
+        margin-right: 15px;
       }
     }
   }

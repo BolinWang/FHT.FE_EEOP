@@ -81,7 +81,7 @@
           <el-row :gutter="20">
             <el-col :span="6">
               <el-form-item>
-                <el-checkbox label="飞虎队" name="type" v-model="estateModel.tag" @change="handleSourceInfo"></el-checkbox>
+                <el-checkbox label="飞虎队" name="type" v-model="estateModel.tag" @change="handleSourceInfo" :disabled="this.type === '编辑公寓'"></el-checkbox>
               </el-form-item>
             </el-col>
             <el-col :span="6">
