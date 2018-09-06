@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-04-11 16:49:14
  * @Last Modified by: chudequan
- * @Last Modified time: 2018-07-09 20:32:05
+ * @Last Modified time: 2018-09-04 18:39:51
  */
 
 const props = {
@@ -123,7 +123,7 @@ const props = {
   indexMethod:{
     type: Function
   },
-  
+
   /* 接口数据排列，后续可以增加本地数据操作 */
   type: {
     type: String,

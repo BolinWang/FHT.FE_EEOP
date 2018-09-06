@@ -1,5 +1,5 @@
 <template>
-  <el-form v-if="JSON.stringify(hostingRoomDetail) !== '{}'" ref="hostingRoomDetail" :model="hostingRoomDetail" :rules="hostingRoomDetailRules" label-width="90px" size="small"  class="room-detail-container hosting-room-detail">
+  <el-form v-if="JSON.stringify(hostingRoomDetail) !== '{}'" ref="hostingRoomDetail" :model="hostingRoomDetail" :rules="hostingRoomDetailRules" label-width="90px" size="small" class="room-detail-container hosting-room-detail">
     <el-row :gutter="20">
       <el-col :span="8">
         <el-form-item label="所在地区" prop="areaCode">
@@ -155,8 +155,11 @@
     </el-row>
 
     <template v-if="hostingRoomDetail.houseRentType === 2">
-      <el-tabs class="sub-room-info-list" v-model="activeRoomName" type="border-card" :closable="hostingRoomDetail.hostingRooms.length > 1" :addable="hostingRoomDetail.hostingRooms.length < 26" @edit="handleTabsEdit">
-        <el-tab-pane :key="item.roomName" v-for="(item, index) in hostingRoomDetail.hostingRooms" :label="item.roomName" :name="item.name">
+      <el-tabs class="sub-room-info-list" v-model="activeRoomName" type="border-card" :addable="hostingRoomDetail.hostingRooms.length < 26" @edit="handleTabsEdit">
+        <el-tab-pane :key="item.roomName" v-for="(item, index) in hostingRoomDetail.hostingRooms" :name="item.name">
+          <span slot="label">{{item.roomName}}
+            <i class="el-icon-delete" v-show="index === hostingRoomDetail.hostingRooms.length - 1 && index > 0" @click="deleteCurRoom(item, index)"></i>
+          </span>
           <el-row :gutter="20">
             <el-col :span="5">
               <el-form-item label-width="0" class="room-count">
@@ -235,19 +238,9 @@
         </el-form-item>
       </el-col>
       <el-col :span="6">
-        <el-form-item v-if="hostingRoomDetail.tag" label-width="0" prop="sourceInfo" >
-          <el-select
-            v-model="hostingRoomDetail.sourceInfo"
-            filterable remote
-            placeholder="房源提供者"
-            :remote-method="fetchFlyTigerList"
-            :loading="loading"
-            :clearable="true"
-            size="small"
-            style="width: 100%">
-            <el-option v-for="item in filterManagerList" :key="item.id"
-              :label="item.name"
-              :value="item.id">
+        <el-form-item v-if="hostingRoomDetail.tag" label-width="0" prop="sourceInfo">
+          <el-select v-model="hostingRoomDetail.sourceInfo" filterable remote placeholder="房源提供者" :remote-method="fetchFlyTigerList" :loading="loading" :clearable="true" size="small" style="width: 100%">
+            <el-option v-for="item in filterManagerList" :key="item.id" :label="item.name" :value="item.id">
               <span style="float: left">{{ item.name }}</span>
               <span style="float: right; color: #8492a6; font-size: 13px">{{ item.mobile }}</span>
             </el-option>
@@ -256,19 +249,9 @@
       </el-col>
     </el-row>
     <!-- 上传图片模态框 -->
-    <el-dialog
-      title="上传房间照片"
-      :visible.sync="uploadPicsModelVisible"
-      :append-to-body="true"
-      @close="uploadModelClose"
-      custom-class="upload-pics-model"
-      width="600px" >
+    <el-dialog title="上传房间照片" :visible.sync="uploadPicsModelVisible" :append-to-body="true" @close="uploadModelClose" custom-class="upload-pics-model" width="600px">
       <div class="previewItems">
-        <Preview
-          :pic-list="currentPicList"
-          :delete-icon="`delete`"
-          :disabled="``"
-          @emitDelete="emitDelete">
+        <Preview :pic-list="currentPicList" :delete-icon="`delete`" :disabled="``" @emitDelete="emitDelete">
         </Preview>
         <label class="el-upload el-upload--picture-card uploadImage" for="uploadImages">
           <i class="el-icon-plus"></i>
@@ -292,7 +275,7 @@
 <script>
 import areaSelect from '@/components/AreaSelect'
 import mapSelect from './mapSelect'
-import { estateOrgListApi, estateZoneListByAreaIdApi } from '@/api/houseManage'
+import { estateOrgListApi, estateZoneListByAreaIdApi, deleteRoomApi } from '@/api/houseManage'
 import { fhdAuditApi } from '@/api/auditCenter'
 import Preview from '@/components/Preview/Preview'
 import ImageCropper from '@/components/ImageCropper/Cropper'
@@ -545,18 +528,19 @@ export default {
         if (activeName === targetName) {
           tabs.forEach((tab, index) => {
             if (tab.name === targetName) {
-              let nextTab = tabs[index + 1] || tabs[index - 1]
+              let nextTab = tabs[index - 1] || tabs[index + 1]
               if (nextTab) {
                 activeName = nextTab.name
               }
             }
           })
         }
-
-        this.activeRoomName = activeName
         this.hostingRoomDetail.hostingRooms = tabs.filter(tab => tab.name !== targetName)
         this.hostingRoomDetail.hostingRooms.forEach((item, index) => {
           item.roomName = '房间' + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')[index]
+        })
+        this.$nextTick(() => {
+          this.activeRoomName = activeName
         })
       }
     },
@@ -611,6 +595,7 @@ export default {
     setRoomDetailData(val) {
       if (val.houseRentType === 2) {
         this.tabIndex = val.hostingRooms.length
+        this.activeRoomName = '1'
       }
       if (val.isEditFlag) {
         this.orgList = [
@@ -630,12 +615,15 @@ export default {
           val.sourceInfo = val.sourceInfo.split(',')[0]
         }
       }
-      this.$set(this, 'hostingRoomDetail', val)
-      if (val.isEditFlag) {
-        this.searchZoneList(true)
-      }
+
       this.$nextTick(() => {
-        this.$refs.hostingRoomDetail.clearValidate()
+        this.$set(this, 'hostingRoomDetail', val)
+        if (val.isEditFlag) {
+          this.searchZoneList(true)
+        }
+        this.$nextTick(() => {
+          this.$refs.hostingRoomDetail.clearValidate()
+        })
       })
     },
     returnRoomDetailData() {  // 返回房间详情数据
@@ -655,6 +643,22 @@ export default {
             })
           }
         } else {
+          if (this.hostingRoomDetail.houseRentType === 2) {
+            for (let index = 0; index < this.hostingRoomDetail.hostingRooms.length; index++) {
+              this.$refs.hostingRoomDetail.validateField('hostingRooms.' + index + '.roomArea', (msg) => {
+                if (msg) {
+                  this.activeRoomName = this.hostingRoomDetail.hostingRooms[index].name
+                  return false
+                }
+              })
+              this.$refs.hostingRoomDetail.validateField('hostingRooms.' + index + '.roomDirection', (msg) => {
+                if (msg) {
+                  this.activeRoomName = this.hostingRoomDetail.hostingRooms[index].name
+                  return false
+                }
+              })
+            }
+          }
           this.$message.error('您还有必填信息未填写完全，请全部填写好后再保存')
           return false
         }
@@ -670,6 +674,17 @@ export default {
       this.curPicListIndex === -1 ? (this.hostingRoomDetail.pictures = this.currentPicList) : (this.hostingRoomDetail.hostingRooms[this.curPicListIndex].pictures = this.currentPicList)
       this.currentPicList = []
     },
+    deleteCurRoom(curRoom, index) {
+      if (curRoom.needCheck) {
+        deleteRoomApi({
+          roomCodeList: [curRoom.roomCode]
+        }).then((res) => {
+          this.handleTabsEdit(curRoom.name, 'remove')
+        }).catch((err) => { console.log(err) })
+      } else {
+        this.handleTabsEdit(curRoom.name, 'remove')
+      }
+    },
     // 删除图片
     emitDelete(val) {
       this.currentPicList = val || []
@@ -682,8 +697,8 @@ export default {
     emitCropperData(list = []) {
       list.forEach((v, i) => {
         v.type = 1,
-        v.imageName = v.title,
-        v.image = v.src
+          v.imageName = v.title,
+          v.image = v.src
         if (v.isBase64 === undefined) {
           v.isBase64 = 1
         }
@@ -772,6 +787,12 @@ export default {
   .sub-room-info-list {
     margin-bottom: 18px;
     box-shadow: 0 0;
+    .el-tabs__item {
+      .el-icon-delete {
+        margin-left: 5px;
+        color: red;
+      }
+    }
   }
 }
 .upload-pics-model {

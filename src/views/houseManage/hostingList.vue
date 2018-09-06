@@ -40,7 +40,7 @@
           </el-form-item>
         </div>
       </el-form>
-      <GridUnit ref="hostingHouseList" :showRowIndex="false" :spanMethod="objectSpanMethod" :formOptions="roomSearchForm" :showSelection="true" :url="houstingListUrl" :dataMethod="method" listField="data.houseList" totalField="data.record" :columns="colModels" :height="tableHeight" @selection-change="handleSelectionChange" :dataHandler="dataHandler" :pageSizes="[50, 100, 200]" border fit>
+      <GridUnit ref="hostingHouseList" :showRowIndex="false" :spanMethod="objectSpanMethod" :formOptions="roomSearchForm" :url="houstingListUrl" :dataMethod="method" listField="data.houseList" totalField="data.record" :columns="colModels" :height="tableHeight" :showSelection="true" @selection-change="handleSelectionChange" :dataHandler="dataHandler" :pageSizes="[50, 100, 200]" border >
         <template slot="index" slot-scope="scope">
           {{scope.row.index + 1}}
         </template>
@@ -58,6 +58,8 @@
             <el-button type="danger" size="mini" @click="deleteRoom(scope.row)">删除</el-button>
           </el-row>
         </template>
+        <el-table-column slot="selection" type="selection">
+        </el-table-column>
       </GridUnit>
     </el-tabs>
     <el-dialog :title="isEditFlag ? '编辑房间' : '添加房源'" :visible.sync="roomDetailModelVisible" width="1000px">
@@ -68,7 +70,7 @@
         <el-button size="small" @click="saveRoomDetailData('clear')">取 消</el-button>
       </span>
     </el-dialog>
-    <el-dialog title="交租方式" :visible.sync="rentPayModelVisible" :width="curRoomFinanceType !== 2 ? '1000px' : '700px'">
+    <el-dialog title="交租方式" :visible.sync="rentPayModelVisible" :width="curRoomFinanceType !== 2 ? '1030px' : '730px'">
       <el-tabs type="border-card" v-if="activeName === '合租'">
         <el-tab-pane :label="item.roomName" v-for="(item, index) in rentPayList" :key="index">
           <rent-pay-way ref="rentPayWay" :list="rentPayList[index].roomRentTypeList" :curRoomFinanceType="curRoomFinanceType" :baseRentTypeList="baseRentTypeList"></rent-pay-way>
@@ -221,6 +223,7 @@ export default {
         { prop: "addrRegionName", label: "房源位置", width: 180 },
         { prop: "roomDetailAddress", label: "公寓/小区-房间", width: 180 },
         { prop: "tags", label: "房源类型", slotName: "tags" },
+        { slot: 'selection' },
         { prop: "roomName", label: "房间" },
         {
           prop: "roomStatus",
@@ -414,7 +417,7 @@ export default {
     // 表格数据合并
     objectSpanMethod({ row, column, rowIndex, columnIndex }) {
       if (this.roomSearchForm.houseRentType === 2) {
-        if (columnIndex <= 5 && columnIndex > 0 || columnIndex === 11) {
+        if (columnIndex < 5 || columnIndex === 11) {
           if (row.spanArr < 1) {
             return {
               rowspan: 0,
@@ -522,6 +525,7 @@ export default {
               item.facilityItemsList = item.facilityItems ? item.facilityItems.split(',') : []
               item.roomAttributesList = item.roomAttributes ? item.roomAttributes.split(',') : []
               item.pictures = item.pictures || []
+              item.needCheck = true
             })
             roomDetailInfo.isEditFlag = true
             this.roomDetailModelVisible = true

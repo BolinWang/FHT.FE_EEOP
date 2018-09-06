@@ -40,6 +40,9 @@
             </span>
           </template>
         </el-table-column>
+        <el-table-column type="selection" width="40">
+          1111111111
+        </el-table-column>
         <el-table-column fixed="right" label="操作" width="230" v-if="customerType == 1">
           <template slot-scope="scope">
             <el-button type="primary" icon="el-icon-tickets" size="small" @click.native="showRecord(scope.row)">租房记录</el-button>
