@@ -300,6 +300,9 @@ export default {
   computed: {
     allCheckedOptionsList() {
       return this.copyOptions.map((item) => item.val)
+    },
+    cityArea() {
+      return this.roomSearchForm.cityArea
     }
   },
   watch: {
@@ -311,6 +314,13 @@ export default {
         else {
           this.roomSearchForm.cityId = ''
         }
+      }
+    },
+    cityArea(val) {
+      if (val && val[1]) {
+        this.roomSearchForm.cityId = val[1]
+      } else {
+        this.roomSearchForm.cityId = ''
       }
     }
   },
