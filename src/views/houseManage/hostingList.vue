@@ -481,6 +481,7 @@ export default {
     // 添加修改房间信息
     openRoomDetail(params) {
       if (typeof (params) === 'number') {
+        this.isEditFlag = false
         this.roomDetailModelVisible = true
         this.$nextTick(() => {
           let roomDetailData = {

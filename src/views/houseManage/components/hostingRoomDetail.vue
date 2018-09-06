@@ -305,7 +305,7 @@ export default {
           }
         ],
         zoneId: [
-          { required: true, message: '请选择所属板块', trigger: 'blur' }
+          { required: true, message: '请选择所属板块', trigger: 'change' }
         ],
         address: [
           { required: true, message: '请输入公寓/小区', trigger: 'change' }
@@ -620,6 +620,9 @@ export default {
           ]
           val.sourceInfo = val.sourceInfo.split(',')[0]
         }
+      } else {
+        this.orgList = []
+        this.zoneList = []
       }
 
       this.$nextTick(() => {
