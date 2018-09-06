@@ -20,7 +20,7 @@
         <el-form-item>
           <el-input v-model="roomSearchForm.orgName" size="small" placeholder="组织名称" style="width:120px" />
           <el-input v-model="roomSearchForm.subdistrictName" size="small" placeholder="公寓/小区" style="width:120px;margin-left:10px" />
-          <el-input v-model="roomSearchForm.roomCode" type="number" size="small" placeholder="房源编码" style="width:120px;margin-left:10px" />
+          <el-input v-model="roomSearchForm.roomCode" size="small" placeholder="房源编码" style="width:120px;margin-left:10px" class="deal" />
         </el-form-item>
         <el-form-item class="house-search-form-group">
           <el-button type="primary" icon="el-icon-search" @click="searchHostingHouseList('search')" class="filter-item">查询</el-button>
@@ -187,6 +187,10 @@ export default {
           value: 2
         },
         {
+          label: '下单未入住',
+          value: 3
+        },
+        {
           label: '在住',
           value: 4
         },
@@ -197,6 +201,10 @@ export default {
         {
           label: '空脏',
           value: 6
+        },
+        {
+          label: '预定',
+          value: 8
         },
         {
           label: '已出租（无租客）',
@@ -217,7 +225,9 @@ export default {
         {
           prop: "roomStatus",
           label: "房间状态",
-          slotName: "roomStatus"
+          slotName: "roomStatus",
+          width: 140,
+          align: 'center'
         },
         { prop: "roomCode", label: "平台房源编码" },
         {
@@ -377,11 +387,12 @@ export default {
     //删除房间
     deleteRoom(row) {
       const h = this.$createElement
+      const message = this.roomSearchForm.houseRentType === 1 ? '' : '若删除单个房间请在【编辑房间】里面删除'
       this.$msgbox({
         title: "确认消息",
         message: h('p', null, [
           h('span', null, '确定删除整套房间吗？ '),
-          h('span', { style: 'color: red' }, '若删除单个房间请在【公寓详情】里面删除')
+          h('span', { style: 'color: red' }, message)
         ]),
         showCancelButton: true,
         confirmButtonText: '确定',
@@ -718,15 +729,6 @@ export default {
       }
     }
   }
-}
-
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-  -webkit-appearance: none !important;
-  margin: 0;
-}
-input{
-    -moz-appearance:textfield;
 }
 </style>
 
