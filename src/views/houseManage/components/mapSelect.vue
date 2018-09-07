@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-tooltip :disabled="!specificAddress" class="item" effect="dark" :content="specificAddress" placement="top-start">
-      <el-select class="map-address-select" v-model="specificAddress" filterable remote :clearable="true" placeholder="请输入关键词" :remote-method="fetchAddressList" popper-class="detail-address-options" :loading="loading" @focus="checkAddressSelect" @clear="clearAddress">
+      <el-select class="map-address-select" v-model="specificAddress" filterable remote :clearable="true" placeholder="请输入关键词" :remote-method="fetchAddressList" :loading="loading" @focus="checkAddressSelect" @clear="clearAddress" :popper-append-to-body="false">
         <el-option v-for="(item, index) in addressList" :key="index" v-html="item.displayText" :value="item.formatName" @click.native="setAddress(item)">
         </el-option>
       </el-select>
@@ -144,13 +144,19 @@ export default {
             address: ''
           })
         } else {
-          this.$emit('addressChange', {
-            zoneId: '',
-            areaCode: [item.provinceId, item.cityId, item.areaId],
-            address: item.formatName,
-            regionAddressId: item.regionAddressId || ''
-          })
-          // this.regionAddressId = item ? item.regionAddressId : ''
+          if (item.areaId !== this.areaCode[2]) {
+            this.$emit('addressChange', {
+              zoneId: '',
+              areaCode: [item.provinceId, item.cityId, item.areaId],
+              address: item.formatName,
+              regionAddressId: item.regionAddressId || ''
+            })
+          } else {
+            this.$emit('addressChange', {
+              address: item.formatName,
+              regionAddressId: item.regionAddressId || ''
+            })
+          }
         }
         this.addressList = []
       }
@@ -285,12 +291,19 @@ export default {
         const data = res.data
         if (data.confirmStatus !== 1) {
           this.mapModelVisible = false
-          this.$emit('addressChange', {
-            areaCode: this.tempAreaCode,
-            address: this.mapSelectForm.name + ' - ' + this.mapSelectForm.address,
-            regionAddressId: data.regionAddressId,
-            zoneId: ''
-          })
+          if (this.tempAreaCode[2] !== this.areaCode[2]) {
+            this.$emit('addressChange', {
+              areaCode: this.tempAreaCode,
+              address: this.mapSelectForm.name + ' - ' + this.mapSelectForm.address,
+              regionAddressId: data.regionAddressId,
+              zoneId: ''
+            })
+          } else {
+            this.$emit('addressChange', {
+              address: this.mapSelectForm.name + ' - ' + this.mapSelectForm.address,
+              regionAddressId: data.regionAddressId,
+            })
+          }
         } else {
           this.$confirm('新选择的小区名称、区域、具体地址和历史录入的一致，<span style="color:red">但经纬度坐标不一致</span>，是否使用新坐标并覆盖？', '再次确定', {
             dangerouslyUseHTMLString: true,
@@ -335,7 +348,7 @@ export default {
       }
     },
     'mapSelectForm.region': function (val, oldVal) {
-      if (val !== oldVal && val !== undefined) {
+      if (val !== oldVal && val) {
         this.tempAreaCode[2] = val
       }
     }

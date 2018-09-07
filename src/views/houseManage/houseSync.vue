@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-07-11 13:49:21
  * @Last Modified by: chudequan
- * @Last Modified time: 2018-09-05 14:00:11
+ * @Last Modified time: 2018-09-07 14:36:37
  */
 
  <template>
@@ -12,7 +12,7 @@
       </el-tab-pane>
       <el-form class="model-search clearfix" :inline="true" size="small">
         <el-form-item>
-          <area-select v-model="searchParams.cityArea" placeholder="请选择城市" :filterable="true" :showAllLevels="false" :level="0" style="width:135px"></area-select>
+          <area-select v-model="searchParams.cityArea" placeholder="请选择城市" :filterable="true" :showAllLevels="false" :level="0" class="item-select"></area-select>
         </el-form-item>
         <el-form-item>
           <el-select size="small" v-model="searchParams.houseStatus" filterable clearable placeholder="房间状态" class="item-select">
@@ -21,71 +21,72 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-select size="small" v-model="searchParams.houseType" filterable clearable placeholder="房间类型" class="item-select filter-item">
+          <el-select size="small" v-model="searchParams.houseType" filterable clearable placeholder="房间类型" class="item-select">
             <el-option label="普通" :value="0"></el-option>
             <el-option label="金融" :value="1"></el-option>
             <el-option label="飞虎队" :value="2"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-select size="small" v-model="searchParams.publishStatus" filterable clearable placeholder="麦邻发布状态" class="item-select filter-item">
+          <el-select size="small" v-model="searchParams.publishStatus" filterable clearable placeholder="麦邻发布状态" class="item-select">
             <el-option label="未发布" :value="0"></el-option>
             <el-option label="已发布" :value="1"></el-option>
             <el-option label="发布中" :value="2"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button size="small" type="primary" icon="el-icon-search" @click="searchParam" class="filter-item">查询</el-button>
-          <el-button size="small" icon="el-icon-remove-outline" @click="searchParam('clear')" class="filter-item" style="margin-left:10px">清空</el-button>
+          <el-button size="small" type="primary" icon="el-icon-search" @click="searchParam">查询</el-button>
+          <el-button size="small" icon="el-icon-remove-outline" @click="searchParam('clear')" style="margin-left:10px">清空</el-button>
         </el-form-item>
         <div>
           <el-form-item>
-            <el-input size="small" v-model="searchParams.organizationName" clearable placeholder="组织名称" style="width:180px;"></el-input>
+            <el-input size="small" v-model="searchParams.organizationName" clearable placeholder="组织名称" class="item-select"></el-input>
           </el-form-item>
           <el-form-item>
-            <el-input size="small" v-model="searchParams.mobileOrName" clearable placeholder="手机号/姓名" class="filter-item" style="width:180px;"></el-input>
+            <el-input size="small" v-model="searchParams.mobileOrName" clearable placeholder="手机号/姓名" class="item-select"></el-input>
           </el-form-item>
           <el-form-item>
-            <el-input size="small" v-model="searchParams.keywords" clearable placeholder="公寓/小区" class="filter-item" style="width:180px;"></el-input>
+            <el-input size="small" v-model="searchParams.keywords" clearable placeholder="公寓/小区" class="item-select"></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button size="small" type="success" icon="el-icon-upload" class="filter-item" @click="syncItems('on')">发布</el-button>
+            <el-input size="small" v-model="searchParams.roomCode" clearable placeholder="房源编码" class="item-select"></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button size="small" type="danger" icon="el-icon-remove" class="filter-item" @click="syncItems('off')">撤销</el-button>
+            <el-button size="small" type="success" icon="el-icon-upload" @click="syncItems('on')">发布</el-button>
+            <el-button size="small" type="danger" icon="el-icon-remove" @click="syncItems('off')" style="margin-left:10px">撤销</el-button>
           </el-form-item>
-            <el-dialog class="select-dialog" :title='"选择"+dialogTitle+"平台"' :visible.sync="dialogVisible" width="450px">
-              <div class="select-platform-container clearfix">
-                <div class="left">
-                  <input type="checkbox" v-model="publishSelect.mlzf" id="mlRent" />
-                  <label for="mlRent">
-                    <div class="ml-selectName" v-bind:class="{changeBackground:publishSelect.mlzf}">麦邻租房</div>
-                    <div class="ml-selectStatus">
-                      <i class="el-icon-check" v-show="publishSelect.mlzf"></i>
-                    </div>
-                  </label>
-                  <el-select v-show="publishSelect.mlzf && dialogTitle === '发布'" class="item-select" v-model="sourceInfo" filterable remote placeholder="照片提供者" :remote-method="fetchFlyTigerList" :loading="loading" :clearable="true" size="small">
-                    <el-option v-for="item in filterManagerList" :key="item.id" :label="item.name" :value="item.id">
-                      <span style="float: left">{{ item.name }}</span>
-                      <span style="float: right; color: #8492a6; font-size: 13px">{{ item.mobile }}</span>
-                    </el-option>
-                  </el-select>
-                </div>
-                <div class="right">
-                  <input type="checkbox" v-model="publishSelect.idlefish" id="idleFishRent" />
-                  <label for="idleFishRent">
-                    <div class="ml-selectName" v-bind:class="{changeBackground:publishSelect.idlefish}">闲鱼租房</div>
-                    <div class="ml-selectStatus">
-                      <i class="el-icon-check" v-show="publishSelect.idlefish"></i>
-                    </div>
-                  </label>
-                </div>
+          <el-dialog class="select-dialog" :title='"选择"+dialogTitle+"平台"' :visible.sync="dialogVisible" width="450px">
+            <div class="select-platform-container clearfix">
+              <div class="left">
+                <input type="checkbox" v-model="publishSelect.mlzf" id="mlRent" />
+                <label for="mlRent">
+                  <div class="ml-selectName" v-bind:class="{changeBackground:publishSelect.mlzf}">麦邻租房</div>
+                  <div class="ml-selectStatus">
+                    <i class="el-icon-check" v-show="publishSelect.mlzf"></i>
+                  </div>
+                </label>
+                <el-select v-show="publishSelect.mlzf && dialogTitle === '发布'" class="item-select" v-model="sourceInfo" filterable remote placeholder="照片提供者" :remote-method="fetchFlyTigerList" :loading="loading" :clearable="true" size="small">
+                  <el-option v-for="item in filterManagerList" :key="item.id" :label="item.name" :value="item.id">
+                    <span style="float: left">{{ item.name }}</span>
+                    <span style="float: right; color: #8492a6; font-size: 13px">{{ item.mobile }}</span>
+                  </el-option>
+                </el-select>
               </div>
-              <span slot="footer" class="dialog-footer">
-                <span class="tips">温馨提示：飞虎队房源需填写照片提供者</span>
-                <el-button type="primary" size="small" @click="gotoHouseAsync">{{dialogTitle === "撤销"?"确定":"发布"}}</el-button>
-              </span>
-            </el-dialog>
+              <div class="right">
+                <input type="checkbox" v-model="publishSelect.idlefish" id="idleFishRent" />
+                <label for="idleFishRent">
+                  <div class="ml-selectName" v-bind:class="{changeBackground:publishSelect.idlefish}">闲鱼租房</div>
+                  <div class="ml-selectStatus">
+                    <i class="el-icon-check" v-show="publishSelect.idlefish"></i>
+                  </div>
+                </label>
+              </div>
+            </div>
+            <span slot="footer" class="dialog-footer">
+              <span class="tips">温馨提示：飞虎队房源需填写照片提供者</span>
+              <el-button type="primary" size="small" @click="gotoHouseAsync">{{dialogTitle === "撤销"?"确定":"发布"}}</el-button>
+            </span>
+          </el-dialog>
         </div>
       </el-form>
       <GridUnit ref="refGridUnit" :columns="colModels" :formOptions="searchParams" :url="url" :showSelection="true" :pageSizes="[50, 100, 200, 500]" :dataMethod="method" :height="tableHeight" @selection-change="handleSelectionChange">
@@ -148,7 +149,8 @@ export default {
         keywords: '',
         mobileOrName: '',
         cityId: '',
-        cityArea: []
+        cityArea: [],
+        roomCode: ''
       },
       selectedItems: [],
       colModels: [
@@ -254,7 +256,9 @@ export default {
           organizationName: '',
           keywords: '',
           mobileOrName: '',
-          cityArea: []
+          cityId: '',
+          cityArea: [],
+          roomCode: ''
         }
       }
       this.searchParams.houseRentType = this.activeName === '整租' ? 1 : (this.activeName === '合租' ? 2 : 0)
@@ -374,16 +378,20 @@ export default {
           this.roomSearchForm.cityId = ''
         }
       }
+    },
+    'searchParams.cityArea': function (val) {
+      if (val && val[1]) {
+        this.searchParams.cityId = val[1]
+      } else {
+        this.searchParams.cityId = ''
+      }
     }
   }
 }
 </script>
 <style rel="stylesheet/scss" lang="scss" scoped>
-.model-search .filter-item {
-  margin-left: 0px;
-}
 .item-select {
-  width: 130px;
+  width: 140px;
 }
 .select-dialog {
   .dialog-footer {
@@ -395,7 +403,6 @@ export default {
     }
   }
 }
-
 .select-platform-container {
   .left {
     margin-left: 30px;
@@ -416,7 +423,6 @@ export default {
     margin-bottom: 15px;
   }
 }
-
 .ml-selectStatus {
   width: 40px;
   height: 30px;
@@ -428,7 +434,6 @@ export default {
   text-align: center;
   line-height: 30px;
 }
-
 .ml-selectName {
   background-color: #ebeef5;
   width: 80px;
