@@ -73,7 +73,7 @@
         <el-button size="small" @click="saveRoomDetailData('clear')">取 消</el-button>
       </span>
     </el-dialog>
-    <el-dialog title="交租方式" :visible.sync="rentPayModelVisible" :width="curRoomFinanceType !== 2 ? '1030px' : '730px'">
+    <el-dialog title="交租方式" :visible.sync="rentPayModelVisible" :width="curRoomFinanceType !== 2 ? '1030px' : '630px'">
       <el-tabs type="border-card" v-if="activeName === '合租'" v-model="activeRentPayTabName" @tab-click="checkRentPaySaveStatus">
         <el-tab-pane :label="item.roomName" v-for="(item, index) in rentPayList" :key="index" :name="index.toString()">
           <rent-pay-way ref="rentPayWay" :list="rentPayList[index].roomRentTypeList" :curRoomFinanceType="curRoomFinanceType" :baseRentTypeList="baseRentTypeList"></rent-pay-way>
@@ -85,7 +85,7 @@
         <el-button @click="rentPayModelVisible = false" size="small">取 消</el-button>
       </span>
     </el-dialog>
-    <el-dialog title="复制到" :visible.sync="copyItemsModelVisible" width="700px" class="copy-items-model">
+    <el-dialog title="复制到" :visible.sync="copyItemsModelVisible" width="600px" class="copy-items-model">
       <room-list-selecter ref="copyItemTo" :roomList="copyItemsRooms" :visible="copyItemsModelVisible">
         <el-card class="head-card">
           <div slot="header" class="clearfix">
@@ -272,10 +272,6 @@ export default {
           val: 3
         },
         {
-          label: '平台模式',
-          val: 4
-        },
-        {
           label: '合同模式',
           val: 5
         },
@@ -457,7 +453,6 @@ export default {
     },
     // 表格数据
     dataHandler(data) {
-      console.log(data)
       let tempArr = []
       data = data.filter( item => item.roomList.length > 0 )
       data.forEach((item, index) => {
@@ -613,6 +608,14 @@ export default {
         this.baseRentTypeList = res.data.baseRentTypeList
         this.rentPayModelVisible = true
         if (this.activeName === '合租') {
+          res.data.hostingRoomRentType.forEach((item, index) => {
+            item.roomRentTypeList.forEach((v, i) => {
+              if (v.type === 2) {
+                v.serviceFeeType = v.serviceFeeType || 1
+                v.serviceChargeType = v.serviceChargeType || 1
+              }
+            })
+          })
           this.activeRentPayTabName = '0'
           this.tempRentPayTabName = '0'
           this.tempRentPayList = res.data.hostingRoomRentType[0].roomRentTypeList
@@ -782,10 +785,10 @@ export default {
     }
     .head-check-options {
       display: inline-block;
-      width: 20%;
+      width: 25%;
       &.especial {
         position: relative;
-        width: 40%;
+        width: 50%;
         .el-select {
           position: absolute;
           top: 0;
@@ -794,7 +797,7 @@ export default {
           z-index: 10;
         }
         .label {
-          width: 165px;
+          width: 170px;
           text-align: right;
         }
       }

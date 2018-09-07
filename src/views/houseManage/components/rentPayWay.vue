@@ -7,7 +7,7 @@
             {{scope.row.name}}
           </template>
         </el-table-column>
-        <el-table-column label="房价/月">
+        <el-table-column label="房价/月" width="89">
           <template slot-scope="scope">
             <el-form-item label="" :key="scope.row.roomRentTypeId" :prop="'financeRentPayList.' + scope.$index + '.rentPrice'" :rules="defaultRentPayForm.rules.rentPrice">
               <el-input size="mini" v-model="scope.row.rentPrice" class="rent-price-input">
@@ -16,7 +16,7 @@
             </el-form-item>
           </template>
         </el-table-column>
-        <el-table-column label="押金">
+        <el-table-column label="押金" width="89">
           <template slot-scope="scope">
             <el-form-item label="" :key="scope.row.roomRentTypeId" :prop="'financeRentPayList.' + scope.$index + '.depositPrice'" :rules="defaultRentPayForm.rules.depositPrice">
               <el-input size="mini" v-model="scope.row.depositPrice" class="rent-price-input">
@@ -109,7 +109,7 @@
             </el-form-item>
           </template>
         </el-table-column>
-        <el-table-column label="房价/月">
+        <el-table-column label="房价/月" width="89">
           <template slot-scope="scope">
             <el-form-item label="" :key="scope.row.roomRentTypeId" :prop="'defaultRentPayList.' + scope.$index + '.rentPrice'" :rules="defaultRentPayForm.rules.rentPrice">
               <el-input size="mini" type="number" v-model="scope.row.rentPrice" class="rent-price-input" @change="computeServiceChargePrice(scope.row)">
@@ -118,7 +118,7 @@
             </el-form-item>
           </template>
         </el-table-column>
-        <el-table-column label="押金">
+        <el-table-column label="押金" width="89">
           <template slot-scope="scope">
             <el-form-item label="" :key="scope.row.roomRentTypeId" :prop="'defaultRentPayList.' + scope.$index + '.depositPrice'" :rules="defaultRentPayForm.rules.depositPrice">
               <el-input size="mini" type="number" v-model="scope.row.depositPrice" class="rent-price-input">

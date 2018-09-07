@@ -542,6 +542,7 @@ export default {
       this.$refs.estateModel.validate((status) => {
         if (status) {
           let roomDetailData = deepClone(this.estateModel)
+          roomDetailData.tag = roomDetailData.tag === true ? 1 : 0
           const sourceInfo = roomDetailData.tag ? this.filterManagerList.filter((item) => item.id === roomDetailData.sourceInfo) : ''
           roomDetailData.sourceInfo = sourceInfo.length ? (sourceInfo[0].id + ',' + sourceInfo[0].name) : ''
           estateData = roomDetailData

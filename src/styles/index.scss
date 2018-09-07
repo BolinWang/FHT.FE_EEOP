@@ -173,6 +173,9 @@ a:hover {
 
 /* 交租方式 */
 .default-rent-pay-way, .finance-rent-pay-way {
+  table {
+    width: 100% !important;
+  }
   input {
     padding: 0 8px;
   }

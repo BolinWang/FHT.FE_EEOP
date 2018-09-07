@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-tooltip :disabled="!specificAddress" class="item" effect="dark" :content="specificAddress" placement="top-start">
-      <el-select class="map-address-select" v-model="specificAddress" filterable remote :clearable="true" placeholder="请输入关键词" :remote-method="fetchAddressList" popper-class="detail-address-options" :loading="loading" @focus="checkAddressSelect">
+      <el-select class="map-address-select" v-model="specificAddress" filterable remote :clearable="true" placeholder="请输入关键词" :remote-method="fetchAddressList" popper-class="detail-address-options" :loading="loading" @focus="checkAddressSelect" @clear="clearAddress">
         <el-option v-for="(item, index) in addressList" :key="index" v-html="item.displayText" :value="item.formatName" @click.native="setAddress(item)">
         </el-option>
       </el-select>
@@ -150,7 +150,7 @@ export default {
             address: item.formatName,
             regionAddressId: item.regionAddressId || ''
           })
-          this.regionAddressId = item ? item.regionAddressId : ''
+          // this.regionAddressId = item ? item.regionAddressId : ''
         }
         this.addressList = []
       }
@@ -305,6 +305,12 @@ export default {
             }
           })
         }
+      })
+    },
+    clearAddress() {
+      this.$emit('addressChange', {
+        address: '',
+        regionAddressId: ''
       })
     }
   },
