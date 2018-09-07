@@ -603,19 +603,19 @@ export default {
       hostingRoomRentTypeApi({
         fangyuanCode: row.fangyuanCode
       }).then((res) => {
+        res.data.hostingRoomRentType.forEach((item, index) => {
+          item.roomRentTypeList.forEach((v, i) => {
+            if (v.type === 2) {
+              v.serviceFeeType = v.serviceFeeType || 1
+              v.serviceChargeType = v.serviceChargeType || 1
+            }
+          })
+        })
         this.curRoomFinanceType = res.data.houseFinanceType
         this.rentPayList = res.data.hostingRoomRentType
         this.baseRentTypeList = res.data.baseRentTypeList
         this.rentPayModelVisible = true
         if (this.activeName === '合租') {
-          res.data.hostingRoomRentType.forEach((item, index) => {
-            item.roomRentTypeList.forEach((v, i) => {
-              if (v.type === 2) {
-                v.serviceFeeType = v.serviceFeeType || 1
-                v.serviceChargeType = v.serviceChargeType || 1
-              }
-            })
-          })
           this.activeRentPayTabName = '0'
           this.tempRentPayTabName = '0'
           this.tempRentPayList = res.data.hostingRoomRentType[0].roomRentTypeList
