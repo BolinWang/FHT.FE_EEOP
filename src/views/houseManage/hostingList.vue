@@ -595,6 +595,7 @@ export default {
           } else {
             this.roomDetailModelVisible = false
           }
+          this.searchParam()
         }
       })
     },
