@@ -523,8 +523,8 @@ export default {
             message: res.message || '操作成功',
             type: 'success'
           })
-          this.searchParam()
           this.roomDetailModelVisible = false
+          this.$refs.estateRoomList.fetchHandler()
         }
       })
     },
@@ -548,7 +548,7 @@ export default {
                 message: res.message,
                 type: 'success'
               })
-              this.searchParam()
+              this.$refs.estateRoomList.fetchHandler()
             }
           })
         }

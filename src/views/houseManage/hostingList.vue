@@ -427,7 +427,7 @@ export default {
               message: res.message,
               type: 'success'
             })
-            this.searchParam()
+            this.$refs.hostingHouseList.fetchHandler()
           }
         }).catch(err => { console.log(err) })
       })
@@ -595,7 +595,7 @@ export default {
           } else {
             this.roomDetailModelVisible = false
           }
-          this.searchParam()
+          this.$refs.hostingHouseList.fetchHandler()
         }
       })
     },
@@ -718,9 +718,11 @@ export default {
         }
       }).catch(err => { console.log(err) })
     },
+    // 复制到checkbox选择状态
     handleCheckAllChange(val) {
       this.checkedCopyList = val ? this.allCheckedOptionsList : []
     },
+    // 复制到checkbox选择状态
     handleOptionsChange() {
       this.checkAllCopyItem = this.checkedCopyList.length === this.allCheckedOptionsList.length
     }

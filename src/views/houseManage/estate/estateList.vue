@@ -182,7 +182,7 @@ export default {
             type: 'success'
           })
           this.showEstateModel = false
-          this.searchParam()
+          this.$refs.estateHouseList.fetchHandler()
         }
       })
     },
@@ -206,7 +206,7 @@ export default {
               message: res.message,
               type: 'success'
             })
-            this.searchParam()
+            this.$refs.estateHouseList.fetchHandler()
           }
         })
       })
