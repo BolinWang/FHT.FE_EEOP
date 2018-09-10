@@ -611,6 +611,23 @@ export default {
             orgName: val.orgName
           }
         ]
+        if (val.houseRentType === 1 && val.pictures) {
+          val.pictures.forEach((item) => {
+            item.title = item.imageName
+            item.key = Math.random().toFixed(5)
+            item.isBase64 = 0
+          })
+        } else {
+          val.hostingRooms.forEach((item) => {
+            if (item.pictures) {
+              item.pictures.forEach((n) => {
+                n.title = n.imageName
+                n.key = Math.random().toFixed(5)
+                n.isBase64 = 0
+              })
+            }
+          })
+        }
         val.tag = val.tag ? true : false
         if (val.sourceInfo) {
           this.filterManagerList = [
@@ -743,9 +760,10 @@ export default {
     // 裁剪后图片列表
     emitCropperData(list = []) {
       list.forEach((v, i) => {
-        v.type = 1,
-          v.imageName = v.title,
-          v.image = v.src
+        v.type = 1
+        v.imageName = v.title
+        v.image = v.src
+        v.key = v.key || Math.random().toFixed(5)
         if (v.isBase64 === undefined) {
           v.isBase64 = 1
         }
