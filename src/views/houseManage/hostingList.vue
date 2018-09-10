@@ -251,6 +251,7 @@ export default {
           prop: "operateRecord",
           label: "操作记录",
           slotName: "operateRecordStr",
+          width: 220
         }
       ],
       roomDetailModelVisible: false,
