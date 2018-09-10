@@ -77,6 +77,8 @@
       <template slot="operateRoom" slot-scope="scope">
         <el-button type="primary" size="mini" @click="openRoomDetailModel(2, scope.row)">编辑房间</el-button>
       </template>
+      <el-table-column slot="selection" type="selection">
+      </el-table-column>
     </grid-unit>
 
     <el-dialog class="copy-item-to-model" title="复制到" :visible.sync="copyItemToModelVisible" width="700px">
@@ -112,262 +114,7 @@
     </el-dialog>
 
     <el-dialog class="rent-pay-model" title="交租方式" :visible.sync="rentPayModelVisible" :width="curRoomFinanceType !== 2 ? '1000px' : '700px'">
-      <el-form :model="defaultRentPayForm" ref="financeRentPayForm" label-width="0">
-        <el-table class="finance-rent-pay-way" :data="defaultRentPayForm.financeRentPayList" style="width: 100%" empty-text="暂无金融·交租方式">
-          <el-table-column label="金融·交租方式" width="130">
-            <template slot-scope="scope">
-              {{scope.row.name}}
-            </template>
-          </el-table-column>
-          <el-table-column label="房价/月">
-            <template slot-scope="scope">
-              <el-form-item
-                label=""
-                :key="scope.row.roomRentTypeId"
-                :prop="'financeRentPayList.' + scope.$index + '.rentPrice'"
-                :rules="defaultRentPayForm.rules.rentPrice">
-                <el-input size="mini" v-model="scope.row.rentPrice" class="rent-price-input">
-                  <template slot="append">元</template>
-                </el-input>
-              </el-form-item>
-            </template>
-          </el-table-column>
-          <el-table-column label="押金">
-            <template slot-scope="scope">
-              <el-form-item
-                label=""
-                :key="scope.row.roomRentTypeId"
-                :prop="'financeRentPayList.' + scope.$index + '.depositPrice'"
-                :rules="defaultRentPayForm.rules.depositPrice">
-                <el-input size="mini" v-model="scope.row.depositPrice" class="rent-price-input">
-                  <template slot="append">元</template>
-                </el-input>
-              </el-form-item>
-            </template>
-          </el-table-column>
-          <el-table-column label="最短租期" width="100">
-            <template slot-scope="scope">
-              <el-select size="mini" v-model="scope.row.minMonthNum" disabled>
-                <el-option v-for="n in 24" :key="n" :label="n + '个月'" :value="n">
-                </el-option>
-              </el-select>
-            </template>
-          </el-table-column>
-          <el-table-column label="最长租期" width="100">
-            <template slot-scope="scope">
-              <el-select size="mini" v-model="scope.row.maxMonthNum" disabled>
-                <el-option v-for="n in 24" :key="n" :label="n + '个月'" :value="n">
-                </el-option>
-              </el-select>
-            </template>
-          </el-table-column>
-          <template v-if="curRoomFinanceType !== 2">
-            <el-table-column label="服务费·元/月" width="130">
-              <template slot-scope="scope">
-                <el-select size="mini" v-model="scope.row.serviceChargeType" @change="switchServiceChargeType(scope.row)" disabled>
-                  <el-option v-for="n in serviceChargeTypeList" :key="n.value" :label="n.label" :value="n.value">
-                  </el-option>
-                </el-select>
-              </template>
-            </el-table-column>
-            <el-table-column label="" width="140">
-              <template slot-scope="scope">
-                <el-row>
-                  <el-col :span="24" v-if="scope.row.serviceChargeType === 2">
-                    <el-form-item
-                      label=""
-                      :key="scope.row.roomRentTypeId"
-                      :prop="'financeRentPayList.' + scope.$index + '.serviceChargePrice'"
-                      :rules="defaultRentPayForm.rules.serviceChargePrice">
-                      <el-input size="mini" type="number" v-model="scope.row.serviceChargePrice" disabled></el-input>
-                    </el-form-item>
-                  </el-col>
-                  <template v-else-if="scope.row.serviceChargeType === 3">
-                    <el-col :span="10">
-                      <el-form-item
-                        label=""
-                        :key="scope.row.roomRentTypeId"
-                        :prop="'financeRentPayList.' + scope.$index + '.serviceChargeRatio'"
-                        :rules="defaultRentPayForm.rules.serviceChargeRatio">
-                        <el-input size="mini" v-model="scope.row.serviceChargeRatio" disabled></el-input>
-                      </el-form-item>
-                    </el-col>
-                    <el-col :span="4" class="service-charge-price-percent">
-                      %
-                    </el-col>
-                    <el-col :span="10">
-                      <el-form-item
-                        label=""
-                        :key="scope.row.roomRentTypeId"
-                        :prop="'financeRentPayList.' + scope.$index + '.serviceChargePrice'"
-                        :rules="defaultRentPayForm.rules.serviceChargePrice">
-                        <el-input size="mini" v-model="scope.row.serviceChargePrice" disabled></el-input>
-                      </el-form-item>
-                    </el-col>
-                  </template>
-                </el-row>
-              </template>
-            </el-table-column>
-            <el-table-column label="服务费支付方式" width="130">
-              <template slot-scope="scope">
-                <el-select size="mini" v-model="scope.row.serviceFeeType" disabled>
-                  <el-option v-if="scope.row.serviceChargeType === 1" label="无" :value="1">
-                  </el-option>
-                  <el-option v-else v-for="n in serviceFeeTypeList" :key="n.value" :label="n.label" :value="n.value">
-                  </el-option>
-                </el-select>
-              </template>
-            </el-table-column>
-          </template>
-          <el-table-column label="" width="50">
-            <template slot-scope="scope">
-              <el-button v-show="false" class="delete-btn" type="text" icon="el-icon-delete" @click="deleteCurRentPay(scope.row)"></el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-      </el-form>
-      <el-form :model="defaultRentPayForm" ref="defaultRentPayForm" label-width="0">
-        <el-table class="default-rent-pay-way" :data="defaultRentPayForm.defaultRentPayList" style="width: 100%" empty-text="暂无常规·交租方式">
-          <el-table-column label="常规·交租方式" width="130">
-            <template slot-scope="scope">
-                <span v-if="scope.row.roomRentTypeId">
-                  {{scope.row.name}}
-                </span>
-                <el-form-item
-                  v-else
-                  label=""
-                  :key="scope.row.roomRentTypeId">
-                  <el-select  v-model="scope.row.rentQty" size="mini" @change="switchRentType(scope.row)">
-                    <el-option v-for="n in baseRentTypeList" :key="n.rentQty" :label="n.name" :value="n.rentQty">
-                    </el-option>
-                  </el-select>
-                </el-form-item>
-            </template>
-          </el-table-column>
-          <el-table-column label="房价/月">
-            <template slot-scope="scope">
-              <el-form-item
-                label=""
-                :key="scope.row.roomRentTypeId"
-                :prop="'defaultRentPayList.' + scope.$index + '.rentPrice'"
-                :rules="defaultRentPayForm.rules.rentPrice">
-                <el-input size="mini" type="number" v-model="scope.row.rentPrice" class="rent-price-input" @change="computeServiceChargePrice(scope.row)">
-                  <template slot="append">元</template>
-                </el-input>
-              </el-form-item>
-            </template>
-          </el-table-column>
-          <el-table-column label="押金">
-            <template slot-scope="scope">
-              <el-form-item
-                label=""
-                :key="scope.row.roomRentTypeId"
-                :prop="'defaultRentPayList.' + scope.$index + '.depositPrice'"
-                :rules="defaultRentPayForm.rules.depositPrice">
-                <el-input size="mini" type="number" v-model="scope.row.depositPrice" class="rent-price-input">
-                  <template slot="append">元</template>
-                </el-input>
-              </el-form-item>
-            </template>
-          </el-table-column>
-          <el-table-column label="最短租期" width="100">
-            <template slot-scope="scope">
-              <el-form-item
-                label=""
-                :key="scope.row.roomRentTypeId">
-                <el-select size="mini" v-model="scope.row.minMonthNum">
-                  <el-option v-for="n in 24" :key="n" :label="n + '个月'" :value="n">
-                  </el-option>
-                </el-select>
-              </el-form-item>
-            </template>
-          </el-table-column>
-          <el-table-column label="最长租期" width="100">
-            <template slot-scope="scope">
-              <el-form-item
-                label=""
-                :key="scope.row.roomRentTypeId">
-                <el-select size="mini" v-model="scope.row.maxMonthNum">
-                  <el-option v-for="n in 24" :key="n" :label="n + '个月'" :value="n">
-                  </el-option>
-                </el-select>
-              </el-form-item>
-            </template>
-          </el-table-column>
-          <template v-if="curRoomFinanceType !== 2">
-            <el-table-column label="服务费·元/月" width="130">
-              <template slot-scope="scope">
-                <el-form-item
-                  label=""
-                  :key="scope.row.roomRentTypeId">
-                  <el-select size="mini" v-model="scope.row.serviceChargeType" @change="switchServiceChargeType(scope.row)">
-                    <el-option v-for="n in serviceChargeTypeList" :key="n.value" :label="n.label" :value="n.value">
-                    </el-option>
-                  </el-select>
-                </el-form-item>
-              </template>
-            </el-table-column>
-            <el-table-column label="" width="140">
-              <template slot-scope="scope">
-                <el-row>
-                  <el-col :span="24" v-if="scope.row.serviceChargeType === 2">
-                    <el-form-item
-                      label=""
-                      :key="scope.row.roomRentTypeId"
-                      :prop="'defaultRentPayList.' + scope.$index + '.serviceChargePrice'"
-                      :rules="defaultRentPayForm.rules.serviceChargePrice">
-                      <el-input size="mini" type="number" v-model="scope.row.serviceChargePrice"></el-input>
-                    </el-form-item>
-                  </el-col>
-                  <template v-else-if="scope.row.serviceChargeType === 3">
-                    <el-col :span="10">
-                      <el-form-item
-                        label=""
-                        :key="scope.row.roomRentTypeId"
-                        :prop="'defaultRentPayList.' + scope.$index + '.serviceChargeRatio'"
-                        :rules="defaultRentPayForm.rules.serviceChargeRatio">
-                        <el-input size="mini" type="number" v-model="scope.row.serviceChargeRatio" @change="computeServiceChargePrice(scope.row)"></el-input>
-                      </el-form-item>
-                    </el-col>
-                    <el-col :span="4" class="service-charge-price-percent">
-                      %
-                    </el-col>
-                    <el-col :span="10">
-                      <el-form-item
-                        label=""
-                        :key="scope.row.roomRentTypeId"
-                        :prop="'defaultRentPayList.' + scope.$index + '.serviceChargePrice'"
-                        :rules="defaultRentPayForm.rules.serviceChargePrice">
-                        <el-input size="mini" v-model="scope.row.serviceChargePrice" disabled></el-input>
-                      </el-form-item>
-                    </el-col>
-                  </template>
-                </el-row>
-              </template>
-            </el-table-column>
-            <el-table-column label="服务费支付方式" width="130">
-              <template slot-scope="scope">
-                <el-form-item
-                  label=""
-                  :key="scope.row.roomRentTypeId">
-                  <el-select size="mini" v-model="scope.row.serviceFeeType">
-                    <el-option v-if="scope.row.serviceChargeType === 1" label="无" :value="1">
-                    </el-option>
-                    <el-option v-else v-for="n in serviceFeeTypeList" :key="n.value" :label="n.label" :value="n.value">
-                    </el-option>
-                  </el-select>
-                </el-form-item>
-              </template>
-            </el-table-column>
-          </template>
-          <el-table-column label="" width="50">
-            <template slot-scope="scope">
-              <el-button class="delete-btn" type="text" icon="el-icon-delete" @click="deleteCurRentPay(scope.row)"></el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-      </el-form>
-      <el-button type="primary" size="mini" @click="addRentPay">添加交租方式</el-button>
+      <rent-pay-way ref="rentPayWay" :list="rentPayList" :curRoomFinanceType="curRoomFinanceType" :baseRentTypeList="baseRentTypeList"></rent-pay-way>
       <span slot="footer">
         <el-button type="primary" size="small" @click="saveRentPay">保 存</el-button>
         <el-button @click="rentPayModelVisible = false" size="small">取 消</el-button>
@@ -389,12 +136,14 @@ import GridUnit from "@/components/GridUnit/grid"
 import { estateRoomFloorApi, estateRoomDetailApi, estateBatchCopyRoomListApi, copyToOtherRoomApi, estateRoomRentPayWayApi, saveEstateRoomRentPayWayApi, oneEstateRoomApi, saveEstateRoomApi, checkRoomHasDeviceApi, deleteRoomApi, changeRoomStatusApi } from "@/api/houseManage"
 import RoomListSelecter from '@/components/RoomListSelecter'
 import RoomDetail from '../components/roomDetailModel'
+import rentPayWay from '../components/rentPayWay'
 export default {
   name: 'singleEstateRoom',
   components: {
     GridUnit,
     RoomListSelecter,
-    RoomDetail
+    RoomDetail,
+    rentPayWay
   },
   data() {
     return {
@@ -439,6 +188,7 @@ export default {
       tableHeight: 500,
       reqMethod: 'queryEstateRoomList',
       colModels: [
+        { slot: 'selection' },
         { prop: "roomTypeName", label: "房间类型" },
         {
           prop: "floorId",
@@ -591,26 +341,6 @@ export default {
   computed: {
     allCheckedOptionsList() {
       return this.copyOptions.map((item) => item.val)
-    },
-    defaultRentPayForm() {
-      return {
-        financeRentPayList: this.rentPayList.filter((item) => item.type === 2),
-        defaultRentPayList: this.rentPayList.filter((item) => item.type === 1),
-        rules: {
-          rentPrice: [
-            { required: true, message: '请输入房价', trigger: 'blur' }
-          ],
-          depositPrice: [
-            { required: true, message: '请输入押金', trigger: 'blur' }
-          ],
-          serviceChargePrice: [
-            { required: true, message: '请输入服务费', trigger: 'blur' }
-          ],
-          serviceChargeRatio: [
-            { required: true, message: '请输入租金百分比', trigger: 'blur' }
-          ]
-        }
-      }
     }
   },
   methods: {
@@ -645,6 +375,7 @@ export default {
           this.copyItemRoomList = res.data
           this.checkedCopyList = []
           this.copyItemToModelVisible = true
+          this.handleOptionsChange()
         }
       })
     },
@@ -659,10 +390,6 @@ export default {
           this.$set(this, 'baseRentTypeList', res.data.baseRentTypeList)
         }
         this.rentPayModelVisible = true
-        this.$nextTick(() => {
-          this.$refs.defaultRentPayForm.clearValidate()
-          this.$refs.financeRentPayForm.clearValidate()
-        })
       })
     },
     handleCheckAllChange(val) {
@@ -710,30 +437,21 @@ export default {
       })
     },
     saveRentPay() {
-      this.$refs.financeRentPayForm.validate((valid) => {
-        if (valid) {
-          this.$refs.defaultRentPayForm.validate((success) => {
-            if (success) {
-              saveEstateRoomRentPayWayApi({
-                roomCode: this.curRoomCode,
-                roomRentTypeList: this.rentPayList
-              }).then((res) => {
-                if (res.code === '0') {
-                  this.$message({
-                    message: res.message,
-                    type: 'success'
-                  })
-                  this.rentPayModelVisible = false
-                }
-              })
-            } else {
-              this.$message.error('请填写完交租方式再保存')
-              return false
-            }
+      let list = this.$refs.rentPayWay.returnRentPayList()
+      if (!list) {
+        this.$message.error(`请填写完交租方式再保存`)
+        return false
+      }
+      saveEstateRoomRentPayWayApi({
+        roomCode: this.curRoomCode,
+        roomRentTypeList: list
+      }).then((res) => {
+        if (res.code === '0') {
+          this.$message({
+            message: res.message,
+            type: 'success'
           })
-        } else {
-          this.$message.error('请填写完交租方式再保存')
-          return false
+          this.rentPayModelVisible = false
         }
       })
     },
@@ -781,7 +499,7 @@ export default {
         return
       }
       data.fangyuanCode = this.fangyuanCode
-      console.log(data)
+
       if (this.curType === 2) {
         data.pictureUploadList = data.pictureList.filter(n => n.image)
         data.pictureList = data.pictureList.filter(n => n.imageUrl)
@@ -796,6 +514,7 @@ export default {
         delete data.pictureUploadList
       }
       delete data.roomStatusOperateList
+      console.log(data)
       saveEstateRoomApi({
         roomInfo: JSON.stringify(data)
       }, this.curType).then((res) => {
@@ -884,13 +603,6 @@ export default {
         .catch(_ => {})
       } else {
         done()
-      }
-    }
-  },
-  watch: {
-    defaultRentPayList(val) {
-      if (val) {
-        this.defaultRentPayForm.defaultRentPayList = val
       }
     }
   },

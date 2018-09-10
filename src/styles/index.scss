@@ -173,6 +173,9 @@ a:hover {
 
 /* 交租方式 */
 .default-rent-pay-way, .finance-rent-pay-way {
+  table {
+    width: 100% !important;
+  }
   input {
     padding: 0 8px;
   }
@@ -217,6 +220,12 @@ a:hover {
     padding: 0 8px;
   }
 }
+/* 分散式房间列表选择列 */
+.room-list-selection-td {
+  .cell {
+    padding-left: 14px !important;
+  }
+}
 
 /* 编辑分散式房源 */
 .room-detail-container {
@@ -238,6 +247,20 @@ a:hover {
         text-align: center;
         line-height: 32px;
         padding: 0 !important;
+      }
+      .el-form-item__error {
+        width: 60px;
+      }
+    }
+    .sub-room-info-list {
+      .el-form-item__error {
+        width: 90px;
+      }
+      .el-icon-close {
+        display: none;
+      }
+      .el-tabs__new-tab {
+        margin-right: 15px;
       }
     }
   }

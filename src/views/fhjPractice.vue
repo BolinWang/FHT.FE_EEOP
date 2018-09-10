@@ -1,8 +1,8 @@
 /*
  * @Author: FT.FE.Bolin
  * @Date: 2018-07-11 13:49:21
- * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-07-25 17:35:47
+ * @Last Modified by: chudequan
+ * @Last Modified time: 2018-09-10 10:15:38
  */
 
  <template>
@@ -48,7 +48,7 @@
               <div class="right">
                 <input type="checkbox" v-model="publishSelect.idlefish" id="idleFishRent" />
                 <label for="idleFishRent">
-                  <div class="ml-selectName">咸鱼租房</div> 
+                  <div class="ml-selectName">咸鱼租房</div>
                   <div class="ml-selectStatus"><i class="el-icon-check" v-show="publishSelect.idlefish"></i></div>
                 </label>
               </div>
@@ -74,6 +74,8 @@
             {{scope.row.idlefishStatus | renderStatusValue}}
           </el-tag>
         </template>
+        <el-table-column slot="selection" type="selection">
+        </el-table-column>
       </GridUnit>
     </el-tabs>
   </div>
@@ -117,6 +119,7 @@ export default {
       },
       selectedItems: [],
       colModels: [
+        { slot: 'selection' },
         { prop: 'organizationName', label: '组织名称' },
         { prop: 'name', label: '姓名', width: 100 },
         { prop: 'mobile', label: '手机号', width: 150 },
@@ -255,7 +258,7 @@ export default {
         this.$message.error(`已${typeConfig[type].title}的房源不能再${typeConfig[type].title}`)
         return false
       }
-      
+
       this.dialogVisible = true;
 
       // this.$confirm(`已选择${this.selectedItems.length}个房源，确定${typeConfig[type].title}吗？`, '提示', {

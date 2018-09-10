@@ -435,7 +435,7 @@ export function changeRoomStatusApi(params) {
 /* 分散式查询房源列表 */
 export function hostingHouseListApi(params) {
   return fetch({
-    url: 'http://localhost:9528/api/market/fangyuan',
+    url: '/market/fangyuan',
     method: 'post',
     data: {
       method: 'queryHostingHouseList',
@@ -444,15 +444,74 @@ export function hostingHouseListApi(params) {
   })
 }
 
-/* 分散式模糊查询小区，公寓 */
-export function hostingAddressByKeywordsApi(params) {
+/* 分散式查询房间详情 */
+export function hostingRoomDetailApi(params) {
   return fetch({
     url: '/market/fangyuan',
     method: 'post',
     data: {
-      method: 'searchAddressByKeyword',
+      method: 'queryHostingHouseInfo',
       params
     }
   })
 }
 
+/* 分散式新增房间保存 */
+export function hostingSaveHouseInfoApi(params) {
+  return fetch({
+    url: '/market/fangyuan',
+    method: 'post',
+    data: {
+      method: 'saveHostingHouseInfo',
+      params
+    }
+  })
+}
+
+/* 分散式编辑房间保存 */
+export function hostingEditHouseInfoApi(params) {
+  return fetch({
+    url: '/market/fangyuan',
+    method: 'post',
+    data: {
+      method: 'editHostingHouseInfo',
+      params
+    }
+  })
+}
+
+/* 分散式查询交租方式 */
+export function hostingRoomRentTypeApi(params) {
+  return fetch({
+    url: '/market/fangyuan',
+    method: 'post',
+    data: {
+      method: 'queryHostingRoomRentType',
+      params
+    }
+  })
+}
+
+/* 分散式查询复制到房源列表 */
+export function hostingCopyItemsRoomsApi(params) {
+  return fetch({
+    url: '/market/fangyuan',
+    method: 'post',
+    data: {
+      method: 'queryAllHostingHouse',
+      params
+    }
+  })
+}
+
+/* 分散式保存复制到 */
+export function hostingSaveCopyItemsApi(params) {
+  return fetch({
+    url: '/market/fangyuan',
+    method: 'post',
+    data: {
+      method: 'hostingCopyTo',
+      params
+    }
+  })
+}
