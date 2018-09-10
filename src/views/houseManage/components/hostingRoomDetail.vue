@@ -194,10 +194,10 @@
             <el-col :span="10">
               <el-form-item label-width="0" prop="">
                 <el-checkbox-group v-model="hostingRoomDetail.hostingRooms[index].roomAttributesList">
-                  <el-checkbox :label="1" class="room-attributes">独立卫生间</el-checkbox>
-                  <el-checkbox :label="2" class="room-attributes">独立阳台</el-checkbox>
-                  <el-checkbox :label="3" class="room-attributes">独立厨房</el-checkbox>
-                  <el-checkbox :label="4" class="room-attributes">飘窗</el-checkbox>
+                  <el-checkbox label="1" class="room-attributes">独立卫生间</el-checkbox>
+                  <el-checkbox label="2" class="room-attributes">独立阳台</el-checkbox>
+                  <el-checkbox label="3" class="room-attributes">独立厨房</el-checkbox>
+                  <el-checkbox label="4" class="room-attributes">飘窗</el-checkbox>
                 </el-checkbox-group>
               </el-form-item>
             </el-col>
