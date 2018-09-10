@@ -1,7 +1,17 @@
 <template>
   <div class="batch-copy-container">
     <slot></slot>
-    <el-card class="batch-copy-card">
+    <el-card v-if="Array.isArray(roomList)" class="batch-copy-card">
+      <el-form ref="form" :model="roomListForm" label-width="180px" size="small">
+        <el-form-item label="请选择你要复制到的房间号">
+          <el-select v-model="roomListForm.checkedRoomList" multiple filterable placeholder="请选择房间">
+            <el-option v-for="item in roomList" :key="item.fangyuanCode" :label="item.detailAddress" :value="item.fangyuanCode">
+            </el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+    </el-card>
+    <el-card v-else class="batch-copy-card">
       <div slot="header" class="clearfix">
         <slot name="card-title"></slot>
         <!-- <span>请选择要应用该房型的房间</span> -->
@@ -19,13 +29,7 @@
         </el-col>
         <el-col :span="19" :offset="1">
           <el-checkbox-group v-model="checkedObj[key]" class="room-list-group">
-            <el-checkbox
-              class="room-list-checkbox"
-              v-for="v in val"
-              :key="v.roomCode"
-              :label="v.roomCode"
-              :disabled="allRoomList[key].isDisabled.includes(v.roomCode)"
-              @change="handleRoomChange(key)">
+            <el-checkbox class="room-list-checkbox" v-for="v in val" :key="v.roomCode" :label="v.roomCode" :disabled="allRoomList[key].isDisabled.includes(v.roomCode)" @change="handleRoomChange(key)">
               {{v.roomNo}}
             </el-checkbox>
           </el-checkbox-group>
@@ -39,7 +43,7 @@
 export default {
   props: {
     visible: Boolean,
-    roomList: Object,
+    roomList: [Object, Array],
     checkedList: {
       type: Array,
       default: () => {
@@ -52,34 +56,52 @@ export default {
       checkedObj: {},
       checkedFloor: {},
       allRoomList: {},
-      checkAll: false
+      checkAll: false,
+      roomListForm: {
+        checkedRoomList: []
+      },
+      options5: [{
+        value: 'HTML',
+        label: 'HTML'
+      }, {
+        value: 'CSS',
+        label: 'CSS'
+      }, {
+        value: 'JavaScript',
+        label: 'JavaScript'
+      }],
     }
   },
   watch: {
     visible: {
       immediate: true,
       handler: function (val) {
-        if (val) {
-          const allRoomList = {}
-          const checkedObj = {}
-          const checkedFloor = {}
-          Object.keys(this.roomList).forEach((key, index) => {
-            checkedFloor[key] = false
-            allRoomList[key] = {}
-            allRoomList[key].allRoom = this.roomList[key].map(v => v.roomCode)
-            allRoomList[key].activeRoom = allRoomList[key].allRoom.filter((n) => !this.checkedList.includes(n))
-            allRoomList[key].isDisabled = allRoomList[key].allRoom.filter((n) => !allRoomList[key].activeRoom.includes(n))
-            checkedObj[key] = allRoomList[key].isDisabled
+        if (Array.isArray(this.roomList)) {
+          if (!val) {
+            this.roomListForm.checkedRoomList = []
+          }
+        } else {
+          if (val) {
+            const allRoomList = {}
+            const checkedObj = {}
+            const checkedFloor = {}
+            Object.keys(this.roomList).forEach((key, index) => {
+              checkedFloor[key] = false
+              allRoomList[key] = {}
+              allRoomList[key].allRoom = this.roomList[key].map(v => v.roomCode)
+              allRoomList[key].activeRoom = allRoomList[key].allRoom.filter((n) => !this.checkedList.includes(n))
+              allRoomList[key].isDisabled = allRoomList[key].allRoom.filter((n) => !allRoomList[key].activeRoom.includes(n))
+              checkedObj[key] = allRoomList[key].isDisabled
+            })
+
+            this.$set(this, 'allRoomList', allRoomList)
+            this.$set(this, 'checkedObj', checkedObj)
+            this.$set(this, 'checkedFloor', checkedFloor)
+          }
+          Object.keys(this.checkedObj).forEach((key, index) => {
+            this.handleRoomChange(key)
           })
-
-          this.$set(this, 'allRoomList', allRoomList)
-          this.$set(this, 'checkedObj', checkedObj)
-          this.$set(this, 'checkedFloor', checkedFloor)
         }
-
-        Object.keys(this.checkedObj).forEach((key, index) => {
-          this.handleRoomChange(key)
-        })
       }
     }
   },
@@ -101,9 +123,13 @@ export default {
     },
     returnCheckedList() {
       let saveRoomList = []
-      Object.keys(this.checkedObj).forEach((key, index) => {
-        saveRoomList = saveRoomList.concat(this.checkedObj[key])
-      })
+      if (Array.isArray(this.roomList)) {
+        saveRoomList = this.roomListForm.checkedRoomList
+      } else {
+        Object.keys(this.checkedObj).forEach((key, index) => {
+          saveRoomList = saveRoomList.concat(this.checkedObj[key])
+        })
+      }
       return saveRoomList
     }
   },
@@ -120,6 +146,12 @@ export default {
   }
   .batch-copy-card {
     box-shadow: 0 0;
+    .el-form-item {
+      margin-bottom: 0;
+      .el-select {
+        width: 100%;
+      }
+    }
   }
   .el-row {
     // padding-bottom: 10px;

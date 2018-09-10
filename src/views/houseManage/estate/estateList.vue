@@ -159,9 +159,6 @@ export default {
 
       let api = null
       if (this.estateModelTitle === '新建公寓') {
-        estateInfo.tag = estateInfo.tag === true ? 1 : 0
-        const sourceInfo = estateInfo.tag ? this.$refs.estateModel.filterManagerList.filter((item) => item.id === estateInfo.sourceInfo) : ''
-        estateInfo.sourceInfo = sourceInfo.length ? (sourceInfo[0].id + ',' + sourceInfo[0].name) : ''
         api = estateNewEstateSaveApi
       } else {
         switch (this.$refs.estateModel.activeNames[0]) {

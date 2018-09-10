@@ -31,10 +31,7 @@
             </el-col>
             <el-col :span="12">
               <el-form-item label="具体位置" prop="address">
-                <el-select class="estate-model-select" ref="addressSelect" v-model="estateModel.address" filterable remote :clearable="true" placeholder="请输入关键词" :remote-method="remoteMethod" popper-class="detail-address-options" :loading="loading" @focus="checkAddressSelect">
-                  <el-option v-for="(item, index) in addressList" :key="index" v-html="item.displayText" :value="item.formatName" @click.native="setAddress(item)">
-                  </el-option>
-                </el-select>
+                <map-select :areaCode="estateModel.areaCode" @addressChange="addressChange" :value="estateModel.address"></map-select>
               </el-form-item>
             </el-col>
           </el-row>
@@ -82,13 +79,13 @@
             </el-col>
           </el-row>
           <el-row :gutter="20">
-            <el-col :span="6" v-if="type === '新建公寓'">
+            <el-col :span="6">
               <el-form-item>
-                <el-checkbox label="飞虎队" name="type" v-model="estateModel.tag" @change="handleSourceInfo"></el-checkbox>
+                <el-checkbox label="飞虎队" name="type" v-model="estateModel.tag" @change="handleSourceInfo" :disabled="this.type === '编辑公寓'"></el-checkbox>
               </el-form-item>
             </el-col>
             <el-col :span="6">
-              <el-form-item label-width="0" prop="sourceInfo" v-if="type === '新建公寓' && estateModel.tag">
+              <el-form-item label-width="0" prop="sourceInfo" v-if="estateModel.tag">
                 <el-select
                   v-model="estateModel.sourceInfo"
                   filterable remote
@@ -203,54 +200,6 @@
       </el-collapse>
     </el-form>
 
-    <el-dialog title="地图选择小区" :visible.sync="mapModelVisible" width="700px" :append-to-body="true">
-      <el-card class="map-selected-tips" :body-style="{padding: '10px'}">
-        <p>1. 如果搜索的内容在右侧列表中小区名称不对（例如：天天超市），点击后可以自定义小区名称、具体位置、所在区域。</p>
-        <p>2. 如果搜索的内容在右侧列表中查询不到，请通过鼠标手动定位房源位置，自定义小区名称、具体位置、所在区域。</p>
-      </el-card>
-      <div class="map-selected-container">
-        <div class="bm-container" ref="bmContainer">
-          <div id="bm-view" class="bm-view">
-
-          </div>
-          <el-input class="search-input" placeholder="请输入公寓地址" v-model="searchKeywords" clearable size="small" @keyup.native="searchPositionByKeywords">
-          </el-input>
-          <el-popover popper-class="selected-house-position" ref="popover" placement="bottom" width="360" trigger="manual">
-            <el-form label-position="right" label-width="80px" :model="formLabelAlign" :rules="rules" size="mini" ref="ruleForm">
-              <i class="el-icon-close close-icon" @click="$refs.popover.doClose()"></i>
-              <el-form-item class="form-item">
-                <div slot="label" class="city-label">当前城市</div>
-                <p class="city-name">{{formLabelAlign.city}}</p>
-              </el-form-item>
-              <el-form-item class="form-item" label="所在区域" prop="region">
-                <el-select v-model="formLabelAlign.region" style="width: 100%">
-                  <el-option v-for="item in regionOptions" :key="item.value" :label="item.label" :value="item.value">
-                  </el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item class="form-item" label="小区名称" prop="name">
-                <el-input v-model="formLabelAlign.name"></el-input>
-              </el-form-item>
-              <el-form-item class="form-item" label="具体地址" prop="address">
-                <el-input v-model="formLabelAlign.address"></el-input>
-              </el-form-item>
-            </el-form>
-            <div class="selected-point" slot="reference"></div>
-          </el-popover>
-        </div>
-        <el-card class="search-list" :body-style="{padding: '10px 0'}">
-          <a class="search-list-item" v-for="(o, i) in searchResult" :key="i" @click="setMapPosition(o.point, o)">
-            <p class="title">{{o.title}}</p>
-            <p class="address">{{o.address}}</p>
-          </a>
-        </el-card>
-      </div>
-      <div slot="footer">
-        <el-button @click="closeMapModel('cancel')" size="small">取 消</el-button>
-        <el-button type="primary" @click="closeMapModel('save')" size="small">确 定</el-button>
-      </div>
-    </el-dialog>
-
     <el-dialog :title="curUploadPicsType === 'estatePics' ? '上传公寓照片' : '上传房间照片'"
       :visible.sync="uploadPicsModelVisible"
       :append-to-body="true"
@@ -308,6 +257,7 @@
 
 <script>
 import areaSelect from '@/components/AreaSelect'
+import mapSelect from './mapSelect'
 import { estateAddressByKeywordsApi, estateZoneListByAreaIdApi, estateDeviceListApi, estateOrgListApi, estateRoomDetailApi, estateBatchCopyRoomListApi, estateNewSubdistrictApi } from '@/api/houseManage'
 import { fhdAuditApi } from '@/api/auditCenter'
 import Preview from '@/components/Preview/Preview'
@@ -315,18 +265,17 @@ import ImageCropper from '@/components/ImageCropper/Cropper'
 import RoomListSelecter from '@/components/RoomListSelecter'
 import estateDeviceGroup from './estateDeviceGroup'
 import { deepClone } from '@/utils'
-import draggable from 'vuedraggable'
 import cityData from '@/components/AreaSelect/cityData'
 let tempNames = []
 export default {
   name: 'estateModel',
   components: {
+    mapSelect,
     areaSelect,
     Preview,
     ImageCropper,
     estateDeviceGroup,
-    RoomListSelecter,
-    draggable
+    RoomListSelecter
   },
   props: [
     'showEstateModel',
@@ -335,15 +284,6 @@ export default {
   data() {
     return {
       currentPicList: [],  //当前展示图片
-      mapModelVisible: false,
-      local: null,
-      map: null,
-      searchKeywords: '',
-      searchResult: [],
-      formLabelAlign: {},
-      tempMapData: {},
-      rules: {
-      },
       estateModel: {},
       estateModelRules: {
         estateName: [
@@ -440,122 +380,8 @@ export default {
     }
   },
   computed: {
-    // ...mapGetters({
-    //   estateModel: 'formatEstateDetailData'
-    // })
   },
   methods: {
-    initBMap() {
-      let self = this
-      let selectAddrArr = this.$refs.areaSelect.$el.innerText.replace(/\s/g, '').split('/')
-      let selectAddr = selectAddrArr[1] + selectAddrArr[2]
-      let cityArr = cityData.filter((n) => n.value === this.tempAreaCode[0])
-      if (cityArr[0] && cityArr[0].children) {
-        this.regionOptions = cityArr[0].children.filter((n) => n.value === this.tempAreaCode[1])[0].children
-      }
-
-      this.formLabelAlign.city = selectAddrArr[1]
-      self.map = new BMap.Map("bm-view", { minZoom: 13, maxZoom: 19 }) // 创建地图实例
-      self.map.centerAndZoom(selectAddr || '杭州市', 15)
-      self.map.enableScrollWheelZoom(true)
-
-      self.map.addEventListener("click", function (e) {
-        self.setMapPosition(e.point)
-      })
-      let options = {
-        onSearchComplete: function (results) {
-          // 判断状态是否正确
-          if (self.local.getStatus() == BMAP_STATUS_SUCCESS) {
-            self.searchResult = [];
-            for (var i = 0; i < results.getCurrentNumPois(); i++) {
-              self.searchResult.push(results.getPoi(i));
-            }
-          }
-        }
-      };
-      self.local = new BMap.LocalSearch(self.map, options);
-    },
-    setMapPosition(position, o) {
-      if (o) {
-        this.$set(this, 'formLabelAlign', Object.assign(this.formLabelAlign, {
-          baiduUid: o.uid,
-          longitude: o.point.lng + '',
-          latitude: o.point.lat + '',
-          address: o.address
-        }))
-      }
-
-      let point = new BMap.Point(position.lng, position.lat)
-      let marker = new BMap.Marker(point)
-      let geoc = new BMap.Geocoder()
-      this.map.clearOverlays()
-      this.map.addOverlay(marker)
-      this.map.panTo(point)
-      this.map.setZoom(15)
-      geoc.getLocation(point, rs => {
-        let addressInfo = rs.addressComponents
-        if (addressInfo.city !== this.formLabelAlign.city) {
-          this.formLabelAlign.city = addressInfo.city
-          let provinceArr = cityData.filter((item) => item.label === addressInfo.province)
-          if (provinceArr[0] && provinceArr[0].children) {
-            this.tempAreaCode[0] = provinceArr[0].value
-            let cityArr = provinceArr[0].children.filter((n) => n.label === addressInfo.city)
-
-            if (cityArr[0] && cityArr[0].children) {
-              this.tempAreaCode[1] = cityArr[0].value
-              this.regionOptions = cityArr[0].children
-            }
-          }
-        }
-
-        if (o) {
-          this.formLabelAlign.name = o.title
-        } else {
-          this.$set(this, 'formLabelAlign', Object.assign(this.formLabelAlign, {
-            name: rs.surroundingPois[0] ? rs.surroundingPois[0].title : rs.address,
-            address: rs.address,
-            longitude: rs.point.lng + '',
-            latitude: rs.point.lat + ''
-          }))
-        }
-        this.regionOptions.forEach((item) => {
-          if (item.label === addressInfo.district) {
-            this.formLabelAlign.region = item.value
-          }
-        })
-        this.tempMapData = deepClone(this.formLabelAlign)
-      });
-      this.$refs.popover.doShow()
-    },
-    searchPositionByKeywords() {
-      this.local.search(this.searchKeywords)
-    },
-    remoteMethod(query) {
-      if (query !== '') {
-        this.loading = true
-        estateAddressByKeywordsApi({
-          cityId: Number(this.estateModel.areaCode[1]) || 330100,
-          keyword: query
-        }).then((res) => {
-          this.loading = false
-          this.addressList = []
-          if (res.code === '0' && res.data.list) {
-            res.data.list.forEach((item, index) => {
-              item.formatName = item.name.replace(/<span(.*?)>/g, '').replace(/<\/span>/g, '') + ' - ' + item.address
-              item.displayText = item.name + ' - ' + item.address
-            })
-            this.addressList = res.data.list
-          }
-          this.addressList.push({
-            formatName: '',
-            cityId: '-1',
-            displayText: '<span style="color: red">找不到小区？点击这里添加小区</span>'
-          })
-        })
-      } else {
-        this.addressList = []
-      }
-    },
     searchZoneList(flag) {
       [this.estateModel.provinceId, this.estateModel.cityId, this.estateModel.regionId] = this.estateModel.areaCode
       if (this.tempFormData.regionId !== this.estateModel.regionId && !flag) {
@@ -645,87 +471,9 @@ export default {
         e.target.blur()
       }
     },
-    setAddress(item) {
-      if (item) {
-        if (item.cityId === '-1') {
-          this.estateModel.address = ''
-          this.mapModelVisible = true
-          this.$set(this, 'formLabelAlign', {
-            city: '',
-            name: '',
-            region: '',
-            address: ''
-          })
-        } else {
-          if (item.areaId !== this.estateModel.areaCode[2]) {
-            this.estateModel.areaCode = [item.provinceId, item.cityId, item.areaId]
-            this.estateModel.zoneId = ''
-            this.searchZoneList(true)
-          }
-          this.estateModel.regionAddressId = item ? item.regionAddressId : ''
-        }
-        this.addressList = []
-      }
-    },
     setOrg(item) {
       this.estateModel.accountName = item ? item.accountName : ''
       this.estateModel.adminUserId = item ? item.adminUserId : ''
-    },
-    closeMapModel(type) {
-      if (type === 'save') {
-        this.addEstateSubdistrict(0)
-      } else {
-        this.$set(this, 'formLabelAlign', {})
-        this.mapModelVisible = false
-      }
-    },
-    addEstateSubdistrict(status) {
-      status = status || 0
-      let source = 1
-      if (status === 0) {
-        Object.keys(this.formLabelAlign).forEach((key) => {
-          if (this.formLabelAlign[key] != this.tempMapData[key]) {
-            source = 5
-          }
-        })
-      } else {
-        source = 5
-      }
-      let formOptions = {
-        provinceId: this.tempAreaCode[0],
-        cityId: this.tempAreaCode[1],
-        regionId: this.tempAreaCode[2],
-        source: source,
-        confirmStatus: status
-      }
-      estateNewSubdistrictApi({
-        ...this.formLabelAlign,
-        ...formOptions
-      }).then((res) => {
-        const data = res.data
-        if (data.confirmStatus !== 1) {
-          this.mapModelVisible = false
-          this.estateModel.areaCode = this.tempAreaCode
-          this.estateModel.address = this.formLabelAlign.name + ' - ' + this.formLabelAlign.address
-          this.estateModel.regionAddressId = data.regionAddressId
-          this.$refs['estateModel'].validateField('address')
-          this.searchZoneList(true)
-          this.estateModel.zoneId = ''
-        } else {
-          this.$confirm('新选择的小区名称、区域、具体地址和历史录入的一致，<span style="color:red">但经纬度坐标不一致</span>，是否使用新坐标并覆盖？', '再次确定', {
-            dangerouslyUseHTMLString: true,
-            distinguishCancelAndClose: true,
-            confirmButtonText: '使用新地址',
-            cancelButtonText: '使用原地址'
-          }).then(() => {
-            this.addEstateSubdistrict(2)
-          }).catch((action) => {
-            if (action === 'cancel') {
-              this.addEstateSubdistrict(3)
-            }
-          })
-        }
-      })
     },
     initEstateData() {
       let estateInfo = this.$store.state.estateDetailData.estateInfo
@@ -739,18 +487,26 @@ export default {
         estateInfo.tag = estateInfo.tag === 1 ? true : false
         estateInfo.address = estateInfo.subdistrictName ? (estateInfo.subdistrictName + ' - ' + estateInfo.subdistrictAddress) : ''
         estateInfo.floors.forEach((item) => { item.forbbidenEdit = true })
-
+        if (estateInfo.sourceInfo) {
+          this.filterManagerList = [
+            {
+              id: estateInfo.sourceInfo.split(',')[0],
+              name: estateInfo.sourceInfo.split(',')[1]
+            }
+          ]
+          estateInfo.sourceInfo = estateInfo.sourceInfo.split(',')[0]
+        }
         estateInfo.pictureList.forEach((item) => {
-          item.src = item.imageUrl
           item.title = item.imageName
           item.key = Math.random().toFixed(5)
+          item.isBase64 = 0
         })
 
         estateInfo.roomTypeList.forEach((item) => {
           item.pictureList.forEach((n) => {
-            n.src = n.imageUrl
             n.title = n.imageName
             item.key = Math.random().toFixed(5)
+            item.isBase64 = 0
           })
         })
 
@@ -784,18 +540,21 @@ export default {
         })
       }, 0)
     },
-    returnEstateData(type) {
+    returnEstateData() {
       let estateData = false
       this.$refs.estateModel.validate((status) => {
         if (status) {
-          estateData = this.estateModel
+          let roomDetailData = deepClone(this.estateModel)
+          roomDetailData.tag = roomDetailData.tag === true ? 1 : 0
+          const sourceInfo = roomDetailData.tag ? this.filterManagerList.filter((item) => item.id === roomDetailData.sourceInfo) : ''
+          roomDetailData.sourceInfo = sourceInfo.length ? (sourceInfo[0].id + ',' + sourceInfo[0].name) : ''
+          estateData = roomDetailData
         } else {
           this.$message.error('您还有必填信息未填写完全，请全部填写好后再保存')
           return false
         }
       })
       return estateData
-      // return this.estateModel
     },
     checkSaveStatus(status) {
       if (this.type === '新建公寓') {
@@ -926,6 +685,11 @@ export default {
         this.estateModel.sourceInfo = ''
       }
     },
+    addressChange(val) {
+      this.estateModel = Object.assign(this.estateModel, val)
+      this.$refs['estateModel'].validateField('address')
+      this.searchZoneList(true)
+    },
     // preview弹出层关闭
     uploadModelClose() {
       this.currentPicList = []
@@ -946,10 +710,13 @@ export default {
     // 裁剪后图片列表
     emitCropperData(list = []) {
       list.forEach((v, i) => {
-        v.type = 1,
-        v.imageName = v.title,
-        v.image = v.src,
+        v.type = 1
+        v.imageName = v.title
+        v.image = v.src
         v.key = v.key || Math.random().toFixed(5)
+        if (v.isBase64 === undefined) {
+          v.isBase64 = 1
+        }
       })
       let picList = this.curPicListIndex === -1 ? this.estateModel.pictureList : this.estateModel.roomTypeList[this.curPicListIndex].pictureList
       if (this.curPicListIndex === -1) {
@@ -1025,18 +792,6 @@ export default {
     }
   },
   watch: {
-    mapModelVisible(val) {
-      if (val) {
-        this.$nextTick(() => {
-          this.tempAreaCode = deepClone(this.estateModel.areaCode)
-          this.initBMap()
-        })
-      } else {
-        this.searchKeywords = ''
-        this.searchResult = []
-        this.$refs.popover.doClose()
-      }
-    },
     showEstateModel: {
       immediate: true,
       handler: function (val) {
@@ -1045,11 +800,6 @@ export default {
         } else {
           this.$store.commit('CLEAR_ESTATEDATA')
         }
-      }
-    },
-    'formLabelAlign.region': function (val, oldVal) {
-      if (val !== oldVal) {
-        this.tempAreaCode[2] = val
       }
     }
   },
