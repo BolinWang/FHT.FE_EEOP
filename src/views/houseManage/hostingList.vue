@@ -38,19 +38,6 @@
             <el-button style="width:120px;margin-left:10px" @click="openRoomDetail(2)">添加合租房源</el-button>
             <el-button style="width:120px" @click="openRoomDetail(1)">添加整租房源</el-button>
           </el-form-item>
-
-          <GridUnit ref="hostingHouseList" :span-method="objectSpanMethod" :formOptions="roomSearchForm" :showSelection="true" :url="houstingListUrl" :dataMethod="method" listField="data.houseList" totalField="data.record" :columns="colModels" :height="tableHeight" fit @selection-change="handleSelectionChange">
-            <template slot="operateHosting" slot-scope="scope">
-              <el-row>
-                <el-button type="primary" size="mini">交租方式</el-button>
-                <el-button type="primary" size="mini">复制到</el-button>
-                <el-button type="primary" size="mini">编辑房间</el-button>
-                <el-button type="danger" size="mini">删除</el-button>
-              </el-row>
-            </template>
-            <el-table-column slot="selection" type="selection">
-            </el-table-column>
-          </GridUnit>
         </div>
       </el-form>
       <GridUnit ref="hostingHouseList" :showRowIndex="false" :spanMethod="objectSpanMethod" :formOptions="roomSearchForm" :url="houstingListUrl" :dataMethod="method" listField="data.houseList" totalField="data.record" :columns="colModels" :height="tableHeight" :showSelection="true" @selection-change="handleSelectionChange" :dataHandler="dataHandler" :pageSizes="[50, 100, 200]" :border="activeName === '合租'">
