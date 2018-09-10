@@ -29,14 +29,14 @@
         <div>
           <el-form-item>
             <el-dropdown class="room-options-dropdown" @command="handleCommand">
-              <el-button type="primary" size="small" style="width:120px">批量房态管理</el-button>
+              <el-button type="primary" plain size="small" style="width:120px">批量房态管理</el-button>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item :command="2">空房</el-dropdown-item>
                 <el-dropdown-item :command="9">已出租无租客</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
-            <el-button type="primary" style="width:120px;margin-left:10px" @click="openRoomDetail(2)">添加合租房源</el-button>
-            <el-button type="primary" style="width:120px" @click="openRoomDetail(1)">添加整租房源</el-button>
+            <el-button type="primary" plain style="width:120px;margin-left:10px" @click="openRoomDetail(2)">添加合租房源</el-button>
+            <el-button type="primary" plain style="width:120px" @click="openRoomDetail(1)">添加整租房源</el-button>
           </el-form-item>
         </div>
       </el-form>

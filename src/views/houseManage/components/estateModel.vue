@@ -505,8 +505,8 @@ export default {
         estateInfo.roomTypeList.forEach((item) => {
           item.pictureList.forEach((n) => {
             n.title = n.imageName
-            item.key = Math.random().toFixed(5)
-            item.isBase64 = 0
+            n.key = Math.random().toFixed(5)
+            n.isBase64 = 0
           })
         })
 

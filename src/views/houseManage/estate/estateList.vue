@@ -133,9 +133,11 @@ export default {
       }
     },
     saveEstateData(type) {
-      if (!this.$refs.estateModel.returnEstateData(type)) {
+      let estateInfo = deepClone(this.$refs.estateModel.returnEstateData(type))
+      if (!estateInfo) {
         return
       }
+      console.log(estateInfo)
       let api = null
       if (this.estateModelTitle === '新建公寓') {
         api = estateNewEstateSaveApi
