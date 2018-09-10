@@ -352,3 +352,20 @@ input[type='file']{
   position:absolute;
   clip:rect(0 0 0 0);
 }
+
+.organEdit {
+  .el-upload-list--picture-card, .el-upload--picture-card{
+    width: 120px;
+    height: 92px;
+    line-height: 90px;
+    display: inline-block;
+  }
+  .el-upload-list{
+    display: none;
+  }
+  .upOgn{
+    margin: 0;
+    vertical-align: top;
+    display: inline-block;
+  }
+}

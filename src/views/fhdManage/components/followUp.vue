@@ -57,7 +57,7 @@
              </div>
            </div>
         </div>
-       
+
         <div slot="footer" class="dialog-footer">
             <el-button @click="dialogTableVisible = false">关闭</el-button>
         </div>
@@ -102,43 +102,43 @@ export default {
           messageType: null,
           messageTypes:[  //1-逾期账单催租提醒,2-租客账单交租提醒,3-租客已退房（账单已逾期）信息确认 4-租客已退房信息确认
               {
-                value:1, 
+                value:1,
                 label:'逾期账单催租提醒'
               },{
-                value:2, 
-                label:'租客账单交租提醒'  
+                value:2,
+                label:'租客账单交租提醒'
               },{
-                value:3, 
-                label:'租客已退房（账单已逾期）信息确认'  
+                value:3,
+                label:'租客已退房（账单已逾期）信息确认'
               },{
-                value:4, 
+                value:4,
                 label:'租客已退房信息确认'
               },{
-                 value:5, 
+                 value:5,
                 label:'线下交租确认信息'
               }
          ],
          messageTypeIs:[  //租客账单交租提醒、租客已退房信息确认  未逾期
              {
-                value:2, 
-                label:'租客账单交租提醒'  
+                value:2,
+                label:'租客账单交租提醒'
               },{
-                value:4, 
+                value:4,
                 label:'租客已退房信息确认'
               },{
-                value:5, 
+                value:5,
                 label:'线下交租确认信息'
               }
          ],
-         messageTypeOver:[  
+         messageTypeOver:[
             {
-                value:1, 
+                value:1,
                 label:'逾期账单催租提醒'
               },{
-                value:3, 
-                label:'租客已退房（账单已逾期）信息确认'  
+                value:3,
+                label:'租客已退房（账单已逾期）信息确认'
              },{
-                value:5, 
+                value:5,
                 label:'线下交租确认信息'
               }
          ],
@@ -151,7 +151,7 @@ export default {
         }
     },
     mounted(){
-     
+
     },
     beforeDestroy(){
       let dia=document.querySelectorAll('body>.el-dialog__wrapper')
@@ -231,14 +231,14 @@ export default {
           }else{
             this.addfun()
           }
-           
+
         }
-       
-        
+
+
       },
       addfun(){
          let params=Object.assign(this.followId,this.form)
-            
+
           billFollowApi(params).then(response => {
             this.innerVisible=false
             this.getfollowList()
@@ -247,7 +247,7 @@ export default {
           })
       },
       managerMessageSubmit(){
-       
+
         if(this.messageType){
           this. messageSubmit()
         }else{
@@ -278,13 +278,13 @@ export default {
           if(this.isOver == true){
             this.messageTypeList = this.messageTypeOver   //以逾期
           }else if(this.isOver == false){
-            this.messageTypeList = this.messageTypeIs   
+            this.messageTypeList = this.messageTypeIs
           }else{
             this.messageTypeList = messageTypes
           }
         }
-        
-        
+
+
       },
       open(type,id,billNo,isOver,status){
         this.dialogTableVisible = true
@@ -294,7 +294,7 @@ export default {
         this.status = status
         this.getfollowList()
       }
-      
+
  }
 }
 </script>

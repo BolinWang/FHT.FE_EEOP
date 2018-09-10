@@ -1,4 +1,14 @@
+/*
+ * @Author: ghost
+ * @Date: 2018-09-05 18:23:17
+ * @Last Modified by:
+ * @Last Modified time: 2018-09-07 10:24:02
+*/
+
 import fetch from '@/utils/fetch'
+
+//  部分飞虎队请求接口
+const FLY = process.env.FLY_API + '/bop'
 
 /* 获取催租列表 */
 export function getRentingListApi(params = {}) {
@@ -98,6 +108,159 @@ export function	cityManagerMessageApi(params = {}) {
       method: 'post',
       data: {
         method: 'cityManagerMessage',
+        params
+      }
+    }).then(res => {
+      resolve(res)
+    }).catch(error => {
+      reject(error)
+    })
+  })
+}
+
+// 机构管理列表接口
+export function	orgManageListApi(params = {}) {
+  return new Promise((resolve, reject) => {
+    fetch({
+      url: FLY + '/orgManage/list',
+      method: 'post',
+      data: {
+        params
+      }
+    }).then(res => {
+      resolve(res)
+    }).catch(error => {
+      reject(error)
+    })
+  })
+}
+
+// 机构备注列表
+export function	orgRemarkListApi(params = {}) {
+  return new Promise((resolve, reject) => {
+    fetch({
+      url: FLY + '/orgRemark/list',
+      method: 'post',
+      data: {
+        params
+      }
+    }).then(res => {
+      resolve(res)
+    }).catch(error => {
+      reject(error)
+    })
+  })
+}
+
+// 机构备注保存
+export function	orgRemarkSaveApi(params = {}) {
+  return new Promise((resolve, reject) => {
+    fetch({
+      url: FLY + '/orgRemark/save',
+      method: 'post',
+      data: {
+        params
+      }
+    }).then(res => {
+      resolve(res)
+    }).catch(error => {
+      reject(error)
+    })
+  })
+}
+
+// 获取单条机构文件
+export function	orgManagequeryByIdApi(params = {}) {
+  return new Promise((resolve, reject) => {
+    fetch({
+      url: FLY + '/orgManage/queryById',
+      method: 'post',
+      data: {
+        params
+      }
+    }).then(res => {
+      resolve(res)
+    }).catch(error => {
+      reject(error)
+    })
+  })
+}
+
+// 机构黑名单列表
+export function	orgManageblackListApi(params = {}) {
+  return new Promise((resolve, reject) => {
+    fetch({
+      url: FLY + '/orgManage/blackList',
+      method: 'post',
+      data: {
+        params
+      }
+    }).then(res => {
+      resolve(res)
+    }).catch(error => {
+      reject(error)
+    })
+  })
+}
+
+// 机构恢复
+export function	orgManageRecoverApi(params = {}) {
+  return new Promise((resolve, reject) => {
+    fetch({
+      url: FLY + '/orgManage/recover',
+      method: 'post',
+      data: {
+        params
+      }
+    }).then(res => {
+      resolve(res)
+    }).catch(error => {
+      reject(error)
+    })
+  })
+}
+
+// 黑名单机构查询单条
+export function	orgManagequeryByMobileApi(params = {}) {
+  return new Promise((resolve, reject) => {
+    fetch({
+      url: FLY + '/orgManage/queryByMobile',
+      method: 'post',
+      data: {
+        params
+      }
+    }).then(res => {
+      resolve(res)
+    }).catch(error => {
+      reject(error)
+    })
+  })
+}
+
+// 机构解除
+export function	orgManageRelieveApi(params = {}) {
+  return new Promise((resolve, reject) => {
+    fetch({
+      url: FLY + '/orgManage/relieve',
+      method: 'post',
+      data: {
+        params
+      }
+    }).then(res => {
+      resolve(res)
+    }).catch(error => {
+      reject(error)
+    })
+  })
+}
+
+// 保存机构
+export function	orgManageSave(params = {}) {
+  return new Promise((resolve, reject) => {
+    fetch({
+      url: FLY + '/orgManage/save',
+      method: 'post',
+      data: {
         params
       }
     }).then(res => {
