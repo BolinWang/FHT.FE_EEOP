@@ -290,6 +290,7 @@ export default {
   data() {
     return {
       hostingRoomDetail: {},
+      tempFormData: {},
       hostingRoomDetailRules: {
         areaCode: [
           {
@@ -627,6 +628,7 @@ export default {
 
       this.$nextTick(() => {
         this.$set(this, 'hostingRoomDetail', val)
+        this.$set(this, 'tempFormData', deepClone(val))
         if (val.isEditFlag) {
           this.searchZoneList(true)
         }
@@ -634,6 +636,42 @@ export default {
           this.$refs.hostingRoomDetail.clearValidate()
         })
       })
+    },
+    checkEditFlag() {
+      let differentFlag = false
+      Object.keys(this.tempFormData).forEach((key) => {
+        if (JSON.stringify(this.tempFormData[key]) != JSON.stringify(this.hostingRoomDetail[key])) {
+          if (key === 'pictures') {
+            differentFlag = checkDiff(this.tempFormData[key], this.hostingRoomDetail[key])
+          } else if (key === 'hostingRooms') {
+            this.tempFormData['hostingRooms'].forEach((v, i) => {
+              Object.keys(v).forEach((k) => {
+                if (k === 'pictures') {
+                  differentFlag = checkDiff(v[k], this.hostingRoomDetail['hostingRooms'][i]['pictures'])
+                } else {
+                  differentFlag = true
+                }
+              })
+            })
+          } else {
+            differentFlag = true
+          }
+          function checkDiff(a, b) {
+            let diffCount = 0
+            if (a.length !== b.length) {
+              diffCount++
+              return diffCount
+            }
+            a.forEach((item, index) => {
+              if (item.imageName !== b[index].imageName) {
+                diffCount++
+              }
+            })
+            return diffCount > 0 ? true : false
+          }
+        }
+      })
+      return differentFlag
     },
     returnRoomDetailData() {  // 返回房间详情数据
       let roomDetailData = false

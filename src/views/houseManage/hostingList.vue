@@ -65,7 +65,7 @@
         </template>
       </GridUnit>
     </el-tabs>
-    <el-dialog :title="isEditFlag ? '编辑房间' : '添加房源'" :visible.sync="roomDetailModelVisible" width="1000px">
+    <el-dialog :title="isEditFlag ? '编辑房间' : '添加房源'" :visible.sync="roomDetailModelVisible" :before-close="checkEditStatus" width="1000px">
       <hosting-room-detail ref="hostingRoomDetail"></hosting-room-detail>
       <span slot="footer" class="dialog-footer">
         <el-button size="small" type="primary" @click="saveRoomDetailData('add')" v-if="!isEditFlag">保存并继续添加</el-button>
@@ -599,6 +599,19 @@ export default {
         }
       })
     },
+    // 检查是否修改房源信息
+    checkEditStatus(done) {
+      const differentFlag = this.$refs.hostingRoomDetail.checkEditFlag()
+      if (differentFlag) {
+        this.$confirm('您还有数据未保存, 确认关闭吗？')
+        .then(_ => {
+          done()
+        })
+        .catch(_ => {})
+      } else {
+        done()
+      }
+    },
     // 编辑交租方式
     openRentPayModel(row) {
       hostingRoomRentTypeApi({
@@ -646,42 +659,6 @@ export default {
         this.tempRentPayList = this.rentPayList[Number(activeTabName)].roomRentTypeList
       }
     },
-    // 检查和保存交租方式
-    // checkAndSaveRentPay() {
-    //   if (this.activeName === '整租') {
-    //     let list = this.$refs.rentPayWay.returnRentPayList()
-    //     if (!list) {
-    //       this.$message.error(`请填写完交租方式再保存`)
-    //       return false
-    //     }
-    //     this.saveEstateRoomRentPayWay(this.rentPayList[0].roomCode, list)
-    //   } else {
-    //     let tempRentPayList = []
-    //     for (let n in this.$refs.rentPayWay) {
-    //       let list = this.$refs.rentPayWay[n].returnRentPayList()
-    //       if (!list) {
-    //         this.$message.error(`${this.rentPayList[n].roomName}的交租方式还未填写完`)
-    //         return false
-    //       }
-    //       tempRentPayList[n] = deepClone(this.rentPayList[n])
-    //       tempRentPayList[n].roomRentTypeList = list
-    //     }
-    //     if (tempRentPayList.length === this.rentPayList.length) {
-    //       Promise.all(tempRentPayList.map((item, index) => {
-    //         return saveEstateRoomRentPayWayApi({
-    //           roomCode: item.roomCode,
-    //           roomRentTypeList: item.roomRentTypeList
-    //         })
-    //       })).then((resArr) => {
-    //         for (let i = 0; i < resArr.length; i++) {
-    //           // if (resArr[i].code) {
-
-    //           // }
-    //         }
-    //       }).catch(err => { console.log(err) })
-    //     }
-    //   }
-    // },
     // 保存交租方式
     saveEstateRoomRentPayWay() {
       let list = this.activeName === '整租' ? this.$refs.rentPayWay.returnRentPayList() : this.$refs.rentPayWay[Number(this.activeRentPayTabName)].returnRentPayList()
