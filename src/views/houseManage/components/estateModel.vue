@@ -22,7 +22,7 @@
           </el-row>
           <el-row :gutter="20">
             <el-col :span="12">
-              <el-form-item label="所属板块" prop="zoneId">
+              <el-form-item label="所属板块" :prop="zoneList.length ? 'zoneId' : ''">
                 <el-select v-model="estateModel.zoneId" class="estate-model-select" :placeholder="zoneList.length ? '请选择' : '无'">
                   <el-option v-for="item in zoneList" :key="item.zoneId" :label="item.zoneName" :value="item.zoneId">
                   </el-option>
@@ -516,12 +516,6 @@ export default {
             orgName: estateInfo.orgName
           }
         ]
-        this.zoneList = [
-          {
-            zoneId: estateInfo.zoneId,
-            zoneName: estateInfo.zoneName
-          }
-        ]
       }
       setTimeout(() => {
         this.$set(this, 'estateModel', deepClone(estateInfo))
@@ -531,7 +525,9 @@ export default {
           this.addEstateFloor()
           this.addEstateRoomType()
         } else {
-          this.searchZoneList(true)
+          if (estateInfo.zoneId) {
+            this.searchZoneList(true)
+          }
         }
         this.$set(this, 'tempFormData', deepClone(this.estateModel))
         this.$nextTick(() => {

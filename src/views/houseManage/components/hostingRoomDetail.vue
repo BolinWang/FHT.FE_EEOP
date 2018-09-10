@@ -7,7 +7,7 @@
         </el-form-item>
       </el-col>
       <el-col :span="7">
-        <el-form-item label="所属板块" prop="zoneId">
+        <el-form-item label="所属板块" :prop="zoneList.length ? 'zoneId' : ''">
           <el-select v-model="hostingRoomDetail.zoneId" class="room-detail-select" :placeholder="zoneList.length ? '请选择' : '无'">
             <el-option v-for="item in zoneList" :key="item.zoneId" :label="item.zoneName" :value="item.zoneId">
             </el-option>
@@ -605,6 +605,7 @@ export default {
         this.activeRoomName = '1'
       }
       if (val.isEditFlag) {
+        val.zoneId = val.zoneId === 0 ? '' : val.zoneId
         this.orgList = [
           {
             orgId: val.orgId,
@@ -646,7 +647,7 @@ export default {
       this.$nextTick(() => {
         this.$set(this, 'hostingRoomDetail', val)
         this.$set(this, 'tempFormData', deepClone(val))
-        if (val.isEditFlag) {
+        if (val.isEditFlag && val.zoneId) {
           this.searchZoneList(true)
         }
         this.$nextTick(() => {
