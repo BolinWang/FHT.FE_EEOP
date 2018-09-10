@@ -527,10 +527,11 @@ export default {
         this.$set(this, 'estateModel', deepClone(estateInfo))
         this.activeNames = ['1']
         tempNames = ['1']
-        this.searchZoneList(true)
         if (this.type === '新建公寓') {
           this.addEstateFloor()
           this.addEstateRoomType()
+        } else {
+          this.searchZoneList(true)
         }
         this.$set(this, 'tempFormData', deepClone(this.estateModel))
         this.$nextTick(() => {
