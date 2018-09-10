@@ -6,13 +6,13 @@
         </el-table-column>
         <el-table-column type="index" width="60" align="center">
         </el-table-column>
-        <el-table-column v-for="(item,index) in colModels" :label="item.label" :width="item.width" key="index" fit show-overflow-tooltip>
+        <el-table-column v-for="(item,index) in colModels" :label="item.label" :width="item.width" :key="index" fit show-overflow-tooltip>
           <template slot-scope="scope">
             <span v-if="item.type === 'img'">
               <img class="image image-center" width="40" height="40"
                 v-if="scope.row[item.prop]"
                 v-lazy="scope.row[item.prop]"
-                @click="showImage(scope.row[item.prop])" /> 
+                @click="showImage(scope.row[item.prop])" />
               <span v-else></span>
             </span>
             <span v-else-if="item.type === 'formatType'">
