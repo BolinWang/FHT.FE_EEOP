@@ -236,17 +236,15 @@ export const asyncRouterMap = [
       path: 'rentingABill',
       component: _import('fhdManage/rentingABill'),
       name: '催租账单'
+    }, {
+      path: 'organManagement',
+      component: _import('fhdManage/organManagement'),
+      name: '机构管理'
+    }, {
+      path: 'organBlack',
+      component: _import('fhdManage/organBlack'),
+      name: '黑名单机构'
     }]
-    // , {
-    //   path: 'organManagement',
-    //   component: _import('fhdManage/organManagement'),
-    //   name: '机构管理'
-    // }, {
-    //   path: 'organBlack',
-    //   component: _import('fhdManage/organBlack'),
-    //   name: '黑名单机构'
-    // }
-
   },
   // {
   //   path: '/serviceManage',
