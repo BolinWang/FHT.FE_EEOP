@@ -11,16 +11,14 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/api': {
-        //  target: proxyIPs.ghost,
-        target: 'http://192.168.5.123:3000',
+        target: proxyIPs.ghost,
         changeOrigin: true,
         pathRewrite: {
           '^/api': ''
         }
       }
     },
-    // host: '0.0.0.0', // 请勿修改，localhost/IP均可访问
-    host:'localhost',
+    host: '0.0.0.0', // 请勿修改，localhost/IP均可访问
     port: 9528,
     autoOpenBrowser: false,
     errorOverlay: true,

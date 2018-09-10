@@ -562,11 +562,14 @@ export default {
           return
         }
         roomStatusParams = {
+          resource: 3,
           roomCodes: this.selectedRooms.map(item => item.roomCode),
           roomStatus: command
         }
       } else {
-        roomStatusParams = command
+        roomStatusParams = Object.assign(command, {
+          resource: 3
+        })
       }
       changeRoomStatusApi(roomStatusParams).then((res) => {
         if (res.code === '0') {
