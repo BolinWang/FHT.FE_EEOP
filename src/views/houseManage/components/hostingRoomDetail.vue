@@ -629,19 +629,19 @@ export default {
             }
           })
         }
-        val.tag = val.tag ? true : false
-        if (val.sourceInfo) {
-          this.filterManagerList = [
-            {
-              id: val.sourceInfo.split(',')[0],
-              name: val.sourceInfo.split(',')[1]
-            }
-          ]
-          val.sourceInfo = val.sourceInfo.split(',')[0]
-        }
       } else {
         this.orgList = []
         this.zoneList = []
+      }
+      val.tag = val.tag ? true : false
+      if (val.sourceInfo) {
+        this.filterManagerList = [
+          {
+            id: val.sourceInfo.split(',')[0],
+            name: val.sourceInfo.split(',')[1]
+          }
+        ]
+        val.sourceInfo = val.sourceInfo.split(',')[0]
       }
 
       this.$nextTick(() => {
@@ -664,10 +664,12 @@ export default {
           } else if (key === 'hostingRooms') {
             this.tempFormData['hostingRooms'].forEach((v, i) => {
               Object.keys(v).forEach((k) => {
-                if (k === 'pictures') {
-                  differentFlag = checkDiff(v[k], this.hostingRoomDetail['hostingRooms'][i]['pictures'])
-                } else {
-                  differentFlag = true
+                if (JSON.stringify(v[k]) != JSON.stringify(this.hostingRoomDetail['hostingRooms'][i][k])) {
+                  if (k === 'pictures') {
+                    differentFlag = checkDiff(v[k], this.hostingRoomDetail['hostingRooms'][i]['pictures'])
+                  } else {
+                    differentFlag = true
+                  }
                 }
               })
             })
@@ -677,8 +679,7 @@ export default {
           function checkDiff(a, b) {
             let diffCount = 0
             if (a.length !== b.length) {
-              diffCount++
-              return diffCount
+              return true
             }
             a.forEach((item, index) => {
               if (item.imageName !== b[index].imageName) {

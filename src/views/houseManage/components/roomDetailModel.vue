@@ -20,12 +20,12 @@
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="起始房号" prop="startNo">
-              <el-input v-model="roomDetailModel.startNo" placeholder="例: 101"></el-input>
+              <el-input type="number" min="0" v-model="roomDetailModel.startNo" placeholder="例: 101"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="末尾房号" prop="">
-              <el-input v-model="roomDetailModel.endNo" placeholder="例: 120"></el-input>
+              <el-input type="number" min="0" v-model="roomDetailModel.endNo" placeholder="例: 120"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -213,7 +213,7 @@ export default {
           { required: true, message: '请输入房号', trigger: 'change' }
         ],
         startNo: [
-          { required: true, message: '请输入起始房号', trigger: 'change' }
+          { required: true, message: '请输入起始房号(数字类型)', trigger: 'change' }
         ],
         roomTypeId: [
           { required: true, message: '请选择房间类型', trigger: 'change' }

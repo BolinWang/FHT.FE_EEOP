@@ -633,7 +633,7 @@ export default {
         if (this.activeName === '合租') {
           this.activeRentPayTabName = '0'
           this.tempRentPayTabName = '0'
-          this.tempRentPayList = res.data.hostingRoomRentType[0].roomRentTypeList
+          this.tempRentPayList = deepClone(res.data.hostingRoomRentType[0].roomRentTypeList)
         }
       })
     },
@@ -653,11 +653,11 @@ export default {
           this.$refs.rentPayWay[Number(this.tempRentPayTabName)].resetForm(this.rentPayList[Number(this.tempRentPayTabName)].roomRentTypeList)
           this.activeRentPayTabName = activeTabName
           this.tempRentPayTabName = activeTabName
-          this.tempRentPayList = this.rentPayList[Number(activeTabName)].roomRentTypeList
+          this.tempRentPayList = deepClone(this.rentPayList[Number(activeTabName)].roomRentTypeList)
         }).catch((err) => { console.log(err) })
       } else {
         this.tempRentPayTabName = activeTabName
-        this.tempRentPayList = this.rentPayList[Number(activeTabName)].roomRentTypeList
+        this.tempRentPayList = deepClone(this.rentPayList[Number(activeTabName)].roomRentTypeList)
       }
     },
     // 保存交租方式
