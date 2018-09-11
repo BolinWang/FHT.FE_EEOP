@@ -209,6 +209,7 @@
 </template>
 
 <script>
+import { deepClone } from "@/utils"
 export default {
   props: {
     list: {
@@ -349,7 +350,7 @@ export default {
     list: {
       immediate: true,
       handler: function (val) {
-        this.rentPayList = val.slice()
+        this.rentPayList = deepClone(val)
         this.$nextTick(() => {
           this.$refs.financeRentPayForm.clearValidate()
           this.$refs.defaultRentPayForm.clearValidate()
