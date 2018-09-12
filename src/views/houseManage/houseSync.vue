@@ -83,7 +83,7 @@
               </div>
             </div>
             <span slot="footer" class="dialog-footer">
-              <span class="tips">温馨提示：飞虎队房源需填写照片提供者</span>
+              <span class="tips" v-show="dialogTitle === '发布'">温馨提示：飞虎队房源需填写照片提供者</span>
               <el-button type="primary" size="small" @click="gotoHouseAsync">{{dialogTitle === "撤销"?"确定":"发布"}}</el-button>
             </span>
           </el-dialog>
@@ -397,9 +397,10 @@ export default {
   .dialog-footer {
     .tips {
       position: absolute;
-      bottom: 25px;
+      bottom: 15px;
       left: 15px;
       font-size: 14px;
+      color: #999;
     }
   }
 }
