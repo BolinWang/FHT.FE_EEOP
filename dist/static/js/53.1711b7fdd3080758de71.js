@@ -1,1 +1,0 @@
-webpackJsonp([53],{"49mI":function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default={}},AHly:function(e,t,n){var r=n("VU/8")(n("49mI"),n("Xipj"),null,null,null);e.exports=r.exports},Xipj:function(e,t){e.exports={render:function(){var e=this.$createElement,t=this._self._c||e;return t("div",[t("router-view")],1)},staticRenderFns:[]}}});
