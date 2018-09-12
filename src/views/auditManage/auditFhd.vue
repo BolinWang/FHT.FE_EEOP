@@ -241,7 +241,7 @@ export default {
       }
     }
     const validateSpiltRate = (rule, value, callback) => {
-      if(!validateIntAndZero(value) || value <= 0 || value >= 100) {
+      if(!validateIntAndZero(value) || value < 0 || value >= 100) {
         callback(new Error('费率为0到100的正整数'))
       } else {
         callback()
