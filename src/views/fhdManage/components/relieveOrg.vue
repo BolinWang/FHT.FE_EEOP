@@ -50,7 +50,7 @@ import {
   delObjectItem
 } from '@/utils'
 import {
-  orgManageRecoverApi,
+  orgManageRelieveApi,
   orgManagequeryByMobileApi
 } from '@/api/renting'
 import {
@@ -100,9 +100,9 @@ export default {
             remark: this.relieve.remark,
             sessionId: getSessionId()
           }
-          orgManageRecoverApi(params).then(res => {
+          orgManageRelieveApi(params).then(res => {
             delObjectItem(this.relieve)
-            this.$emit('search')
+            this.$emit('searchStart')
             this.innerVisible = false
             this.outerVisible = false
             this.$message({

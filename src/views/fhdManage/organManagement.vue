@@ -2,7 +2,7 @@
  * @Author: ghost
  * @Date: 2018-08-31 14:55:54
  * @Last Modified by: 
- * @Last Modified time: 2018-09-12 20:09:22
+ * @Last Modified time: 2018-09-13 11:05:44
  */
 <template>
   <div class="container">
@@ -174,172 +174,182 @@
 </template>
 
 <script>
-  import {
-    parseTime,
-    delObjectItem,
-    ObjectMap
-  } from '@/utils'
-  import {
-    getSessionId
-  } from '@/utils/auth'
-  import {
-    orgManageListApi,
-    orgRemarkSaveApi,
-    orgRemarkListApi
-  } from '@/api/renting'
-  import organEdit from './components/organEdit.vue'
-  export default {
-    components: {
-      organEdit
-    },
-    data() {
-      return {
-        formLabelWidth: '60px',
-        dialogTableVisible: false,
-        innerVisible: false,
-        total: null,
-        gridData: [],
-        nowData: {},
-        formData: {
-          type: '',
-          gmtCreateStart: '',
-          gmtCreateEnd: '',
-          cmKeyWord: '',
-          orgKeyWord: '',
-          sessionId: getSessionId()
-        },
-        form: {
-          remark: null,
-          orgId: null,
-          sessionId: getSessionId()
-        },
-        pageItems: { // pageSize对象
-          pageNo: 1,
-          pageSize: 20
-        },
-        rules: {
-          remark: [{
-            required: true,
-            message: '请输入备注',
-            trigger: 'blur'
-          }]
-        },
-        pageSizeList: [10, 20, 30, 50],
-        dateTime: [], // 时间数组
-        organList: [{
-          value: 1,
-          label: '个人'
-        }, {
-          value: 2,
-          label: '企业'
-        }],
-        tableHeight: 300,
-        organAllList: []
-      }
-    },
-    filters: {
-      filererType(val) {
-        const typeName = val === 1 ? '个人' : '企业'
-        return typeName
+const FLY = process.env.FLY_API + '/bop'
+import {
+  parseTime,
+  delObjectItem,
+  ObjectMap
+} from '@/utils'
+import {
+  getSessionId
+} from '@/utils/auth'
+import {
+  orgManageListApi,
+  orgRemarkSaveApi,
+  orgRemarkListApi
+} from '@/api/renting'
+import organEdit from './components/organEdit.vue'
+export default {
+  components: {
+    organEdit
+  },
+  data() {
+    return {
+      formLabelWidth: '60px',
+      dialogTableVisible: false,
+      innerVisible: false,
+      total: null,
+      gridData: [],
+      nowData: {},
+      formData: {
+        type: '',
+        gmtCreateStart: '',
+        gmtCreateEnd: '',
+        cmKeyWord: '',
+        orgKeyWord: '',
+        sessionId: getSessionId()
       },
-      filererhaveBindCardId(val) {
-        const isCard = val === 0 ? '否' : '是'
-        return isCard
+      form: {
+        remark: null,
+        orgId: null,
+        sessionId: getSessionId()
       },
-      filererIsNo(val) {
-        const IsNo = val === 0 ? '无' : '有'
-        return IsNo
+      pageItems: { // pageSize对象
+        pageNo: 1,
+        pageSize: 20
+      },
+      rules: {
+        remark: [{
+          required: true,
+          message: '请输入备注',
+          trigger: 'blur'
+        }]
+      },
+      pageSizeList: [10, 20, 30, 50],
+      dateTime: [], // 时间数组
+      organList: [{
+        value: 1,
+        label: '个人'
+      }, {
+        value: 2,
+        label: '企业'
+      }],
+      tableHeight: 300,
+      organAllList: []
+    }
+  },
+  filters: {
+    filererType(val) {
+      const typeName = val === 1 ? '个人' : '企业'
+      return typeName
+    },
+    filererhaveBindCardId(val) {
+      const isCard = val === 0 ? '否' : '是'
+      return isCard
+    },
+    filererIsNo(val) {
+      const IsNo = val === 0 ? '无' : '有'
+      return IsNo
+    }
+  },
+  mounted() {
+    let temp_height = document.body.clientHeight - 200
+    this.tableHeight = temp_height > 300 ? temp_height : 300
+    window.onresize = () => {
+      return (() => {
+        temp_height = document.body.clientHeight - 200
+        this.tableHeight = this.tableHeight = temp_height > 300 ? temp_height : 300
+      })()
+    }
+    this.searchParam()
+  },
+  created() {
+  },
+  beforeDestroy() {
+    const dia = document.querySelectorAll('body>.el-dialog__wrapper')
+    dia.forEach(element => {
+      element.style.display = 'none'
+    })
+  },
+  watch: {
+    dateTime(val) {
+      val = val || []
+      this.formData.gmtCreateStart = val[0] ? parseTime(val[0]) : ''
+      this.formData.gmtCreateEnd = val[1] ? parseTime(val[1]) : ''
+    }
+  },
+  methods: {
+    exportExcel() {
+      console.log(this.formData)
+      window.location.href = `${FLY}/orgManage/export?$
+                              type=${this.formData.type}&
+                              gmtCreateStart=${this.formData.gmtCreateStart}$
+                              gmtCreateEnd=${this.formData.gmtCreateEnd}$
+                              cmKeyWord=${this.formData.cmKeyWord}&
+                              orgKeyWord=${this.formData.orgKeyWord}`
+    },
+    editOrgan(row) {
+      this.nowData = row
+      this.$refs.organEdit.open(this.nowData)
+    },
+    remarkOrgan(row) { // 备注
+      this.dialogTableVisible = true
+      this.nowData = row
+      this.getremarkList()
+    },
+    getremarkList() {
+      const params = {
+        orgId: this.nowData.orgId,
+        sessionId: getSessionId()
       }
-    },
-    mounted() {
-      let temp_height = document.body.clientHeight - 200
-      this.tableHeight = temp_height > 300 ? temp_height : 300
-      window.onresize = () => {
-        return (() => {
-          temp_height = document.body.clientHeight - 200
-          this.tableHeight = this.tableHeight = temp_height > 300 ? temp_height : 300
-        })()
-      }
-      this.searchParam()
-    },
-    created() {
-    },
-    beforeDestroy() {
-      const dia = document.querySelectorAll('body>.el-dialog__wrapper')
-      dia.forEach(element => {
-        element.style.display = 'none'
+      orgRemarkListApi(params).then(res => {
+        this.gridData = res.data.orgRemarkList
       })
     },
-    watch: {
-      dateTime(val) {
-        val = val || []
-        this.formData.gmtCreateStart = val[0] ? parseTime(val[0]) : ''
-        this.formData.gmtCreateEnd = val[1] ? parseTime(val[1]) : ''
-      }
+    closeInner() {
+      this.innerVisible = false
+      delObjectItem(this.form)
     },
-    methods: {
-      editOrgan(row) {
-        this.nowData = row
-        this.$refs.organEdit.open(this.nowData)
-      },
-      remarkOrgan(row) { // 备注
-        this.dialogTableVisible = true
-        this.nowData = row
-        this.getremarkList()
-      },
-      getremarkList() {
-        const params = {
-          orgId: this.nowData.orgId,
-          sessionId: getSessionId()
-        }
-        orgRemarkListApi(params).then(res => {
-          this.gridData = res.data.orgRemarkList
-        })
-      },
-      closeInner() {
-        this.innerVisible = false
-        delObjectItem(this.form)
-      },
-      addFollowSubmit() {
-        this.form.orgId = this.nowData.orgId
-        this.$refs['orgForm'].validate((valid) => {
-          if (valid) {
-            orgRemarkSaveApi(this.form).then(res => {
-              this.getremarkList()
-              delObjectItem(this.form)
-              this.innerVisible = false
-              this.$message({
-                message: '添加备注成功',
-                type: 'succes'
-              })
+    addFollowSubmit() {
+      this.form.orgId = this.nowData.orgId
+      this.$refs['orgForm'].validate((valid) => {
+        if (valid) {
+          orgRemarkSaveApi(this.form).then(res => {
+            this.getremarkList()
+            delObjectItem(this.form)
+            this.innerVisible = false
+            this.$message({
+              message: '添加备注成功',
+              type: 'succes'
             })
-          }
-        })
-      },
-      addFllow() {
-        this.innerVisible = true
-      },
-      handleSizeChange(val) {
-        this.pageItems.pageSize = val
-        this.searchParam()
-      },
-      handleCurrentChange(val) {
-        this.pageItems.pageNo = val
-        this.searchParam()
-      },
-      searchParam() {
-        const searchParams = Object.assign(this.pageItems, this.formData)
-        orgManageListApi(ObjectMap(searchParams)).then(res => {
-          this.organAllList = res.data.result
-          this.total = res.data.total
-        })
-      },
-      clearForm() {
-        this.formData = delObjectItem(this.formData)
-        this.dateTime = []
-      }
+          })
+        }
+      })
+    },
+    addFllow() {
+      this.innerVisible = true
+    },
+    handleSizeChange(val) {
+      this.pageItems.pageSize = val
+      this.searchParam()
+    },
+    handleCurrentChange(val) {
+      this.pageItems.pageNo = val
+      this.searchParam()
+    },
+    searchParam() {
+      const searchParams = Object.assign(this.pageItems, this.formData)
+      orgManageListApi(ObjectMap(searchParams)).then(res => {
+        this.organAllList = res.data.result
+        this.total = res.data.total
+      })
+    },
+    clearForm() {
+      this.formData = delObjectItem(this.formData)
+      this.dateTime = []
     }
   }
+}
 </script>
 
 <style scoped lang="scss">

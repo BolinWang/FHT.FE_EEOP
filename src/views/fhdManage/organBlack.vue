@@ -2,7 +2,7 @@
  * @Author: ghost
  * @Date: 2018-08-31 11:27:54
  * @Last Modified by: 
- * @Last Modified time: 2018-09-06 00:17:21
+ * @Last Modified time: 2018-09-13 11:29:13
  */
  <template>
     <div class="container">
@@ -120,7 +120,7 @@
           <el-button type="primary" @click="saveRecover">确 定</el-button>
         </div>
       </el-dialog>
-      <relieve-Org ref="relieveOrg" :search='searchParam'></relieve-Org> 
+      <relieve-Org ref="relieveOrg" v-on:searchStart="searchParam"></relieve-Org> 
     </div>
 </template>
 <script>
@@ -225,6 +225,7 @@ export default {
               message: '已回恢复合作',
               type: 'succes'
             })
+            delObjectItem(this.recoverform)
             this.recoverVisible = false
             this.searchParam()
           })
@@ -282,6 +283,7 @@ export default {
       this.orgKeyWord = null
     },
     searchParam() {
+      console.log('1')
       let params = {
         orgKeyWord: this.orgKeyWord,
         sessionId: getSessionId()
