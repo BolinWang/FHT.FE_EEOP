@@ -40,10 +40,13 @@
           </el-form-item>
         </div>
       </el-form>
-      <GridUnit ref="hostingHouseList" :showRowIndex="false" :spanMethod="objectSpanMethod" :formOptions="roomSearchForm" :url="houstingListUrl" :dataMethod="method" listField="data.houseList" totalField="data.record" :columns="colModels" :height="tableHeight" :showSelection="true" @selection-change="handleSelectionChange" :dataHandler="dataHandler" :pageSizes="[50, 100, 200]" :border="activeName === '合租'">
+      <GridUnit ref="hostingHouseList" :showRowIndex="false" :spanMethod="objectSpanMethod" :formOptions="roomSearchForm" :url="houstingListUrl" :dataMethod="method" listField="data.houseList" totalField="data.record" :columns="colModels" :height="tableHeight" :showSelection="true" @selection-change="handleSelectionChange" @select="handleSelectChange" :dataHandler="dataHandler" :pageSizes="[50, 100, 200]" :border="activeName === '合租'">
         <template slot="index" slot-scope="scope">
           {{scope.row.index + 1}}
         </template>
+        <!-- <template slot="checkHoleRooms" slot-scope="scope">
+          <el-checkbox v-model="checkedList[scope.row.index]" @change="handleCheckHoleRooms(scope.row, scope.$index)"></el-checkbox>
+        </template> -->
         <template slot="roomStatus" slot-scope="scope">
           <el-tag :type="[2].includes(scope.row.roomStatus) ? 'success' : ([5, 6, 8, 10].includes(scope.row.roomStatus) ? 'info' : 'danger')">{{scope.row.roomStatus | setRoomStatus(roomStatusList)}}</el-tag>
         </template>
@@ -165,6 +168,7 @@ export default {
   },
   data() {
     return {
+      checkedList: [],
       roomSearchForm: {
         cityId: '',
         cityArea: [],
@@ -226,6 +230,12 @@ export default {
       ],
       colModels: [
         { label: '#', slotName: "index", fixed: 'left', width: 50, align: 'center' },
+        // {
+        //   prop: "checkHoleRooms",
+        //   label: "",
+        //   slotName: 'checkHoleRooms',
+        //   width: 50
+        // },
         { prop: "orgName", label: "组织名称", width: 200 },
         { prop: "addrRegionName", label: "房源位置", width: 180 },
         { prop: "roomDetailAddress", label: "公寓/小区-房间", width: 180 },
@@ -353,6 +363,11 @@ export default {
         houseRentType: this.activeName === "整租" ? 1 : 2
       }
     },
+    handleCheckHoleRooms(row, index) {
+      for (let i = 0; i < row.spanArr; i++) {
+        this.$refs.hostingHouseList.$refs.gridUnit.toggleRowSelection(this.$refs.hostingHouseList.tableData[index + i])
+      }
+    },
     // 查询/清空
     searchHostingHouseList(type) {
       if (type == "clear") {
@@ -362,8 +377,11 @@ export default {
       }
       this.searchParam()
     },
+    handleSelectChange(selection, row) {
+
+    },
     handleSelectionChange(list) {
-      this.selectedRooms = list
+
     },
     // 批量房态管理
     handleCommand(command) {
@@ -676,7 +694,10 @@ export default {
             message: res.message,
             type: 'success'
           })
-          this.rentPayModelVisible = false
+          let rentPayList = this.activeName === '整租' ? this.$refs.rentPayWay : this.$refs.rentPayWay[Number(this.activeRentPayTabName)]
+          rentPayList.$refs.financeRentPayForm.clearValidate()
+          rentPayList.$refs.defaultRentPayForm.clearValidate()
+          // this.rentPayModelVisible = false
         }
       }).catch(err => { console.log(err) })
     },
