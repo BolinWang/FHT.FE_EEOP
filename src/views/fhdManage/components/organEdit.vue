@@ -2,12 +2,12 @@
  * @Author: ghost 
  * @Date: 2018-09-05 18:34:04 
  * @Last Modified by: 
- * @Last Modified time: 2018-09-10 09:46:58
+ * @Last Modified time: 2018-09-12 23:35:35
  */
 <template>
   <div class="container">
     <el-dialog class="organEdit" title="飞虎队企业机构" width="800px" :visible.sync="companyTableVisible">
-      <el-form :model="companyForm" :inline="true">
+      <el-form :model="companyForm" :inline="true" :rules="rules" ref="ruleForm">
         <el-row>
           <el-col :span="12">
             <el-form-item label="企业名称" >
@@ -64,19 +64,19 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="银行卡号" >
-               <el-input v-model="companyForm.accountIdNum" :disabled="true"></el-input>
+               <el-input v-model="companyForm.bankCardNum" :disabled="true"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="24">
-            <el-form-item label="平台代收租服务" >
+            <el-form-item label="平台代收租服务"  label-width="120px">
               <div class="previewItems">
                 <Preview
                   :pic-list="companyForm.proxyImageList"
                   :delete-icon="`delete`"
                   :disabled="``"
-                  @emitDelete="emitDelete('proxyImageList')">
+                  @emitDelete="emitDelete($event,'proxyImageList')">
                 </Preview>
               </div>
               <label class="el-upload el-upload--picture-card uploadImage" for="uploadImages">
@@ -88,13 +88,13 @@
         </el-row>
         <el-row>
           <el-col :span="24">
-            <el-form-item label="房源发布和租客引流服务" >
+            <el-form-item label="房源发布和租客引流服务" label-width="120px">
               <div class="previewItems">
                 <Preview
                   :pic-list="companyForm.attractionFlowImageList"
                   :delete-icon="`delete`"
                   :disabled="``"
-                  @emitDelete="emitDelete('attractionFlowImageList')">
+                  @emitDelete="emitDelete($event,'attractionFlowImageList')">
                 </Preview>
               </div>
               <label class="el-upload el-upload--picture-card uploadImage" for="uploadImageflow">
@@ -106,13 +106,13 @@
         </el-row>
         <el-row>
           <el-col :span="24">
-            <el-form-item label="企业营业执照" >
+            <el-form-item label="企业营业执照" label-width="120px">
               <div class="previewItems">
                 <Preview
                   :pic-list="companyForm.businessLicenseImageList"
                   :delete-icon="`delete`"
                   :disabled="``"
-                  @emitDelete="emitDelete('businessLicenseImageList')">
+                  @emitDelete="emitDelete($event,'businessLicenseImageList')">
                 </Preview>
               </div>
               <label class="el-upload el-upload--picture-card uploadImage" for="uploadImagebusiness">
@@ -130,7 +130,7 @@
                   :pic-list="companyForm.idCardImageList"
                   :delete-icon="`delete`"
                   :disabled="``"
-                  @emitDelete="emitDelete('idCardImageList')">
+                  @emitDelete="emitDelete($event,'idCardImageList')">
                 </Preview>
               </div>
               <label class="el-upload el-upload--picture-card uploadImage" for="uploadImageidCard">
@@ -145,12 +145,12 @@
       <ImageCropper :cropperList="cropperList" @emitCropperList="emitCropperList" @emitCropperData="emitCropperData">
       </ImageCropper>
       <div slot="footer" class="dialog-footer">
-            <el-button @click="closeDialog()">取 消</el-button>
-            <el-button type="primary" @click="submit()">确 定</el-button>
+            <el-button @click="closeDialog('companyTableVisible')">取 消</el-button>
+            <el-button type="primary" @click="submit('companyTableVisible')">确 定</el-button>
       </div>
     </el-dialog>
      <el-dialog class="organEdit" title="飞虎队个人机构" width="800px" :visible.sync="personalTableVisible">
-      <el-form :model="companyForm" :inline="true">
+      <el-form :model="companyForm" :inline="true" :rules="rules" ref="ruleForm"> 
         <el-row>
           <el-col :span="12">
             <el-form-item label="姓名" >
@@ -165,8 +165,8 @@
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="身份证" >
-               <el-input v-model="companyForm.idNum" ></el-input>
+            <el-form-item label="身份证" prop="idNum">
+               <el-input v-model="companyForm.idNum" :disabled="companyForm.idNum!=='330000000000000000'"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -184,25 +184,25 @@
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="银行开户名" >
+            <el-form-item label="银行开户名" :disabled="companyForm.accountName===null">
                <el-input v-model="companyForm.accountName"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="银行卡号" >
-               <el-input v-model="companyForm.accountIdNum" ></el-input>
+            <el-form-item label="银行卡号">
+               <el-input v-model="companyForm.bankCardNum" :disabled="companyForm.bankCardNum===null" ></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="24">
-            <el-form-item label="平台代收租服务" >
+            <el-form-item label="平台代收租服务" label-width="120px">
               <div class="previewItems">
                 <Preview
-                  :pic-list="companyForm.proxyImageList"
+                  :pic-list="companyForm.proxyImageList||null"
                   :delete-icon="`delete`"
                   :disabled="``"
-                  @emitDelete="emitDelete('proxyImageList')">
+                  @emitDelete="emitDelete($event,'proxyImageList')">
                 </Preview>
               </div>
               <label class="el-upload el-upload--picture-card uploadImage" for="uploadImagesper">
@@ -227,13 +227,13 @@
         </el-row>
         <el-row>
           <el-col :span="24">
-            <el-form-item label="房源发布和租客引流服务" >
+            <el-form-item label="房源发布和租客引流服务" label-width="120px">
              <div class="previewItems">
                 <Preview
-                  :pic-list="companyForm.attractionFlowImageList"
+                  :pic-list="companyForm.attractionFlowImageList||null"
                   :delete-icon="`delete`"
                   :disabled="``"
-                  @emitDelete="emitDelete('attractionFlowImageList')">
+                  @emitDelete="emitDelete($event,'attractionFlowImageList')">
                 </Preview>
               </div>
               <label class="el-upload el-upload--picture-card uploadImage" for="uploadImagesflow">
@@ -245,13 +245,13 @@
         </el-row>
         <el-row>
           <el-col :span="24">
-            <el-form-item label="身份证照片" >
+            <el-form-item label="身份证照片" label-width="120px">
               <div class="previewItems">
                 <Preview
-                  :pic-list="companyForm.idCardImageList"
+                  :pic-list="companyForm.idCardImageList||null"
                   :delete-icon="`delete`"
                   :disabled="``"
-                  @emitDelete="emitDelete('idCardImageList')">
+                  @emitDelete="emitDelete($event,'idCardImageList')">
                 </Preview>
               </div>
               <label class="el-upload el-upload--picture-card uploadImage" for="uploadImagesidCards">
@@ -267,7 +267,7 @@
       </ImageCropper>
       <div slot="footer" class="dialog-footer">
             <el-button @click="closeDialog('personalTableVisible')">取 消</el-button>
-            <el-button type="primary" @click="submit()">确 定</el-button>
+            <el-button type="primary" @click="submit('personalTableVisible')">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -276,6 +276,7 @@
 import {
   getSessionId
 } from '@/utils/auth'
+import { validateisCardNo } from '@/utils/validate'
 import Preview from '@/components/Preview/Preview'
 import ImageCropper from '@/components/ImageCropper/Cropper'
 import { delObjectItem } from '@/utils'
@@ -286,7 +287,19 @@ export default {
     ImageCropper
   },
   data() {
+    const isCardNo = (rule, value, callback) => {
+      if (!validateisCardNo(value)) {
+        callback(new Error('请输入正确的手机号'))
+      } else {
+        callback()
+      }
+    }
     return {
+      rules: {
+        idNum: [
+          { required: true, trigger: 'blur', validator: isCardNo }
+        ]
+      },
       accept: 'image/png, image/jpeg, image/jpg',
       companyTableVisible: false,
       personalTableVisible: false,
@@ -305,15 +318,21 @@ export default {
       this[key] = false
       delObjectItem(this.companyForm)
     },
-    submit() {
-      orgManageSave(this.companyForm).then(res => {
-        this.getData()
-        delObjectItem(this.companyForm)
+    submit(key) {
+      this.$refs.ruleForm.validate(valid => {
+        if (valid) {
+          orgManageSave(this.companyForm).then(res => {
+            this[key] = false
+            this.getData()
+            delObjectItem(this.companyForm)
+          })
+        }
       })
     },
     // 删除图片
     emitDelete(val, key) {
       this.companyForm[key] = val
+      console.log(key)
     },
     // 上传的图片列表
     emitCropperList(list = []) {
@@ -345,7 +364,6 @@ export default {
         console.log('取消上传...')
         return false
       }
-      alert(keys)
       const uploadList = []
       const readFileAsync = file => new Promise(resolve => {
         const reader = new FileReader()
