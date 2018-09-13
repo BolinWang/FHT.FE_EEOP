@@ -2,7 +2,7 @@
  * @Author: ghost
  * @Date: 2018-08-31 11:27:54
  * @Last Modified by: 
- * @Last Modified time: 2018-09-13 11:29:13
+ * @Last Modified time: 2018-09-13 14:51:48
  */
  <template>
     <div class="container">
@@ -237,6 +237,7 @@ export default {
       delObjectItem(this.form)
     },
     cancalRecover() {
+      this.recoverVisible = false
       delObjectItem(this.recoverform)
     },
     addFollowSubmit() {
@@ -245,6 +246,7 @@ export default {
         if (valid) {
           orgRemarkSaveApi(this.form).then(res => {
             this.getremarkList()
+            delObjectItem(this.form)
             this.innerVisible = false
             this.$message({
               message: '添加备注成功',

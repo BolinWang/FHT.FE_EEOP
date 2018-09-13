@@ -2,7 +2,7 @@
  * @Author: ghost 
  * @Date: 2018-09-05 18:34:04 
  * @Last Modified by: 
- * @Last Modified time: 2018-09-12 23:35:35
+ * @Last Modified time: 2018-09-13 15:33:21
  */
 <template>
   <div class="container">
@@ -166,31 +166,31 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="身份证" prop="idNum">
-               <el-input v-model="companyForm.idNum" :disabled="companyForm.idNum!=='330000000000000000'"></el-input>
+               <el-input v-model="companyForm.idNum" :disabled="companyForm.idNum=='330000000000000000'||companyForm.idNum!==''"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="出房费率" >
-               <el-input v-model="companyForm.splitFee"></el-input>
+               <el-input v-model="companyForm.splitFee" :disabled="true"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
             <el-form-item label="房源体量" >
-               <el-input v-model="companyForm.volumn" auto-complete="off"></el-input>
+               <el-input v-model="companyForm.volumn"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="银行开户名" :disabled="companyForm.accountName===null">
-               <el-input v-model="companyForm.accountName"></el-input>
+            <el-form-item label="银行开户名" >
+               <el-input v-model="companyForm.accountName" :disabled="true"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="银行卡号">
-               <el-input v-model="companyForm.bankCardNum" :disabled="companyForm.bankCardNum===null" ></el-input>
+               <el-input v-model="companyForm.bankCardNum" :disabled="true" ></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -199,7 +199,7 @@
             <el-form-item label="平台代收租服务" label-width="120px">
               <div class="previewItems">
                 <Preview
-                  :pic-list="companyForm.proxyImageList||null"
+                  :pic-list="companyForm.proxyImageList"
                   :delete-icon="`delete`"
                   :disabled="``"
                   @emitDelete="emitDelete($event,'proxyImageList')">
@@ -230,7 +230,7 @@
             <el-form-item label="房源发布和租客引流服务" label-width="120px">
              <div class="previewItems">
                 <Preview
-                  :pic-list="companyForm.attractionFlowImageList||null"
+                  :pic-list="companyForm.attractionFlowImageList"
                   :delete-icon="`delete`"
                   :disabled="``"
                   @emitDelete="emitDelete($event,'attractionFlowImageList')">
@@ -248,7 +248,7 @@
             <el-form-item label="身份证照片" label-width="120px">
               <div class="previewItems">
                 <Preview
-                  :pic-list="companyForm.idCardImageList||null"
+                  :pic-list="companyForm.idCardImageList"
                   :delete-icon="`delete`"
                   :disabled="``"
                   @emitDelete="emitDelete($event,'idCardImageList')">
@@ -289,7 +289,7 @@ export default {
   data() {
     const isCardNo = (rule, value, callback) => {
       if (!validateisCardNo(value)) {
-        callback(new Error('请输入正确的手机号'))
+        callback(new Error('请输入正确身份证号码'))
       } else {
         callback()
       }
@@ -319,12 +319,16 @@ export default {
       delObjectItem(this.companyForm)
     },
     submit(key) {
+      console.log(this.companyForm)
       this.$refs.ruleForm.validate(valid => {
         if (valid) {
+          alert('123')
           orgManageSave(this.companyForm).then(res => {
             this[key] = false
             this.getData()
-            delObjectItem(this.companyForm)
+            console.log('12')
+            console.log(res)
+            // delObjectItem(this.companyForm)
           })
         }
       })
@@ -332,7 +336,6 @@ export default {
     // 删除图片
     emitDelete(val, key) {
       this.companyForm[key] = val
-      console.log(key)
     },
     // 上传的图片列表
     emitCropperList(list = []) {
@@ -431,6 +434,7 @@ export default {
       }
       orgManagequeryByIdApi(params).then(res => {
         this.companyForm = res.data
+        console.log(this.companyForm)
       })
     }
   }
