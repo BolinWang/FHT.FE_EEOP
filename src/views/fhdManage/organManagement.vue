@@ -40,8 +40,10 @@
           </template>
         </el-table-column>
         <el-table-column
-          prop="splitFee"
           label="费率">
+          <template slot-scope="scope">
+                {{ scope.row.splitFee || '-'}}
+          </template>
         </el-table-column>
         <el-table-column
           prop="province"
@@ -52,9 +54,11 @@
             </template>
         </el-table-column>
         <el-table-column
-          prop="volumn"
           label="自报体量"
-           width="80">
+          width="80">
+           <template slot-scope="scope">
+                {{ scope.row.volumn || '-'}}
+           </template>
         </el-table-column>
         <el-table-column
             label="身份证照片">
@@ -104,14 +108,18 @@
             label="租客线下交租单数">
           </el-table-column>
           <el-table-column
-            prop="createManagerName"
             label="城市管家"
             width="120">
+            <template slot-scope="scope">
+                {{ scope.row.createManagerName || '-'}}
+              </template>
           </el-table-column>
           <el-table-column
-            prop="createManagerMobile"
             label="手机号码"
             width="120">
+            <template slot-scope="scope">
+                {{ scope.row.createManagerMobile || '-'}}
+              </template>
           </el-table-column>
           <el-table-column
             fixed="right"

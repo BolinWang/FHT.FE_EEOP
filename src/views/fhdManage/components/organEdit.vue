@@ -2,7 +2,7 @@
  * @Author: ghost 
  * @Date: 2018-09-05 18:34:04 
  * @Last Modified by: 
- * @Last Modified time: 2018-09-13 15:33:21
+ * @Last Modified time: 2018-09-13 20:46:44
  */
 <template>
   <div class="container">
@@ -47,11 +47,11 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="联系人身份证" >
-               <el-input v-model="companyForm.idNum" ></el-input>
+               <el-input v-model="companyForm.idNum" :disabled="companyForm.idNum=='330000000000000000'|| textCard(companyForm.idNum)"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="房源体量" >
+            <el-form-item label="房源体量" prop="volumn">
                <el-input v-model="companyForm.volumn" ></el-input>
             </el-form-item>
           </el-col>
@@ -166,7 +166,7 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="身份证" prop="idNum">
-               <el-input v-model="companyForm.idNum" :disabled="companyForm.idNum=='330000000000000000'||companyForm.idNum!==''"></el-input>
+               <el-input v-model="companyForm.idNum" :disabled="companyForm.idNum=='330000000000000000'|| textCard(companyForm.idNum)"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -177,7 +177,7 @@
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="房源体量" >
+            <el-form-item label="房源体量" prop="volumn">
                <el-input v-model="companyForm.volumn"></el-input>
             </el-form-item>
           </el-col>
@@ -276,7 +276,7 @@
 import {
   getSessionId
 } from '@/utils/auth'
-import { validateisCardNo } from '@/utils/validate'
+import { validateisCardNo, validateIntAndZero } from '@/utils/validate'
 import Preview from '@/components/Preview/Preview'
 import ImageCropper from '@/components/ImageCropper/Cropper'
 import { delObjectItem } from '@/utils'
@@ -294,10 +294,20 @@ export default {
         callback()
       }
     }
+    const isZero = (rule, value, callback) => {
+      if (!validateIntAndZero(value)) {
+        callback(new Error('请输入正整数'))
+      } else {
+        callback()
+      }
+    }
     return {
       rules: {
         idNum: [
           { required: true, trigger: 'blur', validator: isCardNo }
+        ],
+        volumn: [
+          { required: true, trigger: 'blur', validator: isZero }
         ]
       },
       accept: 'image/png, image/jpeg, image/jpg',
@@ -313,6 +323,11 @@ export default {
 
   },
   methods: {
+    textCard(card) {
+      const reg = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/
+      console.log(!reg.test(card))
+      return reg.test(card)
+    },
     // 关闭弹窗
     closeDialog(key) {
       this[key] = false
@@ -322,7 +337,6 @@ export default {
       console.log(this.companyForm)
       this.$refs.ruleForm.validate(valid => {
         if (valid) {
-          alert('123')
           orgManageSave(this.companyForm).then(res => {
             this[key] = false
             this.getData()
@@ -386,6 +400,11 @@ export default {
             imageName = file.name.split('.')[0].length <= 30
               ? file.name.split('.')[0]
               : file.name.split('.')[0].substr(0, 30)
+          }
+          console.log(this.companyForm[keys].length)
+          if (this.companyForm[keys].length > 2) {
+            this.$message.error(`您已上传${this.companyForm[keys].length}张图片，最多还能上传${3 - this.companyForm[keys].length}张图片`)
+            return false
           }
           resolve({
             img,
