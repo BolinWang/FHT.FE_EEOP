@@ -1,5 +1,5 @@
 <template>
-   <el-dialog title="解除合作合作机构" :visible.sync="outerVisible">
+   <el-dialog title="解除合作机构" :visible.sync="outerVisible">
      <el-form :model="searchForm" :inline="true" :rules="searchF" ref="searchForm">
         <el-form-item label="组织的主账号" prop="mobile">
           <el-input v-model="searchForm.mobile" placeholder="请输入手机号码"></el-input>
@@ -7,7 +7,7 @@
      </el-form>
     <el-dialog
       width="40%"
-      title="解除合作合作机构"
+      title="解除合作机构"
       :visible.sync="innerVisible"
       append-to-body>
         <el-form :model="relieve" ref="relieve" :rules="relieveRule" >

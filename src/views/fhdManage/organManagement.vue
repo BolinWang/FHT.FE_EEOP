@@ -2,7 +2,7 @@
  * @Author: ghost
  * @Date: 2018-08-31 14:55:54
  * @Last Modified by: 
- * @Last Modified time: 2018-09-06 09:53:09
+ * @Last Modified time: 2018-09-12 20:09:22
  */
 <template>
   <div class="container">
@@ -24,7 +24,7 @@
       </el-form>
     </div>
     <div class="table-box">
-      <el-table :data="organAllList" style="width: 100%" size="small" :max-height="tableHeight">
+      <el-table :data="organAllList" border style="width: 100%" size="small" :max-height="tableHeight">
         <el-table-column type="index" width="50">
         </el-table-column>
         <el-table-column prop="gmtCreateStr" width="160" label="创建时间">
@@ -142,7 +142,7 @@
           :visible.sync="innerVisible"
           append-to-body>
             <el-form :model="form"  ref="orgForm" :rules="rules">
-              <el-form-item label="备注" :label-width="formLabelWidth" prop="remarkRule">
+              <el-form-item label="备注" :label-width="formLabelWidth" prop="remark">
                 <el-input v-model="form.remark" :maxlength="100"  type="textarea" :rows="2" placeholder="请输入备注（0-100字)"></el-input>
               </el-form-item>
             </el-form>
@@ -218,7 +218,7 @@
           pageSize: 20
         },
         rules: {
-          remarkRule: [{
+          remark: [{
             required: true,
             message: '请输入备注',
             trigger: 'blur'
@@ -306,6 +306,7 @@
           if (valid) {
             orgRemarkSaveApi(this.form).then(res => {
               this.getremarkList()
+              delObjectItem(this.form)
               this.innerVisible = false
               this.$message({
                 message: '添加备注成功',

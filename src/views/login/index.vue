@@ -23,25 +23,25 @@
   </div>
 </template>
 <script>
-import { validateMobile } from '@/utils/validate';
+import { validateMobile } from '@/utils/validate'
 
 export default {
   name: 'login',
   data() {
     const validatePhone = (rule, value, callback) => {
-      if (!validateMobile(value.trim())) {
-        callback(new Error('请输入正确的手机号'));
+      if (!validateMobile(value)) {
+        callback(new Error('请输入正确的手机号'))
       } else {
-        callback();
+        callback()
       }
-    };
+    }
     const validatePass = (rule, value, callback) => {
       if (value.length < 6) {
-        callback(new Error('密码不能小于6位'));
+        callback(new Error('密码不能小于6位'))
       } else {
-        callback();
+        callback()
       }
-    };
+    }
     return {
       loginForm: {
         mobile: '',
@@ -62,18 +62,18 @@ export default {
     handleLogin() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
-          this.loading = true;
+          this.loading = true
           this.$store.dispatch('Login', this.loginForm).then(() => {
-            this.loading = false;
-            this.$router.push({ path: '/' });
+            this.loading = false
+            this.$router.push({ path: '/' })
           }).catch(() => {
-            this.loading = false;
-          });
+            this.loading = false
+          })
         } else {
-          console.log('error submit!!');
-          return false;
+          console.log('error submit!!')
+          return false
         }
-      });
+      })
     }
   }
 }
