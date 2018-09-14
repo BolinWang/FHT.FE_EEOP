@@ -169,6 +169,7 @@ export default {
   data() {
     return {
       checkedList: [],
+      tableCheckboxList: [],
       roomSearchForm: {
         cityId: '',
         cityArea: [],
@@ -379,6 +380,13 @@ export default {
     },
     handleSelectChange(selection, row) {
 
+      // if (selection.includes(row)) {
+      //   let aaa = selection.filter(item => item.fangyuanCode === row.fangyuanCode)
+      //   aaa.length === row.columnLength
+      //   console.log(aaa)
+      // } else {
+
+      // }
     },
     handleSelectionChange(list) {
 
@@ -473,6 +481,7 @@ export default {
     // 表格数据
     dataHandler(data) {
       let tempArr = []
+      this.tableCheckboxList = []
       data = data.filter( item => item.roomList.length > 0 )
       data.forEach((item, index) => {
         item.roomList.forEach((v, i) => {
@@ -483,6 +492,11 @@ export default {
             ...item,
             ...v
           }
+          // this.tableCheckboxList[i] = {
+          //   fangyuanCode: item.fangyuanCode,
+          //   isChecked: false,
+          //   columnLength: item.roomList.length
+          // }
           if (i === 0) {
             row.spanArr = item.roomList.length
             row.index = index
@@ -494,6 +508,7 @@ export default {
     },
     // 添加修改房间信息
     openRoomDetail(params) {
+      this.loading = true
       if (typeof (params) === 'number') {
         this.isEditFlag = false
         this.roomDetailModelVisible = true
@@ -694,6 +709,11 @@ export default {
             message: res.message,
             type: 'success'
           })
+          if (this.activeName === '合租') {
+            let list = this.$refs.rentPayWay[Number(this.tempRentPayTabName)].returnRentPayList()
+            this.rentPayList[Number(this.tempRentPayTabName)].roomRentTypeList = deepClone(list)
+            this.tempRentPayList = deepClone(list)
+          }
           let rentPayList = this.activeName === '整租' ? this.$refs.rentPayWay : this.$refs.rentPayWay[Number(this.activeRentPayTabName)]
           rentPayList.$refs.financeRentPayForm.clearValidate()
           rentPayList.$refs.defaultRentPayForm.clearValidate()
