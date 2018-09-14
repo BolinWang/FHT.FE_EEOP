@@ -2,11 +2,11 @@
  * @Author: ghost 
  * @Date: 2018-09-05 18:34:04 
  * @Last Modified by: 
- * @Last Modified time: 2018-09-13 22:01:00
+ * @Last Modified time: 2018-09-14 11:00:05
  */
 <template>
   <div class="container">
-    <el-dialog class="organEdit" title="飞虎队企业机构" width="800px" :visible.sync="companyTableVisible">
+    <el-dialog class="organEdit" title="飞虎队企业机构" width="800px" v-if="companyTableVisible" :visible.sync="companyTableVisible">
       <el-form :model="companyForm" :inline="true" :rules="rules" ref="ruleForm">
         <el-row>
           <el-col :span="12">
@@ -23,7 +23,7 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="社会统一信用代码" >
-               <el-input v-model="companyForm.unifiedSocialCreditCode" :disabled="true" auto-complete="off"></el-input>
+               <el-input v-model="companyForm.unifiedSocialCreditCode" :disabled="true"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -46,7 +46,7 @@
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="联系人身份证" >
+            <el-form-item label="联系人身份证" prop="idNum">
                <el-input v-model="companyForm.idNum" :disabled="textCard()"></el-input>
             </el-form-item>
           </el-col>
@@ -149,7 +149,7 @@
             <el-button type="primary" @click="submit('companyTableVisible')">确 定</el-button>
       </div>
     </el-dialog>
-     <el-dialog class="organEdit" title="飞虎队个人机构" width="800px" :visible.sync="personalTableVisible">
+     <el-dialog class="organEdit" title="飞虎队个人机构" width="800px" v-else :visible.sync="personalTableVisible">
       <el-form :model="companyForm" :inline="true" :rules="rules" ref="ruleForm"> 
         <el-row>
           <el-col :span="12">
@@ -327,7 +327,7 @@ export default {
     textCard() {
       if (this.text === '33000000000000') {
         return false
-      } else if (this.text === null) {
+      } else if (this.text === null || this.text === '') {
         return false
       } else {
         return true
@@ -339,7 +339,6 @@ export default {
       delObjectItem(this.companyForm)
     },
     submit(key) {
-      console.log(this.companyForm)
       this.$refs.ruleForm.validate(valid => {
         if (valid) {
           orgManageSave(this.companyForm).then(res => {

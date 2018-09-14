@@ -247,10 +247,8 @@ export const asyncRouterMap = [
     }, {
       path: 'organBlack',
       component: _import('fhdManage/organBlack'),
-      name: '黑名单机构',
-      meta: {
-        role: ['admin']
-      }
+      name: '黑名单机构'
+
     }]
   },
   // {
