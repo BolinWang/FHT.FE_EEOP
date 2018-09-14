@@ -2,7 +2,7 @@
  * @Author: ghost
  * @Date: 2018-08-31 14:55:54
  * @Last Modified by: 
- * @Last Modified time: 2018-09-13 11:05:44
+ * @Last Modified time: 2018-09-13 16:45:27
  */
 <template>
   <div class="container">
@@ -20,7 +20,8 @@
         </el-select>
         <el-button type="primary" size="small" icon="el-icon-search" @click.native="searchParam" class="filter-item">查询</el-button>
         <el-button plain size="small" icon="el-icon-remove-outline" @click.native="clearForm">清空</el-button>
-        <el-button type="primary" size="small" icon="el-icon-upload" @click.native="exportExcel">导出</el-button>
+        <el-button type="primary" size="small" icon="el-icon-upload" @click.native="exportExcel">导出
+        </el-button>
       </el-form>
     </div>
     <div class="table-box">
@@ -39,8 +40,10 @@
           </template>
         </el-table-column>
         <el-table-column
-          prop="splitFee"
           label="费率">
+          <template slot-scope="scope">
+                {{ scope.row.splitFee || '-'}}
+          </template>
         </el-table-column>
         <el-table-column
           prop="province"
@@ -51,9 +54,11 @@
             </template>
         </el-table-column>
         <el-table-column
-          prop="volumn"
           label="自报体量"
-           width="80">
+          width="80">
+           <template slot-scope="scope">
+                {{ scope.row.volumn || '-'}}
+           </template>
         </el-table-column>
         <el-table-column
             label="身份证照片">
@@ -103,14 +108,18 @@
             label="租客线下交租单数">
           </el-table-column>
           <el-table-column
-            prop="createManagerName"
             label="城市管家"
             width="120">
+            <template slot-scope="scope">
+                {{ scope.row.createManagerName || '-'}}
+              </template>
           </el-table-column>
           <el-table-column
-            prop="createManagerMobile"
             label="手机号码"
             width="120">
+            <template slot-scope="scope">
+                {{ scope.row.createManagerMobile || '-'}}
+              </template>
           </el-table-column>
           <el-table-column
             fixed="right"
@@ -280,13 +289,16 @@ export default {
   },
   methods: {
     exportExcel() {
-      console.log(this.formData)
-      window.location.href = `${FLY}/orgManage/export?$
-                              type=${this.formData.type}&
-                              gmtCreateStart=${this.formData.gmtCreateStart}$
-                              gmtCreateEnd=${this.formData.gmtCreateEnd}$
-                              cmKeyWord=${this.formData.cmKeyWord}&
-                              orgKeyWord=${this.formData.orgKeyWord}`
+      const href = `${FLY}/orgManage/export?type=${this.formData.type}&gmtCreateStart=${this.formData.gmtCreateStart}&gmtCreateEnd=${this.formData.gmtCreateEnd}&cmKeyWord=${this.formData.cmKeyWord}&orgKeyWord=${this.formData.orgKeyWord}`
+      var elink = document.createElement('a')
+      elink.style.display = 'none'
+      console.log(href)
+      elink.href = encodeURI(href)
+      console.log(elink.href)
+      document.body.appendChild(elink)
+      elink.click()
+
+      document.body.removeChild(elink)
     },
     editOrgan(row) {
       this.nowData = row

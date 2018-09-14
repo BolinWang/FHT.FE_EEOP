@@ -2,11 +2,11 @@
  * @Author: ghost 
  * @Date: 2018-09-05 18:34:04 
  * @Last Modified by: 
- * @Last Modified time: 2018-09-12 23:35:35
+ * @Last Modified time: 2018-09-14 11:00:05
  */
 <template>
   <div class="container">
-    <el-dialog class="organEdit" title="飞虎队企业机构" width="800px" :visible.sync="companyTableVisible">
+    <el-dialog class="organEdit" title="飞虎队企业机构" width="800px" v-if="companyTableVisible" :visible.sync="companyTableVisible">
       <el-form :model="companyForm" :inline="true" :rules="rules" ref="ruleForm">
         <el-row>
           <el-col :span="12">
@@ -23,7 +23,7 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="社会统一信用代码" >
-               <el-input v-model="companyForm.unifiedSocialCreditCode" :disabled="true" auto-complete="off"></el-input>
+               <el-input v-model="companyForm.unifiedSocialCreditCode" :disabled="true"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -46,12 +46,12 @@
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="联系人身份证" >
-               <el-input v-model="companyForm.idNum" ></el-input>
+            <el-form-item label="联系人身份证" prop="idNum">
+               <el-input v-model="companyForm.idNum" :disabled="textCard()"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="房源体量" >
+            <el-form-item label="房源体量" prop="volumn">
                <el-input v-model="companyForm.volumn" ></el-input>
             </el-form-item>
           </el-col>
@@ -149,7 +149,7 @@
             <el-button type="primary" @click="submit('companyTableVisible')">确 定</el-button>
       </div>
     </el-dialog>
-     <el-dialog class="organEdit" title="飞虎队个人机构" width="800px" :visible.sync="personalTableVisible">
+     <el-dialog class="organEdit" title="飞虎队个人机构" width="800px" v-else :visible.sync="personalTableVisible">
       <el-form :model="companyForm" :inline="true" :rules="rules" ref="ruleForm"> 
         <el-row>
           <el-col :span="12">
@@ -166,31 +166,31 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="身份证" prop="idNum">
-               <el-input v-model="companyForm.idNum" :disabled="companyForm.idNum!=='330000000000000000'"></el-input>
+               <el-input v-model="companyForm.idNum" :disabled=" textCard()"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="出房费率" >
-               <el-input v-model="companyForm.splitFee"></el-input>
+               <el-input v-model="companyForm.splitFee" :disabled="true"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="房源体量" >
-               <el-input v-model="companyForm.volumn" auto-complete="off"></el-input>
+            <el-form-item label="房源体量" prop="volumn">
+               <el-input v-model="companyForm.volumn"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="银行开户名" :disabled="companyForm.accountName===null">
-               <el-input v-model="companyForm.accountName"></el-input>
+            <el-form-item label="银行开户名" >
+               <el-input v-model="companyForm.accountName" :disabled="true"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="银行卡号">
-               <el-input v-model="companyForm.bankCardNum" :disabled="companyForm.bankCardNum===null" ></el-input>
+               <el-input v-model="companyForm.bankCardNum" :disabled="true" ></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -199,7 +199,7 @@
             <el-form-item label="平台代收租服务" label-width="120px">
               <div class="previewItems">
                 <Preview
-                  :pic-list="companyForm.proxyImageList||null"
+                  :pic-list="companyForm.proxyImageList"
                   :delete-icon="`delete`"
                   :disabled="``"
                   @emitDelete="emitDelete($event,'proxyImageList')">
@@ -230,7 +230,7 @@
             <el-form-item label="房源发布和租客引流服务" label-width="120px">
              <div class="previewItems">
                 <Preview
-                  :pic-list="companyForm.attractionFlowImageList||null"
+                  :pic-list="companyForm.attractionFlowImageList"
                   :delete-icon="`delete`"
                   :disabled="``"
                   @emitDelete="emitDelete($event,'attractionFlowImageList')">
@@ -248,7 +248,7 @@
             <el-form-item label="身份证照片" label-width="120px">
               <div class="previewItems">
                 <Preview
-                  :pic-list="companyForm.idCardImageList||null"
+                  :pic-list="companyForm.idCardImageList"
                   :delete-icon="`delete`"
                   :disabled="``"
                   @emitDelete="emitDelete($event,'idCardImageList')">
@@ -276,7 +276,7 @@
 import {
   getSessionId
 } from '@/utils/auth'
-import { validateisCardNo } from '@/utils/validate'
+import { validateisCardNo, validateIntAndZero } from '@/utils/validate'
 import Preview from '@/components/Preview/Preview'
 import ImageCropper from '@/components/ImageCropper/Cropper'
 import { delObjectItem } from '@/utils'
@@ -289,7 +289,14 @@ export default {
   data() {
     const isCardNo = (rule, value, callback) => {
       if (!validateisCardNo(value)) {
-        callback(new Error('请输入正确的手机号'))
+        callback(new Error('请输入正确身份证号码'))
+      } else {
+        callback()
+      }
+    }
+    const isZero = (rule, value, callback) => {
+      if (!validateIntAndZero(value)) {
+        callback(new Error('请输入正整数'))
       } else {
         callback()
       }
@@ -298,8 +305,12 @@ export default {
       rules: {
         idNum: [
           { required: true, trigger: 'blur', validator: isCardNo }
+        ],
+        volumn: [
+          { required: true, trigger: 'blur', validator: isZero }
         ]
       },
+      text: '',
       accept: 'image/png, image/jpeg, image/jpg',
       companyTableVisible: false,
       personalTableVisible: false,
@@ -313,6 +324,15 @@ export default {
 
   },
   methods: {
+    textCard() {
+      if (this.text === '33000000000000') {
+        return false
+      } else if (this.text === null || this.text === '') {
+        return false
+      } else {
+        return true
+      }
+    },
     // 关闭弹窗
     closeDialog(key) {
       this[key] = false
@@ -324,7 +344,9 @@ export default {
           orgManageSave(this.companyForm).then(res => {
             this[key] = false
             this.getData()
-            delObjectItem(this.companyForm)
+            console.log('12')
+            console.log(res)
+            // delObjectItem(this.companyForm)
           })
         }
       })
@@ -332,7 +354,6 @@ export default {
     // 删除图片
     emitDelete(val, key) {
       this.companyForm[key] = val
-      console.log(key)
     },
     // 上传的图片列表
     emitCropperList(list = []) {
@@ -384,6 +405,11 @@ export default {
               ? file.name.split('.')[0]
               : file.name.split('.')[0].substr(0, 30)
           }
+          console.log(this.companyForm[keys].length)
+          if (this.companyForm[keys].length > 2) {
+            this.$message.error(`您已上传${this.companyForm[keys].length}张图片，最多还能上传${3 - this.companyForm[keys].length}张图片`)
+            return false
+          }
           resolve({
             img,
             imageName,
@@ -431,6 +457,7 @@ export default {
       }
       orgManagequeryByIdApi(params).then(res => {
         this.companyForm = res.data
+        this.text = this.companyForm.idNum
       })
     }
   }
