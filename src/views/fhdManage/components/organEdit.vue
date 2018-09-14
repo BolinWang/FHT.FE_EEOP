@@ -2,7 +2,7 @@
  * @Author: ghost 
  * @Date: 2018-09-05 18:34:04 
  * @Last Modified by: 
- * @Last Modified time: 2018-09-13 20:46:44
+ * @Last Modified time: 2018-09-13 22:01:00
  */
 <template>
   <div class="container">
@@ -47,7 +47,7 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="联系人身份证" >
-               <el-input v-model="companyForm.idNum" :disabled="companyForm.idNum=='330000000000000000'|| textCard(companyForm.idNum)"></el-input>
+               <el-input v-model="companyForm.idNum" :disabled="textCard()"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -166,7 +166,7 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="身份证" prop="idNum">
-               <el-input v-model="companyForm.idNum" :disabled="companyForm.idNum=='330000000000000000'|| textCard(companyForm.idNum)"></el-input>
+               <el-input v-model="companyForm.idNum" :disabled=" textCard()"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -310,6 +310,7 @@ export default {
           { required: true, trigger: 'blur', validator: isZero }
         ]
       },
+      text: '',
       accept: 'image/png, image/jpeg, image/jpg',
       companyTableVisible: false,
       personalTableVisible: false,
@@ -323,10 +324,14 @@ export default {
 
   },
   methods: {
-    textCard(card) {
-      const reg = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/
-      console.log(!reg.test(card))
-      return reg.test(card)
+    textCard() {
+      if (this.text === '33000000000000') {
+        return false
+      } else if (this.text === null) {
+        return false
+      } else {
+        return true
+      }
     },
     // 关闭弹窗
     closeDialog(key) {
@@ -453,7 +458,7 @@ export default {
       }
       orgManagequeryByIdApi(params).then(res => {
         this.companyForm = res.data
-        console.log(this.companyForm)
+        this.text = this.companyForm.idNum
       })
     }
   }
