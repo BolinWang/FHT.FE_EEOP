@@ -44,9 +44,9 @@
         <template slot="index" slot-scope="scope">
           {{scope.row.index + 1}}
         </template>
-        <template slot="checkHoleRooms" slot-scope="scope">
+        <!-- <template slot="checkHoleRooms" slot-scope="scope">
           <el-checkbox v-model="checkedList[scope.row.index]" @change="handleCheckHoleRooms(scope.row, scope.$index)"></el-checkbox>
-        </template>
+        </template> -->
         <template slot="roomStatus" slot-scope="scope">
           <el-tag :type="[2].includes(scope.row.roomStatus) ? 'success' : ([5, 6, 8, 10].includes(scope.row.roomStatus) ? 'info' : 'danger')">{{scope.row.roomStatus | setRoomStatus(roomStatusList)}}</el-tag>
         </template>
@@ -231,12 +231,12 @@ export default {
       ],
       colModels: [
         { label: '#', slotName: "index", fixed: 'left', width: 50, align: 'center' },
-        {
-          prop: "checkHoleRooms",
-          label: "",
-          slotName: 'checkHoleRooms',
-          width: 50
-        },
+        // {
+        //   prop: "checkHoleRooms",
+        //   label: "",
+        //   slotName: 'checkHoleRooms',
+        //   width: 50
+        // },
         { prop: "orgName", label: "组织名称", width: 200 },
         { prop: "addrRegionName", label: "房源位置", width: 180 },
         { prop: "roomDetailAddress", label: "公寓/小区-房间", width: 180 },
@@ -388,7 +388,7 @@ export default {
       // }
     },
     handleSelectionChange(list) {
-
+      this.selectedRooms = list
     },
     // 批量房态管理
     handleCommand(command) {
