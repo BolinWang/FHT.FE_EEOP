@@ -2,18 +2,18 @@
  * @Author: ghost
  * @Date: 2018-09-05 18:23:17
  * @Last Modified by:
- * @Last Modified time: 2018-09-13 10:57:51
+ * @Last Modified time: 2018-09-19 16:58:06
 */
 
 import fetch from '@/utils/fetch'
 
 //  部分飞虎队请求接口
 const FLY = process.env.FLY_API + '/bop'
-
+const FLYSUn = process.env.FLY_API + '/back'
 /* 获取催租列表 */
 export function getRentingListApi(params = {}) {
   return fetch({
-    url: '/flying/leaseBill',
+    url: FLYSUn + '/bill/billList',
     method: 'post',
     data: {
       method: 'billList',
@@ -24,7 +24,7 @@ export function getRentingListApi(params = {}) {
 /* 导出excel */
 export function exportExcelApi(params = {}) {
   return fetch({
-    url: '/flying/leaseBill',
+    url: FLYSUn + '/flying/leaseBill',
     method: 'post',
     data: {
       method: 'exportExcel',
@@ -36,7 +36,7 @@ export function exportExcelApi(params = {}) {
 export function leaseBillApi(params = {}) {
   return new Promise((resolve, reject) => {
     fetch({
-      url: '/flying/leaseBill',
+      url: FLYSUn + '/bill/updateOverReason',
       method: 'post',
       data: {
         method: 'updateOverReason',
@@ -53,7 +53,7 @@ export function leaseBillApi(params = {}) {
 export function	billFollowListApi(params = {}) {
   return new Promise((resolve, reject) => {
     fetch({
-      url: '/flying/leaseBill',
+      url: FLYSUn + '/bill/billFollowList',
       method: 'post',
       data: {
         method: 'billFollowList',
@@ -70,7 +70,7 @@ export function	billFollowListApi(params = {}) {
 export function	billFollowApi(params = {}) {
   return new Promise((resolve, reject) => {
     fetch({
-      url: '/flying/leaseBill',
+      url: FLYSUn + '/bill/billFollow',
       method: 'post',
       data: {
         method: 'billFollow',
@@ -87,7 +87,7 @@ export function	billFollowApi(params = {}) {
 export function	rentMessageApi(params = {}) {
   return new Promise((resolve, reject) => {
     fetch({
-      url: '/flying/leaseBill',
+      url: FLYSUn + '/bill/rentMessage',
       method: 'post',
       data: {
         method: 'rentMessage',
@@ -104,7 +104,7 @@ export function	rentMessageApi(params = {}) {
 export function	cityManagerMessageApi(params = {}) {
   return new Promise((resolve, reject) => {
     fetch({
-      url: '/flying/leaseBill',
+      url: FLYSUn + '/bill/cityManagerMessage',
       method: 'post',
       data: {
         method: 'cityManagerMessage',

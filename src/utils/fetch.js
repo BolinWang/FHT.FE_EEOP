@@ -6,9 +6,9 @@ import { getSessionId } from '@/utils/auth'
 // 创建axios实例
 const service = axios.create({
   baseURL: process.env.BASE_API,
-  interceptors: true, // 是否开启response拦截器
+  interceptors: true // 是否开启response拦截器
   /*   timeout: 5000 // 请求超时时间*/
-  
+
 })
 
 // request拦截器

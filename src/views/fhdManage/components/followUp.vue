@@ -64,238 +64,226 @@
      </el-dialog>
 </template>
 <script>
-import { billFollowListApi , rentMessageApi , billFollowApi ,cityManagerMessageApi} from '@/api/renting'
-import { delObjectItem}  from '@/utils'
+import { billFollowListApi, rentMessageApi, billFollowApi, cityManagerMessageApi } from '@/api/renting'
+import { delObjectItem } from '@/utils'
 export default {
-    data(){
-        return {
-          status:null,
-          gridData: [],
-          dialogTableVisible: false,
-          innerVisible: false,
-          innerWarn: false,
-          followId: {
-              id:null,
-              billNo:null
-          },
-          pageItems: {
-           pageNo: 1,
-           pageSize: 20
-          },
-          isOver:null,
-          resultTypeList:[  //1-已退租 2-未缴纳 3-待确认结果真实性 4-未接听
-              {
-                value:1,
-                label:'已退租'
-              },{
-                value:2,
-                label:'未缴纳'
-              },{
-                value:3,
-                label:'待确认真实性'
-              },{
-                value:4,
-                label:'未接听'
-              }
-          ],
-          messageTypeList:[],
-          messageType: null,
-          messageTypes:[  //1-逾期账单催租提醒,2-租客账单交租提醒,3-租客已退房（账单已逾期）信息确认 4-租客已退房信息确认
-              {
-                value:1,
-                label:'逾期账单催租提醒'
-              },{
-                value:2,
-                label:'租客账单交租提醒'
-              },{
-                value:3,
-                label:'租客已退房（账单已逾期）信息确认'
-              },{
-                value:4,
-                label:'租客已退房信息确认'
-              },{
-                 value:5,
-                label:'线下交租确认信息'
-              }
-         ],
-         messageTypeIs:[  //租客账单交租提醒、租客已退房信息确认  未逾期
-             {
-                value:2,
-                label:'租客账单交租提醒'
-              },{
-                value:4,
-                label:'租客已退房信息确认'
-              },{
-                value:5,
-                label:'线下交租确认信息'
-              }
-         ],
-         messageTypeOver:[
-            {
-                value:1,
-                label:'逾期账单催租提醒'
-              },{
-                value:3,
-                label:'租客已退房（账单已逾期）信息确认'
-             },{
-                value:5,
-                label:'线下交租确认信息'
-              }
-         ],
-        form: {
-          resultType: null,
-          content: null,
-        },
-        messageType:null, //提醒模版
-        formLabelWidth: '120px'
+  data() {
+    return {
+      status: null,
+      gridData: [],
+      dialogTableVisible: false,
+      innerVisible: false,
+      innerWarn: false,
+      followId: {
+        id: null,
+        billNo: null
+      },
+      pageItems: {
+        pageNo: 1,
+        pageSize: 20
+      },
+      isOver: null,
+      resultTypeList: [ // 1-已退租 2-未缴纳 3-待确认结果真实性 4-未接听
+        {
+          value: 1,
+          label: '已退租'
+        }, {
+          value: 2,
+          label: '未缴纳'
+        }, {
+          value: 3,
+          label: '待确认真实性'
+        }, {
+          value: 4,
+          label: '未接听'
         }
+      ],
+      messageTypeList: [],
+      messageTypes: [ // 1-逾期账单催租提醒,2-租客账单交租提醒,3-租客已退房（账单已逾期）信息确认 4-租客已退房信息确认
+        {
+          value: 1,
+          label: '逾期账单催租提醒'
+        }, {
+          value: 2,
+          label: '租客账单交租提醒'
+        }, {
+          value: 3,
+          label: '租客已退房（账单已逾期）信息确认'
+        }, {
+          value: 4,
+          label: '租客已退房信息确认'
+        }, {
+          value: 5,
+          label: '线下交租确认信息'
+        }
+      ],
+      messageTypeIs: [ // 租客账单交租提醒、租客已退房信息确认  未逾期
+        {
+          value: 2,
+          label: '租客账单交租提醒'
+        }, {
+          value: 4,
+          label: '租客已退房信息确认'
+        }, {
+          value: 5,
+          label: '线下交租确认信息'
+        }
+      ],
+      messageTypeOver: [
+        {
+          value: 1,
+          label: '逾期账单催租提醒'
+        }, {
+          value: 3,
+          label: '租客已退房（账单已逾期）信息确认'
+        }, {
+          value: 5,
+          label: '线下交租确认信息'
+        }
+      ],
+      form: {
+        resultType: null,
+        content: null
+      },
+      messageType: '', // 提醒模版
+      formLabelWidth: '120px'
+    }
+  },
+  mounted() {
+
+  },
+  beforeDestroy() {
+    const dia = document.querySelectorAll('body>.el-dialog__wrapper')
+    dia.forEach(element => {
+      element.style.display = 'none'
+    })
+  },
+  filters: {
+    filterCreat(val) {
+      const list = ['运营', '飞虎队']
+      return list[val - 1]
+    }
+  },
+  methods: {
+    closeInner() {
+      this.innerVisible = false
+      delObjectItem(this.form)
     },
-    mounted(){
-
-    },
-    beforeDestroy(){
-      let dia=document.querySelectorAll('body>.el-dialog__wrapper')
-        dia.forEach(element => {
-            element.style.display  = "none";
-        });
-    },
-    filters:{
-     filterCreat(val){
-       const list=['运营','飞虎队']
-       return list[val-1]
-     }
-    },
-    methods:{
-      closeInner(){
-        this.innerVisible=false
-        delObjectItem(this.form)
-      },
-      filterType(type){
-        if(type === 3){
-         return true
-        }
-      },
-      textStatus(){
-        console.log(this.status)
-        if(this.status == 3){
-          this.$message({
-             message: '账单已撤销，无法继续跟进.',
-             type: 'error'
-          });
-          return false
-        }else{
-          return true
-        }
-      },
-      rentMessage(){
-        rentMessageApi(this.followId).then(response =>{
-           if(response.code == 0){
-             this.getfollowList()
-             this.$message({
-                message: response.message,
-                type: 'success'
-             });
-           }
-        })
-      },
-      getfollowList(){
-       let params=Object.assign(this.pageItems,this.followId)
-       billFollowListApi(params).then(response => {
-           this.gridData = response.data.content
-
-       })
-      },
-      addFllow(){  //新增催租记录
-        if(this.textStatus()){
-          this.innerVisible = true
-        }
-      },
-      addFollowSubmit(){
-        if(!this.form.resultType){
-          this.$message({
-                message: '请选择催租结果',
-                type: 'success'
-             });
-             return false
-        }
-        if(this.form.resultType != 3&&this.form.resultType != null&&this.form.resultType != ''){
-             this.form.content=this.resultTypeList[this.form.resultType-1].label
-             this.addfun()
-        }else{
-
-          if(this.form.content===''||this.form.content===null){
-            this.$message({
-                message: '请填写催租结果的备注',
-                type: 'success'
-             });
-          }else{
-            this.addfun()
-          }
-
-        }
-
-
-      },
-      addfun(){
-         let params=Object.assign(this.followId,this.form)
-
-          billFollowApi(params).then(response => {
-            this.innerVisible=false
-            this.getfollowList()
-            this.$emit("searchStart")
-            delObjectItem(this.form)
-          })
-      },
-      managerMessageSubmit(){
-
-        if(this.messageType){
-          this. messageSubmit()
-        }else{
-            this.$message.error('请选择提醒模版');
-        }
-      },
-      messageSubmit(){
-        let dataItem = {
-          isOver : this.isOver,
-          messageType: this.messageType
-        }
-        let params = Object.assign(dataItem,this.followId)
-          cityManagerMessageApi(params).then(response =>{
-            if(response.code == 0){
-              this.getfollowList()
-              this.$message({
-                  message: response.message,
-                  type: 'success'
-              });
-              this.innerWarn=false
-
-            }
-          })
-      },
-      managerMessage(){
-        if(this.textStatus()){
-          this.innerWarn = true
-          if(this.isOver == true){
-            this.messageTypeList = this.messageTypeOver   //以逾期
-          }else if(this.isOver == false){
-            this.messageTypeList = this.messageTypeIs
-          }else{
-            this.messageTypeList = messageTypes
-          }
-        }
-
-
-      },
-      open(type,id,billNo,isOver,status){
-        this.dialogTableVisible = true
-        this.followId.id = id
-        this.followId.billNo = billNo
-        this.isOver = isOver
-        this.status = status
-        this.getfollowList()
+    filterType(type) {
+      if (type === 3) {
+        return true
       }
+    },
+    textStatus() {
+      console.log(this.status)
+      if (this.status === 3) {
+        this.$message({
+          message: '账单已撤销，无法继续跟进.',
+          type: 'error'
+        })
+        return false
+      } else {
+        return true
+      }
+    },
+    rentMessage() {
+      rentMessageApi(this.followId).then(response => {
+        if (response.code === '000') {
+          this.getfollowList()
+          this.$message({
+            message: response.message,
+            type: 'success'
+          })
+        }
+      })
+    },
+    getfollowList() {
+      const params = Object.assign(this.pageItems, this.followId)
+      billFollowListApi(params).then(response => {
+        this.gridData = response.data.result
+      })
+    },
+    addFllow() { // 新增催租记录
+      if (this.textStatus()) {
+        this.innerVisible = true
+      }
+    },
+    addFollowSubmit() {
+      if (!this.form.resultType) {
+        this.$message({
+          message: '请选择催租结果',
+          type: 'success'
+        })
+        return false
+      }
+      if (this.form.resultType !== 3 && this.form.resultType != null && this.form.resultType !== '') {
+        this.form.content = this.resultTypeList[this.form.resultType - 1].label
+        this.addfun()
+      } else {
+        if (this.form.content === '' || this.form.content === null) {
+          this.$message({
+            message: '请填写催租结果的备注',
+            type: 'error'
+          })
+        } else {
+          this.addfun()
+        }
+      }
+    },
+    addfun() {
+      const params = Object.assign(this.followId, this.form)
 
- }
+      billFollowApi(params).then(response => {
+        this.innerVisible = false
+        this.getfollowList()
+        this.$emit('searchStart')
+        delObjectItem(this.form)
+      })
+    },
+    managerMessageSubmit() {
+      if (this.messageType) {
+        this.messageSubmit()
+      } else {
+        this.$message.error('请选择提醒模版')
+      }
+    },
+    messageSubmit() {
+      const dataItem = {
+        isOver: this.isOver,
+        messageType: this.messageType
+      }
+      const params = Object.assign(dataItem, this.followId)
+      cityManagerMessageApi(params).then(response => {
+        this.getfollowList()
+        this.$message({
+          message: response.message,
+          type: 'success'
+        })
+        this.innerWarn = false
+      })
+    },
+    managerMessage() {
+      if (this.textStatus()) {
+        this.innerWarn = true
+        if (this.isOver === true) {
+          this.messageTypeList = this.messageTypeOver // 以逾期
+        } else if (this.isOver === false) {
+          this.messageTypeList = this.messageTypeIs
+        } else {
+          this.messageTypeList = this.messageType
+        }
+      }
+    },
+    open(type, id, billNo, isOver, status) {
+      this.dialogTableVisible = true
+      this.followId.id = id
+      this.followId.billNo = billNo
+      this.isOver = isOver
+      this.status = status
+      this.getfollowList()
+    }
+
+  }
 }
 </script>
 <style >
