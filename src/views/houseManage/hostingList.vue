@@ -44,9 +44,9 @@
         <template slot="index" slot-scope="scope">
           {{scope.row.index + 1}}
         </template>
-        <!-- <template slot="checkHoleRooms" slot-scope="scope">
-          <el-checkbox v-model="checkedList[scope.row.index]" @change="handleCheckHoleRooms(scope.row, scope.$index)"></el-checkbox>
-        </template> -->
+        <template slot="checkHoleRooms" slot-scope="scope">
+          <el-checkbox v-model="checkedList[scope.$index]" @change="handleCheckHoleRooms(scope.row, scope.$index)"></el-checkbox>
+        </template>
         <template slot="roomStatus" slot-scope="scope">
           <el-tag :type="[2].includes(scope.row.roomStatus) ? 'success' : ([5, 6, 8, 10].includes(scope.row.roomStatus) ? 'info' : 'danger')">{{scope.row.roomStatus | setRoomStatus(roomStatusList)}}</el-tag>
         </template>
@@ -169,6 +169,7 @@ export default {
   data() {
     return {
       checkedList: [],
+      tableCheckboxList: [],
       roomSearchForm: {
         cityId: '',
         cityArea: [],
@@ -230,12 +231,12 @@ export default {
       ],
       colModels: [
         { label: '#', slotName: "index", fixed: 'left', width: 50, align: 'center' },
-        // {
-        //   prop: "checkHoleRooms",
-        //   label: "",
-        //   slotName: 'checkHoleRooms',
-        //   width: 50
-        // },
+        {
+          prop: "checkHoleRooms",
+          label: "",
+          slotName: 'checkHoleRooms',
+          width: 50
+        },
         { prop: "orgName", label: "组织名称", width: 200 },
         { prop: "addrRegionName", label: "房源位置", width: 180 },
         { prop: "roomDetailAddress", label: "公寓/小区-房间", width: 180 },
@@ -365,7 +366,8 @@ export default {
     },
     handleCheckHoleRooms(row, index) {
       for (let i = 0; i < row.spanArr; i++) {
-        this.$refs.hostingHouseList.$refs.gridUnit.toggleRowSelection(this.$refs.hostingHouseList.tableData[index + i])
+        this.tableCheckboxList[index + i].isChecked = this.checkedList[index]
+        this.$refs.hostingHouseList.$refs.gridUnit.toggleRowSelection(this.$refs.hostingHouseList.tableData[index + i], this.checkedList[index])
       }
     },
     // 查询/清空
@@ -378,10 +380,38 @@ export default {
       this.searchParam()
     },
     handleSelectChange(selection, row) {
-
+      let clickIndex = this.$refs.hostingHouseList.tableData.indexOf(row)
+      this.tableCheckboxList[clickIndex].isChecked = !this.tableCheckboxList[clickIndex].isChecked
+      if (this.tableCheckboxList[clickIndex].isChecked) {
+        let aaa = this.tableCheckboxList.filter(item => item.fangyuanCode === row.fangyuanCode && item.isChecked)
+        if (aaa.length === this.tableCheckboxList[clickIndex].columnLength) {
+          let curIndex = this.tableCheckboxList.indexOf(aaa[0])
+          this.checkedList[curIndex] = true
+        }
+      } else {
+        let bbb = this.tableCheckboxList.filter(item => item.fangyuanCode === row.fangyuanCode)
+        let norIndex = this.tableCheckboxList.indexOf(bbb[0])
+        this.checkedList[norIndex] = false
+      }
     },
     handleSelectionChange(list) {
-
+      this.selectedRooms = list
+      if (list.length === this.checkedList.length) {
+        let checkedList = []
+        this.checkedList.forEach((item, index) => {
+          this.tableCheckboxList[index].isChecked = true
+          checkedList.push(true)
+        })
+        this.$set(this, 'checkedList', checkedList)
+      }
+      if (list.length === 0) {
+        let checkedList = []
+        this.checkedList.forEach((item, index) => {
+          this.tableCheckboxList[index].isChecked = false
+          checkedList.push(false)
+        })
+        this.$set(this, 'checkedList', checkedList)
+      }
     },
     // 批量房态管理
     handleCommand(command) {
@@ -424,7 +454,7 @@ export default {
         }
       }).catch(err => { console.log(err) })
     },
-    //删除房间
+    // 删除房间
     deleteRoom(row) {
       const h = this.$createElement
       const message = this.roomSearchForm.houseRentType === 1 ? '' : '若删除单个房间请在【编辑房间】里面删除'
@@ -473,6 +503,8 @@ export default {
     // 表格数据
     dataHandler(data) {
       let tempArr = []
+      this.tableCheckboxList = []
+      this.checkedList = []
       data = data.filter( item => item.roomList.length > 0 )
       data.forEach((item, index) => {
         item.roomList.forEach((v, i) => {
@@ -483,6 +515,12 @@ export default {
             ...item,
             ...v
           }
+          this.tableCheckboxList.push({
+            fangyuanCode: item.fangyuanCode,
+            isChecked: false,
+            columnLength: item.roomList.length
+          })
+          this.checkedList.push(false)
           if (i === 0) {
             row.spanArr = item.roomList.length
             row.index = index
@@ -494,6 +532,7 @@ export default {
     },
     // 添加修改房间信息
     openRoomDetail(params) {
+      this.loading = true
       if (typeof (params) === 'number') {
         this.isEditFlag = false
         this.roomDetailModelVisible = true
@@ -694,6 +733,11 @@ export default {
             message: res.message,
             type: 'success'
           })
+          if (this.activeName === '合租') {
+            let list = this.$refs.rentPayWay[Number(this.tempRentPayTabName)].returnRentPayList()
+            this.rentPayList[Number(this.tempRentPayTabName)].roomRentTypeList = deepClone(list)
+            this.tempRentPayList = deepClone(list)
+          }
           let rentPayList = this.activeName === '整租' ? this.$refs.rentPayWay : this.$refs.rentPayWay[Number(this.activeRentPayTabName)]
           rentPayList.$refs.financeRentPayForm.clearValidate()
           rentPayList.$refs.defaultRentPayForm.clearValidate()
