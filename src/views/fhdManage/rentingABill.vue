@@ -29,18 +29,19 @@
               <el-option v-for="item in overTypeList" :key="item.value" :label="item.label" :value="item.value">
               </el-option>
             </el-select>
-          </el-form-item>
-          <el-form-item>
-            <el-select size="small" style="width:120px;" v-model="formData.status" placeholder="请选择订单状态"  clearable >
+            <el-select size="small" class="filter-item" style="width:120px;" v-model="formData.status" placeholder="请选择订单状态"  clearable >
               <el-option v-for="item in statusList" :key="item.value" :label="item.label" :value="item.value" >
               </el-option>
             </el-select>
+          </el-form-item>
+          <el-form-item>
+            
             <el-input
               placeholder="房东／房东手机号码"
               style="width:160px;"
               v-model='formData.orgKeyword'
               @keydown.native.enter="searchParam"
-              class="filter-item">
+              >
             </el-input>
              <el-date-picker
               v-model="dateLineTime"
