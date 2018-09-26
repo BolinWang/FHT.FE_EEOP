@@ -1,8 +1,8 @@
 /*
  * @Author: FT.FE.Bolin
  * @Date: 2018-07-11 13:49:21
- * @Last Modified by: chudequan
- * @Last Modified time: 2018-09-10 10:13:39
+ * @Last Modified by: FT.FE.Bolin
+ * @Last Modified time: 2018-09-26 17:54:11
  */
 
  <template>
@@ -111,10 +111,9 @@
 </template>
 <script>
 import GridUnit from '@/components/GridUnit/grid'
-import { deepClone, cleanArray, ObjectMap } from '@/utils'
 import { fhdAuditApi } from '@/api/auditCenter'
 import { houseAsyncApi, publishHouseApi } from '@/api/houseManage'
-import areaSelect from "@/components/AreaSelect"
+import areaSelect from '@/components/AreaSelect'
 export default {
   name: 'houseSync',
   components: {
@@ -238,7 +237,7 @@ export default {
     })
   },
   computed: {
-    tableStyle: function () {
+    tableStyle: function() {
       return {
         width: '100%',
         height: this.tableHeight + 'px'
@@ -299,18 +298,18 @@ export default {
         this.$message.error(`已${typeConfig[type].title}的房源不能再${typeConfig[type].title}`)
         return false
       }
-      this.dialogVisible = true;
-      this.dialogTitle = typeConfig[type].title;
-      this.publishSelect.mlzf = false;
-      this.publishSelect.idlefish = false;
+      this.dialogVisible = true
+      this.dialogTitle = typeConfig[type].title
+      this.publishSelect.mlzf = false
+      this.publishSelect.idlefish = false
     },
     // 发布、撤销
     gotoHouseAsync() {
-      let roomCodes = this.selectedItems.map(item => item.roomCode);
-      let platform = [];
+      const roomCodes = this.selectedItems.map(item => item.roomCode)
+      const platform = []
       for (var i in this.publishSelect) {
         if (this.publishSelect[i]) {
-          platform.push(i);
+          platform.push(i)
         }
       }
 
@@ -319,8 +318,8 @@ export default {
         roomCodeList: roomCodes
       }
 
-      if (this.dialogTitle === "发布") {
-        let manage = this.filterManagerList.filter(item => item.id === this.sourceInfo)
+      if (this.dialogTitle === '发布') {
+        const manage = this.filterManagerList.filter(item => item.id === this.sourceInfo)
         if (manage.length) {
           params = Object.assign(params, {
             picProviderId: this.sourceInfo,
@@ -328,14 +327,14 @@ export default {
           })
         }
       }
-      publishHouseApi(params, this.dialogTitle === "发布" ? 1 : 2).then(response => {
+      publishHouseApi(params, this.dialogTitle === '发布' ? 1 : 2).then(response => {
         this.$notify({
           title: '成功',
           message: '操作成功',
           type: 'success',
-          duration: 2000,
+          duration: 2000
         })
-        this.dialogVisible = false;
+        this.dialogVisible = false
         this.searchParam()
       })
     },
@@ -364,22 +363,12 @@ export default {
     }
   },
   watch: {
-    'publishSelect.mlzf': function (val) {
-      if (!val && this.dialogTitle === "发布") {
+    'publishSelect.mlzf': function(val) {
+      if (!val && this.dialogTitle === '发布') {
         this.sourceInfo = ''
       }
     },
-    roomSearchForm: {
-      handler: function (val) {
-        if (roomSearchForm.cityArea && roomSearchForm.cityArea[1]) {
-          this.roomSearchForm.cityId = roomSearchForm.cityArea[1]
-        }
-        else {
-          this.roomSearchForm.cityId = ''
-        }
-      }
-    },
-    'searchParams.cityArea': function (val) {
+    'searchParams.cityArea': function(val) {
       if (val && val[1]) {
         this.searchParams.cityId = val[1]
       } else {
