@@ -1,8 +1,8 @@
 /*
- * @Author: ghost 
- * @Date: 2018-09-05 18:34:04 
- * @Last Modified by: 
- * @Last Modified time: 2018-09-14 11:00:05
+ * @Author: ghost
+ * @Date: 2018-09-05 18:34:04
+ * @Last Modified by: FT.FE.Bolin
+ * @Last Modified time: 2018-09-28 14:19:02
  */
 <template>
   <div class="container">
@@ -150,7 +150,7 @@
       </div>
     </el-dialog>
      <el-dialog class="organEdit" title="飞虎队个人机构" width="800px" v-else :visible.sync="personalTableVisible">
-      <el-form :model="companyForm" :inline="true" :rules="rules" ref="ruleForm"> 
+      <el-form :model="companyForm" :inline="true" :rules="rules" ref="ruleForm">
         <el-row>
           <el-col :span="12">
             <el-form-item label="姓名" >
@@ -166,7 +166,7 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="身份证" prop="idNum">
-               <el-input v-model="companyForm.idNum" :disabled=" textCard()"></el-input>
+               <el-input v-model="companyForm.idNum" :disabled="textCard()"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -457,7 +457,7 @@ export default {
       }
       orgManagequeryByIdApi(params).then(res => {
         this.companyForm = res.data
-        this.text = this.companyForm.idNum
+        this.text = this.companyForm.idNum + ''
       })
     }
   }
