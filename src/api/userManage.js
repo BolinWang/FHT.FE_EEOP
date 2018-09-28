@@ -332,6 +332,16 @@ export const tenantReservationApi = {
       }
     })
   },
+  getLandlord(params = {}) {
+    return fetch({
+      url: this.baseUrl,
+      method: 'post',
+      data: {
+        method: 'queryLandlordInfo',
+        params
+      }
+    })
+  },
   sendMessage(params = {}) {
     return fetch({
       url: this.baseUrl,

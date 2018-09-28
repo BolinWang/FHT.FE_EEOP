@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-09-26 18:01:22
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-09-28 11:05:05
+ * @Last Modified time: 2018-09-28 18:23:36
  */
 <template>
   <div class="app-container">
@@ -223,7 +223,7 @@
                             </div>
                           </el-col>
                         </el-row>
-                        <el-row :gutter="10" v-if="selectedRoomInfo.landlordInfo">
+                        <el-row :gutter="10" v-if="landlordList">
                           <el-col :span="24">
                             <div class="roomInfo_details">
                               <span class="detail_label">选择房东：</span>
@@ -234,7 +234,7 @@
                                   @change="selectLandlord"
                                   filterable>
                                   <el-option
-                                    v-for="item in selectedRoomInfo.landlordInfo"
+                                    v-for="item in landlordList"
                                     :key="item.landlordMobile"
                                     :label="item.landlordName"
                                     :value="item.landlordMobile">
@@ -314,10 +314,22 @@
               </el-checkbox-group>
             </el-form-item>
             <el-form-item label="房东手机号" prop="landlordMobile">
-              <el-input
+              <el-select
                 v-model="sendMessageForm.landlordMobile"
+                placeholder="输入姓名/手机号快速匹配"
                 :disabled="!(sendMessageForm.sendType || []).includes('房东')"
-                style="width: 200px;"></el-input>
+                filterable
+                clearable
+                allow-create
+                default-first-option
+                style="width: 200px;">
+                <el-option
+                  v-for="item in landlordList"
+                  :key="item.landlordMobile"
+                  :label="item.landlordMobile"
+                  :value="item.landlordMobile">
+                </el-option>
+              </el-select>
             </el-form-item>
             <el-form-item label="租客手机号" prop="tenantMobile">
               <el-input
@@ -328,7 +340,7 @@
             <el-form-item label="房东短信">
               <el-input
                 type="textarea"
-                autosize
+                :autosize="{ minRows: 3}"
                 disabled
                 :value="`【麦邻租房】您好，${sendMessageForm.tenantName}${sendMessageForm.tenantMobile}通过麦邻租房平台成功预约您发布的房源{房源名称}，看房时间为${sendMessageForm.bookingTime}请及时跟进，若有疑问可致电400-882-7099。`">
               </el-input>
@@ -336,7 +348,7 @@
             <el-form-item label="租客短信">
               <el-input
                 type="textarea"
-                autosize
+                :autosize="{ minRows: 3}"
                 disabled
                 :value="`【麦邻租房】您好，您在${sendMessageForm.tenantSource}预约的信息已发送给房东${sendMessageForm.landlordMobile}，若有疑问可致电400-882-7099。`">
               </el-input>
@@ -419,6 +431,7 @@ export default {
       activeName: '1', // 房源信息手风琴展示
       selectedRoomInfo: {}, // 选择的房源信息
       roomsInfoList: [], // 房源列表
+      landlordList: [], // 房东列表
       formData: {
         startDate: '',
         endDate: '',
@@ -470,6 +483,7 @@ export default {
             }
           }
         },
+        { prop: 'processResult', label: '处理结果' },
         {
           prop: 'createTime',
           label: '创建时间',
@@ -558,13 +572,20 @@ export default {
 
     // dialog关闭 移除表单验证结果
     closeInfo(ref) {
-      this.$refs[ref].clearValidate()
-      this.sendMessageForm = {}
-      this.detailData = {}
-      this.findRoomInfo = {}
-      this.activeName = '1'
-      this.selectedRoomInfo = {}
-      this.roomsInfoList = []
+      this.$confirm('您有信息未保存，确认退出？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$refs[ref].clearValidate()
+        this.landlordList = []
+        this.sendMessageForm = {}
+        this.detailData = {}
+        this.findRoomInfo = {}
+        this.activeName = '1'
+        this.selectedRoomInfo = {}
+        this.roomsInfoList = []
+      }).catch()
     },
 
     // 新增/编辑客源
@@ -585,24 +606,18 @@ export default {
 
     // 房源信息查询
     getSearchRooms(params, flag) {
-      const loadingInstance = this.$loading({
-        text: '拼命加载中',
-        spinner: 'el-icon-loading'
-      })
       tenantReservationApi.getRooms({
         pageNo: 1,
         pageSize: 10,
         ...params
       }).then((res) => {
-        loadingInstance.close()
         if (this.infoTitle === '新增客源') {
+          this.layer_showInfo = true
           this.$set(this, 'roomsInfoList', res.data.content || [])
           this.activeName = '1'
         } else {
-          this.selectRoomInfo((res.data.content || [])[0], true)
-        }
-        if (flag) {
-          this.layer_showInfo = true
+          const _tempInfo = (res.data.content || [])[0]
+          this.selectRoomInfo(_tempInfo, true)
         }
       }).catch(() => {
         this.roomsInfoList = []
@@ -612,21 +627,33 @@ export default {
     // 选择房源
     selectRoomInfo(item, flag) {
       this.selectedRoomInfo = item || {}
-      this.selectedRoomInfo.landlordMobile =
-        (this.selectedRoomInfo.landlordInfo && this.selectedRoomInfo.landlordInfo.length > 0)
-          ? this.selectedRoomInfo.landlordInfo[0].landlordMobile : ''
-      if (!flag) {
-        this.detailData.landlordMobile = this.selectedRoomInfo.landlordMobile
-        this.selectLandlord(this.detailData.landlordMobile)
-      }
-      // 关闭当前手风琴，开启另一个
-      this.activeName = '2'
+      const loadingInstance = this.$loading({
+        background: 'rgba(0, 0, 0, 0)',
+        text: '拼命加载中...'
+      })
+      tenantReservationApi.getLandlord({
+        housingType: item.housingType,
+        positionId: item.positionId
+      }).then(res => {
+        this.landlordList = res.data || []
+        this.selectedRoomInfo.landlordMobile =
+        this.landlordList.length > 0 ? this.landlordList[0].landlordMobile : ''
+        if (!flag) {
+          this.detailData.landlordMobile = this.selectedRoomInfo.landlordMobile
+          this.selectLandlord(this.detailData.landlordMobile)
+        } else {
+          this.layer_showInfo = true
+        }
+        // 关闭当前手风琴，开启另一个
+        this.activeName = '2'
+        loadingInstance.close()
+      })
     },
 
     // 选择房东
     selectLandlord(data) {
       let filterObj = {}
-      filterObj = this.selectedRoomInfo.landlordInfo.find((item) => {
+      filterObj = this.landlordList.find((item) => {
         return item.landlordMobile === data
       })
       this.detailData.landlordName = filterObj.landlordName || ''
@@ -646,6 +673,10 @@ export default {
         if (valid) {
           if (JSON.stringify(this.selectedRoomInfo) === '{}') {
             this.$message.error('请选择房源信息')
+            return false
+          }
+          if (this.detailData.processStatus === 1 && !this.detailData.processResult) {
+            this.$message.error('请选择处理结果')
             return false
           }
           tenantReservationApi.update(ObjectMap({
@@ -674,16 +705,35 @@ export default {
 
     // 发送短信
     sendMessage(row) {
-      this.layer_showMessage = true
       this.sendMessageForm = {
         ...deepClone(row),
         sendType: ['房东', '租客']
       }
+      const loadingInstance = this.$loading({
+        background: 'rgba(0, 0, 0, 0)',
+        text: '拼命加载中...'
+      })
+      tenantReservationApi.getLandlord({
+        housingType: row.housingType,
+        positionId: row.positionId
+      }).then(res => {
+        this.landlordList = res.data || []
+        // 如果房东手机号不在landlordList中，则加进去啦
+        const filterLen = this.landlordList.find(item => item.landlordMobile === this.sendMessageForm.landlordMobile)
+        if (!filterLen) {
+          this.landlordList.unshift({
+            landlordMobile: this.sendMessageForm.landlordMobile
+          })
+        }
+        loadingInstance.close()
+        this.layer_showMessage = true
+      })
     },
     doSendMessage() {
       this.$refs.msgForm.validate((valid) => {
         if (valid) {
           tenantReservationApi.sendMessage(ObjectMap({
+            id: this.sendMessageForm.id,
             tenantMobile: this.sendMessageForm.sendType.includes('租客') ? this.sendMessageForm.tenantMobile : '',
             landlordMobile: this.sendMessageForm.sendType.includes('房东') ? this.sendMessageForm.landlordMobile : ''
           })).then(res => {
