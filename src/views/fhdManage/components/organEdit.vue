@@ -2,7 +2,7 @@
  * @Author: ghost
  * @Date: 2018-09-05 18:34:04
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-09-28 14:19:02
+ * @Last Modified time: 2018-09-28 14:30:11
  */
 <template>
   <div class="container">
@@ -325,7 +325,7 @@ export default {
   },
   methods: {
     textCard() {
-      if (this.text === '33000000000000') {
+      if (this.text === '330000000000000000') {
         return false
       } else if (this.text === null || this.text === '') {
         return false

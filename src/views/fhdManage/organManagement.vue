@@ -1,8 +1,8 @@
 /*
  * @Author: ghost
  * @Date: 2018-08-31 14:55:54
- * @Last Modified by: 
- * @Last Modified time: 2018-09-13 16:45:27
+ * @Last Modified by: FT.FE.Bolin
+ * @Last Modified time: 2018-09-28 14:26:56
  */
 <template>
   <div class="container">
@@ -352,8 +352,13 @@ export default {
     searchParam() {
       const searchParams = Object.assign(this.pageItems, this.formData)
       orgManageListApi(ObjectMap(searchParams)).then(res => {
-        this.organAllList = res.data.result
-        this.total = res.data.total
+        if (res.success) {
+          this.organAllList = res.data.result || []
+          this.total = res.data.total
+        } else {
+          this.$message.error('请求飞虎队失败')
+          return false
+        }
       })
     },
     clearForm() {
@@ -365,7 +370,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-   
+
   .container {
     padding: 20px;
   }
