@@ -1,6 +1,16 @@
 <template>
   <div>
-    <el-cascader :placeholder="placeholder" :disabled="disabled" :options="options" :size="size" :clearable="clearable" :filterable="filterable" :show-all-levels="showAllLevels" v-model="selectedOptions" @change="handleChange" style="width:100%">
+    <el-cascader
+      :placeholder="placeholder"
+      :disabled="disabled"
+      :options="options"
+      :size="size"
+      :clearable="clearable"
+      :filterable="filterable"
+      :show-all-levels="showAllLevels"
+      v-model="selectedOptions"
+      @change="handleChange"
+      style="width:100%">
     </el-cascader>
   </div>
 </template>
@@ -11,7 +21,10 @@ export default {
   name: 'areaselect',
   props: {
     value: {
-      default: []
+      ype: Array,
+      default () {
+        return []
+      }
     },
     placeholder: {
       type: String,
@@ -19,7 +32,7 @@ export default {
     },
     filterable: {
       type: Boolean,
-      default: false
+      default: true
     },
     clearable: {
       type: Boolean,
@@ -31,8 +44,8 @@ export default {
     },
     level: {
       type: Number,
-      default: 1, // 0->二联 1->三联
-      validator: (val) => [0, 1].indexOf(val) > -1
+      default: 1, // -1->省  0->省/城市/地区 1->省/城市/地区
+      validator: (val) => [-1, 0, 1].indexOf(val) > -1
     },
     size: {
       type: String,
@@ -59,12 +72,16 @@ export default {
       this.selectedOptions = this.value.map(key => { return parseInt(key) });
     }
 
-    if (this.level === 0) {
+    if (this.level !== 1) {
       let data = deepClone(areaData)
       data.forEach((item, index) => {
-        item.children.forEach((v, i) => {
-          delete v.children
-        })
+        if (this.level === -1) {
+          delete item.children
+        } else if (this.level === 0) {
+          item.children.forEach((v, i) => {
+            delete v.children
+          })
+        }
       })
       this.options = data
     }

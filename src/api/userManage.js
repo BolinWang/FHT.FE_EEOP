@@ -291,7 +291,7 @@ export function queryMessageQuantityApi(params = {}) {
 // 客源管理
 export const tenantReservationApi = {
   baseUrl: '/market/tenantReservation',
-  queryMethod: 'list',
+  queryMethod: 'queryTenantReservation',
   list(params = {}) {
     return fetch({
       url: this.baseUrl,
@@ -302,7 +302,7 @@ export const tenantReservationApi = {
       }
     })
   },
-  add(params = {}) {
+  update(params = {}) {
     return fetch({
       url: this.baseUrl,
       method: 'post',
@@ -317,7 +317,27 @@ export const tenantReservationApi = {
       url: this.baseUrl,
       method: 'post',
       data: {
-        method: 'batchChangeLeaseStatus',
+        method: 'batchDeleteTenantRes',
+        params
+      }
+    })
+  },
+  getRooms(params = {}) {
+    return fetch({
+      url: this.baseUrl,
+      method: 'post',
+      data: {
+        method: 'findRoomInfo',
+        params
+      }
+    })
+  },
+  sendMessage(params = {}) {
+    return fetch({
+      url: this.baseUrl,
+      method: 'post',
+      data: {
+        method: 'sendBookingMessage',
         params
       }
     })

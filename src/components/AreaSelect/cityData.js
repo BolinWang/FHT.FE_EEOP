@@ -14440,15 +14440,18 @@ module.exports = [{
   "value": 710000,
   "parentvalue": 1,
   "label": "台湾省",
+  disabled: true,
   "children": []
 }, {
   "value": 810000,
   "parentvalue": 1,
   "label": "香港特别行政区",
+  disabled: true,
   "children": []
 }, {
   "value": 820000,
   "parentvalue": 1,
   "label": "澳门特别行政区",
+  disabled: true,
   "children": []
 }]
