@@ -253,17 +253,21 @@
                 </div>
               </el-card>
             </el-form-item>
-            <el-form-item label="房东信息" class="radius_border">
+            <el-form-item label="房东信息" class="radius_border" required>
               <el-row :gutter="0">
                 <el-col :span="9" style="padding-left: 0">
-                  <el-input placeholder="姓名" v-model="detailData.landlordName">
-                    <template slot="prepend">姓名</template>
-                    <template slot="append">手机号</template>
-                  </el-input>
+                  <el-form-item label="" prop="landlordName">
+                    <el-input placeholder="姓名" v-model="detailData.landlordName">
+                      <template slot="prepend">姓名</template>
+                      <template slot="append">手机号</template>
+                    </el-input>
+                  </el-form-item>
                 </el-col>
                 <el-col :span="7" style="padding-right: 0">
-                  <el-input placeholder="手机号" v-model="detailData.landlordMobile" class="radius_borderLeft">
-                  </el-input>
+                  <el-form-item label="" prop="landlordMobile">
+                    <el-input placeholder="手机号" v-model="detailData.landlordMobile" class="radius_borderLeft">
+                    </el-input>
+                  </el-form-item>
                 </el-col>
               </el-row>
             </el-form-item>
@@ -529,6 +533,12 @@ export default {
         ],
         bookingTime: [
           { required: true, message: '请选择看房时间', trigger: 'change' }
+        ],
+        landlordMobile: [
+          { required: true, validator: validatePhone, trigger: 'blur' }
+        ],
+        landlordName: [
+          { required: true, message: '请输入房东姓名', trigger: 'blur' }
         ]
       }
     }
