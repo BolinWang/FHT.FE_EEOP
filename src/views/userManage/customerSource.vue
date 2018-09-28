@@ -111,6 +111,7 @@
         :title="infoTitle"
         :visible.sync="layer_showInfo"
         @close="closeInfo('detailFrom')"
+        :before-close="handleClose"
         width="800px">
         <div class="container">
           <el-form
@@ -572,20 +573,25 @@ export default {
 
     // dialog关闭 移除表单验证结果
     closeInfo(ref) {
+      this.$refs[ref].clearValidate()
+      this.landlordList = []
+      this.sendMessageForm = {}
+      this.detailData = {}
+      this.findRoomInfo = {}
+      this.activeName = '1'
+      this.selectedRoomInfo = {}
+      this.roomsInfoList = []
+    },
+    handleClose(done) {
       this.$confirm('您有信息未保存，确认退出？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.$refs[ref].clearValidate()
-        this.landlordList = []
-        this.sendMessageForm = {}
-        this.detailData = {}
-        this.findRoomInfo = {}
-        this.activeName = '1'
-        this.selectedRoomInfo = {}
-        this.roomsInfoList = []
-      }).catch()
+        done()
+      }).catch(() => {
+        console.log('cancel')
+      })
     },
 
     // 新增/编辑客源
