@@ -41,13 +41,13 @@
 </template>
 
 <script>
-import { debounce, deepClone } from "@/utils"
-import GridUnit from "@/components/GridUnit/grid"
-import areaSelect from "@/components/AreaSelect"
+import { debounce, deepClone } from '@/utils'
+import GridUnit from '@/components/GridUnit/grid'
+import areaSelect from '@/components/AreaSelect'
 import estateModel from '../components/estateModel'
 import { estateRoomDetailApi, estateDeleteEstateApi, estateNewEstateSaveApi, saveEstateBasicInfoApi, saveEstateFloorInfoApi, saveEstateRoomTypeInfoApi } from '@/api/houseManage'
 export default {
-  name: "estateHouseList",
+  name: 'estateHouseList',
   components: {
     GridUnit,
     areaSelect,
@@ -64,23 +64,23 @@ export default {
         cityId: ''
       },
       tableHeight: 500,
-      estateListUrl: "/market/fangyuan",
-      method: "queryEstateList",
+      estateListUrl: '/market/fangyuan',
+      method: 'queryEstateList',
       colModels: [
-        { prop: "orgName", label: "组织名称" },
-        { prop: "displayCityName", label: "城市" },
-        { prop: "estateName", label: "公寓名称" },
+        { prop: 'orgName', label: '组织名称' },
+        { prop: 'displayCityName', label: '城市' },
+        { prop: 'estateName', label: '公寓名称' },
         {
-          prop: "operate",
-          label: "操作",
-          slotName: "operateEstate",
-          width: "300",
+          prop: 'operate',
+          label: '操作',
+          slotName: 'operateEstate',
+          width: '300',
           fixed: 'right'
         },
         {
-          prop: "operateRecord",
-          label: "操作记录",
-          slotName: "operateRecordStr",
+          prop: 'operateRecord',
+          label: '操作记录',
+          slotName: 'operateRecordStr'
         }
       ]
     }
@@ -103,7 +103,7 @@ export default {
       this.searchParam()
     },
     routerToEstateRoomList(row) {
-      this.$router.push({ path: 'estateRoomList', query: { fangyuanCode: row.fangyuanCode } })
+      this.$router.push({ path: 'estateRoomList', query: { fangyuanCode: row.fangyuanCode }})
     },
     openEstateModel(type, row) {
       if (type === 1) {
@@ -124,16 +124,16 @@ export default {
       const differentFlag = this.$refs.estateModel.checkEditFlag()
       if (differentFlag) {
         this.$confirm('您还有数据未保存, 确认关闭吗？')
-        .then(_ => {
-          done()
-        })
-        .catch(_ => {})
+          .then(_ => {
+            done()
+          })
+          .catch(_ => {})
       } else {
         done()
       }
     },
     saveEstateData(type) {
-      let estateInfo = deepClone(this.$refs.estateModel.returnEstateData(type))
+      const estateInfo = deepClone(this.$refs.estateModel.returnEstateData(type))
       if (!estateInfo) {
         return
       }
@@ -203,16 +203,16 @@ export default {
     }
   },
   mounted() {
-    let changeTableSize = debounce(() => {
+    const changeTableSize = debounce(() => {
       this.tableHeight = Math.max(document.body.clientHeight - 190, 250)
     }, 100)
     changeTableSize()
-    window.addEventListener("resize", changeTableSize)
+    window.addEventListener('resize', changeTableSize)
   },
   beforeDestroy() {
-    let dialog = document.querySelectorAll('body > .el-dialog__wrapper')
+    const dialog = document.querySelectorAll('body > .el-dialog__wrapper')
     if (dialog) {
-      [].forEach.call(dialog, function (item, index) {
+      [].forEach.call(dialog, function(item, index) {
         document.body.removeChild(item)
       })
     }

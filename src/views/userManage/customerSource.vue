@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-09-26 18:01:22
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-09-29 11:38:47
+ * @Last Modified time: 2018-09-29 14:17:37
  */
 <template>
   <div class="app-container">
@@ -574,6 +574,7 @@ export default {
 
     clearForm() {
       this.formData = {}
+      this.dateTime = []
       this.searchParam()
     },
 

@@ -324,7 +324,7 @@ export default {
                 diffCount++
               }
             })
-            return diffCount > 0 ? true : false
+            return diffCount > 0
           }
         }
       })
@@ -346,7 +346,7 @@ export default {
         v.image = v.src
         v.key = v.key || Math.random().toFixed(5)
       })
-      let picList = [...this.roomDetailModel.pictureList, ...list]
+      const picList = [...this.roomDetailModel.pictureList, ...list]
       this.$set(this.roomDetailModel, 'pictureList', picList)
     },
     /* 选择图片 */
@@ -357,8 +357,8 @@ export default {
       }
       const uploadList = []
       const readFileAsync = file => new Promise(resolve => {
-        let reader = new FileReader()
-        reader.onerror = function (e) {
+        const reader = new FileReader()
+        reader.onerror = function(e) {
           console.log('读取异常....')
         }
         reader.onload = e => {
@@ -367,7 +367,7 @@ export default {
             ? window.URL.createObjectURL(new Blob([e.target.result]))
             : e.target.result
           let imageName = ''
-          let type = 1
+          const type = 1
           if (!file.name) {
             imageName = ''
           } else {
@@ -388,7 +388,7 @@ export default {
       })
 
       const files = e.target.files
-      let picList = this.roomDetailModel.pictureList
+      const picList = this.roomDetailModel.pictureList
       if (picList.length + files.length > 15) {
         this.$message.error(`您已上传${picList.length}张图片，最多还能上传${15 - picList.length}张图片`)
         e.target.value = null
@@ -433,11 +433,11 @@ export default {
   watch: {
     modelVisible: {
       immediate: true,
-      handler: function (val) {
+      handler: function(val) {
         if (val) {
           this.type === 1 && this.$set(this.roomDetailModel, 'estateName', this.estateInfo.estateName)
-          let roomData = deepClone(this.$store.state.estateDetailData.estateRoomInfo)
-          roomData.tag = roomData.tag === 1 ? true : false
+          const roomData = deepClone(this.$store.state.estateDetailData.estateRoomInfo)
+          roomData.tag = roomData.tag === 1
           this.type === 2 && roomData.pictureList.forEach((item) => {
             item.src = item.imageUrl
             item.title = item.imageName
