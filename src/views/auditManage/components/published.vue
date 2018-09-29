@@ -166,23 +166,23 @@ export default {
     }
   },
   created() {
-    this.housingType = this.type;
+    this.housingType = this.type
     if (this.housingType == 1) {
-      this.$set(this.colModels[1], 'label', '精品公寓-房型');
-      this.colModels.splice(2, 1);
-      this.colModels.splice(-1, 1);
+      this.$set(this.colModels[1], 'label', '精品公寓-房型')
+      this.colModels.splice(2, 1)
+      this.colModels.splice(-1, 1)
     }
-    this.getCityList();
-    this.getGridData(this.pageItems);
+    this.getCityList()
+    this.getGridData(this.pageItems)
   },
   mounted() {
     /* 表格高度控制 */
-    let temp_height = document.body.clientHeight - 267;
-    this.tableHeight = temp_height > 300 ? temp_height : 300;
+    let temp_height = document.body.clientHeight - 267
+    this.tableHeight = temp_height > 300 ? temp_height : 300
     window.onresize = () => {
       return (() => {
-        temp_height = document.body.clientHeight - 267;
-        this.tableHeight = this.tableHeight = temp_height > 300 ? temp_height : 300;
+        temp_height = document.body.clientHeight - 267
+        this.tableHeight = this.tableHeight = temp_height > 300 ? temp_height : 300
       })()
     }
   },
@@ -201,33 +201,33 @@ export default {
         housingType: this.housingType
       }).then(response => {
         this.cityOptions = response.data.list.map((item) => ({ 'label': item.areaName, 'value': item.areaId }))
-      });
+      })
     },
     /* 查看图片 */
     showImage(picUrl) {
       if (!picUrl) {
-        return false;
+        return false
       }
-      this.showPicUrl = picUrl;
-      this.layer_showImage = true;
+      this.showPicUrl = picUrl
+      this.layer_showImage = true
     },
     handleSizeChange(val) {
-      this.pageItems.pageSize = val;
-      this.getGridData(this.pageItems);
+      this.pageItems.pageSize = val
+      this.getGridData(this.pageItems)
     },
     handleCurrentChange(val) {
-      this.pageItems.pageNo = val;
-      this.getGridData(this.pageItems);
+      this.pageItems.pageNo = val
+      this.getGridData(this.pageItems)
     },
     /* 列表渲染，数据请求 */
     getGridData(params) {
-      this.listLoading = true;
-      this.searchParams = Object.assign(deepClone(params), this.formData);
-      this.searchParams.housingType = this.housingType;
+      this.listLoading = true
+      this.searchParams = Object.assign(deepClone(params), this.formData)
+      this.searchParams.housingType = this.housingType
       queryPublishRoomListByPageApi(ObjectMap(this.searchParams)).then(response => {
-        this.tableData = response.data.list;
-        this.total = response.data.record;
-        this.listLoading = false;
+        this.tableData = response.data.list
+        this.total = response.data.record
+        this.listLoading = false
       })
     },
     clearForm() {
@@ -238,19 +238,19 @@ export default {
         subdistrictName: '',
         roomCode: '',
         keyword: ''
-      };
+      }
       this.pageItems = {
         pageNo: 1,
         pageSize: 20
-      };
-      this.getGridData(this.pageItems);
+      }
+      this.getGridData(this.pageItems)
     },
     searchParam() {
-      this.getGridData(this.pageItems);
+      this.getGridData(this.pageItems)
     },
     dialogClose() {
-      this.temp = {};
-      this.reviewData = {};
+      this.temp = {}
+      this.reviewData = {}
     },
     /* 查看详情 */
     handleView(index, row) {
@@ -259,37 +259,37 @@ export default {
       } : {
         roomId: row.roomId
       }
-      let params = deepClone(this.reviewData);
-      params.housingType = this.housingType;
+      const params = deepClone(this.reviewData)
+      params.housingType = this.housingType
       queryPublishRoomDetailApi(params).then(response => {
-        this.temp = response.data.result;
-        this.temp.reviewStatus = row.reviewStatus;
-        this.layer_showInfo = true;
-      });
+        this.temp = response.data.result
+        this.temp.reviewStatus = row.reviewStatus
+        this.layer_showInfo = true
+      })
     },
     saveReviewData(val) {
       if (val.checked != undefined) {
-        this.reviewData.checked = val.checked;
+        this.reviewData.checked = val.checked
       }
       if (val.ids) {
-        this.reviewData.ids = val.ids;
+        this.reviewData.ids = val.ids
       }
     },
     /* 保存 */
     saveData() {
       if (!this.reviewData.checked && !this.reviewData.ids) {
-        this.$message('该数据未修改');
-        this.layer_showInfo = false;
-        return false;
+        this.$message('该数据未修改')
+        this.layer_showInfo = false
+        return false
       }
-      this.reviewData.housingType = this.housingType;
+      this.reviewData.housingType = this.housingType
 
       /* 删除图片 */
       if (this.reviewData.ids) {
         batchRemoveRoomPictureApi(ObjectMap(this.reviewData)).then(response => {
           if (!this.reviewData.checked) {
-            this.layer_showInfo = false;
-            this.getGridData(this.pageItems);
+            this.layer_showInfo = false
+            this.getGridData(this.pageItems)
           }
           this.$notify({
             title: '成功',
@@ -297,26 +297,26 @@ export default {
             type: 'success',
             duration: 2000
           })
-        });
+        })
       }
       /* 下架 */
       if (this.reviewData.checked) {
-        this.reviewData.checked = '';
-        this.reviewData.ids = '';
+        this.reviewData.checked = ''
+        this.reviewData.ids = ''
         savePublishStatusApi(ObjectMap(this.reviewData)).then(response => {
-          this.layer_showInfo = false;
-          this.getGridData(this.pageItems);
+          this.layer_showInfo = false
+          this.getGridData(this.pageItems)
           this.$notify({
             title: '成功',
             message: '房源下架成功',
             type: 'success',
             duration: 2000
           })
-        });
+        })
       }
     }
   }
-};
+}
 </script>
 <style rel="stylesheet/scss" lang="scss">
 .dialog-image .el-dialog {

@@ -171,8 +171,8 @@
         if (!imageUrl) {
           return false
         }
-        let previewObj = {src: imageUrl}
-        let _img = new Image()
+        const previewObj = { src: imageUrl }
+        const _img = new Image()
         _img.src = imageUrl
         _img.onload = function() {
           previewObj.w = _img.width || 800

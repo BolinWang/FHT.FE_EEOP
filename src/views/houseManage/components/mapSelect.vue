@@ -132,7 +132,7 @@ export default {
         e.target.blur()
       }
     },
-    setAddress(item) {  // 选中公寓/小区，没有的话打开地图选择小区模态框
+    setAddress(item) { // 选中公寓/小区，没有的话打开地图选择小区模态框
       if (item) {
         if (item.cityId === '-1') {
           this.specificAddress = ''
@@ -161,41 +161,41 @@ export default {
         this.addressList = []
       }
     },
-    initBMap() {  // 初始化百度地图
-      let self = this
+    initBMap() { // 初始化百度地图
+      const self = this
       let selectAddr = ''
-      let cityArr = cityData.filter((n) => n.value === this.tempAreaCode[0])
+      const cityArr = cityData.filter((n) => n.value === this.tempAreaCode[0])
       if (cityArr[0] && cityArr[0].children) {
         selectAddr = cityArr[0].label
         this.mapSelectForm.city = selectAddr
         this.regionOptions = cityArr[0].children.filter((n) => n.value === this.tempAreaCode[1])[0].children
       }
-      let selectRegion = this.regionOptions.filter((n) => n.value === this.tempAreaCode[2])
+      const selectRegion = this.regionOptions.filter((n) => n.value === this.tempAreaCode[2])
       if (selectRegion[0]) {
         selectAddr += selectRegion[0].label
       }
 
-      self.map = new BMap.Map("bm-view", { minZoom: 13, maxZoom: 19 }) // 创建地图实例
+      self.map = new BMap.Map('bm-view', { minZoom: 13, maxZoom: 19 }) // 创建地图实例
       self.map.centerAndZoom(selectAddr || '杭州市', 15)
       self.map.enableScrollWheelZoom(true)
 
-      self.map.addEventListener("click", function (e) {
+      self.map.addEventListener('click', function(e) {
         self.setMapPosition(e.point)
       })
-      let options = {
-        onSearchComplete: function (results) {
+      const options = {
+        onSearchComplete: function(results) {
           // 判断状态是否正确
           if (self.local.getStatus() == BMAP_STATUS_SUCCESS) {
-            self.searchResult = [];
+            self.searchResult = []
             for (var i = 0; i < results.getCurrentNumPois(); i++) {
-              self.searchResult.push(results.getPoi(i));
+              self.searchResult.push(results.getPoi(i))
             }
           }
         }
       }
       self.local = new BMap.LocalSearch(self.map, options)
     },
-    searchPositionByKeywords() {  // 关键字搜索小区列表
+    searchPositionByKeywords() { // 关键字搜索小区列表
       this.local.search(this.searchKeywords)
     },
     setMapPosition(position, o) { // 设置地图中心位置
@@ -208,21 +208,21 @@ export default {
         }))
       }
 
-      let point = new BMap.Point(position.lng, position.lat)
-      let marker = new BMap.Marker(point)
-      let geoc = new BMap.Geocoder()
+      const point = new BMap.Point(position.lng, position.lat)
+      const marker = new BMap.Marker(point)
+      const geoc = new BMap.Geocoder()
       this.map.clearOverlays()
       this.map.addOverlay(marker)
       this.map.panTo(point)
       this.map.setZoom(15)
       geoc.getLocation(point, rs => {
-        let addressInfo = rs.addressComponents
+        const addressInfo = rs.addressComponents
         if (addressInfo.city !== this.mapSelectForm.city) {
           this.mapSelectForm.city = addressInfo.city
-          let provinceArr = cityData.filter((item) => item.label === addressInfo.province)
+          const provinceArr = cityData.filter((item) => item.label === addressInfo.province)
           if (provinceArr[0] && provinceArr[0].children) {
             this.tempAreaCode[0] = provinceArr[0].value
-            let cityArr = provinceArr[0].children.filter((n) => n.label === addressInfo.city)
+            const cityArr = provinceArr[0].children.filter((n) => n.label === addressInfo.city)
 
             if (cityArr[0] && cityArr[0].children) {
               this.tempAreaCode[1] = cityArr[0].value
@@ -247,7 +247,7 @@ export default {
           }
         })
         this.tempMapData = deepClone(this.mapSelectForm)
-      });
+      })
       this.$refs.popover.doShow()
     },
     closeMapModel(type) { // 关闭地图模态框
@@ -265,7 +265,7 @@ export default {
         this.mapModelVisible = false
       }
     },
-    addEstateSubdistrict(status) {  // 新增小区
+    addEstateSubdistrict(status) { // 新增小区
       status = status || 0
       let source = 1
       if (status === 0) {
@@ -277,7 +277,7 @@ export default {
       } else {
         source = 5
       }
-      let formOptions = {
+      const formOptions = {
         provinceId: this.tempAreaCode[0],
         cityId: this.tempAreaCode[1],
         regionId: this.tempAreaCode[2],
@@ -301,7 +301,7 @@ export default {
           } else {
             this.$emit('addressChange', {
               address: this.mapSelectForm.name + ' - ' + this.mapSelectForm.address,
-              regionAddressId: data.regionAddressId,
+              regionAddressId: data.regionAddressId
             })
           }
         } else {
@@ -343,11 +343,11 @@ export default {
     },
     value: {
       immediate: true,
-      handler: function (val) {
+      handler: function(val) {
         this.specificAddress = val
       }
     },
-    'mapSelectForm.region': function (val, oldVal) {
+    'mapSelectForm.region': function(val, oldVal) {
       if (val !== oldVal && val) {
         this.tempAreaCode[2] = val
       }

@@ -49,7 +49,7 @@ export default {
   },
   methods: {
     changeType() {
-      this.from.overdueType == this.orderType ? this.from.overdueReason = this.orderReason:this.from.overdueReason = ''
+      this.from.overdueType == this.orderType ? this.from.overdueReason = this.orderReason : this.from.overdueReason = ''
     },
     closeDialog() {
       this.dialogFormVisible = false
@@ -62,14 +62,14 @@ export default {
           message: '请选择逾期类别',
           type: 'success'
         })
-            return false
-        }
+        return false
+      }
       if (this.from.overdueType != 1 && params.overdueReason == undefined) {
         this.$message({
           message: '请填写逾期原因',
           type: 'success'
         })
-          } else{
+      } else {
         const that = this
         leaseBillApi(params).then(response => {
           that.$emit('searchCallback')

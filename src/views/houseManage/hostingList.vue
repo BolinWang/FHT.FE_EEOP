@@ -131,12 +131,12 @@
 </template>
 
 <script>
-import { debounce, deepClone } from "@/utils"
+import { debounce, deepClone } from '@/utils'
 import hostingRoomDetail from './components/hostingRoomDetail'
 import rentPayWay from './components/rentPayWay'
-import areaSelect from "@/components/AreaSelect"
+import areaSelect from '@/components/AreaSelect'
 import RoomListSelecter from '@/components/RoomListSelecter'
-import GridUnit from "@/components/GridUnit/grid"
+import GridUnit from '@/components/GridUnit/grid'
 import { hostingHouseListApi, hostingRoomDetailApi, hostingRoomRentTypeApi, saveEstateRoomRentPayWayApi, hostingCopyItemsRoomsApi, hostingSaveCopyItemsApi, hostingSaveHouseInfoApi, hostingEditHouseInfoApi, changeRoomStatusApi, estateDeleteEstateApi } from '@/api/houseManage'
 export default {
   name: 'hostingList',
@@ -162,7 +162,7 @@ export default {
       return status || '未知'
     },
     setRoomStatus(val, statusList) {
-      let status = statusList.filter(item => item.value === val)
+      const status = statusList.filter(item => item.value === val)
       return status.length ? status[0].label : ''
     }
   },
@@ -183,8 +183,8 @@ export default {
       houseRentTypeList: ['整租', '合租'],
       activeName: '整租',
       tableHeight: 400,
-      houstingListUrl: "/market/fangyuan",
-      method: "queryHostingList",
+      houstingListUrl: '/market/fangyuan',
+      method: 'queryHostingList',
       selectedRooms: [],
       houseTypeList: [
         { label: '普通', value: 1 },
@@ -230,38 +230,38 @@ export default {
         }
       ],
       colModels: [
-        { label: '#', slotName: "index", fixed: 'left', width: 50, align: 'center' },
+        { label: '#', slotName: 'index', fixed: 'left', width: 50, align: 'center' },
         {
-          prop: "checkHoleRooms",
-          label: "",
+          prop: 'checkHoleRooms',
+          label: '',
           slotName: 'checkHoleRooms',
           width: 50
         },
-        { prop: "orgName", label: "组织名称", width: 200 },
-        { prop: "addrRegionName", label: "房源位置", width: 180 },
-        { prop: "roomDetailAddress", label: "公寓/小区-房间", width: 180 },
-        { prop: "tags", label: "房源类型", slotName: "tags", width: 130 },
+        { prop: 'orgName', label: '组织名称', width: 200 },
+        { prop: 'addrRegionName', label: '房源位置', width: 180 },
+        { prop: 'roomDetailAddress', label: '公寓/小区-房间', width: 180 },
+        { prop: 'tags', label: '房源类型', slotName: 'tags', width: 130 },
         { slot: 'selection' },
-        { prop: "roomName", label: "房间" },
+        { prop: 'roomName', label: '房间' },
         {
-          prop: "roomStatus",
-          label: "房间状态",
-          slotName: "roomStatus",
+          prop: 'roomStatus',
+          label: '房间状态',
+          slotName: 'roomStatus',
           width: 150
         },
-        { prop: "roomCode", label: "平台房源编码" },
+        { prop: 'roomCode', label: '平台房源编码' },
         {
-          prop: "operate",
-          label: "设置",
-          slotName: "operateHosting",
-          width: "340",
+          prop: 'operate',
+          label: '设置',
+          slotName: 'operateHosting',
+          width: '340',
           fixed: 'right'
         },
-        { prop: "provider", label: "房源提供者", width: 100 },
+        { prop: 'provider', label: '房源提供者', width: 100 },
         {
-          prop: "operateRecord",
-          label: "操作记录",
-          slotName: "operateRecordStr",
+          prop: 'operateRecord',
+          label: '操作记录',
+          slotName: 'operateRecordStr',
           width: 220
         }
       ],
@@ -326,11 +326,10 @@ export default {
   },
   watch: {
     roomSearchForm: {
-      handler: function (val) {
+      handler: function(val) {
         if (this.roomSearchForm.cityArea && this.roomSearchForm.cityArea[1]) {
           this.roomSearchForm.cityId = roomSearchForm.cityArea[1]
-        }
-        else {
+        } else {
           this.roomSearchForm.cityId = ''
         }
       }
@@ -361,7 +360,7 @@ export default {
         orgName: '',
         subdistrictName: '',
         roomCode: '',
-        houseRentType: this.activeName === "整租" ? 1 : 2
+        houseRentType: this.activeName === '整租' ? 1 : 2
       }
     },
     handleCheckHoleRooms(row, index) {
@@ -372,7 +371,7 @@ export default {
     },
     // 查询/清空
     searchHostingHouseList(type) {
-      if (type == "clear") {
+      if (type == 'clear') {
         for (const key in this.roomSearchForm) {
           this.roomSearchForm[key] = key === 'cityArea' ? [] : ''
         }
@@ -380,24 +379,24 @@ export default {
       this.searchParam()
     },
     handleSelectChange(selection, row) {
-      let clickIndex = this.$refs.hostingHouseList.tableData.indexOf(row)
+      const clickIndex = this.$refs.hostingHouseList.tableData.indexOf(row)
       this.tableCheckboxList[clickIndex].isChecked = !this.tableCheckboxList[clickIndex].isChecked
       if (this.tableCheckboxList[clickIndex].isChecked) {
-        let aaa = this.tableCheckboxList.filter(item => item.fangyuanCode === row.fangyuanCode && item.isChecked)
+        const aaa = this.tableCheckboxList.filter(item => item.fangyuanCode === row.fangyuanCode && item.isChecked)
         if (aaa.length === this.tableCheckboxList[clickIndex].columnLength) {
-          let curIndex = this.tableCheckboxList.indexOf(aaa[0])
+          const curIndex = this.tableCheckboxList.indexOf(aaa[0])
           this.checkedList[curIndex] = true
         }
       } else {
-        let bbb = this.tableCheckboxList.filter(item => item.fangyuanCode === row.fangyuanCode)
-        let norIndex = this.tableCheckboxList.indexOf(bbb[0])
+        const bbb = this.tableCheckboxList.filter(item => item.fangyuanCode === row.fangyuanCode)
+        const norIndex = this.tableCheckboxList.indexOf(bbb[0])
         this.checkedList[norIndex] = false
       }
     },
     handleSelectionChange(list) {
       this.selectedRooms = list
       if (list.length === this.checkedList.length) {
-        let checkedList = []
+        const checkedList = []
         this.checkedList.forEach((item, index) => {
           this.tableCheckboxList[index].isChecked = true
           checkedList.push(true)
@@ -405,7 +404,7 @@ export default {
         this.$set(this, 'checkedList', checkedList)
       }
       if (list.length === 0) {
-        let checkedList = []
+        const checkedList = []
         this.checkedList.forEach((item, index) => {
           this.tableCheckboxList[index].isChecked = false
           checkedList.push(false)
@@ -426,8 +425,7 @@ export default {
           roomStatus: command,
           resource: this.roomSearchForm.houseRentType
         }
-      }
-      else {
+      } else {
         roomStatusParams = command
       }
       changeRoomStatusApi(roomStatusParams).then((res) => {
@@ -446,7 +444,7 @@ export default {
           } else {
             const status = roomStatusParams.roomStatus === 2 ? '空房' : '已出租无租客'
             message = {
-              message: `成功${res.data.success}个房间，失败${res.data.fail}个房间，${res.data.already}个房间已经是${status}状态`,
+              message: `成功${res.data.success}个房间，失败${res.data.fail}个房间，${res.data.already}个房间已经是${status}状态`
             }
           }
           this.$message(message)
@@ -459,7 +457,7 @@ export default {
       const h = this.$createElement
       const message = this.roomSearchForm.houseRentType === 1 ? '' : '若删除单个房间请在【编辑房间】里面删除'
       this.$msgbox({
-        title: "确认消息",
+        title: '确认消息',
         message: h('p', null, [
           h('span', null, '确定删除整套房间吗？ '),
           h('span', { style: 'color: red' }, message)
@@ -471,7 +469,7 @@ export default {
         estateDeleteEstateApi({
           fangyuanCode: row.fangyuanCode
         }).then((res) => {
-          if (res.code === "0") {
+          if (res.code === '0') {
             this.$message({
               message: res.message,
               type: 'success'
@@ -490,8 +488,7 @@ export default {
               rowspan: 0,
               colspan: 0
             }
-          }
-          else {
+          } else {
             return {
               rowspan: row.spanArr,
               colspan: 1
@@ -502,16 +499,16 @@ export default {
     },
     // 表格数据
     dataHandler(data) {
-      let tempArr = []
+      const tempArr = []
       this.tableCheckboxList = []
       this.checkedList = []
-      data = data.filter( item => item.roomList.length > 0 )
+      data = data.filter(item => item.roomList.length > 0)
       data.forEach((item, index) => {
         item.roomList.forEach((v, i) => {
           if (this.activeName === '整租') {
             v.roomName = '整套房间'
           }
-          let row = {
+          const row = {
             ...item,
             ...v
           }
@@ -537,7 +534,7 @@ export default {
         this.isEditFlag = false
         this.roomDetailModelVisible = true
         this.$nextTick(() => {
-          let roomDetailData = {
+          const roomDetailData = {
             areaCode: ['', '', ''],
             provinceId: null,
             cityId: null,
@@ -589,11 +586,11 @@ export default {
         }).then((res) => {
           if (res.code === '0') {
             this.isEditFlag = true
-            let roomDetailInfo = res.data
+            const roomDetailInfo = res.data
             roomDetailInfo.areaCode = [roomDetailInfo.provinceId, roomDetailInfo.cityId, roomDetailInfo.regionId]
             roomDetailInfo.address = roomDetailInfo.subdistrictName ? (roomDetailInfo.subdistrictName + ' - ' + roomDetailInfo.subdistrictAddress) : ''
             roomDetailInfo.facilityItemsList = roomDetailInfo.facilityItems ? roomDetailInfo.facilityItems.split(',') : []
-            roomDetailInfo.tag = roomDetailInfo.tag === 1 ? true : false
+            roomDetailInfo.tag = roomDetailInfo.tag === 1
             roomDetailInfo.houseDesc = roomDetailInfo.houseDesc || ''
             if (roomDetailInfo.houseRentType === 1) {
               roomDetailInfo.pictures = roomDetailInfo.pictures || []
@@ -620,11 +617,11 @@ export default {
         this.roomDetailModelVisible = false
         return false
       }
-      let roomDetailData = this.$refs.hostingRoomDetail.returnRoomDetailData()
+      const roomDetailData = this.$refs.hostingRoomDetail.returnRoomDetailData()
       if (!roomDetailData) {
         return false
       }
-      let api = roomDetailData.isEditFlag ? hostingEditHouseInfoApi : hostingSaveHouseInfoApi
+      const api = roomDetailData.isEditFlag ? hostingEditHouseInfoApi : hostingSaveHouseInfoApi
       console.log(roomDetailData)
       api({
         hostingHouseInfo: JSON.stringify(roomDetailData)
@@ -662,10 +659,10 @@ export default {
       const differentFlag = this.$refs.hostingRoomDetail.checkEditFlag()
       if (differentFlag) {
         this.$confirm('您还有数据未保存, 确认关闭吗？')
-        .then(_ => {
-          done()
-        })
-        .catch(_ => {})
+          .then(_ => {
+            done()
+          })
+          .catch(_ => {})
       } else {
         done()
       }
@@ -696,8 +693,8 @@ export default {
     },
     // 检查有无修改交租方式
     checkRentPaySaveStatus() {
-      let activeTabName = this.activeRentPayTabName
-      let list = this.$refs.rentPayWay[Number(this.tempRentPayTabName)].returnRentPayList()
+      const activeTabName = this.activeRentPayTabName
+      const list = this.$refs.rentPayWay[Number(this.tempRentPayTabName)].returnRentPayList()
       if (!list || JSON.stringify(this.tempRentPayList) != JSON.stringify(list)) {
         this.$nextTick(() => {
           this.activeRentPayTabName = this.tempRentPayTabName
@@ -719,7 +716,7 @@ export default {
     },
     // 保存交租方式
     saveEstateRoomRentPayWay() {
-      let list = this.activeName === '整租' ? this.$refs.rentPayWay.returnRentPayList() : this.$refs.rentPayWay[Number(this.activeRentPayTabName)].returnRentPayList()
+      const list = this.activeName === '整租' ? this.$refs.rentPayWay.returnRentPayList() : this.$refs.rentPayWay[Number(this.activeRentPayTabName)].returnRentPayList()
       if (!list) {
         this.$message.error(`请填写完交租方式再保存`)
         return false
@@ -734,11 +731,11 @@ export default {
             type: 'success'
           })
           if (this.activeName === '合租') {
-            let list = this.$refs.rentPayWay[Number(this.tempRentPayTabName)].returnRentPayList()
+            const list = this.$refs.rentPayWay[Number(this.tempRentPayTabName)].returnRentPayList()
             this.rentPayList[Number(this.tempRentPayTabName)].roomRentTypeList = deepClone(list)
             this.tempRentPayList = deepClone(list)
           }
-          let rentPayList = this.activeName === '整租' ? this.$refs.rentPayWay : this.$refs.rentPayWay[Number(this.activeRentPayTabName)]
+          const rentPayList = this.activeName === '整租' ? this.$refs.rentPayWay : this.$refs.rentPayWay[Number(this.activeRentPayTabName)]
           rentPayList.$refs.financeRentPayForm.clearValidate()
           rentPayList.$refs.defaultRentPayForm.clearValidate()
           // this.rentPayModelVisible = false
@@ -752,7 +749,7 @@ export default {
         fangyuanCode: row.fangyuanCode
       }).then((res) => {
         this.copyItemsRooms = res.data
-        let selectedRows = this.$refs.hostingHouseList.tableData.filter((item) => item.fangyuanCode === row.fangyuanCode)
+        const selectedRows = this.$refs.hostingHouseList.tableData.filter((item) => item.fangyuanCode === row.fangyuanCode)
         this.roomSelectList = selectedRows ? selectedRows[0].roomList : []
         this.copyItemsParams.rentTypeRoomCode = this.roomSelectList[0].roomCode
         this.copyItemsParams.pictureRoomCode = this.roomSelectList[0].roomCode
@@ -763,7 +760,7 @@ export default {
     },
     // 保存复制到
     saveCopyItems() {
-      let params = {
+      const params = {
         fromFangyuanCode: this.curFangyuanCode,
         toFangyuanCodes: this.$refs.copyItemTo.returnCheckedList(),
         items: this.checkedCopyList
@@ -794,16 +791,16 @@ export default {
     }
   },
   mounted() {
-    let changeTableSize = debounce(() => {
+    const changeTableSize = debounce(() => {
       this.tableHeight = Math.max(document.body.clientHeight - 340, 250)
     }, 100)
     changeTableSize()
-    window.addEventListener("resize", changeTableSize)
+    window.addEventListener('resize', changeTableSize)
   },
   beforeDestroy() {
-    let dialog = document.querySelectorAll('body > .el-dialog__wrapper')
+    const dialog = document.querySelectorAll('body > .el-dialog__wrapper')
     if (dialog) {
-      [].forEach.call(dialog, function (item, index) {
+      [].forEach.call(dialog, function(item, index) {
         document.body.removeChild(item)
       })
     }

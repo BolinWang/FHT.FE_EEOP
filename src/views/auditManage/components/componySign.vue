@@ -53,7 +53,7 @@ export default {
       default: function() {
         return {}
       }
-    },
+    }
   },
   filters: {
     statusFilter(status) {
@@ -65,7 +65,7 @@ export default {
       return statusMap[status] || 'info'
     },
     statusStrFilter(status) {
-      const statusStrData = ['待审核', '审核通过', '审核不通过'];
+      const statusStrData = ['待审核', '审核通过', '审核不通过']
       return statusStrData[status - 1] || '待审核'
     }
   },
@@ -87,14 +87,14 @@ export default {
   watch: {
     dataSign: {
       handler(val) {
-        this.data_detail = val;
-        this.status = '';
-        this.reject_remark = '';
+        this.data_detail = val
+        this.status = ''
+        this.reject_remark = ''
       },
       deep: true
     }
   }
-};
+}
 </script>
 <style rel="stylesheet/scss" lang="scss">
 .el-tag {

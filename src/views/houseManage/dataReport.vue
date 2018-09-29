@@ -96,16 +96,16 @@ export default {
     }
   },
   created() {
-    this.getGridData(this.pageItems);
+    this.getGridData(this.pageItems)
   },
   mounted() {
     /* 表格高度控制 */
-    let temp_height = document.body.clientHeight - 152;
-    this.tableHeight = temp_height > 300 ? temp_height : 300;
+    let temp_height = document.body.clientHeight - 152
+    this.tableHeight = temp_height > 300 ? temp_height : 300
     window.onresize = () => {
       return (() => {
-        temp_height = document.body.clientHeight - 152;
-        this.tableHeight = this.tableHeight = temp_height > 300 ? temp_height : 300;
+        temp_height = document.body.clientHeight - 152
+        this.tableHeight = this.tableHeight = temp_height > 300 ? temp_height : 300
       })()
     }
   },
@@ -125,45 +125,45 @@ export default {
   methods: {
     /* 查询列表 */
     handleSizeChange(val) {
-      this.pageItems.pageSize = val;
-      this.getGridData(this.pageItems);
+      this.pageItems.pageSize = val
+      this.getGridData(this.pageItems)
     },
     handleCurrentChange(val) {
-      this.pageItems.pageNo = val;
-      this.getGridData(this.pageItems);
+      this.pageItems.pageNo = val
+      this.getGridData(this.pageItems)
     },
     clearForm() {
-      this.dateTime = [];
-      this.textareaVal = '';
-      this.formData = {};
+      this.dateTime = []
+      this.textareaVal = ''
+      this.formData = {}
       this.pageItems = {
         pageNo: 1,
         pageSize: 20
       }
-      this.getGridData(this.pageItems);
+      this.getGridData(this.pageItems)
     },
     /* 导出 */
     handleExport() {
       this.downloadLoading = true
       this.searchParams = Object.assign({
         pageNo: 1,
-        pageSize: 999999,
-      }, this.formData);
+        pageSize: 999999
+      }, this.formData)
       marketOrgHouseReportListApi(ObjectMap(this.searchParams)).then(response => {
         response.data.list.map((item, index) => {
-          item.index = index * 1 + 1;
+          item.index = index * 1 + 1
         })
         require.ensure([], () => {
           const { export_json_to_excel } = require('@/vendor/Export2Excel')
           const tHeader = [
-            "序号", "创建日期", "组织名称", "组织缩写名", "组织类型", "手机号码", "法人姓名", "公寓数", "公寓房间数",
-            "分散式套数（非金融）", "分散式间数（非金融）", "分散式套数（金融）", "分散式间数 (金融）"
-          ];
+            '序号', '创建日期', '组织名称', '组织缩写名', '组织类型', '手机号码', '法人姓名', '公寓数', '公寓房间数',
+            '分散式套数（非金融）', '分散式间数（非金融）', '分散式套数（金融）', '分散式间数 (金融）'
+          ]
           const filterVal = [
             'index', 'orgGmtCreateStr', 'organizationName', 'displayName', 'orgTypeName',
             'orgContactMobile', 'orgLegalPersonName', 'estateCount', 'estateRoomCount', 'houseCount',
             'houseRoomCount', 'financehouseCount', 'financeRoomCount'
-          ];
+          ]
           const data = this.formatJson(filterVal, response.data.list || [])
           export_json_to_excel(tHeader, data, new Date().getTime(), '组织房源信息表')
           this.downloadLoading = false
@@ -176,32 +176,32 @@ export default {
       }))
     },
     handleSearchParams() {
-      this.getGridData(this.pageItems);
+      this.getGridData(this.pageItems)
     },
     /* 列表渲染，数据请求 */
     getGridData(params) {
-      this.listLoading = true;
-      this.searchParams = Object.assign(deepClone(params), this.formData);
+      this.listLoading = true
+      this.searchParams = Object.assign(deepClone(params), this.formData)
       marketOrgHouseReportListApi(ObjectMap(this.searchParams)).then(response => {
-        this.tableData = response.data.list;
-        this.total = response.data.record;
-        this.listLoading = false;
+        this.tableData = response.data.list
+        this.total = response.data.record
+        this.listLoading = false
       })
     }
   },
   watch: {
     dateTime(val) {
-      val = val || [];
-      this.formData.startDate = val[0] ? parseTime(val[0]) : '';
-      this.formData.endDate = val[1] ? parseTime(val[1]) : '';
+      val = val || []
+      this.formData.startDate = val[0] ? parseTime(val[0]) : ''
+      this.formData.endDate = val[1] ? parseTime(val[1]) : ''
     },
     textareaVal(val) {
       if (val != '') {
-        this.formData.orgNames = val.split(/[\n|\r\n|\r]/gi).join(',');
+        this.formData.orgNames = val.split(/[\n|\r\n|\r]/gi).join(',')
       }
     }
   }
-};
+}
 </script>
 <style rel="stylesheet/scss" lang="scss">
 .el-textarea textarea {

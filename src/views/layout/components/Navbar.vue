@@ -113,16 +113,16 @@ export default {
   data() {
     const validateName = (rule, value, callback) => {
       if (!value) {
-        callback(new Error('请输入用户名'));
+        callback(new Error('请输入用户名'))
       } else {
-        callback();
+        callback()
       }
     }
     const validatePass = (rule, value, callback) => {
       if (value && value.length < 6) {
-        callback(new Error('密码不能小于6位'));
+        callback(new Error('密码不能小于6位'))
       } else {
-        callback();
+        callback()
       }
     }
     return {
@@ -146,7 +146,7 @@ export default {
     clearInterval(this.intervalId)
     this.getMessageInfos()
   },
-  destroyed () {
+  destroyed() {
     clearInterval(this.intervalId)
   },
   computed: {
@@ -160,7 +160,7 @@ export default {
   methods: {
     // 一分钟查询一次消息
     getMessageInfos() {
-      let _this = this
+      const _this = this
       _this.intervalId = setInterval(() => {
         _this.getMessageQuantity()
       }, 60000)
@@ -176,11 +176,11 @@ export default {
       })
     },
     routerTo(path, type) {
-       this.$router.push({
-          path,
-          query: { type: type }
-       })
-     },
+      this.$router.push({
+        path,
+        query: { type: type }
+      })
+    },
 
     toggleSideBar() {
       this.$store.dispatch('ToggleSideBar')
@@ -194,7 +194,7 @@ export default {
       this.$refs.ruleForm.validate(valid => {
         if (valid) {
           saveSelfDetailApi(ObjectMap(this.ruleForm)).then(response => {
-            this.layer_showUserInfo = false;
+            this.layer_showUserInfo = false
             this.$store.dispatch('LogOut').then(() => {
               location.reload() // 为了重新实例化vue-router对象 避免bug
             })

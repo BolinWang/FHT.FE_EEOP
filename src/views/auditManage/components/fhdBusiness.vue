@@ -148,33 +148,33 @@ import Preview from '@/components/Preview/Preview'
 import { ObjectMap, deepClone } from '@/utils'
 import noPic from '@/assets/noPic.jpg'
 import store from '@/store'
-let bankList = [
-  { value: "01000000", name: "邮储银行" },
-  { value: "01020000", name: "工商银行" },
-  { value: "01030000", name: "农业银行" },
-  { value: "01040000", name: "中国银行" },
-  { value: "01050000", name: "建设银行" },
-  { value: "03010000", name: "交通银行" },
-  { value: "03020000", name: "中信银行" },
-  { value: "03030000", name: "光大银行" },
-  { value: "03040000", name: "华夏银行" },
-  { value: "03050000", name: "民生银行" },
-  { value: "03060000", name: "广发银行" },
-  { value: "03070000", name: "平安银行" },
-  { value: "03080000", name: "招商银行" },
-  { value: "03090000", name: "兴业银行" },
-  { value: "03100000", name: "浦发银行" },
-  { value: "03160000", name: "浙商银行" },
-  { value: "04012900", name: "上海银行" },
-  { value: "04031000", name: "北京银行" },
-  { value: "04083320", name: "宁波银行" },
-  { value: "04233310", name: "杭州银行" },
-  { value: "04256020", name: "东莞银行" },
-  { value: "04375850", name: "珠海华润" },
-  { value: "04791920", name: "包商银行" },
-  { value: "05083000", name: "江苏银行" },
-  { value: "64135810", name: "广州银行" },
-  { value: "64895910", name: "广东南粤" }
+const bankList = [
+  { value: '01000000', name: '邮储银行' },
+  { value: '01020000', name: '工商银行' },
+  { value: '01030000', name: '农业银行' },
+  { value: '01040000', name: '中国银行' },
+  { value: '01050000', name: '建设银行' },
+  { value: '03010000', name: '交通银行' },
+  { value: '03020000', name: '中信银行' },
+  { value: '03030000', name: '光大银行' },
+  { value: '03040000', name: '华夏银行' },
+  { value: '03050000', name: '民生银行' },
+  { value: '03060000', name: '广发银行' },
+  { value: '03070000', name: '平安银行' },
+  { value: '03080000', name: '招商银行' },
+  { value: '03090000', name: '兴业银行' },
+  { value: '03100000', name: '浦发银行' },
+  { value: '03160000', name: '浙商银行' },
+  { value: '04012900', name: '上海银行' },
+  { value: '04031000', name: '北京银行' },
+  { value: '04083320', name: '宁波银行' },
+  { value: '04233310', name: '杭州银行' },
+  { value: '04256020', name: '东莞银行' },
+  { value: '04375850', name: '珠海华润' },
+  { value: '04791920', name: '包商银行' },
+  { value: '05083000', name: '江苏银行' },
+  { value: '64135810', name: '广州银行' },
+  { value: '64895910', name: '广东南粤' }
 ]
 export default {
   name: 'fhdBusiness',
@@ -199,7 +199,7 @@ export default {
       if (!val) {
         return ''
       }
-      let filterBank = bankList.filter((item) => item.value === val)
+      const filterBank = bankList.filter((item) => item.value === val)
       return filterBank.length > 0 ? filterBank[0].name : ''
     },
     picListFilter(list = []) {
@@ -207,14 +207,14 @@ export default {
         return []
       }
       return list.map((src) => {
-        return {src}
+        return { src }
       })
     },
     filterNum(val) {
       if (!val) {
         return ''
       }
-      return val.replace(/\s/g,'').replace(/\D/g,'').replace(/(\d{4})(?=\d)/g,"$1 ")
+      return val.replace(/\s/g, '').replace(/\D/g, '').replace(/(\d{4})(?=\d)/g, '$1 ')
     },
     sexFilter(type) {
       const sexMap = ['先生', '女士']

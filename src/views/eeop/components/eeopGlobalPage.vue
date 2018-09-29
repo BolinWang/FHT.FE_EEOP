@@ -135,25 +135,25 @@
 import draggable from 'vuedraggable'
 import { parseTime, ObjectMap, deepClone } from '@/utils'
 import { validateURL } from '@/utils/validate'
-import { getGridApi, saveDataApi } from '@/api/eeop';
+import { getGridApi, saveDataApi } from '@/api/eeop'
 
 /* 阻止原生dragale打开新页面 */
 document.body.ondrop = function(event) {
-  event.preventDefault();
-  event.stopPropagation();
+  event.preventDefault()
+  event.stopPropagation()
 }
 
 const defaultOptions = [
   { value: 1, label: '待上线' },
   { value: 2, label: '已上线' },
   { value: 3, label: '已下线' }
-];
+]
 const eeopTypeMap = {
   'activety': '精彩活动',
   'interview': '麦友专访',
   'advertis': '推广广告页',
   'banner': '首页焦点图'
-};
+}
 
 export default {
   name: 'eeopGlobalPage',
@@ -179,18 +179,18 @@ export default {
       return statusMap[status] || 'success'
     },
     statusStrFilter(status) {
-      const statusStrData = ['待上线', '已上线', '已下线'];
+      const statusStrData = ['待上线', '已上线', '已下线']
       return statusStrData[status - 1] || '已上线'
     }
   },
   data() {
     const validateUrl = (rule, value, callback) => {
       if (!validateURL(value)) {
-        callback(new Error('请输入合法的链接'));
+        callback(new Error('请输入合法的链接'))
       } else {
-        callback();
+        callback()
       }
-    };
+    }
     return {
       selectData: {
         options: [],
@@ -199,11 +199,11 @@ export default {
       nowOnline: false,
       nowOffline: false,
       restaurants: [
-        { "value": "https://www.mdguanjia.com" },
-        { "value": "http://www.memorhome.com" },
-        { "value": "http://www.52mailin.com" },
-        { "value": "https://" },
-        { "value": "http://" }
+        { 'value': 'https://www.mdguanjia.com' },
+        { 'value': 'http://www.memorhome.com' },
+        { 'value': 'http://www.52mailin.com' },
+        { 'value': 'https://' },
+        { 'value': 'http://' }
       ],
       actionBaseUrl: process.env.BASE_API,
       colModels: [
@@ -282,68 +282,68 @@ export default {
   },
   created() {
     /* 判断父组件的eeopType */
-    this.selectData.options = [...defaultOptions];
-    this.$set(this.colModels[0], 'prop', this.eeopType + 'Status');
-    this.eeopTypeStr = eeopTypeMap[this.eeopType];
+    this.selectData.options = [...defaultOptions]
+    this.$set(this.colModels[0], 'prop', this.eeopType + 'Status')
+    this.eeopTypeStr = eeopTypeMap[this.eeopType]
     switch (this.eeopType) {
       case 'interview':
-        let _optionList = [...defaultOptions];
-        _optionList.pop();
-        this.selectData.options = _optionList;
-        this.$set(this.colModels[0], 'prop', 'interviewStatus');
-        this.$set(this.colModels[1], 'label', '麦友昵称');
-        this.colModels.splice(5, 1);
-        this.colModels.splice(2, 0, { prop: 'estateName', label: '公寓', width: 200 });
-        this.uploadTips = '请上传1024 * 1024的jpg/png图片，且不超过1Mb';
+        const _optionList = [...defaultOptions]
+        _optionList.pop()
+        this.selectData.options = _optionList
+        this.$set(this.colModels[0], 'prop', 'interviewStatus')
+        this.$set(this.colModels[1], 'label', '麦友昵称')
+        this.colModels.splice(5, 1)
+        this.colModels.splice(2, 0, { prop: 'estateName', label: '公寓', width: 200 })
+        this.uploadTips = '请上传1024 * 1024的jpg/png图片，且不超过1Mb'
         /* api url */
         this.urlPathObj = {
           urlPath: 'interview',
           queryMethod: 'queryInterviewListByPage',
           saveMethod: 'saveInterview'
         }
-        break;
+        break
       case 'advertis':
-        this.$set(this.colModels[0], 'prop', 'interviewStatus');
-        this.uploadTips = '请上传1080 * 1920的jpg/png图片，且不超过1Mb';
-        this.isShowSortApp = false;
+        this.$set(this.colModels[0], 'prop', 'interviewStatus')
+        this.uploadTips = '请上传1080 * 1920的jpg/png图片，且不超过1Mb'
+        this.isShowSortApp = false
         /* api url */
         this.urlPathObj = {
           urlPath: 'advertisement',
           queryMethod: 'queryAdvertisementListByPage',
           saveMethod: 'saveAdvertisement'
         }
-        break;
+        break
       case 'activety':
-        this.$set(this.colModels[0], 'prop', 'activityStatus');
-        this.uploadTips = '请上传480 * 240的jpg/png图片，且不超过500kb';
+        this.$set(this.colModels[0], 'prop', 'activityStatus')
+        this.uploadTips = '请上传480 * 240的jpg/png图片，且不超过500kb'
         /* api url */
         this.urlPathObj = {
           urlPath: 'activity',
           queryMethod: 'queryActivityListByPage',
           saveMethod: 'saveActivity'
         }
-        break;
+        break
       case 'banner':
-        this.$set(this.colModels[0], 'prop', 'focusPictureStatus');
-        this.uploadTips = '请上传1080 * 432的jpg/png图片，且不超过500kb';
+        this.$set(this.colModels[0], 'prop', 'focusPictureStatus')
+        this.uploadTips = '请上传1080 * 432的jpg/png图片，且不超过500kb'
         /* api url */
         this.urlPathObj = {
           urlPath: 'focus',
           queryMethod: 'queryFocusPictureListByPage',
           saveMethod: 'saveFocusPicture'
         }
-        break;
+        break
     }
-    this.getGridData(this.pageItems);
+    this.getGridData(this.pageItems)
   },
   mounted() {
     /* 表格高度控制 */
-    let temp_height = document.body.clientHeight - 200;
-    this.tableHeight = temp_height > 300 ? temp_height : 300;
+    let temp_height = document.body.clientHeight - 200
+    this.tableHeight = temp_height > 300 ? temp_height : 300
     window.onresize = () => {
       return (() => {
-        temp_height = document.body.clientHeight - 200;
-        this.tableHeight = this.tableHeight = temp_height > 300 ? temp_height : 300;
+        temp_height = document.body.clientHeight - 200
+        this.tableHeight = this.tableHeight = temp_height > 300 ? temp_height : 300
       })()
     }
   },
@@ -359,7 +359,7 @@ export default {
         animation: 0,
         group: 'description',
         ghostClass: 'ghost'
-      };
+      }
     },
     textNumber() {
       return (50 - this.temp.introduction.length) < 0 ? 0 : (50 - this.temp.introduction.length)
@@ -368,11 +368,11 @@ export default {
   methods: {
     /* 快速输入建议 */
     querySearch(queryString, cb) {
-      let restaurants = this.restaurants;
-      cb(restaurants);
+      const restaurants = this.restaurants
+      cb(restaurants)
     },
     setSortFirst(index) {
-      let tempSortObj = this.sort_tableData.splice(index, 1);
+      const tempSortObj = this.sort_tableData.splice(index, 1)
       this.sort_tableData.unshift(tempSortObj[0])
     },
     /* 上传图片 */
@@ -380,93 +380,93 @@ export default {
       const isLt500K = file.size / 1024 / 1024 <= 0.5
       const isLt1M = file.size / 1024 / 1024 <= 1
       if (['image/jpeg', 'image/jpg', 'image/png'].indexOf(file.type) == -1) {
-        this.$message.error('请上传jpg/png的图片');
-        return false;
+        this.$message.error('请上传jpg/png的图片')
+        return false
       }
       if (this.eeopType == 'activety' || this.eeopType == 'banner') {
         if (!isLt500K) {
-          this.$message.error('请上传500Kb大小以内的图片');
-          return false;
+          this.$message.error('请上传500Kb大小以内的图片')
+          return false
         }
       } else {
         if (!isLt1M) {
-          this.$message.error('请上传1Mb大小以内的图片');
-          return false;
+          this.$message.error('请上传1Mb大小以内的图片')
+          return false
         }
       }
     },
     pictureRemove(file, fileList, picType) {
       console.log('remove')
-      this.showPicUrl = '';
+      this.showPicUrl = ''
       if (picType) {
-        this[picType] = '';
-        this.temp[picType] = '';
+        this[picType] = ''
+        this.temp[picType] = ''
       }
     },
     picturePreview(file) {
-      this.showPicUrl = file.url;
-      this.layer_showImage = true;
+      this.showPicUrl = file.url
+      this.layer_showImage = true
     },
     pictureSuccess(response, file, fileList, picType) {
       console.log('success')
       if (picType) {
-        this[picType] = response.data[0];
-        this.temp[picType] = response.data[0];
+        this[picType] = response.data[0]
+        this.temp[picType] = response.data[0]
       }
       if (fileList.length > 1) {
-        fileList.splice(0, 1);
+        fileList.splice(0, 1)
       }
     },
     pictureError(err, file) {
-      file = null;
+      file = null
     },
     resetFile(file) {
-      file = null;
+      file = null
     },
     showPicUrlClose() {
-      this.showPicUrl = '';
+      this.showPicUrl = ''
     },
     /* 查询列表 */
     change(value) {
-      this.getGridData(this.pageItems);
+      this.getGridData(this.pageItems)
     },
     /* 查看图片 */
     showImage(picUrl) {
       if (!picUrl) {
-        return false;
+        return false
       }
-      this.showPicUrl = picUrl;
-      this.layer_showImage = true;
+      this.showPicUrl = picUrl
+      this.layer_showImage = true
     },
     /* 弹窗关闭时的回调 */
     dialogClose() {
-      this.fileList = [];
-      this.thumFileList = [];
-      this.nowOnline = false;
-      this.nowOffline = false;
-      this.resetTemp();
-      this.$refs.dataForm.resetFields();
+      this.fileList = []
+      this.thumFileList = []
+      this.nowOnline = false
+      this.nowOffline = false
+      this.resetTemp()
+      this.$refs.dataForm.resetFields()
     },
     closeDialog() {
-      this.layer_showImage = false;
+      this.layer_showImage = false
     },
     handleSizeChange(val) {
-      this.pageItems.pageSize = val;
-      this.getGridData(this.pageItems);
+      this.pageItems.pageSize = val
+      this.getGridData(this.pageItems)
     },
     handleCurrentChange(val) {
-      this.pageItems.pageNo = val;
-      this.getGridData(this.pageItems);
+      this.pageItems.pageNo = val
+      this.getGridData(this.pageItems)
     },
     /* 列表渲染，数据请求 */
     getGridData(params) {
-      this.listLoading = true;
-      this.searchParams = deepClone(params);
+      this.listLoading = true
+      this.searchParams = deepClone(params)
       this.searchParams.status = this.selectData.value
       getGridApi(ObjectMap(this.searchParams), this.urlPathObj).then(response => {
-        this.tableData = response.data.content;
-        this.total = response.data.totalElements;
-        this.listLoading = false;
+        this.tableData = response.data.content
+        this.total = response.data.totalElements
+        this.listLoading = false
       })
     },
     /* 重置临时数据 */
@@ -486,105 +486,105 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        row.isDelete = 1;
-        this.tableData.splice(index, 1, row);
-        this.saveData(this.tableData);
+        row.isDelete = 1
+        this.tableData.splice(index, 1, row)
+        this.saveData(this.tableData)
       }).catch(() => {
 
-      });
+      })
     },
     /* 新增 */
     createRow() {
-      this.resetTemp();
-      this.layer_showInfo = true;
-      this.dialogStatus = 'create';
+      this.resetTemp()
+      this.layer_showInfo = true
+      this.dialogStatus = 'create'
       this.btnText = '上传图片'
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
-      });
+      })
     },
     /* 编辑 */
     updateRow(index, row) {
-      this.layer_showInfo = true;
-      this.dialogStatus = 'update';
+      this.layer_showInfo = true
+      this.dialogStatus = 'update'
       this.btnText = '替换图片'
-      this.editRowIndex = index;
+      this.editRowIndex = index
       if (row.picUrl) {
-        this.fileList = [{ name: '查看图片', url: row.picUrl }];
+        this.fileList = [{ name: '查看图片', url: row.picUrl }]
       }
       if (row.thumbnail) {
-        this.thumFileList = [{ name: '查看缩略图', url: row.thumbnail }];
+        this.thumFileList = [{ name: '查看缩略图', url: row.thumbnail }]
       }
-      this.temp = Object.assign({}, row);
-      this.temp.effectiveTime = new Date(this.temp.effectiveTime);
+      this.temp = Object.assign({}, row)
+      this.temp.effectiveTime = new Date(this.temp.effectiveTime)
       if (this.eeopType != 'interview') {
-        this.temp.ineffectiveTime = new Date(this.temp.ineffectiveTime);
+        this.temp.ineffectiveTime = new Date(this.temp.ineffectiveTime)
       }
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
-      });
+      })
     },
     /* 创建、更新活动 */
     createAndUpdateData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          this.temp.effectiveTime = parseTime(this.temp.effectiveTime);
+          this.temp.effectiveTime = parseTime(this.temp.effectiveTime)
           if (this.eeopType != 'interview') {
-            this.temp.ineffectiveTime = parseTime(this.temp.ineffectiveTime);
+            this.temp.ineffectiveTime = parseTime(this.temp.ineffectiveTime)
             if (this.temp.effectiveTime >= this.temp.ineffectiveTime) {
-              this.$message.error('上线时间必须小于下线时间');
-              this.temp.effectiveTime = new Date(this.temp.effectiveTime);
-              this.temp.ineffectiveTime = new Date(this.temp.ineffectiveTime);
+              this.$message.error('上线时间必须小于下线时间')
+              this.temp.effectiveTime = new Date(this.temp.effectiveTime)
+              this.temp.ineffectiveTime = new Date(this.temp.ineffectiveTime)
               return false
             }
           }
-          this.saveData([this.temp]);
+          this.saveData([this.temp])
         }
       })
     },
     /* 列表排序 */
     sortApp() {
-      this.sort_tableData = [];
+      this.sort_tableData = []
       getGridApi({
         pageNo: 1,
         pageSize: 9999,
         status: 2
       }, this.urlPathObj).then(response => {
-        this.sort_tableData = response.data.content.sort((a, b) => a['sortNum'] * 1 - b['sortNum'] * 1);
+        this.sort_tableData = response.data.content.sort((a, b) => a['sortNum'] * 1 - b['sortNum'] * 1)
         console.log(this.sort_tableData)
         if (this.sort_tableData.length == 0) {
-          this.$message.error('没有【已上线】的数据');
-          return false;
+          this.$message.error('没有【已上线】的数据')
+          return false
         }
-        this.layer_appsort = true;
-      });
+        this.layer_appsort = true
+      })
     },
     saveData(params, type) {
       /* 列表排序 */
-      let savePatams = deepClone(params);
+      const savePatams = deepClone(params)
       if (type == 'sort') {
-        savePatams.forEach((item, index) => item.sortNum = index * 1 + 1);
+        savePatams.forEach((item, index) => item.sortNum = index * 1 + 1)
       } else {
         if (this.nowOnline) {
-          //savePatams[0][this.colModels[0].prop] = 2;
-          savePatams[0].operateType = 1;
+          // savePatams[0][this.colModels[0].prop] = 2;
+          savePatams[0].operateType = 1
         }
         if (this.nowOffline) {
-          //savePatams[0][this.colModels[0].prop] = 3;
-          savePatams[0].operateType = 2;
+          // savePatams[0][this.colModels[0].prop] = 3;
+          savePatams[0].operateType = 2
         }
       }
       saveDataApi(savePatams, this.urlPathObj).then(response => {
-        this.layer_appsort = false;
-        this.layer_showInfo = false;
-        this.getGridData(this.pageItems);
+        this.layer_appsort = false
+        this.layer_showInfo = false
+        this.getGridData(this.pageItems)
         this.$notify({
           title: '成功',
           message: '操作成功',
           type: 'success',
           duration: 2000
         })
-      });
+      })
     }
   },
   watch: {
@@ -604,7 +604,7 @@ export default {
 
     }
   }
-};
+}
 
 </script>
 

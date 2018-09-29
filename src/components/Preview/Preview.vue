@@ -100,7 +100,7 @@ export default {
         return false
       }
       const imgloadAsync = item => new Promise(resolve => {
-        let _img = new Image()
+        const _img = new Image()
         _img.src = item.src
         _img.onload = e => {
           item.w = _img.width || 800
@@ -140,7 +140,7 @@ export default {
   watch: {
     picList: {
       immediate: true,
-      handler: function (val) {
+      handler: function(val) {
         this.list = (val || []).slice()
         this.list.map((item, index) => {
           // item.sortNum = item.sortNum !== undefined ? item.sortNum : Math.random().toFixed(5)

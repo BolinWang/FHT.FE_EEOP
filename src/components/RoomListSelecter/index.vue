@@ -69,13 +69,13 @@ export default {
       }, {
         value: 'JavaScript',
         label: 'JavaScript'
-      }],
+      }]
     }
   },
   watch: {
     visible: {
       immediate: true,
-      handler: function (val) {
+      handler: function(val) {
         if (Array.isArray(this.roomList)) {
           if (!val) {
             this.roomListForm.checkedRoomList = []
@@ -111,13 +111,13 @@ export default {
       this.checkAll = Object.keys(this.checkedFloor).length === Object.keys(this.checkedFloor).filter(v => this.checkedFloor[v] === true).length
     },
     handleRoomChange(key) {
-      let checkedCount = this.checkedObj[key].length
+      const checkedCount = this.checkedObj[key].length
       this.checkedFloor[key] = checkedCount === this.allRoomList[key].allRoom.length
       this.checkAll = Object.keys(this.checkedFloor).length === Object.keys(this.checkedFloor).filter(v => this.checkedFloor[v] === true).length
     },
     handleCheckAllChange(val) {
       Object.keys(this.checkedObj).forEach((key, index) => {
-        this.checkedFloor[key] = val ? true : false
+        this.checkedFloor[key] = !!val
         this.$set(this.checkedObj, key, val ? this.allRoomList[key].allRoom : this.allRoomList[key].isDisabled)
       })
     },

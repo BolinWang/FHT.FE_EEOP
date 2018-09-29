@@ -111,7 +111,7 @@ export default {
       return statusMap[status] || 'info'
     },
     statusStrFilter(status) {
-      const statusStrData = ['待审核', '审核通过', '审核不通过'];
+      const statusStrData = ['待审核', '审核通过', '审核不通过']
       return statusStrData[status - 1] || '待审核'
     }
   },
@@ -136,12 +136,12 @@ export default {
         auditId: this.data_detail.id
       }).then(response => {
         if (!response.data) {
-          this.$message.error(response.message || '您的网络出了点差错哦，请稍后重试');
-          return false;
+          this.$message.error(response.message || '您的网络出了点差错哦，请稍后重试')
+          return false
         }
-        this.data_detail.realNameAuth = response.data.data.result ? 1 : 2;
+        this.data_detail.realNameAuth = response.data.data.result ? 1 : 2
         if (this.data_detail.realNameAuth == 2) {
-          this.status = 3;
+          this.status = 3
         }
       })
     }
@@ -149,14 +149,14 @@ export default {
   watch: {
     dataSign: {
       handler(val) {
-        this.data_detail = val;
-        this.status = '';
-        this.reject_remark = '';
+        this.data_detail = val
+        this.status = ''
+        this.reject_remark = ''
       },
       deep: true
     }
   }
-};
+}
 </script>
 <style rel="stylesheet/scss" lang="scss">
 .el-tag {

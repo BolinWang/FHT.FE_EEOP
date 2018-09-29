@@ -79,9 +79,9 @@
         this.pswpOptions = Object.assign({
           index: index,
           getThumbBoundsFn(index) {
-            let pageYScroll = window.pageYOffset || document.documentElement.scrollTop
-            let rect = document.querySelectorAll('.preview-img')[index].getBoundingClientRect()
-            return {x: rect.left, y: rect.top + pageYScroll, w: rect.width}
+            const pageYScroll = window.pageYOffset || document.documentElement.scrollTop
+            const rect = document.querySelectorAll('.preview-img')[index].getBoundingClientRect()
+            return { x: rect.left, y: rect.top + pageYScroll, w: rect.width }
           }
         }, params)
         this.photoswipe = new PhotoSwipe(this.$el, UI, list, this.pswpOptions)
@@ -110,7 +110,7 @@
         this.rotateCount = this.rotateCount > 3 ? 0 : this.rotateCount
         this.rotateCount++
         const ratateDeg = this.rotateCount * 90
-        let targetImage = this.photoswipe.currItem.container.querySelector('img')
+        const targetImage = this.photoswipe.currItem.container.querySelector('img')
         // image 配置crossOrigin属性，配合canvas跨域
         // targetImage.crossOrigin = "Anonymous"
         targetImage.style.transform = `rotateZ(${ratateDeg}deg)`
@@ -130,41 +130,41 @@
         let w = image.width
         let h = image.height
         const canvasWidth = Math.max(w, h)
-        let canvas = this.getCanvas(canvasWidth, canvasWidth)
-        let ctx = canvas.getContext('2d')
+        const canvas = this.getCanvas(canvasWidth, canvasWidth)
+        const ctx = canvas.getContext('2d')
         ctx.translate(canvasWidth / 2, canvasWidth / 2)
-          ctx.rotate(degrees * (Math.PI / 180))
-          let x = -canvasWidth / 2
-          let y = -canvasWidth / 2
-          degrees = degrees % 360
-          // 没有旋转角度
-          if (degrees === 0) {
-            return callback(image.src, w, h)
-          }
-          let sx = 0
-          let sy = 0
-          if ((degrees % 180) !== 0) {
-            if (degrees === -90 || degrees === 270) {
-              x = -w + canvasWidth / 2
-            } else {
-              y = canvasWidth/2 - h
-            }
-            let c = w
-            w = h
-            h = c
+        ctx.rotate(degrees * (Math.PI / 180))
+        let x = -canvasWidth / 2
+        let y = -canvasWidth / 2
+        degrees = degrees % 360
+        // 没有旋转角度
+        if (degrees === 0) {
+          return callback(image.src, w, h)
+        }
+        const sx = 0
+        const sy = 0
+        if ((degrees % 180) !== 0) {
+          if (degrees === -90 || degrees === 270) {
+            x = -w + canvasWidth / 2
           } else {
-            x = canvasWidth/2 - w
-            y = canvasWidth/2 - h
+            y = canvasWidth / 2 - h
           }
-          ctx.drawImage(image, x, y)
-          let canvas2 = this.getCanvas(w, h)
-          let ctx2 = canvas2.getContext('2d')
-          ctx2.drawImage(canvas, 0, 0, w, h, 0, 0, w, h)
-          let data = canvas2.toDataURL('image/jpeg')
-          callback(data, w, h)
+          const c = w
+          w = h
+          h = c
+        } else {
+          x = canvasWidth / 2 - w
+          y = canvasWidth / 2 - h
+        }
+        ctx.drawImage(image, x, y)
+        const canvas2 = this.getCanvas(w, h)
+        const ctx2 = canvas2.getContext('2d')
+        ctx2.drawImage(canvas, 0, 0, w, h, 0, 0, w, h)
+        const data = canvas2.toDataURL('image/jpeg')
+        callback(data, w, h)
       },
       getCanvas(width, height) {
-        let canvas = document.createElement('canvas');
+        const canvas = document.createElement('canvas')
         canvas.width = width
         canvas.height = height
         return canvas

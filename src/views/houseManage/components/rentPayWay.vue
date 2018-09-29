@@ -209,7 +209,7 @@
 </template>
 
 <script>
-import { deepClone } from "@/utils"
+import { deepClone } from '@/utils'
 export default {
   props: {
     list: {
@@ -277,13 +277,13 @@ export default {
     }
   },
   methods: {
-    addRentPay() {  // 添加交租方式
+    addRentPay() { // 添加交租方式
       this.rentPayList.push({
         depositPrice: '',
         depositQty: '',
         maxMonthNum: 12,
         minMonthNum: 1,
-        name: "月付",
+        name: '月付',
         rentPrice: '',
         rentQty: 1,
         rentTypeId: 1,
@@ -349,7 +349,7 @@ export default {
   watch: {
     list: {
       immediate: true,
-      handler: function (val) {
+      handler: function(val) {
         this.rentPayList = deepClone(val)
         this.$nextTick(() => {
           this.$refs.financeRentPayForm.clearValidate()

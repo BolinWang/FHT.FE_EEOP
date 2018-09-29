@@ -268,23 +268,23 @@ export default {
         'status': ['申请中', '启用', '停用']
       }
       if (!statusStrData[key]) {
-        return '';
+        return ''
       }
       return statusStrData[key][status] ||
-        (key == 'status' ? '申请中' : '');
+        (key == 'status' ? '申请中' : '')
     },
     dateFilter(value) {
-      return `${parseTime(value)} `;
+      return `${parseTime(value)} `
     }
   },
   data() {
     const validatePhone = (rule, value, callback) => {
       if (!validateMobile(value)) {
-        callback(new Error('请输入正确的手机号'));
+        callback(new Error('请输入正确的手机号'))
       } else {
-        callback();
+        callback()
       }
-    };
+    }
     return {
       rules: {
         organizationName: [{
@@ -319,7 +319,7 @@ export default {
         }]
 
       },
-      isHideUpload: false, //是否隐藏图片上传按钮
+      isHideUpload: false, // 是否隐藏图片上传按钮
       selectOptions: [{
         label: '系统',
         value: 1
@@ -340,10 +340,10 @@ export default {
       cardOptions: [{
         label: '身份证',
         value: 1
-      }, ],
+      }],
       listLoading: false,
       financeEdit: false,
-      financeTrusteeshipType: "",
+      financeTrusteeshipType: '',
       colModels: [{
         prop: 'organizationName',
         label: '组织名称'
@@ -431,16 +431,16 @@ export default {
     }
   },
   created() {
-    this.getGridData(this.pageItems);
+    this.getGridData(this.pageItems)
   },
   mounted() {
     /* 表格高度控制 */
-    let temp_height = document.body.clientHeight - 200;
-    this.tableHeight = temp_height > 300 ? temp_height : 300;
+    let temp_height = document.body.clientHeight - 200
+    this.tableHeight = temp_height > 300 ? temp_height : 300
     window.onresize = () => {
       return (() => {
-        temp_height = document.body.clientHeight - 200;
-        this.tableHeight = this.tableHeight = temp_height > 300 ? temp_height : 300;
+        temp_height = document.body.clientHeight - 200
+        this.tableHeight = this.tableHeight = temp_height > 300 ? temp_height : 300
       })()
     }
   },
@@ -454,31 +454,31 @@ export default {
   },
   watch: {
     isEdit(val) {
-      this.overlayTitle = val ? '基本资料' : '新增组织';
+      this.overlayTitle = val ? '基本资料' : '新增组织'
     },
-    'formData.organizationType' (val) {
+    'formData.organizationType'(val) {
       if (val == 3) {
         if (this.colModels.length == 5) {
           this.colModels.splice(2, 0, {
             prop: 'contractMobile',
             label: '联系电话'
-          });
+          })
         }
       } else {
         if (this.colModels.length == 6) {
-          this.colModels.splice(2, 1);
+          this.colModels.splice(2, 1)
         }
       }
     }
   },
   methods: {
     handleApply() {
-      this.layer_showInfo = true;
-      this.isEdit = false;
-      this.isHideUpload = false;
+      this.layer_showInfo = true
+      this.isEdit = false
+      this.isHideUpload = false
       queryTemplateListApi().then(response => {
         console.log(response)
-        this.permTemplate = response.data.result;
+        this.permTemplate = response.data.result
       })
     },
     changeStep(num) {
@@ -489,41 +489,37 @@ export default {
               this.stepForm1.orgAddrProvinceId,
               this.stepForm1.orgAddrCityId,
               this.stepForm1.orgAddrRegionId
-            ] = this.areaCode;
+            ] = this.areaCode
             this.stepForm1.picList.map(val => {
-              val.picUrl = val.url;
+              val.picUrl = val.url
             })
-            let realName = {
+            const realName = {
               'name': this.stepForm1.orgLegalPersonName,
               'cardNo': this.stepForm1.orgLegalPersonCardNo
             }
             realNameAuthApi(realName).then(response => {
-              this.active += num;
+              this.active += num
             }).catch(response => {
 
             })
           } else {
-            return false;
+            return false
           }
-        });
+        })
       } else if (this.active == 1) {
         if (num > 0 && !this.organizationPermTemplateId) {
-          this.$message.error('请选择权限模板');
-          return false;
+          this.$message.error('请选择权限模板')
+          return false
         } else {
-          this.active += num;
+          this.active += num
         }
-
       } else {
-        this.active += num;
+        this.active += num
       }
-
-
     },
     completeFn() {
       this.$refs['stepForm2'].validate((valid) => {
         if (valid) {
-
           [
             this.stepForm2.cardAddrProvinceId,
             this.stepForm2.cardAddrCityId,
@@ -534,9 +530,9 @@ export default {
             this.stepForm2.addrProvinceId,
             this.stepForm2.addrCityId,
             this.stepForm2.addrRegionId
-          ] = this.areaCode2;
+          ] = this.areaCode2
 
-          let search = {
+          const search = {
             organizationStepOneVO: this.stepForm1,
             organizationNewPermVO: {
               organizationPermTemplateId: this.organizationPermTemplateId
@@ -544,98 +540,89 @@ export default {
             organizationNewUserVO: this.stepForm2
           }
           saveOrgApi(JSON.stringify(search)).then(response => {
-            this.layer_showInfo = false;
-            this.getGridData(this.pageItems);
-            this.resetFormData();
-
+            this.layer_showInfo = false
+            this.getGridData(this.pageItems)
+            this.resetFormData()
           })
         } else {
-          return false;
+          return false
         }
-      });
-
+      })
     },
     editData(index, row) {
-
-      let search = {
+      const search = {
         organizationId: row.organizationId,
         type: row.type
       }
-      this.rowType = row.type;
+      this.rowType = row.type
       organizationInfoApi(search).then(response => {
-        let result = response.data.result;
-        this.layer_showInfo = true;
-        this.isEdit = true;
+        const result = response.data.result
+        this.layer_showInfo = true
+        this.isEdit = true
 
         if (this.rowType != 3) {
-          this.financeTrusteeshipType = result.financeTrusteeshipType.toString();
-          this.financeEdit = this.financeTrusteeshipType == '2' ? true : false;
+          this.financeTrusteeshipType = result.financeTrusteeshipType.toString()
+          this.financeEdit = this.financeTrusteeshipType == '2'
           Object.keys(this.stepForm1).map(key => {
-            this.stepForm1[key] = result[key] || '';
-          });
-          this.stepForm1.organizationId = row.organizationId;
+            this.stepForm1[key] = result[key] || ''
+          })
+          this.stepForm1.organizationId = row.organizationId
           this.fileList = this.stepForm1.picList.map(key => {
             return {
               'name': '图片',
               'url': key.picUrl
             }
-          });
+          })
           if (this.stepForm1.picList.length == 10) {
-            this.isHideUpload = true;
+            this.isHideUpload = true
           }
           this.areaCode = [
             result.orgAddrProvinceId,
             result.orgAddrCityId,
             result.orgAddrRegionId
-          ];
+          ]
         } else {
           Object.keys(this.stepForm2).map(key => {
-            this.stepForm2[key] = result[key] || '';
-          });
-          this.stepForm2.organizationId = row.organizationId;
+            this.stepForm2[key] = result[key] || ''
+          })
+          this.stepForm2.organizationId = row.organizationId
           this.areaCode1 = [
             result.cardAddrProvinceId,
             result.cardAddrCityId,
             result.cardAddrRegionId
-          ];
+          ]
           this.areaCode2 = [
             result.addrProvinceId,
             result.addrCityId,
             result.addrRegionId
-          ];
-          this.active = 2;
+          ]
+          this.active = 2
         }
-
-
       })
     },
     editFn() {
-
       this.$refs.stepForm1.validateField('displayName', (valid) => {
         if (!valid) {
           [
             this.stepForm1.orgAddrProvinceId,
             this.stepForm1.orgAddrCityId,
             this.stepForm1.orgAddrRegionId
-          ] = this.areaCode;
+          ] = this.areaCode
           this.stepForm1.picList.map(val => {
-            val.picUrl = val.picUrl || val.url;
+            val.picUrl = val.picUrl || val.url
           })
 
-          this.stepForm1.financeTrusteeshipType = this.financeTrusteeshipType;
+          this.stepForm1.financeTrusteeshipType = this.financeTrusteeshipType
           editOrgBasicInfoApi(JSON.stringify(this.stepForm1)).then(response => {
-            this.layer_showInfo = false;
-            this.isEdit = false;
-            this.getGridData(this.pageItems);
-            this.$message.success('操作成功');
+            this.layer_showInfo = false
+            this.isEdit = false
+            this.getGridData(this.pageItems)
+            this.$message.success('操作成功')
           })
         } else {
-          return false;
+          return false
         }
       })
-
-
-
     },
     resetFormData() {
       this.stepForm1 = {
@@ -654,7 +641,7 @@ export default {
         type: 2,
         picList: []
       }
-      this.organizationPermTemplateId = '';
+      this.organizationPermTemplateId = ''
       this.stepForm2 = {
         name: '',
         gender: '',
@@ -680,22 +667,22 @@ export default {
         []
       ]
 
-      this.active = 0;
+      this.active = 0
     },
-    enableItems() { //启用
+    enableItems() { // 启用
       if (this.multipleSelection.length == 0) {
-        this.$message.error('请选择要启用的组织');
-        return false;
+        this.$message.error('请选择要启用的组织')
+        return false
       }
       let flag = true,
-        organizationIds = [];
+        organizationIds = []
       this.multipleSelection.map(key => {
         if (key.status == 1) {
-          flag = false;
-          this.$message.error('已启用的组织不能再启用');
-          return false;
+          flag = false
+          this.$message.error('已启用的组织不能再启用')
+          return false
         } else {
-          organizationIds.push(key.organizationId);
+          organizationIds.push(key.organizationId)
         }
       })
       if (flag) {
@@ -704,7 +691,7 @@ export default {
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          let search = {
+          const search = {
             type: 1,
             organizationIds: organizationIds
           }
@@ -712,27 +699,26 @@ export default {
             this.$message({
               type: 'success',
               message: '启用成功!'
-            });
-            this.getGridData(this.pageItems);
+            })
+            this.getGridData(this.pageItems)
           })
         })
-
       }
     },
-    disableItems() { //禁用
+    disableItems() { // 禁用
       if (this.multipleSelection.length == 0) {
-        this.$message.error('请选择要停用的组织');
-        return false;
+        this.$message.error('请选择要停用的组织')
+        return false
       }
       let flag = true,
-        organizationIds = [];
+        organizationIds = []
       this.multipleSelection.map(key => {
         if (key.status == 2) {
-          flag = false;
-          this.$message.error('已停用的组织不能再停用');
-          return false;
+          flag = false
+          this.$message.error('已停用的组织不能再停用')
+          return false
         } else {
-          organizationIds.push(key.organizationId);
+          organizationIds.push(key.organizationId)
         }
       })
       if (flag) {
@@ -741,7 +727,7 @@ export default {
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          let search = {
+          const search = {
             type: 2,
             organizationIds: organizationIds
           }
@@ -749,15 +735,14 @@ export default {
             this.$message({
               type: 'success',
               message: '停用成功!'
-            });
-            this.getGridData(this.pageItems);
+            })
+            this.getGridData(this.pageItems)
           })
-        });
-
+        })
       }
     },
     handleSelectionChange(val) {
-      this.multipleSelection = val;
+      this.multipleSelection = val
     },
     delData(index, row) {
       this.$confirm('此操作将永久删除该组织, 是否继续?', '提示', {
@@ -765,7 +750,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        let search = {
+        const search = {
           type: 3,
           organizationIds: [row.organizationId]
         }
@@ -774,94 +759,90 @@ export default {
           this.$message({
             type: 'success',
             message: '删除成功!'
-          });
-          this.getGridData(this.pageItems);
+          })
+          this.getGridData(this.pageItems)
         })
-
       }).catch(() => {
 
-      });
+      })
     },
     /* 上传图片 */
     pictureUpload(file) {
       const isLt5M = file.size / 1024 / 1024 <= 5
       if (['image/jpeg', 'image/jpg', 'image/png'].indexOf(file.type) == -1) {
-        this.$message.error('请上传jpg/png的图片');
-        return false;
+        this.$message.error('请上传jpg/png的图片')
+        return false
       }
       if (!isLt5M) {
-        this.$message.error('请上传5Mb大小以内的图片');
-        return false;
+        this.$message.error('请上传5Mb大小以内的图片')
+        return false
       }
-
     },
     closeDialog() {
-      this.layer_showImage = false;
+      this.layer_showImage = false
     },
     handleExceed(files, fileList) {
-      this.$message.warning(`当前限制上传 10 张图片，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+      this.$message.warning(`当前限制上传 10 张图片，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
     },
     pictureRemove(file, fileList) {
-      this.showPicUrl = '';
-      let imgList = [];
-      this.isHideUpload = false;
+      this.showPicUrl = ''
+      const imgList = []
+      this.isHideUpload = false
 
       fileList.map(key => {
         if (key.response) {
-          key.url = key.response.data[0];
+          key.url = key.response.data[0]
         }
-        imgList.push(key);
+        imgList.push(key)
       })
-      this.stepForm1.picList = deepClone(imgList);
-
+      this.stepForm1.picList = deepClone(imgList)
     },
     picturePreview(file) {
-      this.showPicUrl = file.url;
-      this.layer_showImage = true;
+      this.showPicUrl = file.url
+      this.layer_showImage = true
     },
     pictureSuccess(response, file, fileList) {
       if (fileList.length >= 10) {
-        this.isHideUpload = true;
+        this.isHideUpload = true
       }
       this.stepForm1.picList.push({
         'url': file.response.data[0]
       })
     },
     pictureError(err, file) {
-      file = null;
+      file = null
     },
     resetFile(file) {
-      file = null;
+      file = null
     },
     showPicUrlClose() {
-      this.showPicUrl = '';
+      this.showPicUrl = ''
     },
     /* 弹窗关闭时的回调 */
     dialogClose() {
-      this.resetFormData();
-      this.active = 0;
-      this.fileList = [];
-      this.financeEdit = false;
-      this.$refs.stepForm1.clearValidate();
-      this.$refs.stepForm2.clearValidate();
+      this.resetFormData()
+      this.active = 0
+      this.fileList = []
+      this.financeEdit = false
+      this.$refs.stepForm1.clearValidate()
+      this.$refs.stepForm2.clearValidate()
     },
     handleSizeChange(val) {
-      this.pageItems.pageSize = val;
-      this.getGridData(this.pageItems);
+      this.pageItems.pageSize = val
+      this.getGridData(this.pageItems)
     },
     handleCurrentChange(val) {
-      this.pageItems.pageNo = val;
-      this.getGridData(this.pageItems);
+      this.pageItems.pageNo = val
+      this.getGridData(this.pageItems)
     },
     /* 列表渲染，数据请求 */
     getGridData(params) {
-      this.listLoading = true;
-      this.searchParams = Object.assign(deepClone(params), deepClone(this.formData));
+      this.listLoading = true
+      this.searchParams = Object.assign(deepClone(params), deepClone(this.formData))
       initOrgListApi(ObjectMap(this.searchParams)).then(response => {
-        this.listLoading = false;
-        this.tableData = response.data.list;
-        this.total = response.data.record;
-
+        this.listLoading = false
+        this.tableData = response.data.list
+        this.total = response.data.record
       })
     },
     searchParam() {
@@ -869,7 +850,7 @@ export default {
         pageNo: 1,
         pageSize: 20
       }
-      this.getGridData(this.pageItems);
+      this.getGridData(this.pageItems)
     },
     clearForm() {
       this.pageItems = {
@@ -880,30 +861,30 @@ export default {
         searchField: '',
         organizationType: 2
       }
-      this.getGridData(this.pageItems);
+      this.getGridData(this.pageItems)
     },
     changefinanceType(val) {
       if (val != 2) {
-        return false;
+        return false
       }
       checkCanBeFinanceTrusteeshipApi({
         organizationId: this.stepForm1.organizationId
       }).then(response => {
         if (response.code != 0) {
-          let _this = this;
+          const _this = this
           this.$alert(response.message, '标记托底方失败', {
             type: 'error',
             showClose: false,
             beforeClose(action, instance, done) {
-              _this.financeTrusteeshipType = 1;
-              done();
+              _this.financeTrusteeshipType = 1
+              done()
             }
-          });
+          })
         }
       })
     }
   }
-};
+}
 
 </script>
 <style rel="stylesheet/scss" lang="scss">

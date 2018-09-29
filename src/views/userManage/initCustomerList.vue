@@ -24,7 +24,7 @@ export default {
       activeName: 'C端租客'
     }
   }
-};
+}
 </script>
 <style rel="stylesheet/scss" lang="scss">
 .model-search .filter-item {

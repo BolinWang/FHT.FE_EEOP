@@ -5,7 +5,7 @@
   </div>
 </template>
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters } from 'vuex'
 import bannerPic from '@/assets/banner1.jpg'
 export default {
   name: 'dashboard',

@@ -102,8 +102,8 @@ import { appIconApi } from '@/api/eeop'
 
 /* 阻止原生dragale打开新页面 */
 document.body.ondrop = function(event) {
-  event.preventDefault();
-  event.stopPropagation();
+  event.preventDefault()
+  event.stopPropagation()
 }
 
 export default {
@@ -147,14 +147,14 @@ export default {
       sort_tableData: []
     }
   },
-  created () {
+  created() {
     appIconApi.cityList().then(response => {
       this.cityList = response.data
     })
   },
   mounted() {
     /* 表格高度控制 */
-   this.$nextTick(() => {
+    this.$nextTick(() => {
       const offsetTop = this.$refs.refGridUnit.$el.offsetTop || 140
       const pagenationH = 5
       const containerPadding = 20
@@ -191,7 +191,7 @@ export default {
       this.temp = {
         ...deepClone(row),
         cityId: row.cityId || this.searchParams.cityId,
-        picList: row.picUrl ? [{url: row.picUrl, name: '查看图片'}] : []
+        picList: row.picUrl ? [{ url: row.picUrl, name: '查看图片' }] : []
       }
       this.temp.picList = row.picUrl ? [{
         url: row.picUrl,
@@ -227,7 +227,7 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           const saveApi = this.temp.iconId ? appIconApi.edit : appIconApi.add
-          let { configId, iconId, title, cityId } = this.temp
+          const { configId, iconId, title, cityId } = this.temp
           saveApi(ObjectMap({
             configId,
             iconId,
@@ -290,8 +290,8 @@ export default {
         this.$message.error('图片预览失败')
         return false
       }
-      let previewObj = {src: this.temp.picList[0].url}
-      let _img = new Image()
+      const previewObj = { src: this.temp.picList[0].url }
+      const _img = new Image()
       _img.src = this.temp.picList[0].url
       _img.onload = function() {
         previewObj.w = _img.width || 800
@@ -301,7 +301,7 @@ export default {
     },
     pictureSuccess(response, file, fileList) {
       console.log('success')
-      let picList = response.data.map(item => {
+      const picList = response.data.map(item => {
         return {
           url: item,
           name: '查看图片'
@@ -309,7 +309,7 @@ export default {
       })
       this.$set(this.temp, 'picList', picList)
       if (fileList.length > 1) {
-        fileList.splice(0,1)
+        fileList.splice(0, 1)
       }
     },
     pictureError(err, file) {

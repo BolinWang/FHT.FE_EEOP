@@ -22,7 +22,7 @@ export default {
   props: {
     value: {
       ype: Array,
-      default () {
+      default() {
         return []
       }
     },
@@ -64,16 +64,16 @@ export default {
   },
   methods: {
     handleChange(selected) {
-      this.$emit('input', selected);
+      this.$emit('input', selected)
     }
   },
   created() {
     if (Array.isArray(this.value)) {
-      this.selectedOptions = this.value.map(key => { return parseInt(key) });
+      this.selectedOptions = this.value.map(key => { return parseInt(key) })
     }
 
     if (this.level !== 1) {
-      let data = deepClone(areaData)
+      const data = deepClone(areaData)
       data.forEach((item, index) => {
         if (this.level === -1) {
           delete item.children
@@ -88,7 +88,7 @@ export default {
   },
   watch: {
     value(val) {
-      this.selectedOptions = val;
+      this.selectedOptions = val
     }
   }
 }

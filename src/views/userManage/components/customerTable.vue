@@ -156,14 +156,14 @@ export default {
         'deviceLimit': ['可用', '不可用']
       }
       if (!statusStrData[key]) {
-        return '';
+        return ''
       }
       return statusStrData[key][status] ||
-        (key == 'authenticationSource' ? '其他' : '');
+        (key == 'authenticationSource' ? '其他' : '')
     },
     xing(val) {
-      let value = (val && val.length >= 7) ? plusXing(val, 3, 4) : val;
-      return value;
+      const value = (val && val.length >= 7) ? plusXing(val, 3, 4) : val
+      return value
     }
   },
   data() {
@@ -236,7 +236,7 @@ export default {
             return row.housingType == 1 ? '集中式' : '分散式'
           }
         },
-        { prop: 'orgName', label: '归属组织' },
+        { prop: 'orgName', label: '归属组织' }
       ],
       deviceCol: [
         { prop: 'fangyuanName', label: '房源信息' },
@@ -248,7 +248,7 @@ export default {
           prop: 'deviceStatus',
           label: '管理状态',
           align: 'center',
-          slotName: 'deviceStatus',
+          slotName: 'deviceStatus'
         },
         {
           prop: 'deviceCurrentStatus',
@@ -319,16 +319,16 @@ export default {
         { prop: 'gmtCreateName', label: '归属组织', width: 180 }
       ]
     }
-    this.getGridData(this.pageItems);
+    this.getGridData(this.pageItems)
   },
   mounted() {
     /* 表格高度控制 */
-    let temp_height = document.body.clientHeight - 267;
-    this.tableHeight = temp_height > 300 ? temp_height : 300;
+    let temp_height = document.body.clientHeight - 267
+    this.tableHeight = temp_height > 300 ? temp_height : 300
     window.onresize = () => {
       return (() => {
-        temp_height = document.body.clientHeight - 267;
-        this.tableHeight = this.tableHeight = temp_height > 300 ? temp_height : 300;
+        temp_height = document.body.clientHeight - 267
+        this.tableHeight = this.tableHeight = temp_height > 300 ? temp_height : 300
       })()
     }
   },
@@ -349,20 +349,20 @@ export default {
   },
   methods: {
     handleSizeChange(val) {
-      this.pageItems.pageSize = val;
-      this.getGridData(this.pageItems);
+      this.pageItems.pageSize = val
+      this.getGridData(this.pageItems)
     },
     handleCurrentChange(val) {
-      this.pageItems.pageNo = val;
-      this.getGridData(this.pageItems);
+      this.pageItems.pageNo = val
+      this.getGridData(this.pageItems)
     },
     searchParam() {
-      let params = deepClone(this.formData)
+      const params = deepClone(this.formData)
       this.pageItems = {
         pageNo: 1,
         pageSize: 20
-      };
-      this.getGridData(Object.assign(this.pageItems, params));
+      }
+      this.getGridData(Object.assign(this.pageItems, params))
     },
     clearForm() {
       this.formData = {
@@ -374,12 +374,12 @@ export default {
       this.pageItems = {
         pageNo: 1,
         pageSize: 20
-      };
-      this.searchParam();
+      }
+      this.searchParam()
     },
     /* 租房记录 */
     showRecord(row) {
-      this.rentRecord = true;
+      this.rentRecord = true
       this.rentParams = {
         pageNo: 1,
         pageSize: 9999,
@@ -394,22 +394,22 @@ export default {
       }
     },
     showDetail(row) {
-      this.lookDetail = true;
-      this.detailData = row;
+      this.lookDetail = true
+      this.detailData = row
     },
     /* 列表渲染 */
     getGridData(params) {
-      this.listLoading = true;
-      this.searchParams = deepClone(params);
-      let dataApi = this.customerType == 1 ? customerListApi : businessUserListApi;
+      this.listLoading = true
+      this.searchParams = deepClone(params)
+      const dataApi = this.customerType == 1 ? customerListApi : businessUserListApi
       dataApi(ObjectMap(this.searchParams)).then(response => {
-        this.tableData = response.data.list;
-        this.total = response.data.record;
-        this.listLoading = false;
+        this.tableData = response.data.list
+        this.total = response.data.record
+        this.listLoading = false
       })
     },
     /* 查看智能设备密码 */
-    getDevivePWD (row, i) {
+    getDevivePWD(row, i) {
       devicePasswordApi({
         deviceId: row.deviceId
       }).then((res) => {
@@ -417,7 +417,7 @@ export default {
       })
     }
   }
-};
+}
 </script>
 <style rel="stylesheet/scss" lang="scss">
 </style>

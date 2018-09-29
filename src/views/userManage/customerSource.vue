@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-09-26 18:01:22
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-09-29 14:17:37
+ * @Last Modified time: 2018-09-29 14:28:01
  */
 <template>
   <div class="app-container">
@@ -805,8 +805,8 @@ export default {
         resData.map((item, index) => {
           item.index = index * 1 + 1
           item.bookingTime = parseTime(item.bookingTime, '{y}-{m}-{d} {h}:{i}')
-          item.createTime = parseTime(item.createTime, '{y}-{m}-{d} {h}:{i}')
-          item.modifyTime = item.modifyTime ? parseTime(item.modifyTime, '{y}-{m}-{d} {h}:{i}') : ''
+          item.createTime = parseTime(item.createTime)
+          item.modifyTime = item.modifyTime ? parseTime(item.modifyTime) : ''
           item.housingType = item.housingType * 1 === 1 ? '集中式' : '分散式'
           item.processStatus = item.processStatus * 1 === 1 ? '已处理' : '未处理'
         })
