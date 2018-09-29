@@ -335,6 +335,7 @@
                   :value="item.landlordMobile">
                 </el-option>
               </el-select>
+              <span style="color: #999;">支持自定义，输入手机号按回车键确定</span>
             </el-form-item>
             <el-form-item label="租客手机号" prop="tenantMobile">
               <el-input
@@ -627,7 +628,7 @@ export default {
         pageSize: 10,
         ...params
       }).then((res) => {
-        if (this.infoTitle === '新增客源') {
+        if (!flag) {
           this.layer_showInfo = true
           this.$set(this, 'roomsInfoList', res.data.content || [])
           this.activeName = '1'
