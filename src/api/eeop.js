@@ -65,7 +65,7 @@ export const appIconApi = {
       url: appIconApi.defaultOptions.requestUrl,
       method: 'post',
       data: {
-        method: defaultOptions.method,
+        method: appIconApi.defaultOptions.method,
         params
       }
     })
@@ -143,7 +143,7 @@ export const infomationApi = {
       url: infomationApi.defaultOptions.requestUrl,
       method: 'post',
       data: {
-        method: defaultOptions.method,
+        method: infomationApi.defaultOptions.method,
         params
       }
     })
@@ -181,10 +181,9 @@ export const hotRecommendApi = {
       url: hotRecommendApi.defaultOptions.requestUrl,
       method: 'post',
       data: {
-        method: defaultOptions.method,
+        method: hotRecommendApi.defaultOptions.method,
         params
       }
     })
   }
 }
-

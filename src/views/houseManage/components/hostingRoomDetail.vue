@@ -282,6 +282,19 @@ import { fhdAuditApi } from '@/api/auditCenter'
 import Preview from '@/components/Preview/Preview'
 import ImageCropper from '@/components/ImageCropper/Cropper'
 import { deepClone } from '@/utils'
+const checkDiff = (a, b) => {
+  let diffCount = 0
+  if (a.length !== b.length) {
+    diffCount++
+    return diffCount
+  }
+  a.forEach((item, index) => {
+    if (item.imageName !== b[index].imageName) {
+      diffCount++
+    }
+  })
+  return diffCount > 0
+}
 export default {
   components: {
     areaSelect,
@@ -660,13 +673,13 @@ export default {
     checkEditFlag() {
       let differentFlag = false
       Object.keys(this.tempFormData).forEach((key) => {
-        if (JSON.stringify(this.tempFormData[key]) != JSON.stringify(this.hostingRoomDetail[key])) {
+        if (JSON.stringify(this.tempFormData[key]) !== JSON.stringify(this.hostingRoomDetail[key])) {
           if (key === 'pictures') {
             differentFlag = checkDiff(this.tempFormData[key], this.hostingRoomDetail[key])
           } else if (key === 'hostingRooms') {
             this.tempFormData['hostingRooms'].forEach((v, i) => {
               Object.keys(v).forEach((k) => {
-                if (JSON.stringify(v[k]) != JSON.stringify(this.hostingRoomDetail['hostingRooms'][i][k])) {
+                if (JSON.stringify(v[k]) !== JSON.stringify(this.hostingRoomDetail['hostingRooms'][i][k])) {
                   if (k === 'pictures') {
                     differentFlag = checkDiff(v[k], this.hostingRoomDetail['hostingRooms'][i]['pictures'])
                   } else {
@@ -677,18 +690,6 @@ export default {
             })
           } else {
             differentFlag = true
-          }
-          function checkDiff(a, b) {
-            let diffCount = 0
-            if (a.length !== b.length) {
-              return true
-            }
-            a.forEach((item, index) => {
-              if (item.imageName !== b[index].imageName) {
-                diffCount++
-              }
-            })
-            return diffCount > 0
           }
         }
       })

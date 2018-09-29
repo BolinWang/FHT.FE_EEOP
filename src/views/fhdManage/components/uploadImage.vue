@@ -46,6 +46,7 @@ export default {
   },
   methods: {
     pictureError(err, file) {
+      console.log(err)
       file = null
     },
     handleExceed(files) {
@@ -66,7 +67,7 @@ export default {
     // 上传的图片列表
     pictureUpload(file) {
       const isLt5M = file.size / 1024 / 1024 <= 5
-      if (['image/jpeg', 'image/jpg', 'image/png'].indexOf(file.type) == -1) {
+      if (['image/jpeg', 'image/jpg', 'image/png'].indexOf(file.type) === -1) {
         this.$message.error('请上传jpg/png的图片')
         return false
       }

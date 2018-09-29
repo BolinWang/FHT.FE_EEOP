@@ -89,7 +89,6 @@
 <script>
 import Preview from '@/components/Preview/Preview'
 import { upgradeRealNameApi } from '@/api/auditCenter'
-import { deepClone } from '@/utils'
 
 export default {
   name: 'persontoComponySign',
@@ -140,7 +139,7 @@ export default {
           return false
         }
         this.data_detail.realNameAuth = response.data.data.result ? 1 : 2
-        if (this.data_detail.realNameAuth == 2) {
+        if (this.data_detail.realNameAuth * 1 === 2) {
           this.status = 3
         }
       })

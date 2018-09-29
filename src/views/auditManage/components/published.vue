@@ -85,7 +85,7 @@
   </div>
 </template>
 <script>
-import { parseTime, ObjectMap, deepClone } from '@/utils'
+import { ObjectMap, deepClone } from '@/utils'
 import { queryPublishRoomListByPageApi, queryPublishRoomDetailApi, savePublishStatusApi, batchRemoveRoomPictureApi } from '@/api/auditCenter'
 import { getCityListApi } from '@/api/houseManage'
 import waves from '@/directive/waves'
@@ -167,7 +167,7 @@ export default {
   },
   created() {
     this.housingType = this.type
-    if (this.housingType == 1) {
+    if (this.housingType * 1 === 1) {
       this.$set(this.colModels[1], 'label', '精品公寓-房型')
       this.colModels.splice(2, 1)
       this.colModels.splice(-1, 1)
@@ -254,7 +254,7 @@ export default {
     },
     /* 查看详情 */
     handleView(index, row) {
-      this.reviewData = this.housingType == 1 ? {
+      this.reviewData = this.housingType * 1 === 1 ? {
         estateRoomTypeId: row.estateRoomTypeId
       } : {
         roomId: row.roomId
@@ -268,7 +268,7 @@ export default {
       })
     },
     saveReviewData(val) {
-      if (val.checked != undefined) {
+      if (val.checked !== undefined) {
         this.reviewData.checked = val.checked
       }
       if (val.ids) {

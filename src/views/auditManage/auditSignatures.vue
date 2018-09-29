@@ -115,7 +115,7 @@ export default {
       return dialogWidth[type - 1] || '800px'
     },
     formatTime(val, item) {
-      if (item.status == 1) {
+      if (item.status * 1 === 1) {
         return ''
       }
       return `${parseTime(val)} ${item.operator}`
@@ -247,7 +247,7 @@ export default {
         this.$message.error('请选择审核结果')
         return false
       }
-      if (this.saveAuditParam.status == 3 && !this.saveAuditParam.reject_remark) {
+      if (this.saveAuditParam.status * 1 === 3 && !this.saveAuditParam.reject_remark) {
         this.$message.error('请输入审核不通过原因')
         return false
       }

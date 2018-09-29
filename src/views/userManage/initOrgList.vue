@@ -271,7 +271,7 @@ export default {
         return ''
       }
       return statusStrData[key][status] ||
-        (key == 'status' ? '申请中' : '')
+        (key === 'status' ? '申请中' : '')
     },
     dateFilter(value) {
       return `${parseTime(value)} `
@@ -457,15 +457,15 @@ export default {
       this.overlayTitle = val ? '基本资料' : '新增组织'
     },
     'formData.organizationType'(val) {
-      if (val == 3) {
-        if (this.colModels.length == 5) {
+      if (val * 1 === 3) {
+        if (this.colModels.length === 5) {
           this.colModels.splice(2, 0, {
             prop: 'contractMobile',
             label: '联系电话'
           })
         }
       } else {
-        if (this.colModels.length == 6) {
+        if (this.colModels.length === 6) {
           this.colModels.splice(2, 1)
         }
       }
@@ -482,7 +482,7 @@ export default {
       })
     },
     changeStep(num) {
-      if (this.active == 0) {
+      if (this.active === 0) {
         this.$refs.stepForm1.validate((valid) => {
           if (valid) {
             [
@@ -506,7 +506,7 @@ export default {
             return false
           }
         })
-      } else if (this.active == 1) {
+      } else if (this.active === 1) {
         if (num > 0 && !this.organizationPermTemplateId) {
           this.$message.error('请选择权限模板')
           return false
@@ -560,9 +560,9 @@ export default {
         this.layer_showInfo = true
         this.isEdit = true
 
-        if (this.rowType != 3) {
+        if (this.rowType !== 3) {
           this.financeTrusteeshipType = result.financeTrusteeshipType.toString()
-          this.financeEdit = this.financeTrusteeshipType == '2'
+          this.financeEdit = this.financeTrusteeshipType === '2'
           Object.keys(this.stepForm1).map(key => {
             this.stepForm1[key] = result[key] || ''
           })
@@ -573,7 +573,7 @@ export default {
               'url': key.picUrl
             }
           })
-          if (this.stepForm1.picList.length == 10) {
+          if (this.stepForm1.picList.length === 10) {
             this.isHideUpload = true
           }
           this.areaCode = [
@@ -670,14 +670,14 @@ export default {
       this.active = 0
     },
     enableItems() { // 启用
-      if (this.multipleSelection.length == 0) {
+      if (this.multipleSelection.length === 0) {
         this.$message.error('请选择要启用的组织')
         return false
       }
-      let flag = true,
-        organizationIds = []
+      let flag = true
+      const organizationIds = []
       this.multipleSelection.map(key => {
-        if (key.status == 1) {
+        if (key.status * 1 === 1) {
           flag = false
           this.$message.error('已启用的组织不能再启用')
           return false
@@ -706,14 +706,14 @@ export default {
       }
     },
     disableItems() { // 禁用
-      if (this.multipleSelection.length == 0) {
+      if (this.multipleSelection.length === 0) {
         this.$message.error('请选择要停用的组织')
         return false
       }
-      let flag = true,
-        organizationIds = []
+      let flag = true
+      const organizationIds = []
       this.multipleSelection.map(key => {
-        if (key.status == 2) {
+        if (key.status === 2) {
           flag = false
           this.$message.error('已停用的组织不能再停用')
           return false
@@ -769,7 +769,7 @@ export default {
     /* 上传图片 */
     pictureUpload(file) {
       const isLt5M = file.size / 1024 / 1024 <= 5
-      if (['image/jpeg', 'image/jpg', 'image/png'].indexOf(file.type) == -1) {
+      if (['image/jpeg', 'image/jpg', 'image/png'].indexOf(file.type) === -1) {
         this.$message.error('请上传jpg/png的图片')
         return false
       }
@@ -810,6 +810,7 @@ export default {
       })
     },
     pictureError(err, file) {
+      console.log(err)
       file = null
     },
     resetFile(file) {
@@ -864,13 +865,13 @@ export default {
       this.getGridData(this.pageItems)
     },
     changefinanceType(val) {
-      if (val != 2) {
+      if (val * 1 !== 2) {
         return false
       }
       checkCanBeFinanceTrusteeshipApi({
         organizationId: this.stepForm1.organizationId
       }).then(response => {
-        if (response.code != 0) {
+        if (response.code * 1 !== 0) {
           const _this = this
           this.$alert(response.message, '标记托底方失败', {
             type: 'error',

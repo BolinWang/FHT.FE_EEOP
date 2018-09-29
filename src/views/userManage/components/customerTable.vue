@@ -117,7 +117,7 @@
 <script>
 import waves from '@/directive/waves'
 import GridUnit from '@/components/GridUnit/grid'
-import { customerListApi, businessUserListApi, queryRentRecordApi, deviceListApi, devicePasswordApi } from '@/api/userManage'
+import { customerListApi, businessUserListApi, devicePasswordApi } from '@/api/userManage'
 import { ObjectMap, deepClone, plusXing } from '@/utils'
 
 export default {
@@ -159,7 +159,7 @@ export default {
         return ''
       }
       return statusStrData[key][status] ||
-        (key == 'authenticationSource' ? '其他' : '')
+        (key === 'authenticationSource' ? '其他' : '')
     },
     xing(val) {
       const value = (val && val.length >= 7) ? plusXing(val, 3, 4) : val
@@ -200,7 +200,7 @@ export default {
           type: 'status',
           unitFilters: {
             renderStatusType(status) {
-              return status == 1 ? 'success' : 'info'
+              return status * 1 === 1 ? 'success' : 'info'
             },
             renderStatusValue(status) {
               const statusStrData = ['未入住', '在住', '申请换房', '申请退房', '已搬离']
@@ -216,7 +216,7 @@ export default {
           type: 'status',
           unitFilters: {
             renderStatusType(status) {
-              return status == 1 ? 'success' : 'info'
+              return status * 1 === 1 ? 'success' : 'info'
             },
             renderStatusValue(status) {
               const statusStrData = ['否', '是']
@@ -233,7 +233,7 @@ export default {
           filterType: 'housingType',
           width: 80,
           render(row) {
-            return row.housingType == 1 ? '集中式' : '分散式'
+            return row.housingType * 1 === 1 ? '集中式' : '分散式'
           }
         },
         { prop: 'orgName', label: '归属组织' }
@@ -295,7 +295,7 @@ export default {
     }
   },
   created() {
-    if (this.customerType == 1) {
+    if (this.customerType * 1 === 1) {
       this.colModels = [
         { prop: 'customerId', label: 'ID' },
         { prop: 'customerName', label: '用户名' },
@@ -401,7 +401,7 @@ export default {
     getGridData(params) {
       this.listLoading = true
       this.searchParams = deepClone(params)
-      const dataApi = this.customerType == 1 ? customerListApi : businessUserListApi
+      const dataApi = this.customerType * 1 === 1 ? customerListApi : businessUserListApi
       dataApi(ObjectMap(this.searchParams)).then(response => {
         this.tableData = response.data.list
         this.total = response.data.record

@@ -10,7 +10,6 @@
 <script>
 import waves from '@/directive/waves' // 水波纹指令
 import customerTable from './components/customerTable'
-import { parseTime } from '@/utils'
 
 export default {
   name: 'initCustomerList',

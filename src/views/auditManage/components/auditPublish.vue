@@ -156,12 +156,12 @@ export default {
       return `${item.province}/${item.city}/${item.region}`
     },
     formatTime(val, prop, item) {
-      const name = prop == 'publishTime' ? item.publisher : item.reviewer
+      const name = prop === 'publishTime' ? item.publisher : item.reviewer
       return `${parseTime(val)} ${name}`
     },
     formatRoomName(val, item) {
-      let unitCodeStr = item.unitCode ? (item.unitCode + '单元 ') : '',
-        buildingNameStr = item.buildingName ? (item.buildingName + '幢 ') : ''
+      const unitCodeStr = item.unitCode ? (item.unitCode + '单元 ') : ''
+      const buildingNameStr = item.buildingName ? (item.buildingName + '幢 ') : ''
       return ('【' + item.subdistrictName + '】' +
         buildingNameStr + unitCodeStr +
         item.floorName + '楼 ' + item.roomNo + '号 ' + '- ' + (item.roomName || '整套房间'))
@@ -333,7 +333,7 @@ export default {
         estateTypeId: row.estateTypeId,
         groupCode: row.groupCode
       }
-      const params = this.housingType == 1 ? {
+      const params = this.housingType * 1 === 1 ? {
         estateId: row.estateId,
         estateTypeId: row.estateTypeId,
         groupCode: row.groupCode,
@@ -350,7 +350,7 @@ export default {
       })
     },
     saveReviewData(val) {
-      if (val.checked != undefined) {
+      if (val.checked !== undefined) {
         this.reviewData.checked = val.checked
       }
     },
@@ -418,7 +418,7 @@ export default {
       queryMessageQuantityApi().then(response => {
         const responseData = response.data
         const stateMessageData = this.$store.state.app.messageData
-        if (JSON.stringify(stateMessageData) != JSON.stringify(responseData)) {
+        if (JSON.stringify(stateMessageData) !== JSON.stringify(responseData)) {
           this.$store.dispatch('UpdateMessageData', response.data || {})
         }
       })

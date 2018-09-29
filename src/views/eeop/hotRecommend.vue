@@ -64,7 +64,7 @@
 <script>
 import waves from '@/directive/waves'
 import GridUnit from '@/components/GridUnit/grid'
-import { deepClone, cleanArray, ObjectMap } from '@/utils'
+import { cleanArray, ObjectMap } from '@/utils'
 import { hotRecommendApi, appIconApi } from '@/api/eeop'
 
 export default {

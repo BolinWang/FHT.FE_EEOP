@@ -317,7 +317,7 @@ export default {
       row.minMonthNum = row.rentQty
     },
     deleteCurRentPay(row) {
-      this.$set(this, 'rentPayList', this.rentPayList.filter((item) => item != row))
+      this.$set(this, 'rentPayList', this.rentPayList.filter((item) => item !== row))
     },
     returnRentPayList() {
       let list = false

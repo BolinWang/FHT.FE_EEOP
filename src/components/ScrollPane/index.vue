@@ -1,8 +1,8 @@
 /*
- * @Author: FT.FE.Bolin 
- * @Date: 2018-04-11 16:51:47 
+ * @Author: FT.FE.Bolin
+ * @Date: 2018-04-11 16:51:47
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-04-12 16:19:15
+ * @Last Modified time: 2018-09-29 14:56:34
  */
 
 <template>
@@ -60,6 +60,7 @@ export default {
         $targetLeft + padding > -this.left &&
         $targetLeft + $targetWidth < -this.left + $containerWidth - padding
       ) {
+        console.log('bolin')
       } else {
         this.left = -($targetLeft - ($containerWidth - $targetWidth) + padding)
       }
@@ -78,7 +79,7 @@ export default {
     position: absolute;
     -moz-user-select:none;
     -webkit-user-select:none;
-    user-select:none;  
+    user-select:none;
   }
 }
 </style>

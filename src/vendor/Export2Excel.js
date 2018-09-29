@@ -1,6 +1,7 @@
+/* eslint-disable */
+import XLSX from 'xlsx'
 require('script-loader!file-saver')
 require('script-loader!@/vendor/Blob')
-import XLSX from 'xlsx'
 
 function generateArray(table) {
   var out = []
@@ -124,20 +125,20 @@ export function export_json_to_excel(th, jsonData, defaultTitle, defaultSheetNam
   var wb = new Workbook(),
     ws = sheet_from_array_of_arrays(data)
 
-  /* 设置worksheet每列的最大宽度*/
+  /* 设置worksheet每列的最大宽度 */
   const colWidth = data.map(row => row.map(val => {
-    /* 先判断是否为null/undefined*/
+    /* 先判断是否为null/undefined */
     if (val == null) {
       return { 'wch': 10 }
     }
-    /* 再判断是否为中文*/
+    /* 再判断是否为中文 */
     else if (val.toString().charCodeAt(0) > 255) {
       return { 'wch': val.toString().length * 2 }
     } else {
       return { 'wch': val.toString().length }
     }
   }))
-  /* 以第一行为初始值*/
+  /* 以第一行为初始值 */
   const result = colWidth[0]
   for (let i = 1; i < colWidth.length; i++) {
     for (let j = 0; j < colWidth[i].length; j++) {

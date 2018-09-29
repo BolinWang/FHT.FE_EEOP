@@ -285,9 +285,9 @@ export default {
     this.selectData.options = [...defaultOptions]
     this.$set(this.colModels[0], 'prop', this.eeopType + 'Status')
     this.eeopTypeStr = eeopTypeMap[this.eeopType]
+    const _optionList = [...defaultOptions]
     switch (this.eeopType) {
       case 'interview':
-        const _optionList = [...defaultOptions]
         _optionList.pop()
         this.selectData.options = _optionList
         this.$set(this.colModels[0], 'prop', 'interviewStatus')
@@ -379,11 +379,11 @@ export default {
     pictureUpload(file) {
       const isLt500K = file.size / 1024 / 1024 <= 0.5
       const isLt1M = file.size / 1024 / 1024 <= 1
-      if (['image/jpeg', 'image/jpg', 'image/png'].indexOf(file.type) == -1) {
+      if (['image/jpeg', 'image/jpg', 'image/png'].indexOf(file.type) === -1) {
         this.$message.error('请上传jpg/png的图片')
         return false
       }
-      if (this.eeopType == 'activety' || this.eeopType == 'banner') {
+      if (this.eeopType === 'activety' || this.eeopType === 'banner') {
         if (!isLt500K) {
           this.$message.error('请上传500Kb大小以内的图片')
           return false
@@ -418,6 +418,7 @@ export default {
       }
     },
     pictureError(err, file) {
+      console.log(err)
       file = null
     },
     resetFile(file) {
@@ -517,7 +518,7 @@ export default {
       }
       this.temp = Object.assign({}, row)
       this.temp.effectiveTime = new Date(this.temp.effectiveTime)
-      if (this.eeopType != 'interview') {
+      if (this.eeopType !== 'interview') {
         this.temp.ineffectiveTime = new Date(this.temp.ineffectiveTime)
       }
       this.$nextTick(() => {
@@ -529,7 +530,7 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           this.temp.effectiveTime = parseTime(this.temp.effectiveTime)
-          if (this.eeopType != 'interview') {
+          if (this.eeopType !== 'interview') {
             this.temp.ineffectiveTime = parseTime(this.temp.ineffectiveTime)
             if (this.temp.effectiveTime >= this.temp.ineffectiveTime) {
               this.$message.error('上线时间必须小于下线时间')
@@ -552,7 +553,7 @@ export default {
       }, this.urlPathObj).then(response => {
         this.sort_tableData = response.data.content.sort((a, b) => a['sortNum'] * 1 - b['sortNum'] * 1)
         console.log(this.sort_tableData)
-        if (this.sort_tableData.length == 0) {
+        if (this.sort_tableData.length === 0) {
           this.$message.error('没有【已上线】的数据')
           return false
         }
@@ -562,8 +563,8 @@ export default {
     saveData(params, type) {
       /* 列表排序 */
       const savePatams = deepClone(params)
-      if (type == 'sort') {
-        savePatams.forEach((item, index) => item.sortNum = index * 1 + 1)
+      if (type === 'sort') {
+        savePatams.forEach((item, index) => { item.sortNum = index * 1 + 1 })
       } else {
         if (this.nowOnline) {
           // savePatams[0][this.colModels[0].prop] = 2;

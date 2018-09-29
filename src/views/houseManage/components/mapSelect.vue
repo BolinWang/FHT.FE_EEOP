@@ -175,6 +175,7 @@ export default {
         selectAddr += selectRegion[0].label
       }
 
+      // eslint-disable-next-line
       self.map = new BMap.Map('bm-view', { minZoom: 13, maxZoom: 19 }) // 创建地图实例
       self.map.centerAndZoom(selectAddr || '杭州市', 15)
       self.map.enableScrollWheelZoom(true)
@@ -185,7 +186,8 @@ export default {
       const options = {
         onSearchComplete: function(results) {
           // 判断状态是否正确
-          if (self.local.getStatus() == BMAP_STATUS_SUCCESS) {
+          // eslint-disable-next-line
+          if (self.local.getStatus() === BMAP_STATUS_SUCCESS) {
             self.searchResult = []
             for (var i = 0; i < results.getCurrentNumPois(); i++) {
               self.searchResult.push(results.getPoi(i))
@@ -193,6 +195,7 @@ export default {
           }
         }
       }
+      // eslint-disable-next-line
       self.local = new BMap.LocalSearch(self.map, options)
     },
     searchPositionByKeywords() { // 关键字搜索小区列表
@@ -207,9 +210,11 @@ export default {
           address: o.address
         }))
       }
-
+      // eslint-disable-next-line
       const point = new BMap.Point(position.lng, position.lat)
+      // eslint-disable-next-line
       const marker = new BMap.Marker(point)
+      // eslint-disable-next-line
       const geoc = new BMap.Geocoder()
       this.map.clearOverlays()
       this.map.addOverlay(marker)
@@ -270,7 +275,7 @@ export default {
       let source = 1
       if (status === 0) {
         Object.keys(this.mapSelectForm).forEach((key) => {
-          if (this.mapSelectForm[key] != this.tempMapData[key]) {
+          if (this.mapSelectForm[key] !== this.tempMapData[key]) {
             source = 5
           }
         })

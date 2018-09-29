@@ -49,7 +49,7 @@ export default {
   },
   methods: {
     changeType() {
-      this.from.overdueType == this.orderType ? this.from.overdueReason = this.orderReason : this.from.overdueReason = ''
+      this.from.overdueType === this.orderType ? this.from.overdueReason = this.orderReason : this.from.overdueReason = ''
     },
     closeDialog() {
       this.dialogFormVisible = false
@@ -64,7 +64,7 @@ export default {
         })
         return false
       }
-      if (this.from.overdueType != 1 && params.overdueReason == undefined) {
+      if (this.from.overdueType !== 1 && params.overdueReason === undefined) {
         this.$message({
           message: '请填写逾期原因',
           type: 'success'
@@ -87,7 +87,7 @@ export default {
       this.from.id = id
     },
     filStatus(val) {
-      const b = val != 1
+      const b = val !== 1
       return b
     }
   }

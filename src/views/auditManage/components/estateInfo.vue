@@ -136,8 +136,7 @@
 <script>
 import Preview from '@/components/Preview/Preview'
 import ImageCropper from '@/components/ImageCropper/Cropper'
-import { parseTime, ObjectMap, deepClone } from '@/utils'
-import noPic from '@/assets/noPic.jpg'
+import { deepClone } from '@/utils'
 import store from '@/store'
 
 export default {
@@ -338,7 +337,7 @@ export default {
       deep: true
     },
     checked(val) {
-      if (this.type == 'published') {
+      if (this.type === 'published') {
         this.$emit('saveReviewData', {
           checked: val,
           type: 'pulished'

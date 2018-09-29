@@ -18,7 +18,7 @@ Vue.config.productionTip = false
 Vue.use(ElementUI)
 Vue.use(VuePreview)
 Vue.use(VueLazyload, {
-  /* error: errorPic,*/
+  /* error: errorPic, */
   loading: lazyLoadPic
 })
 Vue.component('icon-svg', IconSvg)
@@ -69,6 +69,6 @@ new Vue({
   el: '#app',
   router,
   store,
-  template: '<App/>',
-  components: { App }
+  components: { App },
+  template: '<App/>'
 })

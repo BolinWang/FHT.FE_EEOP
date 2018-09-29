@@ -89,7 +89,7 @@ export default {
       if (!val) {
         return ''
       }
-      const contactGender = row.contactGender == 1 ? '先生' : '女士'
+      const contactGender = row.contactGender * 1 === 1 ? '先生' : '女士'
       return `${val} ${contactGender}`
     },
     filterTags(val) {
@@ -182,7 +182,7 @@ export default {
     },
     searchParam() {
       const params = deepClone(this.formData)
-      if (this.housingTypeClone == 1) {
+      if (this.housingTypeClone * 1 === 1) {
         params.estateId = params.subdistrictId
       }
       this.getGridData(Object.assign({
@@ -191,27 +191,27 @@ export default {
       }, params))
     },
     cityChange(value) {
-      if (value == '') {
+      if (value === '') {
         this.subdistrictOptions = this.subdistrictOptionsClone
       } else {
         this.formData.subdistrictId = ''
         this.formData.regionId = ''
         this.subdistrictOptions = this.subdistrictOptionsClone.filter((item) => {
-          return item.cityId == value
+          return item.cityId * 1 === value * 1
         })
         const currentItem = this.cityOptions.filter((item) => {
-          return item.cityId == value
+          return item.cityId * 1 === value * 1
         })
         this.regionOptions = currentItem[0].areaList
       }
     },
     regionChange(value) {
       this.formData.subdistrictId = ''
-      if (value == '') {
+      if (value === '') {
         this.cityChange(this.formData.cityId)
       } else {
         this.subdistrictOptions = this.subdistrictOptionsClone.filter((item) => {
-          return item.areaId == value
+          return item.areaId * 1 === value * 1
         })
       }
     },
@@ -245,7 +245,7 @@ export default {
   watch: {
     housingType(val) {
       this.housingTypeClone = val
-      this.placeholder = val == 1 ? '公寓' : '小区'
+      this.placeholder = val * 1 === 1 ? '公寓' : '小区'
       this.pageItems = {
         pageNo: 1,
         pageSize: 20

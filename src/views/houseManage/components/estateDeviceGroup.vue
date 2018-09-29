@@ -22,7 +22,6 @@
 </template>
 
 <script>
-import { deepClone } from '@/utils'
 const activeTabMap = {
   first: 'services',
   second: 'storeServices',

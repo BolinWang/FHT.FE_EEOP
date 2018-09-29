@@ -196,7 +196,7 @@ export default {
       this.formData.endDate = val[1] ? parseTime(val[1]) : ''
     },
     textareaVal(val) {
-      if (val != '') {
+      if (val !== '') {
         this.formData.orgNames = val.split(/[\n|\r\n|\r]/gi).join(',')
       }
     }

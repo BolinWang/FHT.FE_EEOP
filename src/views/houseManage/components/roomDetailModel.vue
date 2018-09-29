@@ -187,6 +187,19 @@
 import { deepClone } from '@/utils'
 import Preview from '@/components/Preview/Preview'
 import ImageCropper from '@/components/ImageCropper/Cropper'
+const checkDiff = (a, b) => {
+  let diffCount = 0
+  if (a.length !== b.length) {
+    diffCount++
+    return diffCount
+  }
+  a.forEach((item, index) => {
+    if (item.imageName !== b[index].imageName) {
+      diffCount++
+    }
+  })
+  return diffCount > 0
+}
 export default {
   name: 'roomDetailModel',
   components: {
@@ -307,24 +320,11 @@ export default {
     checkEditFlag() {
       let differentFlag = false
       Object.keys(this.tempFormData).forEach((key) => {
-        if (JSON.stringify(this.tempFormData[key]) != JSON.stringify(this.roomDetailModel[key])) {
+        if (JSON.stringify(this.tempFormData[key]) !== JSON.stringify(this.roomDetailModel[key])) {
           if (key === 'pictureList') {
             differentFlag = checkDiff(this.tempFormData[key], this.roomDetailModel[key])
           } else {
             differentFlag = true
-          }
-          function checkDiff(a, b) {
-            let diffCount = 0
-            if (a.length !== b.length) {
-              diffCount++
-              return diffCount
-            }
-            a.forEach((item, index) => {
-              if (item.imageName !== b[index].imageName) {
-                diffCount++
-              }
-            })
-            return diffCount > 0
           }
         }
       })

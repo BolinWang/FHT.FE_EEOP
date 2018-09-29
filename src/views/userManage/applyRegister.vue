@@ -104,7 +104,7 @@
 </template>
 <script>
 import waves from '@/directive/waves' // 水波纹指令
-import { parseTime, ObjectMap, deepClone } from '@/utils'
+import { ObjectMap, deepClone } from '@/utils'
 import {
   queryUserRequestByPageApi, saveUserRequestApi, registeredUserApi,
   initFlyOrgApi, addTempOrgApi, bindWithdrawCardApi

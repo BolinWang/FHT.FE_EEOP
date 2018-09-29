@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-04-11 16:50:01
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-06-13 14:19:53
+ * @Last Modified time: 2018-09-29 14:42:27
  */
 
 <template>
@@ -141,8 +141,8 @@
         if (degrees === 0) {
           return callback(image.src, w, h)
         }
-        const sx = 0
-        const sy = 0
+        // const sx = 0
+        // const sy = 0
         if ((degrees % 180) !== 0) {
           if (degrees === -90 || degrees === 270) {
             x = -w + canvasWidth / 2

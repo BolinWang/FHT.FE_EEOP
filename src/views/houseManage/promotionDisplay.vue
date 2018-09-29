@@ -104,7 +104,7 @@
 import GridUnit from '@/components/GridUnit/grid'
 import draggable from 'vuedraggable'
 import Preview from '@/components/Preview/Preview'
-import { parseTime, ObjectMap, deepClone } from '@/utils'
+import { ObjectMap, deepClone } from '@/utils'
 import { getCityListApi, getGridApi, saveDataApi } from '@/api/houseManage'
 import noPic from '@/assets/noPic.jpg'
 
@@ -179,7 +179,6 @@ export default {
       layer_appsort: false,
       isDragging: false,
       delayedDragging: false,
-      tableHeight: 300,
       method: 'queryEstateListByPage',
       url: '/market/estate/'
     }
@@ -194,7 +193,7 @@ export default {
     window.onresize = () => {
       return (() => {
         temp_height = document.body.clientHeight - 200
-        this.tableHeight = this.tableHeight = temp_height > 300 ? temp_height : 300
+        this.tableHeight = temp_height > 300 ? temp_height : 300
       })()
     }
   },
@@ -230,7 +229,7 @@ export default {
     },
     /* 立即下架 */
     downImmediate(index, row) {
-      if (row.showStatus != 2) {
+      if (row.showStatus * 1 !== 2) {
         this.$message.error('请选择【已展示】的房源进行下架')
         return false
       }
@@ -242,9 +241,9 @@ export default {
     /* 公寓信息 */
     showEstateInfo(row) {
       const deepCloneObj = deepClone(row)
-      this.temp.estateName = (deepCloneObj.type == 1 ? '【集中式】' : '【分散式】') + deepCloneObj.estateName
+      this.temp.estateName = (deepCloneObj.type * 1 === 1 ? '【集中式】' : '【分散式】') + deepCloneObj.estateName
       this.temp.contactNameInfo = deepCloneObj.contactName
-        ? deepCloneObj.contactName + (deepCloneObj.contactGender == 1 ? ' 先生 ' : ' 女士 ') + deepCloneObj.contactMobile : ''
+        ? deepCloneObj.contactName + (deepCloneObj.contactGender * 1 === 1 ? ' 先生 ' : ' 女士 ') + deepCloneObj.contactMobile : ''
       this.temp.longitude = deepCloneObj.longitude
       this.temp.latitude = deepCloneObj.latitude
       this.temp.bmapData = this.temp.longitude + ',' + this.temp.latitude
@@ -293,7 +292,7 @@ export default {
         status: 2
       }).then(response => {
         this.sort_tableData = response.data.content.sort((a, b) => a['sortNum'] * 1 - b['sortNum'] * 1)
-        if (this.sort_tableData.length == 0) {
+        if (this.sort_tableData.length === 0) {
           this.$message.error('没有【已展示】的房源')
           return false
         }
@@ -302,8 +301,8 @@ export default {
     },
     saveData(params, type) {
       const savePatams = deepClone(params)
-      if (type == 'sort') {
-        savePatams.forEach((item, index) => item.sortNum = index * 1 + 1)
+      if (type === 'sort') {
+        savePatams.forEach((item, index) => { item.sortNum = index * 1 + 1 })
       }
       saveDataApi(savePatams).then(response => {
         this.layer_appsort = false
@@ -319,18 +318,23 @@ export default {
     /* 百度地图 */
     openBMap() {
       this.$nextTick(() => {
+        // eslint-disable-next-line
         const map = new BMap.Map('addressMap')
         if (this.temp.bmapData) {
+          // eslint-disable-next-line
           const point = new BMap.Point(this.temp.longitude * 1 || 0, this.temp.latitude * 1 || 0)
           map.centerAndZoom(point, 14)
+          // eslint-disable-next-line
           map.addOverlay(new BMap.Marker(point))
         } else {
           map.centerAndZoom('杭州市', 12)
         }
+        // eslint-disable-next-line
         map.addControl(new BMap.MapTypeControl())
         map.enableScrollWheelZoom(true)
         map.addEventListener('click', function(e) {
           map.clearOverlays()
+          // eslint-disable-next-line
           map.addOverlay(new BMap.Marker(new BMap.Point(e.point.lng, e.point.lat)))
         })
       })

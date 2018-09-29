@@ -145,8 +145,7 @@
 
 <script>
 import Preview from '@/components/Preview/Preview'
-import { ObjectMap, deepClone } from '@/utils'
-import noPic from '@/assets/noPic.jpg'
+import { deepClone } from '@/utils'
 import store from '@/store'
 const bankList = [
   { value: '01000000', name: '邮储银行' },

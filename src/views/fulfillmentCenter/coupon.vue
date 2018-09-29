@@ -2,11 +2,11 @@
     <div class="app-container">
         <div class="model-search clearfix">
            <el-form size="small" :inline="true" :model="formData">
-                <el-input size="small" v-model="formData.keyword" placeholder="优惠券名称"  
+                <el-input size="small" v-model="formData.keyword" placeholder="优惠券名称"
                     style="width:260px;"
-                    @keydown.native.enter="searchParam">    
+                    @keydown.native.enter="searchParam">
                 </el-input>
-                <el-select size="small" v-model="formData.type" 
+                <el-select size="small" v-model="formData.type"
                     placeholder="状态" class="item-select" style="width: 120px;"
                     clearable>
                     <el-option
@@ -16,7 +16,7 @@
                         :value="item.value">
                     </el-option>
                 </el-select>
-                <el-select size="small" v-model="formData.feeType" 
+                <el-select size="small" v-model="formData.feeType"
                     placeholder="费用类型" class="item-select" style="width: 120px;"
                     clearable>
                     <el-option
@@ -32,17 +32,17 @@
             </el-form>
         </div>
         <div class="model-table" :style="tableStyle">
-            <el-table 
-                :data="tableData" 
-                v-loading.body="listLoading" 
-                :max-height="tableHeight" 
+            <el-table
+                :data="tableData"
+                v-loading.body="listLoading"
+                :max-height="tableHeight"
                 size="small"
                 fit stripe highlight-current-row>
                 <el-table-column type="index" width="60" align="center"></el-table-column>
                 <el-table-column v-for="(item,index) in colModels"
-                    :label="item.label" 
+                    :label="item.label"
                     :width="item.width"
-                    key="index"
+                    :key="index"
                     fit
                     show-overflow-tooltip>
                     <template slot-scope="scope">
@@ -65,29 +65,29 @@
             </el-table>
         </div>
         <div class="model-pagination">
-            <el-pagination 
+            <el-pagination
                 background
-                @size-change="handleSizeChange" 
-                @current-change="handleCurrentChange" 
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
                 :current-page.sync="pageItems.pageNo"
-                :page-sizes="pageSizeList" 
-                :page-size="pageItems.pageSize" 
-                layout="total, sizes, prev, pager, next, jumper" 
+                :page-sizes="pageSizeList"
+                :page-size="pageItems.pageSize"
+                layout="total, sizes, prev, pager, next, jumper"
                 :total="total">
             </el-pagination>
         </div>
         <div class="dialog-info">
-            <el-dialog 
-                title="创建优惠券" 
+            <el-dialog
+                title="创建优惠券"
                 :visible.sync="layer_showInfo" width="800px"
                 @close="dialogClose">
                 <el-form size="small" status-icon :model="dialogForm" :rules="rules" ref="dialogForm" label-width="140px">
                     <el-form-item label="优惠券名称" prop="name">
-                        <el-input v-model.trim="dialogForm.name" 
+                        <el-input v-model.trim="dialogForm.name"
                         ></el-input>
                     </el-form-item>
                     <el-form-item label="优惠券类型" prop="type">
-                        <el-radio v-model="dialogForm.type" 
+                        <el-radio v-model="dialogForm.type"
                                 label="1" :disabled="isDisabled">代金券</el-radio>
                     </el-form-item>
                     <div class="clearfix">
@@ -109,9 +109,9 @@
                     <div class="clearfix">
                         <el-col :span="10">
                             <el-form-item label="每人累计领取上限" prop="type1">
-                                <el-select size="small" 
-                                    v-model="dialogForm.type1" 
-                                    placeholder="状态" 
+                                <el-select size="small"
+                                    v-model="dialogForm.type1"
+                                    placeholder="状态"
                                     :disabled="isDisabled" class="item-select"
                                     >
                                     <el-option
@@ -134,9 +134,9 @@
                     <div class="clearfix">
                         <el-col :span="10">
                             <el-form-item label="券使用费用类型" prop="type2">
-                                <el-select size="small" 
-                                    v-model="dialogForm.type2" 
-                                    placeholder="请选择" 
+                                <el-select size="small"
+                                    v-model="dialogForm.type2"
+                                    placeholder="请选择"
                                     :disabled="isDisabled"
                                     class="item-select"
                                     >
@@ -146,7 +146,7 @@
                                         :label="item.label"
                                         :value="item.value">
                                     </el-option>
-                                </el-select>                                
+                                </el-select>
                             </el-form-item>
                         </el-col>
                     </div>
@@ -162,9 +162,9 @@
                     <div class="clearfix">
                         <el-col :span="10">
                             <el-form-item label="最低消费金额" prop="type3">
-                                <el-select size="small" 
-                                    v-model="dialogForm.type3" 
-                                    placeholder="请选择" 
+                                <el-select size="small"
+                                    v-model="dialogForm.type3"
+                                    placeholder="请选择"
                                     :disabled="isDisabled"
                                     class="item-select"
                                     >
@@ -174,7 +174,7 @@
                                         :label="item.label"
                                         :value="item.value">
                                     </el-option>
-                                </el-select>                                
+                                </el-select>
                             </el-form-item>
                         </el-col>
                         <el-col :span="8" v-if="dialogForm.type3 == 1">
@@ -188,9 +188,9 @@
                     <div class="clearfix">
                         <el-col :span="10">
                             <el-form-item label="券使用有效期" prop="type4">
-                                <el-select size="small" 
-                                    v-model="dialogForm.type4" 
-                                    placeholder="请选择" 
+                                <el-select size="small"
+                                    v-model="dialogForm.type4"
+                                    placeholder="请选择"
                                     :disabled="isDisabled"
                                     class="item-select"
                                     >
@@ -200,7 +200,7 @@
                                         :label="item.label"
                                         :value="item.value">
                                     </el-option>
-                                </el-select>                                
+                                </el-select>
                             </el-form-item>
                         </el-col>
                         <el-col :span="14" v-if="dialogForm.type4 == 1">
@@ -220,9 +220,9 @@
                     <div class="clearfix">
                         <el-col :span="10">
                             <el-form-item label="券不可用日期" prop="type5">
-                                <el-select size="small" 
-                                    v-model="dialogForm.type5" 
-                                    placeholder="请选择" 
+                                <el-select size="small"
+                                    v-model="dialogForm.type5"
+                                    placeholder="请选择"
                                     :disabled="isDisabled"
                                     class="item-select"
                                     >
@@ -230,16 +230,16 @@
                                         label="不限制"
                                         value="1">
                                     </el-option>
-                                </el-select>                                
+                                </el-select>
                             </el-form-item>
                         </el-col>
                     </div>
                     <div class="clearfix">
                         <el-col :span="10">
                             <el-form-item label="券使用时间段" prop="type6">
-                                <el-select size="small" 
-                                    v-model="dialogForm.type6" 
-                                    placeholder="请选择" 
+                                <el-select size="small"
+                                    v-model="dialogForm.type6"
+                                    placeholder="请选择"
                                     :disabled="isDisabled"
                                     class="item-select"
                                     >
@@ -247,7 +247,7 @@
                                         label="不限制"
                                         value="1">
                                     </el-option>
-                                </el-select>                                
+                                </el-select>
                             </el-form-item>
                         </el-col>
                     </div>
@@ -269,7 +269,7 @@
             </el-dialog>
         </div>
     </div>
-    
+
 </template>
 
 <script>
@@ -306,8 +306,8 @@
             callback()
           }
         }
-    // 正整数
-    const validateCount2 = (rule, value, callback) => {
+        // 正整数
+        const validateCount2 = (rule, value, callback) => {
           const r = /^\+?[1-9][0-9]*$/
           if (!r.test(value) || value > 100) {
             callback(new Error('请输入1 ~ 100的整数'))
@@ -315,8 +315,8 @@
             callback()
           }
         }
-    // 两位小数
-    const validateCount3 = (rule, value, callback) => {
+        // 两位小数
+        const validateCount3 = (rule, value, callback) => {
           const r = /^(([1-9][0-9]*)|(([0]\.\d{1,2}|[1-9][0-9]*\.\d{1,2})))$/
           if (!r.test(value)) {
             callback(new Error('请输入1 ~ 10,000的数字，最多两位小数'))
@@ -324,7 +324,7 @@
             callback()
           }
         }
-    return {
+        return {
           rules: {
             name: [
               { required: true, message: '请输入优惠券名称', trigger: 'blur' },
@@ -459,7 +459,7 @@
           })()
         }
         this.getGridData(this.pageItems)
-    },
+  },
       computed: {
         tableStyle: function() {
           return {
@@ -555,9 +555,9 @@
             cancelButtonText: '取消',
             type: 'warning'
           }).then(() => {
-    
+
           }).catch(() => {
-    
+
           })
         },
         dialogClose() {

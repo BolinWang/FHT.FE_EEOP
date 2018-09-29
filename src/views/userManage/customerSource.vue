@@ -2,17 +2,25 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-09-26 18:01:22
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-09-29 14:28:01
+ * @Last Modified time: 2018-09-29 14:45:58
  */
 <template>
   <div class="app-container">
     <div class="model-search clearfix">
       <div>
         <el-select
-          size="small" v-model="formData.tenantSource" placeholder="客户来源"
-          class="item-select" style="width: 150px;"
-          clearable filterable>
-          <el-option v-for="item in sourceList" :key="item.value" :label="item.label" :value="item.value">
+          size="small"
+          v-model="formData.tenantSource"
+          placeholder="客户来源"
+          class="item-select"
+          style="width: 150px;"
+          clearable
+          filterable>
+          <el-option
+            v-for="(item, index) in sourceList"
+            :key="index"
+            :label="item.label"
+            :value="item.value">
           </el-option>
         </el-select>
         <el-select

@@ -134,7 +134,7 @@
 </template>
 <script>
 import waves from '@/directive/waves' // 水波纹指令
-import { parseTime, ObjectMap, deepClone } from '@/utils'
+import { ObjectMap, deepClone } from '@/utils'
 import { validateMobile } from '@/utils/validate'
 import {
   getAreaListApi,
@@ -411,21 +411,21 @@ export default {
         ...this.rentPrice,
         ...this.roomArea,
         chamberCounts: [{
-          min: (this.isActive[2] == -1 ? '' : this.itemFilters[2].filters[this.isActive[2]].min),
-          max: (this.isActive[2] == -1 ? '' : this.itemFilters[2].filters[this.isActive[2]].max)
+          min: (this.isActive[2] === -1 ? '' : this.itemFilters[2].filters[this.isActive[2]].min),
+          max: (this.isActive[2] === -1 ? '' : this.itemFilters[2].filters[this.isActive[2]].max)
         }],
-        houseRentType: (this.isActive[3] == -1 ? '' : this.itemFilters[3].filters[this.isActive[3]].value)
+        houseRentType: (this.isActive[3] === -1 ? '' : this.itemFilters[3].filters[this.isActive[3]].value)
       })
       this.getGridData()
     },
     selectMethod(pindex, index) {
       this.$set(this.isActive, pindex, index)
-      if (pindex == 0 && this.isActive[0] != -1) {
-        this.rentPrice.minPrice = this.itemFilters[0].filters[this.isActive[0]].minPrice,
+      if (pindex * 1 === 0 && this.isActive[0] !== -1) {
+        this.rentPrice.minPrice = this.itemFilters[0].filters[this.isActive[0]].minPrice
         this.rentPrice.maxPrice = this.itemFilters[0].filters[this.isActive[0]].maxPrice
       }
-      if (pindex == 1 && this.isActive[0] != -1) {
-        this.roomArea.minRoomArea = this.itemFilters[1].filters[this.isActive[1]].min,
+      if (pindex * 1 === 1 && this.isActive[0] !== -1) {
+        this.roomArea.minRoomArea = this.itemFilters[1].filters[this.isActive[1]].min
         this.roomArea.maxRoomArea = this.itemFilters[1].filters[this.isActive[1]].max
       }
     },
@@ -435,7 +435,7 @@ export default {
         index: index,
         value: value
       })
-      if (pindex != 0) {
+      if (pindex * 1 !== 0) {
         return false
       }
       this.$set(this.isAreaActive, 1, {
@@ -443,7 +443,7 @@ export default {
         index: -1,
         value: ''
       })
-      if (index == -1) {
+      if (index * 1 === -1) {
         this.zoneList = []
         return false
       }
@@ -457,7 +457,7 @@ export default {
       this.multipleSelection = list
     },
     handlePreview(picList = []) {
-      if (!picList || picList.length == 0) {
+      if (!picList || picList.length === 0) {
         this.$message.error('暂无房源图片')
         return false
       }
@@ -472,7 +472,7 @@ export default {
     },
     changeServicer(val) {
       const filterData = this.serviceList.filter((item) => {
-        return (item.userId == val)
+        return (item.userId * 1 === val * 1)
       })[0]
       this.renterInfo.selectedServicer = {
         serverId: val,
@@ -483,7 +483,7 @@ export default {
     saveSendData() {
       this.$refs.ruleForm.validate(valid => {
         if (valid) {
-          if (this.multipleSelection.length == 0) {
+          if (this.multipleSelection.length === 0) {
             this.$message.error('请选择房源，最多5个')
             return false
           }

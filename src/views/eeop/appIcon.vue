@@ -248,7 +248,9 @@ export default {
       })
     },
     saveSort() {
-      this.sort_tableData.forEach((item, index) => item.sortNum = index * 1 + 1)
+      this.sort_tableData.forEach((item, index) => {
+        item.sortNum = index * 1 + 1
+      })
       appIconApi.saveSort(ObjectMap({
         cityId: this.searchParams.cityId,
         list: this.sort_tableData
@@ -271,7 +273,7 @@ export default {
     /* 上传图片 */
     pictureUpload(file) {
       const isLt500K = file.size / 1024 / 1024 <= 0.5
-      if (['image/jpeg', 'image/jpg', 'image/png'].indexOf(file.type) == -1) {
+      if (['image/jpeg', 'image/jpg', 'image/png'].indexOf(file.type) === -1) {
         this.$message.error('请上传jpg/png的图片')
         return false
       }
@@ -286,7 +288,7 @@ export default {
     },
     picturePreview(file) {
       const _this = this
-      if (!this.temp.picList || this.temp.picList.length == 0) {
+      if (!this.temp.picList || this.temp.picList.length === 0) {
         this.$message.error('图片预览失败')
         return false
       }
@@ -313,6 +315,7 @@ export default {
       }
     },
     pictureError(err, file) {
+      console.log(err)
       file = null
     },
     resetFile(file) {
@@ -321,7 +324,7 @@ export default {
     /* 列表排序 */
     sortApp() {
       this.sort_tableData = this.$refs.refGridUnit.tableData.sort((a, b) => a['sortNum'] * 1 - b['sortNum'] * 1)
-      if (this.sort_tableData.length == 0) {
+      if (this.sort_tableData.length === 0) {
         this.$message.error('没有可排序的数据')
         return false
       }

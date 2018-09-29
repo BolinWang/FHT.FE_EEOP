@@ -1,3 +1,4 @@
+/* eslint-disable */
 (function(view) {
   'use strict'
 

@@ -171,10 +171,10 @@ export default {
     },
     /* 删除 */
     handleDelete(index, row, type) {
-      let needDeleteList = [],
-        confirmContent = ''
-      if (type == 'multi') {
-        if (this.multipleSelection.length == 0) {
+      let needDeleteList = []
+      let confirmContent = ''
+      if (type === 'multi') {
+        if (this.multipleSelection.length === 0) {
           this.$message.error('请选择需要删除的数据')
           return false
         }

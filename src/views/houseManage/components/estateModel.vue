@@ -268,6 +268,19 @@ import RoomListSelecter from '@/components/RoomListSelecter'
 import estateDeviceGroup from './estateDeviceGroup'
 import { deepClone } from '@/utils'
 let tempNames = []
+const checkDiff = (a, b) => {
+  let diffCount = 0
+  if (a.length !== b.length) {
+    diffCount++
+    return diffCount
+  }
+  a.forEach((item, index) => {
+    if (item.imageName !== b[index].imageName) {
+      diffCount++
+    }
+  })
+  return diffCount > 0
+}
 export default {
   name: 'estateModel',
   components: {
@@ -598,19 +611,6 @@ export default {
           } else {
             differentFlag = true
           }
-          function checkDiff(a, b) {
-            let diffCount = 0
-            if (a.length !== b.length) {
-              diffCount++
-              return diffCount
-            }
-            a.forEach((item, index) => {
-              if (item.imageName !== b[index].imageName) {
-                diffCount++
-              }
-            })
-            return diffCount > 0
-          }
         }
       })
       return differentFlag
@@ -717,6 +717,7 @@ export default {
         }
       })
       const picList = this.curPicListIndex === -1 ? this.estateModel.pictureList : this.estateModel.roomTypeList[this.curPicListIndex].pictureList
+      console.log(picList)
       if (this.curPicListIndex === -1) {
         this.estateModel.pictureList = [...this.estateModel.pictureList, ...list]
       } else {

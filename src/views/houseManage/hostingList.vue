@@ -137,7 +137,7 @@ import rentPayWay from './components/rentPayWay'
 import areaSelect from '@/components/AreaSelect'
 import RoomListSelecter from '@/components/RoomListSelecter'
 import GridUnit from '@/components/GridUnit/grid'
-import { hostingHouseListApi, hostingRoomDetailApi, hostingRoomRentTypeApi, saveEstateRoomRentPayWayApi, hostingCopyItemsRoomsApi, hostingSaveCopyItemsApi, hostingSaveHouseInfoApi, hostingEditHouseInfoApi, changeRoomStatusApi, estateDeleteEstateApi } from '@/api/houseManage'
+import { hostingRoomDetailApi, hostingRoomRentTypeApi, saveEstateRoomRentPayWayApi, hostingCopyItemsRoomsApi, hostingSaveCopyItemsApi, hostingSaveHouseInfoApi, hostingEditHouseInfoApi, changeRoomStatusApi, estateDeleteEstateApi } from '@/api/houseManage'
 export default {
   name: 'hostingList',
   components: {
@@ -328,7 +328,7 @@ export default {
     roomSearchForm: {
       handler: function(val) {
         if (this.roomSearchForm.cityArea && this.roomSearchForm.cityArea[1]) {
-          this.roomSearchForm.cityId = roomSearchForm.cityArea[1]
+          this.roomSearchForm.cityId = this.roomSearchForm.cityArea[1]
         } else {
           this.roomSearchForm.cityId = ''
         }
@@ -371,7 +371,7 @@ export default {
     },
     // 查询/清空
     searchHostingHouseList(type) {
-      if (type == 'clear') {
+      if (type === 'clear') {
         for (const key in this.roomSearchForm) {
           this.roomSearchForm[key] = key === 'cityArea' ? [] : ''
         }
@@ -695,7 +695,7 @@ export default {
     checkRentPaySaveStatus() {
       const activeTabName = this.activeRentPayTabName
       const list = this.$refs.rentPayWay[Number(this.tempRentPayTabName)].returnRentPayList()
-      if (!list || JSON.stringify(this.tempRentPayList) != JSON.stringify(list)) {
+      if (!list || JSON.stringify(this.tempRentPayList) !== JSON.stringify(list)) {
         this.$nextTick(() => {
           this.activeRentPayTabName = this.tempRentPayTabName
         })
