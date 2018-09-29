@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-09-26 18:01:22
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-09-29 11:32:07
+ * @Last Modified time: 2018-09-29 11:38:47
  */
 <template>
   <div class="app-container">
@@ -344,7 +344,7 @@
                 :disabled="!(sendMessageForm.sendType || []).includes('租客')"
                 style="width: 200px;"></el-input>
             </el-form-item>
-            <el-form-item label="房东短信" v-if="!(sendMessageForm.sendType || []).includes('房东')">
+            <el-form-item label="房东短信" v-if="(sendMessageForm.sendType || []).includes('房东')">
               <el-input
                 type="textarea"
                 :autosize="{ minRows: 3}"
@@ -352,7 +352,7 @@
                 :value="`【麦邻租房】您好，${sendMessageForm.tenantName}${sendMessageForm.tenantMobile}通过麦邻租房平台成功预约您发布的房源{房源名称}，看房时间为${sendMessageForm.bookingTime}请及时跟进，若有疑问可致电400-882-7099。`">
               </el-input>
             </el-form-item>
-            <el-form-item label="租客短信" v-if="!(sendMessageForm.sendType || []).includes('房东')">
+            <el-form-item label="租客短信" v-if="(sendMessageForm.sendType || []).includes('租客')">
               <el-input
                 type="textarea"
                 :autosize="{ minRows: 3}"
