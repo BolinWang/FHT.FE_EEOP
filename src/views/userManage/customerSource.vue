@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-09-26 18:01:22
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-09-28 18:23:36
+ * @Last Modified time: 2018-09-29 11:32:07
  */
 <template>
   <div class="app-container">
@@ -16,7 +16,7 @@
           </el-option>
         </el-select>
         <el-select
-          size="small" v-model="formData.housingType" placeholder="预约类型"
+          size="small" v-model="formData.housingType" placeholder="房源类型"
           class="filter-item item-select" style="width: 150px;" clearable>
           <el-option v-for="item in housingTypeList" :key="item.value" :label="item.label" :value="item.value">
           </el-option>
@@ -26,7 +26,7 @@
           type="daterange"
           size="small"
           class="filter-item"
-          style="width: 350px;"
+          style="width: 360px;"
           align="right"
           key="dateTime"
           unlink-panels
@@ -62,7 +62,7 @@
         <el-input size="small"
           v-model="formData.mobile" placeholder="客户/房东手机号"
           class="filter-item"
-          style="width: 350px;"
+          style="width: 360px;"
           @keydown.native.enter="searchParam">
         </el-input>
         <el-button
@@ -152,6 +152,7 @@
                 type="textarea"
                 v-model="detailData.bookingRemark"
                 placeholder="最多可输入70个字"
+                :maxlength="70"
                 :rows="3"></el-input>
               <span class="limitTips">{{detailData.bookingRemark ? detailData.bookingRemark.length : 0}}/70</span>
             </el-form-item>
@@ -294,7 +295,7 @@
           </el-form>
         </div>
         <div slot="footer" class="dialog-footer">
-          <el-button @click="layer_showInfo = false" size="small">取消</el-button>
+          <el-button @click="handleClose(() => layer_showInfo = false)" size="small">取消</el-button>
           <el-button type="primary" size="small" @click="saveInfoData">确定</el-button>
         </div>
       </el-dialog>
@@ -343,7 +344,7 @@
                 :disabled="!(sendMessageForm.sendType || []).includes('租客')"
                 style="width: 200px;"></el-input>
             </el-form-item>
-            <el-form-item label="房东短信">
+            <el-form-item label="房东短信" v-if="!(sendMessageForm.sendType || []).includes('房东')">
               <el-input
                 type="textarea"
                 :autosize="{ minRows: 3}"
@@ -351,7 +352,7 @@
                 :value="`【麦邻租房】您好，${sendMessageForm.tenantName}${sendMessageForm.tenantMobile}通过麦邻租房平台成功预约您发布的房源{房源名称}，看房时间为${sendMessageForm.bookingTime}请及时跟进，若有疑问可致电400-882-7099。`">
               </el-input>
             </el-form-item>
-            <el-form-item label="租客短信">
+            <el-form-item label="租客短信" v-if="!(sendMessageForm.sendType || []).includes('房东')">
               <el-input
                 type="textarea"
                 :autosize="{ minRows: 3}"
@@ -448,7 +449,7 @@ export default {
         { prop: 'tenantMobile', label: '手机号码', width: 100 },
         {
           prop: 'housingType',
-          label: '预约类型',
+          label: '房源类型',
           width: 80,
           render(row) {
             return row.housingType === 1 ? '集中式' : '分散式'
@@ -539,7 +540,7 @@ export default {
           { required: true, validator: validatePhone, trigger: 'blur' }
         ],
         landlordName: [
-          { required: true, message: '请输入房东姓名', trigger: 'blur' }
+          { required: true, message: '请输入房东姓名', trigger: 'change' }
         ]
       }
     }
@@ -673,8 +674,8 @@ export default {
       filterObj = this.landlordList.find((item) => {
         return item.landlordMobile === data
       })
-      this.detailData.landlordName = filterObj.landlordName || ''
-      this.detailData.landlordMobile = data
+      this.$set(this.detailData, 'landlordName', filterObj.landlordName || '')
+      this.$set(this.detailData, 'landlordMobile', data)
     },
 
     // 处理状态变更
