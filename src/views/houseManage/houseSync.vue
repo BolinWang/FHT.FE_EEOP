@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-07-11 13:49:21
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-09-29 14:21:52
+ * @Last Modified time: 2018-09-29 16:16:22
  */
 
  <template>
@@ -217,7 +217,7 @@ export default {
         { prop: 'name', label: '姓名', width: 100 },
         { prop: 'mobile', label: '手机号', width: 150 },
         { prop: 'userType', label: '用户类型', width: 100 },
-        { prop: 'createTimestamp', label: '创建时间', width: 150 },
+        { prop: 'createTimestamp', label: '创建时间', width: 150, filter: 'parseTime' },
         {
           prop: 'roomStatus',
           label: '房间状态',
@@ -278,7 +278,7 @@ export default {
   mounted() {
     /* 表格高度控制 */
     this.$nextTick(() => {
-      const offsetTop = 230
+      const offsetTop = 255
       const pagenationH = 64
       const containerPadding = 20
       let temp_height = document.body.clientHeight - offsetTop - pagenationH - containerPadding

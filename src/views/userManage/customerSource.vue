@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-09-26 18:01:22
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-09-29 15:48:34
+ * @Last Modified time: 2018-09-29 16:29:32
  */
 <template>
   <div class="app-container">
@@ -357,7 +357,7 @@
                 type="textarea"
                 :autosize="{ minRows: 3}"
                 disabled
-                :value="`【麦邻租房】您好，${sendMessageForm.tenantName}${sendMessageForm.tenantMobile}通过麦邻租房平台成功预约您发布的房源{房源名称}，看房时间为${sendMessageForm.bookingTime}请及时跟进，若有疑问可致电400-882-7099。`">
+                :value="`【麦邻租房】您好，${sendMessageForm.tenantName}${sendMessageForm.tenantMobile}通过麦邻租房平台成功预约您发布的房源${sendMessageForm.addressName}，看房时间为${sendMessageForm.bookingTimeStr}请及时跟进，若有疑问可致电400-882-7099。`">
               </el-input>
             </el-form-item>
             <el-form-item label="租客短信" v-if="(sendMessageForm.sendType || []).includes('租客')">
@@ -751,6 +751,7 @@ export default {
     sendMessage(row) {
       this.sendMessageForm = {
         ...deepClone(row),
+        bookingTimeStr: parseTime(row.bookingTime, '{y}-{m}-{d} {h}:{i}'),
         sendType: ['房东', '租客']
       }
       const loadingInstance = this.$loading({
