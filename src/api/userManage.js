@@ -306,6 +306,7 @@ export const tenantReservationApi = {
     return fetch({
       url: this.baseUrl,
       method: 'post',
+      interceptors: false,
       data: {
         method: 'addTenantReservation',
         params

@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-09-26 18:01:22
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-09-29 14:45:58
+ * @Last Modified time: 2018-09-29 15:48:34
  */
 <template>
   <div class="app-container">
@@ -706,28 +706,45 @@ export default {
             this.$message.error('请选择处理结果')
             return false
           }
-          tenantReservationApi.update(ObjectMap({
-            ...this.detailData,
-            id: this.detailData.id || 0,
-            housingType: this.selectedRoomInfo.housingType,
-            positionId: this.selectedRoomInfo.positionId,
-            cityName: this.selectedRoomInfo.cityName,
-            addressName: this.selectedRoomInfo.address
-          })).then(res => {
-            this.$notify({
-              title: this.infoTitle,
-              message: '操作成功',
-              type: 'success',
-              duration: 3000
-            })
-            this.layer_showInfo = false
-            this.searchParam()
-          }).catch()
         } else {
           this.$message.error('请完善客源信息后再保存！')
           return false
         }
+        this.doSaveData(ObjectMap({
+          ...this.detailData,
+          id: this.detailData.id || 0,
+          housingType: this.selectedRoomInfo.housingType,
+          positionId: this.selectedRoomInfo.positionId,
+          cityName: this.selectedRoomInfo.cityName,
+          addressName: this.selectedRoomInfo.address,
+          flag: 0
+        }))
       })
+    },
+    doSaveData(params) {
+      tenantReservationApi.update(params).then(res => {
+        if (res.code * 1 === 0) {
+          this.$notify({
+            title: this.infoTitle,
+            message: '操作成功',
+            type: 'success',
+            duration: 3000
+          })
+          this.layer_showInfo = false
+          this.searchParam()
+        } else if (res.code * 1 === 1) {
+          this.$confirm(res.message, '提示', {
+            confirmButtonText: '继续保存',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            this.doSaveData({
+              ...params,
+              flag: 1
+            })
+          }).catch()
+        }
+      }).catch()
     },
 
     // 发送短信
