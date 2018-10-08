@@ -64,7 +64,7 @@
 <script>
 import waves from '@/directive/waves'
 import GridUnit from '@/components/GridUnit/grid'
-import { deepClone, cleanArray, ObjectMap } from '@/utils'
+import { cleanArray, ObjectMap } from '@/utils'
 import { hotRecommendApi, appIconApi } from '@/api/eeop'
 
 export default {
@@ -87,11 +87,11 @@ export default {
         { prop: 'keyword', label: '搜索词TOP' },
         { prop: 'searchTimes', label: '搜索次数', sortable: true, align: 'right', render(row) {
           return row.searchTimes || 0
-        }},
+        } },
         { prop: 'resultAmount', label: '搜索结果数', sortable: true, align: 'right', render(row) {
           return row.resultAmount || 0
-        }},
-        { prop: 'gmtModified', label: '操作时间', width: 150, filter: 'parseTime'},
+        } },
+        { prop: 'gmtModified', label: '操作时间', width: 150, filter: 'parseTime' },
         { label: '操作', slotName: 'handle', width: 150, align: 'center' }
       ],
       tableHeight: 300,
@@ -109,14 +109,14 @@ export default {
       layer_showInfo: false
     }
   },
-  created () {
+  created() {
     appIconApi.cityList().then(response => {
       this.cityList = response.data
     })
   },
   mounted() {
     /* 表格高度控制 */
-   this.$nextTick(() => {
+    this.$nextTick(() => {
       const offsetTop = this.$refs.refGridUnit.$el.offsetTop || 140
       const pagenationH = 64
       const containerPadding = 20
@@ -169,7 +169,7 @@ export default {
     saveData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          let keywords = this.temp.data.split(/[\n|\r\n|\r]/gi)
+          const keywords = this.temp.data.split(/[\n|\r\n|\r]/gi)
           hotRecommendApi.add(ObjectMap({
             cityId: this.temp.cityId,
             keywords: cleanArray(keywords)

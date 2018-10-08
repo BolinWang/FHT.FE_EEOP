@@ -154,8 +154,7 @@
 <script>
 import Preview from '@/components/Preview/Preview'
 import ImageCropper from '@/components/ImageCropper/Cropper'
-import { ObjectMap, deepClone } from '@/utils'
-import noPic from '@/assets/noPic.jpg'
+import { deepClone } from '@/utils'
 import store from '@/store'
 
 export default {
@@ -226,7 +225,7 @@ export default {
   created() {
     this.temp.roomInfosFormat = this.temp.roomInfos ? this.temp.roomInfos[0] : ''
     this.temp.roomRentTypes = this.temp.roomRentTypes || []
-    let picList = this.temp.picUrls || []
+    const picList = this.temp.picUrls || []
     this.houseInfoData = {
       reviewStatus: '',
       remark: '',
@@ -263,11 +262,11 @@ export default {
     },
     // 裁剪后图片列表
     emitCropperData(list = []) {
-      list.forEach((v ,i) => {
+      list.forEach((v, i) => {
         v.type = 1
       })
-      let picList = [...this.houseInfoData.picList,...list]
-      this.$set(this.houseInfoData,'picList', picList)
+      const picList = [...this.houseInfoData.picList, ...list]
+      this.$set(this.houseInfoData, 'picList', picList)
     },
     /* 选择图片 */
     async uploadImg(e) {
@@ -277,7 +276,7 @@ export default {
       }
       const uploadList = []
       const readFileAsync = file => new Promise(resolve => {
-        let reader = new FileReader()
+        const reader = new FileReader()
         reader.onerror = function(e) {
           console.log('读取异常....')
         }
@@ -287,7 +286,7 @@ export default {
             ? window.URL.createObjectURL(new Blob([e.target.result]))
             : e.target.result
           let imageName = ''
-          let type = 1
+          const type = 1
           if (!file.name) {
             imageName = ''
           } else {
@@ -331,7 +330,7 @@ export default {
     tempData: {
       handler(val) {
         this.temp = val
-        let picList = val.picUrls || []
+        const picList = val.picUrls || []
         this.houseInfoData = {
           reviewStatus: '',
           remark: '',
@@ -362,7 +361,7 @@ export default {
       deep: true
     },
     checked(val) {
-      if (this.type == 'published') {
+      if (this.type === 'published') {
         this.$emit('saveReviewData', {
           checked: val,
           type: 'pulished'
@@ -370,7 +369,7 @@ export default {
       }
     }
   }
-};
+}
 </script>
 <style rel="stylesheet/scss" lang="scss">
 .el-tag {

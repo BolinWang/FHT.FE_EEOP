@@ -174,173 +174,173 @@
     import { parseTime, ObjectMap, deepClone } from '@/utils'
     import { initOrgListApi } from '@/api/userManage'
     export default {
-        name: 'lookRecord',
-        directives: {waves},
-        filters:{
-            tagFilter(val){
-                const filterObj = {
-                    '0' : 'info',
-                    '1' : 'success',
-                    '2' : 'success'
-                }
-                return filterObj[val] || 'info'
-            },
-            statusFilter(val,item){
-                const filterObj = {
-                    'lookHouseStatus' : ['未带看','带看中','已带看'],
-                    'lookHouseResult' : ['未签约','已签约']
-                }
-                return filterObj[item][val] || '未知'
-            }
+      name: 'lookRecord',
+      directives: { waves },
+      filters: {
+        tagFilter(val) {
+          const filterObj = {
+            '0': 'info',
+            '1': 'success',
+            '2': 'success'
+          }
+          return filterObj[val] || 'info'
         },
-        data() {
-            return {
-                formData: {
-                    code: '',
-                    mobile: '',
-                    type1: '',
-                    type2: '',
-                    type3: '',
-                    type4: '',
-                    startDate1: '',
-                    endDate1: '',
-                    startDate2: '',
-                    endDate2: ''
-                },
-                date1: [],
-                date2: [],
-                typeOpt1: [
-                    {label: '已领取', value: 1},
-                    {label: '已过期', value: 2},
-                    {label: '已使用', value: 3},
-                ],
-                typeOpt2: [
-                    {label: '房租', value: 1},
-                    {label: '押金', value: 2},
-                    {label: '电费', value: 3},
-                    {label: '水费', value: 4}
-                ],
-                typeOpt3: [
-                    {label: '麦邻生活APP', value: 1},
-                    {label: '微信H5', value: 2},
-                    {label: '系统赠送', value: 3},
-                    {label: '扫码', value: 4}
-                ],
-                dialogForm: {
-                    name: ''
-                },  
-                listLoading: false,
-                layer_showInfo: false,
-                colModels:[
-                    { prop:'userName', label: '优惠券批次编码'},
-                    { prop:'userMobile', label: '优惠券类型'},
-                    { prop:'bookingTime', label: '费用类型'},
-                    { prop:'roomAddr', label: '优惠金额'},
-                    { prop:'serverName', label: '优惠券ID'},
-                    { prop:'serverMobile', label: '优惠券状态'},
-                    { prop:'lookHouseStatus', label: '领取手机号'},
-                    { prop:'lookHouseResult', label: '领取时间'},
-                    { prop:'lookHouseResult', label: '获取渠道'},
-                    { prop:'lookHouseResult', label: '消费账单号'},
-                    { prop:'lookHouseResult', label: '消费时间'}
-                ],
-                tableHeight: 300,
-                tableData: [],
-                pageSizeList: [10, 20, 30, 50],
-                total: null,
-                pageItems: {
-                    pageNo: 1,
-                    pageSize: 20
-                }
-            }
-        },
-        mounted() {
-            /* 表格高度控制 */
-            let temp_height = document.body.clientHeight - 220;
-            this.tableHeight = temp_height > 300 ? temp_height : 300;
-            window.onresize = () => {
-                return (() => {
-                    temp_height = document.body.clientHeight - 220;
-                    this.tableHeight = this.tableHeight = temp_height > 300 ? temp_height : 300;
-                })()
-            }
-            this.getGridData(this.pageItems);
-            console.log((1187.50+255)*2)
-            console.log((701.37+250)*3)
-        },
-        computed: {
-            tableStyle: function () {
-                return {
-                    width: '100%',
-                    height: this.tableHeight + 'px'
-                }
-            }
-        },
-        methods: {
-            getGridData(parm) {
-                this.listLoading = true;
-                this.searchParams = Object.assign(deepClone(parm), deepClone(this.formData));
-                initOrgListApi(ObjectMap(this.searchParams)).then(response => {
-                    this.listLoading = false;
-                    this.tableData = response.data.list;
-                    this.total = response.data.record;                    
-                })
-            },
-            searchParam(){
-                this.pageItems = {
-                    pageNo: 1,
-                    pageSize: 20
-                }
-                this.getGridData(this.pageItems);
-            },
-            clearForm(){
-                this.pageItems = {
-                    pageNo: 1,
-                    pageSize: 20
-                }
-                this.formData = {
-                    code: '',
-                    mobile: '',
-                    type1: '',
-                    type2: '',
-                    type3: '',
-                    type4: '',
-                    startDate1: '',
-                    endDate1: '',
-                    startDate2: '',
-                    endDate2: ''
-                }
-                this.date1 = [];
-                this.date2 = [];
-                this.getGridData(this.pageItems);
-            },
-            lookData(row) {
-                this.layer_showInfo = true;
-            },
-            dialogClose() {
-                
-            },
-            handleSizeChange(val) {
-                this.pageItems.pageSize = val;
-                this.getGridData(this.pageItems);
-            },
-            handleCurrentChange(val) {
-                this.pageItems.pageNo = val;
-                this.getGridData(this.pageItems);
-            }
-        },
-        watch: {
-            date1(val){
-                val = val || [];
-                this.formData.startDate1 = val[0] ? parseTime(val[0]) : '';
-                this.formData.endDate1 = val[1] ? parseTime(val[1]) : '';
-            },
-            date2(val){
-                val = val || [];
-                this.formData.startDate2 = val[0] ? parseTime(val[0]) : '';
-                this.formData.endDate2 = val[1] ? parseTime(val[1]) : '';
-            }
+        statusFilter(val, item) {
+          const filterObj = {
+            'lookHouseStatus': ['未带看', '带看中', '已带看'],
+            'lookHouseResult': ['未签约', '已签约']
+          }
+          return filterObj[item][val] || '未知'
         }
+      },
+      data() {
+        return {
+          formData: {
+            code: '',
+            mobile: '',
+            type1: '',
+            type2: '',
+            type3: '',
+            type4: '',
+            startDate1: '',
+            endDate1: '',
+            startDate2: '',
+            endDate2: ''
+          },
+          date1: [],
+          date2: [],
+          typeOpt1: [
+            { label: '已领取', value: 1 },
+            { label: '已过期', value: 2 },
+            { label: '已使用', value: 3 }
+          ],
+          typeOpt2: [
+            { label: '房租', value: 1 },
+            { label: '押金', value: 2 },
+            { label: '电费', value: 3 },
+            { label: '水费', value: 4 }
+          ],
+          typeOpt3: [
+            { label: '麦邻生活APP', value: 1 },
+            { label: '微信H5', value: 2 },
+            { label: '系统赠送', value: 3 },
+            { label: '扫码', value: 4 }
+          ],
+          dialogForm: {
+            name: ''
+          },
+          listLoading: false,
+          layer_showInfo: false,
+          colModels: [
+            { prop: 'userName', label: '优惠券批次编码' },
+            { prop: 'userMobile', label: '优惠券类型' },
+            { prop: 'bookingTime', label: '费用类型' },
+            { prop: 'roomAddr', label: '优惠金额' },
+            { prop: 'serverName', label: '优惠券ID' },
+            { prop: 'serverMobile', label: '优惠券状态' },
+            { prop: 'lookHouseStatus', label: '领取手机号' },
+            { prop: 'lookHouseResult', label: '领取时间' },
+            { prop: 'lookHouseResult', label: '获取渠道' },
+            { prop: 'lookHouseResult', label: '消费账单号' },
+            { prop: 'lookHouseResult', label: '消费时间' }
+          ],
+          tableHeight: 300,
+          tableData: [],
+          pageSizeList: [10, 20, 30, 50],
+          total: null,
+          pageItems: {
+            pageNo: 1,
+            pageSize: 20
+          }
+        }
+      },
+      mounted() {
+        /* 表格高度控制 */
+        let temp_height = document.body.clientHeight - 220
+        this.tableHeight = temp_height > 300 ? temp_height : 300
+        window.onresize = () => {
+          return (() => {
+            temp_height = document.body.clientHeight - 220
+            this.tableHeight = this.tableHeight = temp_height > 300 ? temp_height : 300
+          })()
+        }
+        this.getGridData(this.pageItems)
+        console.log((1187.50 + 255) * 2)
+        console.log((701.37 + 250) * 3)
+      },
+      computed: {
+        tableStyle: function() {
+          return {
+            width: '100%',
+            height: this.tableHeight + 'px'
+          }
+        }
+      },
+      methods: {
+        getGridData(parm) {
+          this.listLoading = true
+          this.searchParams = Object.assign(deepClone(parm), deepClone(this.formData))
+          initOrgListApi(ObjectMap(this.searchParams)).then(response => {
+            this.listLoading = false
+            this.tableData = response.data.list
+            this.total = response.data.record
+          })
+        },
+        searchParam() {
+          this.pageItems = {
+            pageNo: 1,
+            pageSize: 20
+          }
+          this.getGridData(this.pageItems)
+        },
+        clearForm() {
+          this.pageItems = {
+            pageNo: 1,
+            pageSize: 20
+          }
+          this.formData = {
+            code: '',
+            mobile: '',
+            type1: '',
+            type2: '',
+            type3: '',
+            type4: '',
+            startDate1: '',
+            endDate1: '',
+            startDate2: '',
+            endDate2: ''
+          }
+          this.date1 = []
+          this.date2 = []
+          this.getGridData(this.pageItems)
+        },
+        lookData(row) {
+          this.layer_showInfo = true
+        },
+        dialogClose() {
+    
+        },
+        handleSizeChange(val) {
+          this.pageItems.pageSize = val
+          this.getGridData(this.pageItems)
+        },
+        handleCurrentChange(val) {
+          this.pageItems.pageNo = val
+          this.getGridData(this.pageItems)
+        }
+      },
+      watch: {
+        date1(val) {
+          val = val || []
+          this.formData.startDate1 = val[0] ? parseTime(val[0]) : ''
+          this.formData.endDate1 = val[1] ? parseTime(val[1]) : ''
+        },
+        date2(val) {
+          val = val || []
+          this.formData.startDate2 = val[0] ? parseTime(val[0]) : ''
+          this.formData.endDate2 = val[1] ? parseTime(val[1]) : ''
+        }
+      }
     }
 </script>
 

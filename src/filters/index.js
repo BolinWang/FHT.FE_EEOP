@@ -78,7 +78,7 @@ export function formatTime(time, option) {
   }
 }
 
-/* 数字 格式化*/
+/* 数字 格式化 */
 export function nFormatter(num, digits) {
   const si = [
     { value: 1E18, symbol: 'E' },
@@ -106,4 +106,3 @@ export function html2Text(val) {
 export function toThousandslsFilter(num) {
   return (+num || 0).toString().replace(/^-?\d+/g, m => m.replace(/(?=(?!\b)(\d{3})+$)/g, ','))
 }
-

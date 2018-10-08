@@ -104,7 +104,7 @@
 </template>
 <script>
 import waves from '@/directive/waves' // 水波纹指令
-import { parseTime, ObjectMap, deepClone } from '@/utils'
+import { ObjectMap, deepClone } from '@/utils'
 import {
   queryUserRequestByPageApi, saveUserRequestApi, registeredUserApi,
   initFlyOrgApi, addTempOrgApi, bindWithdrawCardApi
@@ -125,30 +125,30 @@ export default {
       return statusMap[status] || 'info'
     },
     statusStrFilter(status) {
-      const statusStrData = ['未联系', '已联系'];
+      const statusStrData = ['未联系', '已联系']
       return statusStrData[status - 1] || '未联系'
     }
   },
   data() {
     const validateName = (rule, value, callback) => {
       if (!value) {
-        callback(new Error('请输入姓名'));
+        callback(new Error('请输入姓名'))
       } else {
-        callback();
+        callback()
       }
-    };
+    }
     const validatePhone = (rule, value, callback) => {
       if (!validateMobile(value)) {
-        callback(new Error('请输入正确的手机号'));
+        callback(new Error('请输入正确的手机号'))
       } else {
-        callback();
+        callback()
       }
-    };
+    }
     const validateSpiltRate = (rule, value, callback) => {
-      if(/^\d+(?:.\d{1,2})?$/.test(value) && value <= 100) {
-        callback();
+      if (/^\d+(?:.\d{1,2})?$/.test(value) && value <= 100) {
+        callback()
       } else {
-        callback(new Error('费率为0到100,最多保留2位小数'));
+        callback(new Error('费率为0到100,最多保留2位小数'))
       }
     }
     return {
@@ -216,16 +216,16 @@ export default {
     }
   },
   created() {
-    this.getGridData(this.pageItems);
+    this.getGridData(this.pageItems)
   },
   mounted() {
     /* 表格高度控制 */
-    let temp_height = document.body.clientHeight - 200;
-    this.tableHeight = temp_height > 300 ? temp_height : 300;
+    let temp_height = document.body.clientHeight - 200
+    this.tableHeight = temp_height > 300 ? temp_height : 300
     window.onresize = () => {
       return (() => {
-        temp_height = document.body.clientHeight - 200;
-        this.tableHeight = this.tableHeight = temp_height > 300 ? temp_height : 300;
+        temp_height = document.body.clientHeight - 200
+        this.tableHeight = this.tableHeight = temp_height > 300 ? temp_height : 300
       })()
     }
   },
@@ -239,35 +239,35 @@ export default {
   },
   methods: {
     handleApply() {
-      this.layer_showInfo = true;
+      this.layer_showInfo = true
       if (this.$refs.ruleForm) {
         this.$refs.ruleForm.clearValidate()
       }
     },
     /* 弹窗关闭时的回调 */
     dialogClose() {
-      this.$refs.ruleForm.resetFields();
+      this.$refs.ruleForm.resetFields()
     },
     handleSizeChange(val) {
-      this.pageItems.pageSize = val;
-      this.getGridData(this.pageItems);
+      this.pageItems.pageSize = val
+      this.getGridData(this.pageItems)
     },
     handleCurrentChange(val) {
-      this.pageItems.pageNo = val;
-      this.getGridData(this.pageItems);
+      this.pageItems.pageNo = val
+      this.getGridData(this.pageItems)
     },
     /* 列表渲染，数据请求 */
     getGridData(params) {
-      this.listLoading = true;
-      this.searchParams = Object.assign(deepClone(params), deepClone(this.formData));
+      this.listLoading = true
+      this.searchParams = Object.assign(deepClone(params), deepClone(this.formData))
       queryUserRequestByPageApi(ObjectMap(this.searchParams)).then(response => {
-        this.tableData = response.data.content;
-        this.total = response.data.totalElements;
-        this.listLoading = false;
+        this.tableData = response.data.content
+        this.total = response.data.totalElements
+        this.listLoading = false
       })
     },
     searchParam() {
-      this.getGridData(this.pageItems);
+      this.getGridData(this.pageItems)
     },
     clearForm() {
       this.pageItems = {
@@ -278,9 +278,9 @@ export default {
         requestStatus: '',
         mobile: ''
       }
-      this.getGridData(this.pageItems);
+      this.getGridData(this.pageItems)
     },
-    signSaveData() {//标记为飞虎队
+    signSaveData() { // 标记为飞虎队
       this.$refs.signForm.validate(valid => {
         if (valid) {
           initFlyOrgApi({
@@ -298,10 +298,10 @@ export default {
             })
           }).catch()
         } else {
-          console.log('error submit!!');
-          return false;
+          console.log('error submit!!')
+          return false
         }
-      });
+      })
     },
     dialogSign() {
       this.signForm = {
@@ -315,13 +315,13 @@ export default {
         if (valid) {
           bindWithdrawCardApi(deepClone(this.cardForm)).then(response => {
             this.$message.success('银行卡绑定成功')
-            this.layer_card = false;
+            this.layer_card = false
           }).catch()
         } else {
-          console.log('error submit!!');
-          return false;
+          console.log('error submit!!')
+          return false
         }
-      });
+      })
     },
     dialogCard() {
       this.cardForm = {
@@ -338,8 +338,8 @@ export default {
             mobile: this.ruleForm.mobile + '',
             name: this.ruleForm.name
           }).then(response => {
-            this.layer_showInfo = false;
-            this.getGridData(this.pageItems);
+            this.layer_showInfo = false
+            this.getGridData(this.pageItems)
             this.$notify({
               title: '成功',
               message: '注册成功，初始密码为：123456',
@@ -348,15 +348,15 @@ export default {
             })
           })
         } else {
-          console.log('error submit!!');
-          return false;
+          console.log('error submit!!')
+          return false
         }
-      });
+      })
     },
     signContactor(index, row) {
-      row.requestStatus = 2;
+      row.requestStatus = 2
       saveUserRequestApi([row]).then(response => {
-        this.getGridData(this.pageItems);
+        this.getGridData(this.pageItems)
         this.$notify({
           title: '成功',
           message: '标记成功',
@@ -366,7 +366,7 @@ export default {
       })
     }
   }
-};
+}
 </script>
 <style rel="stylesheet/scss" lang="scss" scoped>
 </style>

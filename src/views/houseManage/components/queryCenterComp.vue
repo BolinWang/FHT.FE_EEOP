@@ -79,7 +79,7 @@ export default {
       return statusMap[status] || 'success'
     },
     statusStrFilter(status) {
-      const statusStrData = ['待上线', '已上线', '已下线'];
+      const statusStrData = ['待上线', '已上线', '已下线']
       return statusStrData[status] || '已上线'
     },
     formatAddress(val, row) {
@@ -89,7 +89,7 @@ export default {
       if (!val) {
         return ''
       }
-      let contactGender = row.contactGender == 1 ? '先生' : '女士'
+      const contactGender = row.contactGender * 1 === 1 ? '先生' : '女士'
       return `${val} ${contactGender}`
     },
     filterTags(val) {
@@ -138,17 +138,17 @@ export default {
     }
   },
   created() {
-    this.getCityAndEstateList();
-    this.getGridData(this.pageItems);
+    this.getCityAndEstateList()
+    this.getGridData(this.pageItems)
   },
   mounted() {
     /* 表格高度控制 */
-    let temp_height = document.body.clientHeight - 267;
-    this.tableHeight = temp_height > 300 ? temp_height : 300;
+    let temp_height = document.body.clientHeight - 267
+    this.tableHeight = temp_height > 300 ? temp_height : 300
     window.onresize = () => {
       return (() => {
-        temp_height = document.body.clientHeight - 267;
-        this.tableHeight = this.tableHeight = temp_height > 300 ? temp_height : 300;
+        temp_height = document.body.clientHeight - 267
+        this.tableHeight = this.tableHeight = temp_height > 300 ? temp_height : 300
       })()
     }
   },
@@ -166,53 +166,53 @@ export default {
       marketCityAndSubdistrictListApi({
         housingType: this.housingType
       }).then(response => {
-        let dataList = response.data.list
+        const dataList = response.data.list
         this.cityOptions = dataList.cityInfoList
         this.subdistrictOptions = dataList.subdistrictList || []
         this.subdistrictOptionsClone = deepClone(dataList.subdistrictList || [])
       })
     },
     handleSizeChange(val) {
-      this.pageItems.pageSize = val;
-      this.getGridData(this.pageItems);
+      this.pageItems.pageSize = val
+      this.getGridData(this.pageItems)
     },
     handleCurrentChange(val) {
-      this.pageItems.pageNo = val;
-      this.getGridData(this.pageItems);
+      this.pageItems.pageNo = val
+      this.getGridData(this.pageItems)
     },
     searchParam() {
-      let params = deepClone(this.formData)
-      if (this.housingTypeClone == 1) {
-        params.estateId = params.subdistrictId;
+      const params = deepClone(this.formData)
+      if (this.housingTypeClone * 1 === 1) {
+        params.estateId = params.subdistrictId
       }
       this.getGridData(Object.assign({
         pageNo: 1,
         pageSize: 20
-      }, params));
+      }, params))
     },
     cityChange(value) {
-      if (value == '') {
-        this.subdistrictOptions = this.subdistrictOptionsClone;
+      if (value === '') {
+        this.subdistrictOptions = this.subdistrictOptionsClone
       } else {
-        this.formData.subdistrictId = '';
-        this.formData.regionId = '';
+        this.formData.subdistrictId = ''
+        this.formData.regionId = ''
         this.subdistrictOptions = this.subdistrictOptionsClone.filter((item) => {
-          return item.cityId == value
-        });
-        let currentItem = this.cityOptions.filter((item) => {
-          return item.cityId == value
+          return item.cityId * 1 === value * 1
         })
-        this.regionOptions = currentItem[0].areaList;
+        const currentItem = this.cityOptions.filter((item) => {
+          return item.cityId * 1 === value * 1
+        })
+        this.regionOptions = currentItem[0].areaList
       }
     },
     regionChange(value) {
-      this.formData.subdistrictId = '';
-      if (value == '') {
-        this.cityChange(this.formData.cityId);
+      this.formData.subdistrictId = ''
+      if (value === '') {
+        this.cityChange(this.formData.cityId)
       } else {
         this.subdistrictOptions = this.subdistrictOptionsClone.filter((item) => {
-          return item.areaId == value
-        });
+          return item.areaId * 1 === value * 1
+        })
       }
     },
     clearForm() {
@@ -222,38 +222,38 @@ export default {
         subdistrictId: '',
         roomCode: ''
       }
-      this.regionOptions = [];
+      this.regionOptions = []
       this.subdistrictOptions = this.subdistrictOptionsClone
       this.pageItems = {
         pageNo: 1,
         pageSize: 20
-      };
-      this.searchParam();
+      }
+      this.searchParam()
     },
     /* 列表渲染 */
     getGridData(params) {
-      this.listLoading = true;
-      this.searchParams = Object.assign(deepClone(params), deepClone(this.formData));
+      this.listLoading = true
+      this.searchParams = Object.assign(deepClone(params), deepClone(this.formData))
       this.searchParams.housingType = this.housingTypeClone
       marketReviewCheckListByPageApi(ObjectMap(this.searchParams)).then(response => {
-        this.tableData = response.data.list;
-        this.total = response.data.record;
-        this.listLoading = false;
+        this.tableData = response.data.list
+        this.total = response.data.record
+        this.listLoading = false
       })
     }
   },
   watch: {
     housingType(val) {
-      this.housingTypeClone = val;
-      this.placeholder = val == 1 ? '公寓' : '小区'
+      this.housingTypeClone = val
+      this.placeholder = val * 1 === 1 ? '公寓' : '小区'
       this.pageItems = {
         pageNo: 1,
         pageSize: 20
-      };
-      this.clearForm();
+      }
+      this.clearForm()
     }
   }
-};
+}
 </script>
 <style rel="stylesheet/scss" lang="scss">
 </style>

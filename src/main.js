@@ -13,24 +13,21 @@ import * as filters from './filters'
 import VuePreview from '@/components/Preview/plugins'
 import VueLazyload from 'vue-lazyload'
 import lazyLoadPic from '@/assets/lazyLoad@3x.png'
-// if (process.env.NODE_ENV === "development") {
-//   require("@/mock")
-// }
 Vue.config.productionTip = false
 
 Vue.use(ElementUI)
 Vue.use(VuePreview)
 Vue.use(VueLazyload, {
-  /* error: errorPic,*/
+  /* error: errorPic, */
   loading: lazyLoadPic
-});
+})
 Vue.component('icon-svg', IconSvg)
 
 Object.keys(filters).forEach(key => {
   Vue.filter(key, filters[key])
-});
+})
 
-const whiteList = ['/login'];
+const whiteList = ['/login']
 router.beforeEach((to, from, next) => {
   NProgress.start()
   if (getSessionId()) {
@@ -51,27 +48,27 @@ router.beforeEach((to, from, next) => {
           })
         })
       } else {
-        next();
+        next()
       }
     }
   } else {
     if (whiteList.indexOf(to.path) !== -1) {
       next()
     } else {
-      next('/login');
-      NProgress.done();
+      next('/login')
+      NProgress.done()
     }
   }
-});
+})
 
 router.afterEach(() => {
   NProgress.done()
-});
+})
 
 new Vue({
   el: '#app',
   router,
   store,
-  template: '<App/>',
-  components: { App }
+  components: { App },
+  template: '<App/>'
 })

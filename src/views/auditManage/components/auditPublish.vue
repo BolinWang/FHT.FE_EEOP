@@ -156,15 +156,15 @@ export default {
       return `${item.province}/${item.city}/${item.region}`
     },
     formatTime(val, prop, item) {
-      let name = prop == 'publishTime' ? item.publisher : item.reviewer;
+      const name = prop === 'publishTime' ? item.publisher : item.reviewer
       return `${parseTime(val)} ${name}`
     },
     formatRoomName(val, item) {
-      let unitCodeStr = item.unitCode ? (item.unitCode + '单元 ') : '',
-        buildingNameStr = item.buildingName ? (item.buildingName + '幢 ') : '';
+      const unitCodeStr = item.unitCode ? (item.unitCode + '单元 ') : ''
+      const buildingNameStr = item.buildingName ? (item.buildingName + '幢 ') : ''
       return ('【' + item.subdistrictName + '】' +
         buildingNameStr + unitCodeStr +
-        item.floorName + '楼 ' + item.roomNo + '号 ' + '- ' + (item.roomName || '整套房间'));
+        item.floorName + '楼 ' + item.roomNo + '号 ' + '- ' + (item.roomName || '整套房间'))
     },
     formatEstateName(val, item) {
       return `【${val}】${item.subdistrictAddress}`
@@ -210,9 +210,9 @@ export default {
           { prop: 'roomCode', label: '房源编号', width: 90 },
           { prop: 'tags', label: '标签', type: 'tags', width: 200 },
           { prop: 'reviewStatus', label: '审核状态', width: 110, type: 'status' },
-          { prop: 'reviewRemark', label: '不符合原因', minWidth: 150, type: 'remark'},
-          { prop: 'fangyuanProviderName', label: '房源提供者', width: 90},
-          { prop: 'picProviderName', label: '照片提供者', width: 90},
+          { prop: 'reviewRemark', label: '不符合原因', minWidth: 150, type: 'remark' },
+          { prop: 'fangyuanProviderName', label: '房源提供者', width: 90 },
+          { prop: 'picProviderName', label: '照片提供者', width: 90 },
           { prop: 'publishTime', label: '提交时间', width: 140, type: 'formatTime', toolTip: true },
           { prop: 'reviewTime', label: '操作时间', width: 140, type: 'formatTime', toolTip: true }
         ],
@@ -221,11 +221,11 @@ export default {
           { prop: 'estateName', label: '精品公寓', type: 'formatEstateName', toolTip: true, width: 200 },
           { prop: 'styleName', label: '房间类型', width: 100 },
           { prop: 'roomCount', label: '数量(间)', width: 80 },
-          { prop: 'tags', label: '标签', type: 'tags', width: 200},
+          { prop: 'tags', label: '标签', type: 'tags', width: 200 },
           { prop: 'reviewStatus', label: '审核状态', width: 110, type: 'status' },
           { prop: 'reviewRemark', label: '不符合原因', minWidth: 150, type: 'remark' },
-          { prop: 'fangyuanProviderName', label: '房源提供者', width: 90},
-          { prop: 'picProviderName', label: '照片提供者', width: 90},
+          { prop: 'fangyuanProviderName', label: '房源提供者', width: 90 },
+          { prop: 'picProviderName', label: '照片提供者', width: 90 },
           { prop: 'publishTime', label: '提交时间', width: 140, type: 'formatTime', toolTip: true },
           { prop: 'reviewTime', label: '操作时间', width: 140, type: 'formatTime', toolTip: true }
         ]
@@ -245,18 +245,18 @@ export default {
     }
   },
   created() {
-    this.housingType = this.type;
-    this.getCityList();
-    this.getGridData(this.pageItems);
+    this.housingType = this.type
+    this.getCityList()
+    this.getGridData(this.pageItems)
   },
   mounted() {
     /* 表格高度控制 */
-    let temp_height = document.body.clientHeight - 267;
-    this.tableHeight = temp_height > 300 ? temp_height : 300;
+    let temp_height = document.body.clientHeight - 267
+    this.tableHeight = temp_height > 300 ? temp_height : 300
     window.onresize = () => {
       return (() => {
-        temp_height = document.body.clientHeight - 267;
-        this.tableHeight = this.tableHeight = temp_height > 300 ? temp_height : 300;
+        temp_height = document.body.clientHeight - 267
+        this.tableHeight = this.tableHeight = temp_height > 300 ? temp_height : 300
       })()
     }
   },
@@ -275,33 +275,33 @@ export default {
         housingType: this.housingType
       }).then(response => {
         this.cityOptions = response.data.list.map((item) => ({ 'label': item.areaName, 'value': item.areaId }))
-      });
+      })
     },
     /* 查看图片 */
     showImage(picUrl) {
       if (!picUrl) {
-        return false;
+        return false
       }
-      this.showPicUrl = picUrl;
-      this.layer_showImage = true;
+      this.showPicUrl = picUrl
+      this.layer_showImage = true
     },
     handleSizeChange(val) {
-      this.pageItems.pageSize = val;
-      this.getGridData(this.pageItems);
+      this.pageItems.pageSize = val
+      this.getGridData(this.pageItems)
     },
     handleCurrentChange(val) {
-      this.pageItems.pageNo = val;
-      this.getGridData(this.pageItems);
+      this.pageItems.pageNo = val
+      this.getGridData(this.pageItems)
     },
     /* 列表渲染，数据请求 */
     getGridData(params) {
-      this.listLoading = true;
-      this.searchParams = Object.assign(deepClone(params), this.formData);
-      this.searchParams.housingType = this.housingType;
+      this.listLoading = true
+      this.searchParams = Object.assign(deepClone(params), this.formData)
+      this.searchParams.housingType = this.housingType
       queryReviewCheckListByPageApi(ObjectMap(this.searchParams)).then(response => {
-        this.tableData = response.data.list;
-        this.total = response.data.record;
-        this.listLoading = false;
+        this.tableData = response.data.list
+        this.total = response.data.record
+        this.listLoading = false
       })
     },
     clearForm() {
@@ -310,19 +310,19 @@ export default {
         reviewStatus: '',
         publishStatus: '',
         keyword: ''
-      };
+      }
       this.pageItems = {
         pageNo: 1,
         pageSize: 20
-      };
-      this.getGridData(this.pageItems);
+      }
+      this.getGridData(this.pageItems)
     },
     searchParam() {
-      this.getGridData(this.pageItems);
+      this.getGridData(this.pageItems)
     },
     dialogClose() {
-      this.temp = {};
-      this.reviewData = {};
+      this.temp = {}
+      this.reviewData = {}
     },
     /* 查看详情 */
     handleView(index, row) {
@@ -333,7 +333,7 @@ export default {
         estateTypeId: row.estateTypeId,
         groupCode: row.groupCode
       }
-      let params = this.housingType == 1 ? {
+      const params = this.housingType * 1 === 1 ? {
         estateId: row.estateId,
         estateTypeId: row.estateTypeId,
         groupCode: row.groupCode,
@@ -342,22 +342,22 @@ export default {
       } : {
         reviewCheckId: row.reviewCheckId
       }
-      params.housingType = this.housingType;
+      params.housingType = this.housingType
       queryReviewCheckRoomDetailApi(params).then(response => {
-        this.temp = response.data.result;
-        this.temp.reviewStatus = row.reviewStatus;
-        this.layer_showInfo = true;
-      });
+        this.temp = response.data.result
+        this.temp.reviewStatus = row.reviewStatus
+        this.layer_showInfo = true
+      })
     },
     saveReviewData(val) {
-      if (val.checked != undefined) {
+      if (val.checked !== undefined) {
         this.reviewData.checked = val.checked
       }
     },
     /* 保存 */
     saveData() {
       const store_houseInfoData = this.$store.getters.houseInfoData
-      let reviewData = this.housingType === 2 ? store_houseInfoData.houseInfo : store_houseInfoData.estateInfo
+      const reviewData = this.housingType === 2 ? store_houseInfoData.houseInfo : store_houseInfoData.estateInfo
       reviewData.discrepancyReason = reviewData.discrepancyReason || []
       this.reviewData = this.housingType === 2 ? {
         ...this.reviewData,
@@ -382,10 +382,10 @@ export default {
         remark: undefined,
         picList: undefined,
         desc: undefined,
-        discrepancyReason: reviewData.discrepancyReason.join('、'),
+        discrepancyReason: reviewData.discrepancyReason.join('、')
       }
       if (!this.reviewData.reviewStatus) {
-        this.$message.error('请选择审核结果');
+        this.$message.error('请选择审核结果')
         return false
       }
       if (this.reviewData.reviewStatus === 2 && !this.reviewData.accordPic) {
@@ -418,13 +418,13 @@ export default {
       queryMessageQuantityApi().then(response => {
         const responseData = response.data
         const stateMessageData = this.$store.state.app.messageData
-        if (JSON.stringify(stateMessageData) != JSON.stringify(responseData)) {
+        if (JSON.stringify(stateMessageData) !== JSON.stringify(responseData)) {
           this.$store.dispatch('UpdateMessageData', response.data || {})
         }
       })
     }
   }
-};
+}
 </script>
 <style rel="stylesheet/scss" lang="scss">
 .dialog-image .el-dialog {

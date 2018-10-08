@@ -103,20 +103,20 @@ export default {
       return statusMap[status] || 'info'
     },
     statusStrFilter(status) {
-      const statusStrData = ['待审核', '审核通过', '审核不通过'];
+      const statusStrData = ['待审核', '审核通过', '审核不通过']
       return statusStrData[status - 1] || '待审核'
     },
     typeFilter(type) {
-      const typeData = ['个人升级企业', '企业电子签章', '个人电子签章'];
+      const typeData = ['个人升级企业', '企业电子签章', '个人电子签章']
       return typeData[type - 1] || '个人电子签章'
     },
     widthFilter(type) {
-      const dialogWidth = ['700px', '700px', '510px'];
+      const dialogWidth = ['700px', '700px', '510px']
       return dialogWidth[type - 1] || '800px'
     },
     formatTime(val, item) {
-      if (item.status == 1) {
-        return '';
+      if (item.status * 1 === 1) {
+        return ''
       }
       return `${parseTime(val)} ${item.operator}`
     }
@@ -157,7 +157,7 @@ export default {
       total: null,
       pageItems: {
         pageNo: 1,
-        pageSize: 20,
+        pageSize: 20
       },
       pageSizeList: [10, 20, 30, 50],
       listLoading: true,
@@ -172,12 +172,12 @@ export default {
   },
   mounted() {
     /* 表格高度控制 */
-    let temp_height = document.body.clientHeight - 200;
-    this.tableHeight = temp_height > 400 ? temp_height : 400;
+    let temp_height = document.body.clientHeight - 200
+    this.tableHeight = temp_height > 400 ? temp_height : 400
     window.onresize = () => {
       return (() => {
-        temp_height = document.body.clientHeight - 200;
-        this.tableHeight = this.tableHeight = temp_height > 400 ? temp_height : 400;
+        temp_height = document.body.clientHeight - 200
+        this.tableHeight = this.tableHeight = temp_height > 400 ? temp_height : 400
       })()
     }
   },
@@ -191,26 +191,26 @@ export default {
   },
   methods: {
     handleSizeChange(val) {
-      this.pageItems.pageSize = val;
-      this.getGridData(this.pageItems);
+      this.pageItems.pageSize = val
+      this.getGridData(this.pageItems)
     },
     handleCurrentChange(val) {
-      this.pageItems.pageNo = val;
-      this.getGridData(this.pageItems);
+      this.pageItems.pageNo = val
+      this.getGridData(this.pageItems)
     },
     getGridData(params) {
-      this.listLoading = true;
-      this.searchParams = Object.assign(deepClone(params), deepClone(this.formData));
+      this.listLoading = true
+      this.searchParams = Object.assign(deepClone(params), deepClone(this.formData))
       this.searchParams.type = this.searchParams.type + ''
       signaturesListsApi(ObjectMap(this.searchParams)).then(response => {
-        this.tableData = response.data.content;
-        this.total = response.data.totalElements;
-        this.listLoading = false;
+        this.tableData = response.data.content
+        this.total = response.data.totalElements
+        this.listLoading = false
       })
     },
     /* 查询 */
     searchParam() {
-      this.getGridData(this.pageItems);
+      this.getGridData(this.pageItems)
     },
     clearForm() {
       this.formData = {
@@ -219,45 +219,45 @@ export default {
         status: '',
         startDate: '',
         endDate: ''
-      };
-      this.dateTime = [];
+      }
+      this.dateTime = []
       this.pageItems = {
         pageNo: 1,
         pageSize: 20
-      };
-      this.searchParam();
+      }
+      this.searchParam()
     },
     showDetail(index, row) {
-      this.data_detail = deepClone(row);
-      this.data_detail.principalIdCard = plusXing(this.data_detail.principalIdCard, 6, 4);
-      let picList = (this.data_detail.licensePicUrls || this.data_detail.electronicSealUrl).split(',') || [];
+      this.data_detail = deepClone(row)
+      this.data_detail.principalIdCard = plusXing(this.data_detail.principalIdCard, 6, 4)
+      const picList = (this.data_detail.licensePicUrls || this.data_detail.electronicSealUrl).split(',') || []
       this.data_detail.picList = picList.map((item) => {
         return ({ src: item, w: 800, h: 600 })
-      });
-      this.currentIndex = index;
-      this.layer_showInfo = true;
+      })
+      this.currentIndex = index
+      this.layer_showInfo = true
     },
     dialogClose() {
-      this.data_detail = {};
+      this.data_detail = {}
     },
     saveAuditResult() {
       this.saveAuditParam.status = this.$refs.signOfRef.status
       this.saveAuditParam.reject_remark = this.$refs.signOfRef.reject_remark
       if (!this.saveAuditParam.status) {
-        this.$message.error('请选择审核结果');
-        return false;
+        this.$message.error('请选择审核结果')
+        return false
       }
-      if (this.saveAuditParam.status == 3 && !this.saveAuditParam.reject_remark) {
-        this.$message.error('请输入审核不通过原因');
-        return false;
+      if (this.saveAuditParam.status * 1 === 3 && !this.saveAuditParam.reject_remark) {
+        this.$message.error('请输入审核不通过原因')
+        return false
       }
       signaturesHandleApi(ObjectMap({
         auditId: this.data_detail.id,
         status: this.saveAuditParam.status,
         reject_remark: this.saveAuditParam.reject_remark
       })).then(response => {
-        this.layer_showInfo = false;
-        this.getGridData(this.pageItems);
+        this.layer_showInfo = false
+        this.getGridData(this.pageItems)
         this.$notify({
           title: '成功',
           message: '操作成功',
@@ -269,12 +269,12 @@ export default {
   },
   watch: {
     dateTime(val) {
-      val = val || [];
-      this.formData.startDate = val[0] ? parseTime(val[0]) : '';
-      this.formData.endDate = val[1] ? parseTime(val[1]) : '';
+      val = val || []
+      this.formData.startDate = val[0] ? parseTime(val[0]) : ''
+      this.formData.endDate = val[1] ? parseTime(val[1]) : ''
     }
   }
-};
+}
 </script>
 <style rel="stylesheet/scss" lang="scss">
 .model-search .filter-item {

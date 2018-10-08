@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-07-11 13:49:21
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-10-08 11:52:59
+ * @Last Modified time: 2018-10-08 11:36:01
  */
 
  <template>
@@ -29,14 +29,26 @@
         </el-form-item>
         <el-form-item>
           <el-select size="small" v-model="searchParams.publishStatus" filterable clearable placeholder="麦邻发布状态" class="item-select">
-            <el-option label="未发布" :value="0"></el-option>
-            <el-option label="已发布" :value="1"></el-option>
-            <el-option label="发布中" :value="2"></el-option>
+            <el-option label="麦邻未发布" :value="0"></el-option>
+            <el-option label="麦邻已发布" :value="1"></el-option>
+            <el-option label="麦邻发布中" :value="2"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button size="small" type="primary" icon="el-icon-search" @click="searchParam">查询</el-button>
-          <el-button size="small" icon="el-icon-remove-outline" @click="searchParam('clear')" style="margin-left:10px">清空</el-button>
+          <el-select size="small" v-model="searchParams.saltedFishStatus" filterable clearable placeholder="闲鱼发布状态" class="item-select">
+            <el-option label="闲鱼未发布" :value="0"></el-option>
+            <el-option label="闲鱼已发布" :value="1"></el-option>
+            <el-option label="闲鱼发布中" :value="2"></el-option>
+            <el-option label="闲鱼发布失败" :value="9"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button-group>
+            <el-button size="small" type="primary" icon="el-icon-search" @click="searchParam">查询</el-button>
+            <el-button size="small" icon="el-icon-remove-outline" @click="searchParam('clear')">清空</el-button>
+            <el-button size="small" type="success" icon="el-icon-upload" @click="syncItems('on')">发布</el-button>
+            <el-button size="small" type="danger" icon="el-icon-remove" @click="syncItems('off')">撤销</el-button>
+          </el-button-group>
         </el-form-item>
         <div>
           <el-form-item>
@@ -52,8 +64,21 @@
             <el-input size="small" v-model="searchParams.roomCode" clearable placeholder="房源编码" class="item-select"></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button size="small" type="success" icon="el-icon-upload" @click="syncItems('on')">发布</el-button>
-            <el-button size="small" type="danger" icon="el-icon-remove" @click="syncItems('off')" style="margin-left:10px">撤销</el-button>
+            <el-date-picker
+              v-model="dateTime"
+              type="daterange"
+              size="small"
+              align="left"
+              key="dateTime"
+              style="width: 360px;"
+              unlink-panels
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              value-format="yyyy-MM-dd"
+              :picker-options="pickerOptions"
+              @change="changeDate">
+            </el-date-picker>
           </el-form-item>
           <el-dialog class="select-dialog" :title='"选择"+dialogTitle+"平台"' :visible.sync="dialogVisible" width="450px">
             <div class="select-platform-container clearfix">
@@ -111,10 +136,36 @@
 </template>
 <script>
 import GridUnit from '@/components/GridUnit/grid'
-import { deepClone, cleanArray, ObjectMap } from '@/utils'
 import { fhdAuditApi } from '@/api/auditCenter'
 import { houseAsyncApi, publishHouseApi } from '@/api/houseManage'
 import areaSelect from '@/components/AreaSelect'
+const pickerOptions = {
+  shortcuts: [{
+    text: '最近一周',
+    onClick(picker) {
+      const end = new Date()
+      const start = new Date()
+      start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+      picker.$emit('pick', [start, end])
+    }
+  }, {
+    text: '最近一个月',
+    onClick(picker) {
+      const end = new Date()
+      const start = new Date()
+      start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+      picker.$emit('pick', [start, end])
+    }
+  }, {
+    text: '最近三个月',
+    onClick(picker) {
+      const end = new Date()
+      const start = new Date()
+      start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
+      picker.$emit('pick', [start, end])
+    }
+  }]
+}
 export default {
   name: 'houseSync',
   components: {
@@ -140,6 +191,8 @@ export default {
     return {
       tabMapOptions: ['整租', '合租', '集中式'],
       activeName: '整租',
+      dateTime: [],
+      pickerOptions,
       searchParams: {
         houseRentType: 1,
         houseStatus: 0,
@@ -164,6 +217,7 @@ export default {
         { prop: 'name', label: '姓名', width: 100 },
         { prop: 'mobile', label: '手机号', width: 150 },
         { prop: 'userType', label: '用户类型', width: 100 },
+        { prop: 'createTimestamp', label: '创建时间', width: 150, filter: 'parseTime' },
         {
           prop: 'roomStatus',
           label: '房间状态',
@@ -222,7 +276,7 @@ export default {
   mounted() {
     /* 表格高度控制 */
     this.$nextTick(() => {
-      const offsetTop = 230
+      const offsetTop = 255
       const pagenationH = 64
       const containerPadding = 20
       let temp_height = document.body.clientHeight - offsetTop - pagenationH - containerPadding
@@ -247,6 +301,7 @@ export default {
     // 查询
     searchParam(type) {
       if (type === 'clear') {
+        this.dateTime = []
         this.searchParams = {
           houseStatus: '',
           houseType: '',
@@ -264,6 +319,11 @@ export default {
       this.$nextTick(() => {
         this.$refs.refGridUnit.searchHandler()
       })
+    },
+    // 日期选择
+    changeDate(value) {
+      this.searchParams.createTimestampStart = value ? value[0] : ''
+      this.searchParams.createTimestampEnd = value ? value[1] : ''
     },
     // tabs切换
     handleClickTab(tab) {
@@ -367,15 +427,6 @@ export default {
         this.sourceInfo = ''
       }
     },
-    roomSearchForm: {
-      handler: function(val) {
-        if (roomSearchForm.cityArea && roomSearchForm.cityArea[1]) {
-          this.roomSearchForm.cityId = roomSearchForm.cityArea[1]
-        } else {
-          this.roomSearchForm.cityId = ''
-        }
-      }
-    },
     'searchParams.cityArea': function(val) {
       if (val && val[1]) {
         this.searchParams.cityId = val[1]
@@ -388,7 +439,7 @@ export default {
 </script>
 <style rel="stylesheet/scss" lang="scss" scoped>
 .item-select {
-  width: 140px;
+  width: 130px;
 }
 .select-dialog {
   .dialog-footer {

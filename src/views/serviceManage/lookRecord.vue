@@ -62,15 +62,15 @@ export default {
   },
   mounted() {
     /* 表格高度控制 */
-    let temp_height = document.body.clientHeight - 95;
-    this.tableHeight = temp_height > 300 ? temp_height : 300;
+    let temp_height = document.body.clientHeight - 95
+    this.tableHeight = temp_height > 300 ? temp_height : 300
     window.onresize = () => {
       return (() => {
-        temp_height = document.body.clientHeight - 95;
-        this.tableHeight = this.tableHeight = temp_height > 300 ? temp_height : 300;
+        temp_height = document.body.clientHeight - 95
+        this.tableHeight = this.tableHeight = temp_height > 300 ? temp_height : 300
       })()
     }
-    this.getGridData();
+    this.getGridData()
   },
   computed: {
     tableStyle: function() {
@@ -83,10 +83,10 @@ export default {
   },
   methods: {
     getGridData() {
-      this.listLoading = true;
+      this.listLoading = true
       queryLookRecordApi(this.searchParams).then(response => {
-        this.tableData = response.data ? (response.data.list || []) : [];
-        this.listLoading = false;
+        this.tableData = response.data ? (response.data.list || []) : []
+        this.listLoading = false
       })
     }
   }

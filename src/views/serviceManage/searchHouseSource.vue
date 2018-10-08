@@ -134,8 +134,8 @@
 </template>
 <script>
 import waves from '@/directive/waves' // 水波纹指令
-import { parseTime, ObjectMap, deepClone } from '@/utils'
-import { validateMobile } from '@/utils/validate';
+import { ObjectMap, deepClone } from '@/utils'
+import { validateMobile } from '@/utils/validate'
 import {
   getAreaListApi,
   getZoneListApi,
@@ -175,23 +175,23 @@ export default {
   data() {
     const validatePhone = (rule, value, callback) => {
       if (!value || !validateMobile(value.trim())) {
-        callback(new Error('请输入正确的手机号'));
+        callback(new Error('请输入正确的手机号'))
       } else {
-        callback();
+        callback()
       }
-    };
+    }
     const validateServicer = (rule, value, callback) => {
       if (!value || !value.serverId) {
-        callback(new Error('请选择城市管家'));
+        callback(new Error('请选择城市管家'))
       } else {
-        callback();
+        callback()
       }
     }
     return {
       formData: {
         cityId: 310100,
         keyword: '',
-        /*orgOwnIds: [2, 4],*/
+        /* orgOwnIds: [2, 4],*/
         tags: ['fhd'],
         allPics: true
       },
@@ -366,15 +366,15 @@ export default {
   },
   mounted() {
     /* 表格高度控制 */
-    let temp_height = document.body.clientHeight - 425;
-    this.tableHeight = temp_height > 300 ? temp_height : 300;
+    let temp_height = document.body.clientHeight - 425
+    this.tableHeight = temp_height > 300 ? temp_height : 300
     window.onresize = () => {
       return (() => {
-        temp_height = document.body.clientHeight - 425;
-        this.tableHeight = this.tableHeight = temp_height > 300 ? temp_height : 300;
+        temp_height = document.body.clientHeight - 425
+        this.tableHeight = this.tableHeight = temp_height > 300 ? temp_height : 300
       })()
     }
-    this.getAreaList();
+    this.getAreaList()
   },
   computed: {
     tableStyle: function() {
@@ -390,16 +390,16 @@ export default {
       getAreaListApi({
         cityId: this.formData.cityId
       }).then(response => {
-        this.areaList = response.data || [];
-        this.getGridData();
+        this.areaList = response.data || []
+        this.getGridData()
       })
     },
     getGridData() {
-      this.listLoading = true;
-      this.searchParams = Object.assign({ pageNo: 1, pageSize: 100 }, deepClone(this.formData));
+      this.listLoading = true
+      this.searchParams = Object.assign({ pageNo: 1, pageSize: 100 }, deepClone(this.formData))
       getGridApi(ObjectMap(this.searchParams)).then(response => {
-        this.tableData = response.data ? (response.data.resultList || []) : [];
-        this.listLoading = false;
+        this.tableData = response.data ? (response.data.resultList || []) : []
+        this.listLoading = false
       })
     },
     searchParam() {
@@ -411,22 +411,22 @@ export default {
         ...this.rentPrice,
         ...this.roomArea,
         chamberCounts: [{
-          min: (this.isActive[2] == -1 ? '' : this.itemFilters[2].filters[this.isActive[2]].min),
-          max: (this.isActive[2] == -1 ? '' : this.itemFilters[2].filters[this.isActive[2]].max)
+          min: (this.isActive[2] === -1 ? '' : this.itemFilters[2].filters[this.isActive[2]].min),
+          max: (this.isActive[2] === -1 ? '' : this.itemFilters[2].filters[this.isActive[2]].max)
         }],
-        houseRentType: (this.isActive[3] == -1 ? '' : this.itemFilters[3].filters[this.isActive[3]].value)
+        houseRentType: (this.isActive[3] === -1 ? '' : this.itemFilters[3].filters[this.isActive[3]].value)
       })
-      this.getGridData();
+      this.getGridData()
     },
     selectMethod(pindex, index) {
-      this.$set(this.isActive, pindex, index);
-      if (pindex == 0 && this.isActive[0] != -1) {
-        this.rentPrice.minPrice = this.itemFilters[0].filters[this.isActive[0]].minPrice,
-          this.rentPrice.maxPrice = this.itemFilters[0].filters[this.isActive[0]].maxPrice
+      this.$set(this.isActive, pindex, index)
+      if (pindex * 1 === 0 && this.isActive[0] !== -1) {
+        this.rentPrice.minPrice = this.itemFilters[0].filters[this.isActive[0]].minPrice
+        this.rentPrice.maxPrice = this.itemFilters[0].filters[this.isActive[0]].maxPrice
       }
-      if (pindex == 1 && this.isActive[0] != -1) {
-        this.roomArea.minRoomArea = this.itemFilters[1].filters[this.isActive[1]].min,
-          this.roomArea.maxRoomArea = this.itemFilters[1].filters[this.isActive[1]].max
+      if (pindex * 1 === 1 && this.isActive[0] !== -1) {
+        this.roomArea.minRoomArea = this.itemFilters[1].filters[this.isActive[1]].min
+        this.roomArea.maxRoomArea = this.itemFilters[1].filters[this.isActive[1]].max
       }
     },
     selectAreaMethod(pindex, index, id, value) {
@@ -434,32 +434,32 @@ export default {
         id: id,
         index: index,
         value: value
-      });
-      if (pindex != 0) {
-        return false;
+      })
+      if (pindex * 1 !== 0) {
+        return false
       }
       this.$set(this.isAreaActive, 1, {
         id: '',
         index: -1,
         value: ''
-      });
-      if (index == -1) {
-        this.zoneList = [];
-        return false;
+      })
+      if (index * 1 === -1) {
+        this.zoneList = []
+        return false
       }
       getZoneListApi({
         regionId: this.areaList[index].areaId
       }).then(response => {
-        this.zoneList = response.data;
+        this.zoneList = response.data
       })
     },
     handleSelectionChange(list) {
-      this.multipleSelection = list;
+      this.multipleSelection = list
     },
     handlePreview(picList = []) {
-      if (!picList || picList.length == 0) {
-        this.$message.error('暂无房源图片');
-        return false;
+      if (!picList || picList.length === 0) {
+        this.$message.error('暂无房源图片')
+        return false
       }
       this.$preview.open(0, picList.map((item, index) => {
         return ({ id: index, src: item, w: 800, h: 600 })
@@ -468,11 +468,11 @@ export default {
     getServicers() {
       getServicersApi({}).then(response => {
         this.serviceList = response.data
-      });
+      })
     },
     changeServicer(val) {
-      let filterData = this.serviceList.filter((item) => {
-        return (item.userId == val)
+      const filterData = this.serviceList.filter((item) => {
+        return (item.userId * 1 === val * 1)
       })[0]
       this.renterInfo.selectedServicer = {
         serverId: val,
@@ -483,15 +483,15 @@ export default {
     saveSendData() {
       this.$refs.ruleForm.validate(valid => {
         if (valid) {
-          if (this.multipleSelection.length == 0) {
-            this.$message.error('请选择房源，最多5个');
-            return false;
+          if (this.multipleSelection.length === 0) {
+            this.$message.error('请选择房源，最多5个')
+            return false
           }
           if (this.multipleSelection.length > 5) {
-            this.$message.error('最多可选择5个房源！请重新选择');
-            return false;
+            this.$message.error('最多可选择5个房源！请重新选择')
+            return false
           }
-          let saveData = {
+          const saveData = {
             userMobile: this.renterInfo.userMobile,
             userName: this.renterInfo.userName,
             detailRequireMent: this.renterInfo.detailRequireMent,
@@ -505,12 +505,12 @@ export default {
               type: 'success',
               duration: 2000
             })
-          });
+          })
         } else {
-          console.log('error submit!!');
-          return false;
+          console.log('error submit!!')
+          return false
         }
-      });
+      })
     }
   }
 }

@@ -1,4 +1,4 @@
-import fetch from '@/utils/fetch';
+import fetch from '@/utils/fetch'
 
 /* 获取表格数据 */
 export function getGridApi(params, urlPathObj) {
@@ -9,7 +9,7 @@ export function getGridApi(params, urlPathObj) {
       method: urlPathObj.queryMethod,
       params
     }
-  });
+  })
 }
 
 /* 新增、编辑、排序、删除接口 */
@@ -21,7 +21,7 @@ export function saveDataApi(params, urlPathObj) {
       method: urlPathObj.saveMethod,
       params
     }
-  });
+  })
 }
 
 /* APP icon */
@@ -65,7 +65,7 @@ export const appIconApi = {
       url: appIconApi.defaultOptions.requestUrl,
       method: 'post',
       data: {
-        method: defaultOptions.method,
+        method: appIconApi.defaultOptions.method,
         params
       }
     })
@@ -143,7 +143,7 @@ export const infomationApi = {
       url: infomationApi.defaultOptions.requestUrl,
       method: 'post',
       data: {
-        method: defaultOptions.method,
+        method: infomationApi.defaultOptions.method,
         params
       }
     })
@@ -181,10 +181,9 @@ export const hotRecommendApi = {
       url: hotRecommendApi.defaultOptions.requestUrl,
       method: 'post',
       data: {
-        method: defaultOptions.method,
+        method: hotRecommendApi.defaultOptions.method,
         params
       }
     })
-  },
+  }
 }
-

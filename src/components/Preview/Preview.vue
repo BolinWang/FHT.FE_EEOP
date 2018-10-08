@@ -1,8 +1,8 @@
 /*
  * @Author: FT.FE.Bolin
  * @Date: 2018-04-11 16:50:08
- * @Last Modified by: chudequan
- * @Last Modified time: 2018-09-10 10:26:14
+ * @Last Modified by: FT.FE.Bolin
+ * @Last Modified time: 2018-09-29 14:56:29
  */
 
 <template>
@@ -30,7 +30,6 @@
   </draggable>
 </template>
 <script>
-import { deepClone } from '@/utils'
 import draggable from 'vuedraggable'
 
 /* 阻止原生dragale打开新页面 */
@@ -100,7 +99,7 @@ export default {
         return false
       }
       const imgloadAsync = item => new Promise(resolve => {
-        let _img = new Image()
+        const _img = new Image()
         _img.src = item.src
         _img.onload = e => {
           item.w = _img.width || 800
@@ -140,7 +139,7 @@ export default {
   watch: {
     picList: {
       immediate: true,
-      handler: function (val) {
+      handler: function(val) {
         this.list = (val || []).slice()
         this.list.map((item, index) => {
           // item.sortNum = item.sortNum !== undefined ? item.sortNum : Math.random().toFixed(5)

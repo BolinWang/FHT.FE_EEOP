@@ -166,12 +166,12 @@ export default {
       layer_showApply: false
     }
   },
-  created () {
+  created() {
 
   },
   mounted() {
     /* 表格高度控制 */
-   this.$nextTick(() => {
+    this.$nextTick(() => {
       const offsetTop = this.$refs.refGridUnit.$el.offsetTop || 140
       const pagenationH = 64
       const containerPadding = 20
@@ -224,7 +224,7 @@ export default {
     nextStep() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          let bindParams = {
+          const bindParams = {
             platform: 'idlefish',
             userid: this.temp.userId,
             account: this.temp.account,

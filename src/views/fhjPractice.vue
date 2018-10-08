@@ -1,8 +1,8 @@
 /*
  * @Author: FT.FE.Bolin
  * @Date: 2018-07-11 13:49:21
- * @Last Modified by: chudequan
- * @Last Modified time: 2018-09-10 10:15:38
+ * @Last Modified by: FT.FE.Bolin
+ * @Last Modified time: 2018-09-29 15:23:03
  */
 
  <template>
@@ -82,7 +82,6 @@
 </template>
 <script>
 import GridUnit from '@/components/GridUnit/grid'
-import { deepClone, cleanArray, ObjectMap } from '@/utils'
 import { houseAsyncApi } from '@/api/houseManage'
 export default {
   name: 'houseSync',
@@ -198,7 +197,7 @@ export default {
     })
   },
   computed: {
-    tableStyle: function () {
+    tableStyle: function() {
       return {
         width: '100%',
         height: this.tableHeight + 'px'
@@ -259,7 +258,7 @@ export default {
         return false
       }
 
-      this.dialogVisible = true;
+      this.dialogVisible = true
 
       // this.$confirm(`已选择${this.selectedItems.length}个房源，确定${typeConfig[type].title}吗？`, '提示', {
       //   confirmButtonText: '确定',
@@ -271,7 +270,7 @@ export default {
     },
     // 发布、撤销
     gotoHouseAsync(api) {
-      let roomCodes = this.selectedItems.map(item => item.roomCode)
+      const roomCodes = this.selectedItems.map(item => item.roomCode)
       api({
         platform: ['idlefish'],
         roomCodes

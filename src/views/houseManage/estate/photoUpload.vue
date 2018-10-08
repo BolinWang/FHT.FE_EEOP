@@ -61,8 +61,8 @@ export default {
       }
       const uploadList = []
       const readFileAsync = file => new Promise(resolve => {
-        let reader = new FileReader()
-        reader.onerror = function (e) {
+        const reader = new FileReader()
+        reader.onerror = function(e) {
           console.log('读取异常....')
         }
         reader.onload = e => {
@@ -71,7 +71,7 @@ export default {
             ? window.URL.createObjectURL(new Blob([e.target.result]))
             : e.target.result
           let imageName = ''
-          let type = 1
+          const type = 1
           if (!file.name) {
             imageName = ''
           } else {

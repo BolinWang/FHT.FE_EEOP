@@ -287,3 +287,70 @@ export function queryMessageQuantityApi(params = {}) {
     }
   })
 }
+
+// 客源管理
+export const tenantReservationApi = {
+  baseUrl: '/market/tenantReservation',
+  queryMethod: 'queryTenantReservation',
+  list(params = {}) {
+    return fetch({
+      url: this.baseUrl,
+      method: 'post',
+      data: {
+        method: this.queryMethod,
+        params
+      }
+    })
+  },
+  update(params = {}) {
+    return fetch({
+      url: this.baseUrl,
+      method: 'post',
+      interceptors: false,
+      data: {
+        method: 'addTenantReservation',
+        params
+      }
+    })
+  },
+  delete(params = {}) {
+    return fetch({
+      url: this.baseUrl,
+      method: 'post',
+      data: {
+        method: 'batchDeleteTenantRes',
+        params
+      }
+    })
+  },
+  getRooms(params = {}) {
+    return fetch({
+      url: this.baseUrl,
+      method: 'post',
+      data: {
+        method: 'findRoomInfo',
+        params
+      }
+    })
+  },
+  getLandlord(params = {}) {
+    return fetch({
+      url: this.baseUrl,
+      method: 'post',
+      data: {
+        method: 'queryLandlordInfo',
+        params
+      }
+    })
+  },
+  sendMessage(params = {}) {
+    return fetch({
+      url: this.baseUrl,
+      method: 'post',
+      data: {
+        method: 'sendBookingMessage',
+        params
+      }
+    })
+  }
+}

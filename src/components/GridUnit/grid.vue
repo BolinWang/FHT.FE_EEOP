@@ -1,8 +1,8 @@
 /*
  * @Author: FT.FE.Bolin
  * @Date: 2018-04-11 16:47:22
- * @Last Modified by: chudequan
- * @Last Modified time: 2018-09-10 13:51:38
+ * @Last Modified by: FT.FE.Bolin
+ * @Last Modified time: 2018-09-27 17:59:28
  */
 <template>
   <div class="model-table-pagenation">
@@ -89,9 +89,9 @@
             <template slot-scope="scope">
               <!-- 全局过滤器 -->
               <span v-if="column.filter">
-                <i v-if="column.filter === 'parseTime'
-                  && scope.row[column.prop]
-                  && scope.row[column.prop] != ''" class="el-icon-time">
+                <i
+                  v-if="column.filter === 'parseTime' && scope.row[column.prop]"
+                  class="el-icon-time">
                 </i>
                 {{ Vue.filter(column['filter'])(scope.row[column.prop]) }}
               </span>
@@ -171,8 +171,8 @@
         if (!imageUrl) {
           return false
         }
-        let previewObj = {src: imageUrl}
-        let _img = new Image()
+        const previewObj = { src: imageUrl }
+        const _img = new Image()
         _img.src = imageUrl
         _img.onload = function() {
           previewObj.w = _img.width || 800
