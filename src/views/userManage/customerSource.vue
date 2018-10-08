@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-09-26 18:01:22
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-09-29 16:29:32
+ * @Last Modified time: 2018-10-08 14:41:12
  */
 <template>
   <div class="app-container">
@@ -118,6 +118,7 @@
       <el-dialog
         :title="infoTitle"
         :visible.sync="layer_showInfo"
+        @open="clearFormValidate"
         @close="closeInfo('detailFrom')"
         :before-close="handleClose"
         width="800px">
@@ -239,7 +240,7 @@
                               <span class="detail_label">选择房东：</span>
                               <el-select
                                   class="input_auto"
-                                  v-model="selectedRoomInfo.landlordMobile"
+                                  v-model="selectedRoomInfo.selectedLandlordMobile"
                                   placeholder="输入姓名/手机号快速匹配"
                                   @change="selectLandlord"
                                   filterable>
@@ -615,6 +616,12 @@ export default {
       })
     },
 
+    clearFormValidate() {
+      if (this.$refs['detailFrom']) {
+        this.$refs['detailFrom'].clearValidate()
+      }
+    },
+
     // 新增/编辑客源
     addAndEdit(type, data = {}) {
       this.infoTitle = type === 2 ? '编辑客源' : '新增客源'
@@ -663,10 +670,16 @@ export default {
         positionId: item.positionId
       }).then(res => {
         this.landlordList = res.data || []
-        this.selectedRoomInfo.landlordMobile =
-        this.landlordList.length > 0 ? this.landlordList[0].landlordMobile : ''
+        if (
+          this.detailData.landlordMobile &&
+          (this.landlordList.filter(item => item.landlordMobile === this.detailData.landlordMobile).length > 0)
+        ) {
+          this.selectedRoomInfo.selectedLandlordMobile = this.detailData.landlordMobile
+        } else {
+          this.selectedRoomInfo.selectedLandlordMobile = this.landlordList.length > 0 ? this.landlordList[0].landlordMobile : ''
+        }
         if (!flag) {
-          this.detailData.landlordMobile = this.selectedRoomInfo.landlordMobile
+          this.detailData.landlordMobile = this.selectedRoomInfo.selectedLandlordMobile
           this.selectLandlord(this.detailData.landlordMobile)
         } else {
           this.layer_showInfo = true
@@ -683,6 +696,7 @@ export default {
       filterObj = this.landlordList.find((item) => {
         return item.landlordMobile === data
       })
+      this.$set(this.selectedRoomInfo, 'selectedLandlordMobile', data)
       this.$set(this.detailData, 'landlordName', filterObj.landlordName || '')
       this.$set(this.detailData, 'landlordMobile', data)
     },
