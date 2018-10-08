@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-07-11 13:49:21
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-10-08 11:27:49
+ * @Last Modified time: 2018-10-08 11:36:01
  */
 
  <template>
@@ -114,7 +114,7 @@
           </el-dialog>
         </div>
       </el-form>
-      <GridUnit ref="refGridUnit" :columns="colModels" :formOptions="searchParams" :url="url" :showSelection="true" :pageSizes="[50, 100, 200, 300]" :dataMethod="method" :height="tableHeight" @selection-change="handleSelectionChange">
+      <GridUnit ref="refGridUnit" :columns="colModels" :formOptions="searchParams" :url="url" :showSelection="true" :pageSizes="[50, 100, 150, 200]" :dataMethod="method" :height="tableHeight" @selection-change="handleSelectionChange">
         <template slot="slot_popover" slot-scope="scope">
           <el-popover v-if="scope.row.idlefishStatus === `发布失败` || scope.row.publishStatus === `发布失败` " trigger="hover" placement="top">
             <p>发布失败原因: {{ scope.row.failReason }}</p>
