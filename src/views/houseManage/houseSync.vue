@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-07-11 13:49:21
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-09-29 16:16:22
+ * @Last Modified time: 2018-10-08 11:27:49
  */
 
  <template>
@@ -114,7 +114,7 @@
           </el-dialog>
         </div>
       </el-form>
-      <GridUnit ref="refGridUnit" :columns="colModels" :formOptions="searchParams" :url="url" :showSelection="true" :pageSizes="[50, 100, 200, 500]" :dataMethod="method" :height="tableHeight" @selection-change="handleSelectionChange">
+      <GridUnit ref="refGridUnit" :columns="colModels" :formOptions="searchParams" :url="url" :showSelection="true" :pageSizes="[50, 100, 200, 300]" :dataMethod="method" :height="tableHeight" @selection-change="handleSelectionChange">
         <template slot="slot_popover" slot-scope="scope">
           <el-popover v-if="scope.row.idlefishStatus === `发布失败` || scope.row.publishStatus === `发布失败` " trigger="hover" placement="top">
             <p>发布失败原因: {{ scope.row.failReason }}</p>
@@ -223,7 +223,6 @@ export default {
           label: '房间状态',
           width: 100,
           type: 'status',
-          fixed: 'right',
           unitFilters: {
             renderStatusType(status) {
               const statusMap = {
@@ -242,7 +241,6 @@ export default {
           label: '麦邻租房',
           width: 100,
           type: 'status',
-          fixed: 'right',
           unitFilters: {
             renderStatusType(status) {
               const statusMap = {
@@ -257,7 +255,7 @@ export default {
             }
           }
         },
-        { prop: 'idlefishStatus', label: '闲鱼租房', width: 100, slotName: 'slot_popover', fixed: 'right' },
+        { prop: 'idlefishStatus', label: '闲鱼租房', width: 100, slotName: 'slot_popover' },
         { prop: 'operation', label: '操作记录', width: 180 }
       ],
       tableHeight: 300,
