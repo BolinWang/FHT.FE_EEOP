@@ -35,7 +35,7 @@
             </el-select>
           </el-form-item>
           <el-form-item>
-            
+
             <el-input
               placeholder="房东／房东手机号码"
               style="width:160px;"
@@ -231,7 +231,7 @@ export default {
         endDeadlineTime: ''
       },
       select: '',
-      tableHeight: '',
+      tableHeight: 300,
       tableData: [],
       cityData: [{
         value: 330100,
