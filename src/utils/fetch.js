@@ -6,9 +6,9 @@ import { getSessionId } from '@/utils/auth'
 // 创建axios实例
 const service = axios.create({
   baseURL: process.env.BASE_API,
-  interceptors: true, // 是否开启response拦截器
-  /*   timeout: 5000 // 请求超时时间*/
-  
+  interceptors: true // 是否开启response拦截器
+  /*   timeout: 5000 // 请求超时时间 */
+
 })
 
 // request拦截器
@@ -19,7 +19,7 @@ service.interceptors.request.use(config => {
     reqId: '0010C2379272774D6EC087B917CE2A71438DEF90',
     sign: '8F4C4A8E9D850EDD9692DE38723D0543'
   }
-  if (config.method.toUpperCase() == 'POST') {
+  if (config.method.toUpperCase() === 'POST') {
     if (store.getters.sessionId && !config.noSessionId) {
       config.data['sessionId'] = getSessionId()
     }
@@ -44,13 +44,13 @@ service.interceptors.request.use(config => {
 service.interceptors.response.use(
   response => {
     const res = response.data
-    if (!response.config.interceptors || res.code == 0) {
+    if (!response.config.interceptors || res.code * 1 === 0) {
       return response.data
     }
-    if (res.code == 1011) {
-      if (res.message == '无数据') {
+    if (res.code * 1 === 1011) {
+      if (res.message === '无数据') {
         return response.data
-      } else if (res.message == '数据不存在') {
+      } else if (res.message === '数据不存在') {
         store.dispatch('FedLogOut').then(() => {
           location.reload() // 为了重新实例化vue-router对象 避免bug
         })
@@ -62,7 +62,7 @@ service.interceptors.response.use(
       duration: 5 * 1000
     })
     // sessionId 失效
-    if (res.code == 1016) {
+    if (res.code * 1 === 1016) {
       MessageBox.confirm(res.message + '，请重新登录', '提示', {
         confirmButtonText: '重新登录',
         cancelButtonText: '取消',

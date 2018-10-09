@@ -26,7 +26,7 @@ export default {
   methods: {
 
   }
-};
+}
 </script>
 <style rel="stylesheet/scss" lang="scss">
 .model-search .filter-item {

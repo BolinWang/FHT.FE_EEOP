@@ -1,4 +1,4 @@
-import fetch from '@/utils/fetch';
+import fetch from '@/utils/fetch'
 
 /* 获取区域数据 */
 export function getAreaListApi(params = {}) {
@@ -9,7 +9,7 @@ export function getAreaListApi(params = {}) {
       method: 'query.region.area',
       params
     }
-  });
+  })
 }
 
 /* 获取区域对应板块数据 */
@@ -21,7 +21,7 @@ export function getZoneListApi(params = {}) {
       method: 'query.region.zone',
       params
     }
-  });
+  })
 }
 
 /* 获取房源数据列表 */
@@ -33,7 +33,7 @@ export function getGridApi(params = {}) {
       method: 'searchByPage',
       params
     }
-  });
+  })
 }
 
 /* 获取服务人员列表 */
@@ -45,7 +45,7 @@ export function getServicersApi(params = {}) {
       method: 'query.server.people',
       params
     }
-  });
+  })
 }
 
 /* 提交租客信息 */
@@ -57,7 +57,7 @@ export function saveRenterInfoApi(params = {}) {
       method: 'distribute.server',
       params
     }
-  });
+  })
 }
 
 /* 带看记录查看 */
@@ -69,5 +69,5 @@ export function queryLookRecordApi(params = {}) {
       method: 'seeRecord',
       params
     }
-  });
+  })
 }

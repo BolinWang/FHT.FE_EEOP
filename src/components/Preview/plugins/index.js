@@ -9,9 +9,9 @@ import PreviewComponent from './preview.vue'
 let $vm
 export default {
   install(Vue) {
-    let Preview = Vue.extend(PreviewComponent)
+    const Preview = Vue.extend(PreviewComponent)
     if (!$vm) {
-      $vm = new Preview({el: document.createElement('div')})
+      $vm = new Preview({ el: document.createElement('div') })
       document.body.appendChild($vm.$el)
     }
     const preview = {

@@ -27,26 +27,27 @@
 <script>
 import Preview from '@/components/Preview/Preview'
 export default {
-   components: {
+  components: {
     Preview
   },
   props: {
-    fileList:Array
+    fileList: Array
   },
-  data () {
+  data() {
     return {
-      fileListLeng:[],
+      fileListLeng: [],
       actionBaseUrl: process.env.FLY_API,
       iSFile: false,
-      accept: 'image/png, image/jpeg, image/jpg',
+      accept: 'image/png, image/jpeg, image/jpg'
     }
   },
   watch: {
-    
+
   },
   methods: {
     pictureError(err, file) {
-      file = null;
+      console.log(err)
+      file = null
     },
     handleExceed(files) {
       // this.$message.warning(`当前限制上传 3 张图片，本次选择了 ${files.length} 个文件，共选择了 ${files.length + this.fileList.length} 个文件`);
@@ -56,29 +57,28 @@ export default {
       this.fileList = val
     },
     resetFile(file) {
-      file = null;
+      file = null
     },
-     pictureSuccess(response, file) {
+    pictureSuccess(response, file) {
       this.fileList.push({
         'src': file.response.data
       })
     },
     // 上传的图片列表
-     pictureUpload(file) {
+    pictureUpload(file) {
       const isLt5M = file.size / 1024 / 1024 <= 5
-      if (['image/jpeg', 'image/jpg', 'image/png'].indexOf(file.type) == -1) {
-        this.$message.error('请上传jpg/png的图片');
-        return false;
+      if (['image/jpeg', 'image/jpg', 'image/png'].indexOf(file.type) === -1) {
+        this.$message.error('请上传jpg/png的图片')
+        return false
       }
       if (!isLt5M) {
-        this.$message.error('请上传5Mb大小以内的图片');
-        return false;
+        this.$message.error('请上传5Mb大小以内的图片')
+        return false
       }
-     
     },
-    picturePreview(file){
-    console.log(file)
-    },
+    picturePreview(file) {
+      console.log(file)
+    }
   }
 }
 </script>

@@ -132,8 +132,8 @@
 </template>
 
 <script>
-import GridUnit from "@/components/GridUnit/grid"
-import { estateRoomFloorApi, estateRoomDetailApi, estateBatchCopyRoomListApi, copyToOtherRoomApi, estateRoomRentPayWayApi, saveEstateRoomRentPayWayApi, oneEstateRoomApi, saveEstateRoomApi, checkRoomHasDeviceApi, deleteRoomApi, changeRoomStatusApi } from "@/api/houseManage"
+import GridUnit from '@/components/GridUnit/grid'
+import { estateRoomDetailApi, estateBatchCopyRoomListApi, copyToOtherRoomApi, estateRoomRentPayWayApi, saveEstateRoomRentPayWayApi, oneEstateRoomApi, saveEstateRoomApi, checkRoomHasDeviceApi, deleteRoomApi, changeRoomStatusApi } from '@/api/houseManage'
 import RoomListSelecter from '@/components/RoomListSelecter'
 import RoomDetail from '../components/roomDetailModel'
 import rentPayWay from '../components/rentPayWay'
@@ -184,74 +184,74 @@ export default {
           value: 10
         }
       ],
-      estateRoomListUrl: "/market/fangyuan",
+      estateRoomListUrl: '/market/fangyuan',
       tableHeight: 500,
       reqMethod: 'queryEstateRoomList',
       colModels: [
         { slot: 'selection' },
-        { prop: "roomTypeName", label: "房间类型" },
+        { prop: 'roomTypeName', label: '房间类型' },
         {
-          prop: "floorId",
-          label: "楼层",
-          slotName: "floorName"
+          prop: 'floorId',
+          label: '楼层',
+          slotName: 'floorName'
         },
-        { prop: "roomNo", label: "房号" },
+        { prop: 'roomNo', label: '房号' },
         {
-          prop: "roomDirection",
-          label: "朝向",
+          prop: 'roomDirection',
+          label: '朝向',
           render(row) {
-            let directionList = ['', '朝南', '朝北', '朝东', '朝西', '东南', '西南', '东北', '西北']
+            const directionList = ['', '朝南', '朝北', '朝东', '朝西', '东南', '西南', '东北', '西北']
             return directionList[row.roomDirection]
           }
         },
         {
-          prop: "roomStatus",
-          label: "房间状态",
-          slotName: "roomStatus"
+          prop: 'roomStatus',
+          label: '房间状态',
+          slotName: 'roomStatus'
         },
-        { prop: "roomCode", label: "平台房源编码" },
+        { prop: 'roomCode', label: '平台房源编码' },
         {
-          prop: "roomLayout",
-          label: "室厅卫",
+          prop: 'roomLayout',
+          label: '室厅卫',
           render(row) {
             return (row.chamberCount || 0) + '室' + (row.boardCount || 0) + '厅' + (row.toiletCount || 0) + '卫'
           }
         },
-        { prop: "roomArea", label: "面积" },
+        { prop: 'roomArea', label: '面积' },
         {
-          prop: "decorationDegree",
-          label: "装修程度",
+          prop: 'decorationDegree',
+          label: '装修程度',
           render(row) {
-            let decorationDegreeList = ['', '毛坯', '简装', '精装修', '豪华装']
+            const decorationDegreeList = ['', '毛坯', '简装', '精装修', '豪华装']
             return decorationDegreeList[row.decorationDegree]
           }
         },
-        { prop: "bedCount", label: "床数" },
-        { prop: "maxPerson", label: "最大入住人数" },
+        { prop: 'bedCount', label: '床数' },
+        { prop: 'maxPerson', label: '最大入住人数' },
         {
-          prop: "tag",
-          label: "标签",
-          align: "center",
-          slotName: "setTag"
+          prop: 'tag',
+          label: '标签',
+          align: 'center',
+          slotName: 'setTag'
         },
         {
-          prop: "settings",
-          label: "设置",
+          prop: 'settings',
+          label: '设置',
           width: '280px',
           align: 'center',
           fixed: 'right',
-          slotName: "settingRoom"
+          slotName: 'settingRoom'
         },
         {
-          prop: "operate",
-          label: "操作",
-          align: "center",
+          prop: 'operate',
+          label: '操作',
+          align: 'center',
           fixed: 'right',
-          slotName: "operateRoom"
+          slotName: 'operateRoom'
         },
         {
-          prop: "operateRecord",
-          label: "操作记录",
+          prop: 'operateRecord',
+          label: '操作记录',
           render(row) {
             return row.lastOperator + ' ' + row.lastOperateTime
           }
@@ -296,7 +296,7 @@ export default {
         {
           label: '飞虎队',
           val: 10
-        },
+        }
       ],
       checkedCopyList: [],
       rentPayModelVisible: false,
@@ -399,7 +399,7 @@ export default {
       this.checkAllCopyItem = this.checkedCopyList.length === this.allCheckedOptionsList.length
     },
     saveCopyItemTo() {
-      let checkedRoomList = this.$refs.copyItemTo.returnCheckedList()
+      const checkedRoomList = this.$refs.copyItemTo.returnCheckedList()
       copyToOtherRoomApi({
         fromRoomCode: this.curRoomCode,
         toRoomCodes: checkedRoomList,
@@ -423,7 +423,7 @@ export default {
         depositQty: '',
         maxMonthNum: 12,
         minMonthNum: 1,
-        name: "月付",
+        name: '月付',
         rentPrice: '',
         rentQty: 1,
         rentTypeId: 1,
@@ -437,7 +437,7 @@ export default {
       })
     },
     saveRentPay() {
-      let list = this.$refs.rentPayWay.returnRentPayList()
+      const list = this.$refs.rentPayWay.returnRentPayList()
       if (!list) {
         this.$message.error(`请填写完交租方式再保存`)
         return false
@@ -467,7 +467,7 @@ export default {
       row.minMonthNum = row.rentQty
     },
     deleteCurRentPay(row) {
-      this.$set(this, 'rentPayList', this.rentPayList.filter((item) => item != row))
+      this.$set(this, 'rentPayList', this.rentPayList.filter((item) => item !== row))
     },
     computeServiceChargePrice(row) {
       if (row.serviceChargeType !== 3) {
@@ -494,7 +494,7 @@ export default {
       }
     },
     saveRoomData() {
-      let data = this.$refs.roomDetailModel.saveRoomData()
+      const data = this.$refs.roomDetailModel.saveRoomData()
       if (!data) {
         return
       }
@@ -600,10 +600,10 @@ export default {
       const differentFlag = this.$refs.roomDetailModel.checkEditFlag()
       if (differentFlag) {
         this.$confirm('您还有数据未保存, 确认关闭吗？')
-        .then(_ => {
-          done()
-        })
-        .catch(_ => {})
+          .then(_ => {
+            done()
+          })
+          .catch(_ => {})
       } else {
         done()
       }
@@ -612,12 +612,12 @@ export default {
   filters: {
     setFloorName(val, floors) {
       if (floors) {
-        let floor = floors.filter((item) => item.floorId === val)
+        const floor = floors.filter((item) => item.floorId === val)
         return floor.length ? floor[0].floorName : ''
       }
     },
     setRoomStatus(val, statusList) {
-      let status = statusList.filter(item => item.value === val)
+      const status = statusList.filter(item => item.value === val)
       return status.length ? status[0].label : ''
     }
   },
@@ -629,9 +629,9 @@ export default {
     this.roomSearchForm.fangyuanCode = this.fangyuanCode
   },
   beforeDestroy() {
-    let dialog = document.querySelectorAll('body > .el-dialog__wrapper')
+    const dialog = document.querySelectorAll('body > .el-dialog__wrapper')
     if (dialog) {
-      [].forEach.call(dialog, function (item, index) {
+      [].forEach.call(dialog, function(item, index) {
         document.body.removeChild(item)
       })
     }

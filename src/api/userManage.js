@@ -1,4 +1,4 @@
-import fetch from '@/utils/fetch';
+import fetch from '@/utils/fetch'
 
 /* 获取用户列表 */
 export function getGridApi(params = {}) {
@@ -9,7 +9,7 @@ export function getGridApi(params = {}) {
       method: 'loadUserList',
       params
     }
-  });
+  })
 }
 
 /* 重置密码、删除、新增 */
@@ -57,7 +57,7 @@ export function saveFeedbackApi(params = {}) {
       method: 'saveFeedback',
       params
     }
-  });
+  })
 }
 
 /* 申请注册获取列表数据 */
@@ -69,7 +69,7 @@ export function queryUserRequestByPageApi(params = {}) {
       method: 'queryUserRequestByPage',
       params
     }
-  });
+  })
 }
 
 /* 申请注册保存 */
@@ -81,9 +81,8 @@ export function saveUserRequestApi(params = {}) {
       method: 'saveUserRequest',
       params
     }
-  });
+  })
 }
-
 
 /* 申请注册注册账号 */
 export function registeredUserApi(params = {}) {
@@ -94,7 +93,7 @@ export function registeredUserApi(params = {}) {
       method: 'registeredUser',
       params
     }
-  });
+  })
 }
 // C端租客查询
 export function customerListApi(params = {}) {
@@ -105,7 +104,7 @@ export function customerListApi(params = {}) {
       method: 'customerList',
       params
     }
-  });
+  })
 }
 // 租房记录
 export function queryRentRecordApi(params = {}) {
@@ -149,7 +148,7 @@ export function businessUserListApi(params = {}) {
       method: 'businessUserList',
       params
     }
-  });
+  })
 }
 
 // 查询组织列表
@@ -161,7 +160,7 @@ export function initOrgListApi(params = {}) {
       method: 'list',
       params
     }
-  });
+  })
 }
 // 查询权限模板
 export function queryTemplateListApi(params = {}) {
@@ -172,7 +171,7 @@ export function queryTemplateListApi(params = {}) {
       method: 'queryTemplateList',
       params
     }
-  });
+  })
 }
 // 组织启用/禁用/删除
 export function updateOrgStatusAndDeleteApi(params = {}) {
@@ -183,7 +182,7 @@ export function updateOrgStatusAndDeleteApi(params = {}) {
       method: 'updateOrgStatusAndDelete',
       params
     }
-  });
+  })
 }
 // 新增组织
 export function saveOrgApi(params = {}) {
@@ -194,7 +193,7 @@ export function saveOrgApi(params = {}) {
       method: 'saveOrg',
       params
     }
-  });
+  })
 }
 // 编辑组织
 export function editOrgBasicInfoApi(params = {}) {
@@ -205,7 +204,7 @@ export function editOrgBasicInfoApi(params = {}) {
       method: 'editOrgBasicInfo',
       params
     }
-  });
+  })
 }
 // 查询组织信息
 export function organizationInfoApi(params = {}) {
@@ -216,7 +215,7 @@ export function organizationInfoApi(params = {}) {
       method: 'organizationInfo',
       params
     }
-  });
+  })
 }
 // 实名校验
 export function realNameAuthApi(params = {}) {
@@ -227,7 +226,7 @@ export function realNameAuthApi(params = {}) {
       method: 'realNameAuth',
       params
     }
-  });
+  })
 }
 // 金融托底方
 export function checkCanBeFinanceTrusteeshipApi(params = {}) {
@@ -239,7 +238,7 @@ export function checkCanBeFinanceTrusteeshipApi(params = {}) {
       method: 'checkCanBeFinanceTrusteeship',
       params
     }
-  });
+  })
 }
 
 // 标记为飞虎队
@@ -251,7 +250,7 @@ export function initFlyOrgApi(params = {}) {
       method: 'initFlyOrg',
       params
     }
-  });
+  })
 }
 export function addTempOrgApi(params = {}) {
   return fetch({
@@ -262,7 +261,7 @@ export function addTempOrgApi(params = {}) {
     data: {
       ...params
     }
-  });
+  })
 }
 
 // 银行卡绑定
@@ -274,7 +273,7 @@ export function bindWithdrawCardApi(params = {}) {
       method: 'bindWithdrawCard',
       params
     }
-  });
+  })
 }
 
 // 获取消息数
@@ -287,4 +286,71 @@ export function queryMessageQuantityApi(params = {}) {
       params
     }
   })
+}
+
+// 客源管理
+export const tenantReservationApi = {
+  baseUrl: '/market/tenantReservation',
+  queryMethod: 'queryTenantReservation',
+  list(params = {}) {
+    return fetch({
+      url: this.baseUrl,
+      method: 'post',
+      data: {
+        method: this.queryMethod,
+        params
+      }
+    })
+  },
+  update(params = {}) {
+    return fetch({
+      url: this.baseUrl,
+      method: 'post',
+      interceptors: false,
+      data: {
+        method: 'addTenantReservation',
+        params
+      }
+    })
+  },
+  delete(params = {}) {
+    return fetch({
+      url: this.baseUrl,
+      method: 'post',
+      data: {
+        method: 'batchDeleteTenantRes',
+        params
+      }
+    })
+  },
+  getRooms(params = {}) {
+    return fetch({
+      url: this.baseUrl,
+      method: 'post',
+      data: {
+        method: 'findRoomInfo',
+        params
+      }
+    })
+  },
+  getLandlord(params = {}) {
+    return fetch({
+      url: this.baseUrl,
+      method: 'post',
+      data: {
+        method: 'queryLandlordInfo',
+        params
+      }
+    })
+  },
+  sendMessage(params = {}) {
+    return fetch({
+      url: this.baseUrl,
+      method: 'post',
+      data: {
+        method: 'sendBookingMessage',
+        params
+      }
+    })
+  }
 }

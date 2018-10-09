@@ -112,16 +112,16 @@ export default {
   created() {
     this.privateFormData = deepClone(this.formData)
     this.privateDateTime = deepClone(this.dateTime)
-    this.getGridData(this.pageItems);
+    this.getGridData(this.pageItems)
   },
   mounted() {
     /* 表格高度控制 */
-    let temp_height = document.body.clientHeight - 267;
-    this.tableHeight = temp_height > 300 ? temp_height : 300;
+    let temp_height = document.body.clientHeight - 267
+    this.tableHeight = temp_height > 300 ? temp_height : 300
     window.onresize = () => {
       return (() => {
-        temp_height = document.body.clientHeight - 267;
-        this.tableHeight = this.tableHeight = temp_height > 300 ? temp_height : 300;
+        temp_height = document.body.clientHeight - 267
+        this.tableHeight = this.tableHeight = temp_height > 300 ? temp_height : 300
       })()
     }
   },
@@ -137,93 +137,93 @@ export default {
     /* 查看图片 */
     showImage(picUrl) {
       if (!picUrl) {
-        return false;
+        return false
       }
-      this.showPicUrl = picUrl;
-      this.layer_showImage = true;
+      this.showPicUrl = picUrl
+      this.layer_showImage = true
     },
     /* 多选 */
     handleSelectionChange(val) {
-      this.multipleSelection = val;
+      this.multipleSelection = val
     },
     /* 查询列表 */
     handleSizeChange(val) {
-      this.pageItems.pageSize = val;
-      this.getGridData(this.pageItems);
+      this.pageItems.pageSize = val
+      this.getGridData(this.pageItems)
     },
     handleCurrentChange(val) {
-      this.pageItems.pageNo = val;
-      this.getGridData(this.pageItems);
+      this.pageItems.pageNo = val
+      this.getGridData(this.pageItems)
     },
     /* 列表渲染，数据请求 */
     getGridData(params) {
-      this.listLoading = true;
-      this.searchParams = Object.assign(deepClone(params), deepClone(this.privateFormData));
-      this.searchParams.sourceType = this.type * 1 + 1;
+      this.listLoading = true
+      this.searchParams = Object.assign(deepClone(params), deepClone(this.privateFormData))
+      this.searchParams.sourceType = this.type * 1 + 1
       queryFeedbackByPageApi(ObjectMap(this.searchParams)).then(response => {
-        this.tableData = response.data.content;
-        this.total = response.data.totalElements;
-        this.listLoading = false;
+        this.tableData = response.data.content
+        this.total = response.data.totalElements
+        this.listLoading = false
       })
     },
     searchParam() {
-      this.getGridData(this.pageItems);
+      this.getGridData(this.pageItems)
     },
     /* 删除 */
     handleDelete(index, row, type) {
-      let needDeleteList = [],
-        confirmContent = '';
-      if (type == 'multi') {
-        if (this.multipleSelection.length == 0) {
-          this.$message.error('请选择需要删除的数据');
-          return false;
+      let needDeleteList = []
+      let confirmContent = ''
+      if (type === 'multi') {
+        if (this.multipleSelection.length === 0) {
+          this.$message.error('请选择需要删除的数据')
+          return false
         }
         this.multipleSelection.map((item) => {
-          item.isDelete = 1;
-        });
-        needDeleteList = this.multipleSelection;
-        confirmContent = `已选择${this.multipleSelection.length}条数据`;
+          item.isDelete = 1
+        })
+        needDeleteList = this.multipleSelection
+        confirmContent = `已选择${this.multipleSelection.length}条数据`
       } else {
-        row.isDelete = 1;
-        needDeleteList = [row];
-        confirmContent = '此操作将永久删除该数据';
+        row.isDelete = 1
+        needDeleteList = [row]
+        confirmContent = '此操作将永久删除该数据'
       }
       this.$confirm(`${confirmContent}, 是否继续?`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.saveData(needDeleteList);
+        this.saveData(needDeleteList)
       }).catch(() => {})
     },
     /* 保存 */
     saveData(params, type) {
-      let savePatams = deepClone(params);
+      const savePatams = deepClone(params)
       saveFeedbackApi(savePatams).then(response => {
-        this.getGridData(this.pageItems);
+        this.getGridData(this.pageItems)
         this.$notify({
           title: '成功',
           message: '操作成功',
           type: 'success',
           duration: 2000
         })
-      });
+      })
     }
   },
   watch: {
     formData: {
       handler(val) {
-        this.privateFormData = val;
+        this.privateFormData = val
         console.log(val)
       },
       deep: true
     },
     dateTime(val) {
-      this.privateDateTime = val;
+      this.privateDateTime = val
       console.log(val)
     }
   }
-};
+}
 </script>
 <style rel="stylesheet/scss" lang="scss">
 .dialog-image .el-dialog {

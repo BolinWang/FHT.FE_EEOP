@@ -136,8 +136,7 @@
 <script>
 import Preview from '@/components/Preview/Preview'
 import ImageCropper from '@/components/ImageCropper/Cropper'
-import { parseTime, ObjectMap, deepClone } from '@/utils'
-import noPic from '@/assets/noPic.jpg'
+import { deepClone } from '@/utils'
 import store from '@/store'
 
 export default {
@@ -210,7 +209,7 @@ export default {
     }
   },
   created() {
-    let picList = this.temp.roomTypePicUrls || []
+    const picList = this.temp.roomTypePicUrls || []
     this.estateInfoData = {
       reviewStatus: '',
       remark: '',
@@ -247,7 +246,7 @@ export default {
     },
     // 裁剪后图片列表
     emitCropperData(list = []) {
-      this.$set(this.estateInfoData,'picList',[...this.picList,...list])
+      this.$set(this.estateInfoData, 'picList', [...this.picList, ...list])
     },
     /* 选择图片 */
     async uploadImg(e) {
@@ -257,7 +256,7 @@ export default {
       }
       const uploadList = []
       const readFileAsync = file => new Promise(resolve => {
-        let reader = new FileReader()
+        const reader = new FileReader()
         reader.onerror = function(e) {
           console.log('读取异常....')
         }
@@ -310,7 +309,7 @@ export default {
       handler(val) {
         this.temp = val
         this.checked = false
-        let picList = val.roomTypePicUrls || []
+        const picList = val.roomTypePicUrls || []
         this.estateInfoData = {
           reviewStatus: '',
           remark: '',
@@ -338,11 +337,11 @@ export default {
       deep: true
     },
     checked(val) {
-      if (this.type == 'published') {
+      if (this.type === 'published') {
         this.$emit('saveReviewData', {
           checked: val,
           type: 'pulished'
-        });
+        })
       }
     }
   }

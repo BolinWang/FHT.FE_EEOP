@@ -1,11 +1,11 @@
 /*
- * @Author: ghost 
- * @Date: 2018-09-05 18:34:04 
- * @Last Modified by: 
- * @Last Modified time: 2018-09-14 11:00:05
+ * @Author: ghost
+ * @Date: 2018-09-05 18:34:04
+ * @Last Modified by: chudequan
+ * @Last Modified time: 2018-10-09 16:55:10
  */
 <template>
-  <div class="container">
+  <div class="organ-container">
     <el-dialog class="organEdit" title="飞虎队企业机构" width="800px" v-if="companyTableVisible" :visible.sync="companyTableVisible">
       <el-form :model="companyForm" :inline="true" :rules="rules" ref="ruleForm">
         <el-row>
@@ -150,7 +150,7 @@
       </div>
     </el-dialog>
      <el-dialog class="organEdit" title="飞虎队个人机构" width="800px" v-else :visible.sync="personalTableVisible">
-      <el-form :model="companyForm" :inline="true" :rules="rules" ref="ruleForm"> 
+      <el-form :model="companyForm" :inline="true" :rules="rules" ref="ruleForm">
         <el-row>
           <el-col :span="12">
             <el-form-item label="姓名" >
@@ -166,7 +166,7 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="身份证" prop="idNum">
-               <el-input v-model="companyForm.idNum" :disabled=" textCard()"></el-input>
+               <el-input v-model="companyForm.idNum" :disabled="textCard()"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -325,7 +325,7 @@ export default {
   },
   methods: {
     textCard() {
-      if (this.text === '33000000000000') {
+      if (this.text === '330000000000000000') {
         return false
       } else if (this.text === null || this.text === '') {
         return false
@@ -457,14 +457,14 @@ export default {
       }
       orgManagequeryByIdApi(params).then(res => {
         this.companyForm = res.data
-        this.text = this.companyForm.idNum
+        this.text = this.companyForm.idNum + ''
       })
     }
   }
 }
 </script>
 <style scoped lang="scss">
- .container .el-upload--picture-card {
+ .organ-container .el-upload--picture-card {
     &.uploadImage {
       width: 120px;
       height: 90px;

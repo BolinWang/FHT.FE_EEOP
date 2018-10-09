@@ -101,17 +101,17 @@
   </div>
 </template>
 <script>
-import GridUnit from "@/components/GridUnit/grid";
+import GridUnit from '@/components/GridUnit/grid'
 import draggable from 'vuedraggable'
 import Preview from '@/components/Preview/Preview'
-import { parseTime, ObjectMap, deepClone } from '@/utils'
+import { ObjectMap, deepClone } from '@/utils'
 import { getCityListApi, getGridApi, saveDataApi } from '@/api/houseManage'
 import noPic from '@/assets/noPic.jpg'
 
 /* 阻止原生dragale打开新页面 */
-document.body.ondrop = function (event) {
-  event.preventDefault();
-  event.stopPropagation();
+document.body.ondrop = function(event) {
+  event.preventDefault()
+  event.stopPropagation()
 }
 
 export default {
@@ -129,36 +129,36 @@ export default {
       cityOptions: [],
       colModels: [
         {
-          prop: "showStatus",
-          label: "状态",
+          prop: 'showStatus',
+          label: '状态',
           width: 80,
-          type: "status",
-          slotName: "slot_status",
+          type: 'status',
+          slotName: 'slot_status',
           unitFilters: {
             renderStatusType(status) {
               const statusMap = {
-                "1": "info",
-                "2": "success",
-                "3": ""
-              };
-              return statusMap[status] || "info";
+                '1': 'info',
+                '2': 'success',
+                '3': ''
+              }
+              return statusMap[status] || 'info'
             },
             renderStatusValue(status) {
-              const statusStrData = ["未申请", "已展示", "申请中"];
-              return statusStrData[status - 1] || "未发布";
+              const statusStrData = ['未申请', '已展示', '申请中']
+              return statusStrData[status - 1] || '未发布'
             }
           }
         },
-        { prop: "addressName", label: "房源位置" },
-        { prop: "estateName", label: "公寓" },
-        { prop: "tags", label: "标签", type: "tags", width: 200 },
-        { prop: "gmtModified", label: "操作时间", width: 180 },
+        { prop: 'addressName', label: '房源位置' },
+        { prop: 'estateName', label: '公寓' },
+        { prop: 'tags', label: '标签', type: 'tags', width: 200 },
+        { prop: 'gmtModified', label: '操作时间', width: 180 },
         {
-          label: "操作",
-          slotName: "handle",
-          fixed: "right",
+          label: '操作',
+          slotName: 'handle',
+          fixed: 'right',
           width: 230,
-          align: "center"
+          align: 'center'
         }
       ],
       isShowSortApp: true,
@@ -179,22 +179,21 @@ export default {
       layer_appsort: false,
       isDragging: false,
       delayedDragging: false,
-      tableHeight: 300,
-      method: "queryEstateListByPage",
-      url: "/market/estate/"
+      method: 'queryEstateListByPage',
+      url: '/market/estate/'
     }
   },
   created() {
-    this.getCityList();
+    this.getCityList()
   },
   mounted() {
     /* 表格高度控制 */
-    let temp_height = document.body.clientHeight - 200;
-    this.tableHeight = temp_height > 300 ? temp_height : 300;
+    let temp_height = document.body.clientHeight - 200
+    this.tableHeight = temp_height > 300 ? temp_height : 300
     window.onresize = () => {
       return (() => {
-        temp_height = document.body.clientHeight - 200;
-        this.tableHeight = this.tableHeight = temp_height > 300 ? temp_height : 300;
+        temp_height = document.body.clientHeight - 200
+        this.tableHeight = temp_height > 300 ? temp_height : 300
       })()
     }
   },
@@ -210,12 +209,12 @@ export default {
         animation: 0,
         group: 'description',
         ghostClass: 'ghost'
-      };
+      }
     }
   },
   methods: {
     setSortFirst(index) {
-      let tempSortObj = this.sort_tableData.splice(index, 1);
+      const tempSortObj = this.sort_tableData.splice(index, 1)
       this.sort_tableData.unshift(tempSortObj[0])
     },
     /* 获取城市列表 */
@@ -225,45 +224,45 @@ export default {
       }).then(response => {
         this.cityOptions = response.data.list.map((item) => ({ 'label': item.areaName, 'value': item.areaId }))
         this.formData.cityId = this.cityOptions[0].value
-        this.getGridData(this.pageItems);
-      });
+        this.getGridData(this.pageItems)
+      })
     },
     /* 立即下架 */
     downImmediate(index, row) {
-      if (row.showStatus != 2) {
-        this.$message.error('请选择【已展示】的房源进行下架');
-        return false;
+      if (row.showStatus * 1 !== 2) {
+        this.$message.error('请选择【已展示】的房源进行下架')
+        return false
       }
-      row.showStatus = 1;
-      row.publishStatus = 1;
-      this.tableData.splice(index, 1, row);
-      this.saveData(this.tableData);
+      row.showStatus = 1
+      row.publishStatus = 1
+      this.tableData.splice(index, 1, row)
+      this.saveData(this.tableData)
     },
     /* 公寓信息 */
     showEstateInfo(row) {
-      let deepCloneObj = deepClone(row);
-      this.temp.estateName = (deepCloneObj.type == 1 ? '【集中式】' : '【分散式】') + deepCloneObj.estateName;
-      this.temp.contactNameInfo = deepCloneObj.contactName ?
-        deepCloneObj.contactName + (deepCloneObj.contactGender == 1 ? ' 先生 ' : ' 女士 ') + deepCloneObj.contactMobile : '';
-      this.temp.longitude = deepCloneObj.longitude;
-      this.temp.latitude = deepCloneObj.latitude;
-      this.temp.bmapData = this.temp.longitude + ',' + this.temp.latitude;
-      this.temp.addressName = deepCloneObj.addressName;
-      this.temp.zoneName = deepCloneObj.zoneName;
-      this.temp.introduction = deepCloneObj.introduction;
+      const deepCloneObj = deepClone(row)
+      this.temp.estateName = (deepCloneObj.type * 1 === 1 ? '【集中式】' : '【分散式】') + deepCloneObj.estateName
+      this.temp.contactNameInfo = deepCloneObj.contactName
+        ? deepCloneObj.contactName + (deepCloneObj.contactGender * 1 === 1 ? ' 先生 ' : ' 女士 ') + deepCloneObj.contactMobile : ''
+      this.temp.longitude = deepCloneObj.longitude
+      this.temp.latitude = deepCloneObj.latitude
+      this.temp.bmapData = this.temp.longitude + ',' + this.temp.latitude
+      this.temp.addressName = deepCloneObj.addressName
+      this.temp.zoneName = deepCloneObj.zoneName
+      this.temp.introduction = deepCloneObj.introduction
       this.temp.picList = deepCloneObj.estatePictureList.length > 0 ? deepCloneObj.estatePictureList.map((item) => ({
         src: item.smallImage,
         w: 800,
         h: 600
-      })) : [{ src: noPic, w: 800, h: 600, isnoPic: true }];
-      this.layer_showInfo = true;
+      })) : [{ src: noPic, w: 800, h: 600, isnoPic: true }]
+      this.layer_showInfo = true
     },
     layerClose() {
-      this.temp = {};
+      this.temp = {}
     },
     /* 查询列表 */
     change(value) {
-      this.$refs.refGridUnit.searchHandler();
+      this.$refs.refGridUnit.searchHandler()
     },
     // handleSizeChange(val) {
     //   this.pageItems.pageSize = val;
@@ -275,13 +274,13 @@ export default {
     // },
     /* 列表渲染，数据请求 */
     getGridData(params) {
-      this.listLoading = true;
-      this.searchParams = deepClone(params);
+      this.listLoading = true
+      this.searchParams = deepClone(params)
       this.searchParams.cityId = this.formData.cityId
       getGridApi(ObjectMap(this.searchParams)).then(response => {
-        this.tableData = response.data.content;
-        this.total = response.data.totalElements;
-        this.listLoading = false;
+        this.tableData = response.data.content
+        this.total = response.data.totalElements
+        this.listLoading = false
       })
     },
     /* 列表排序 */
@@ -292,47 +291,52 @@ export default {
         cityId: this.formData.cityId,
         status: 2
       }).then(response => {
-        this.sort_tableData = response.data.content.sort((a, b) => a['sortNum'] * 1 - b['sortNum'] * 1);
-        if (this.sort_tableData.length == 0) {
-          this.$message.error('没有【已展示】的房源');
-          return false;
+        this.sort_tableData = response.data.content.sort((a, b) => a['sortNum'] * 1 - b['sortNum'] * 1)
+        if (this.sort_tableData.length === 0) {
+          this.$message.error('没有【已展示】的房源')
+          return false
         }
-        this.layer_appsort = true;
-      });
+        this.layer_appsort = true
+      })
     },
     saveData(params, type) {
-      let savePatams = deepClone(params);
-      if (type == 'sort') {
-        savePatams.forEach((item, index) => item.sortNum = index * 1 + 1);
+      const savePatams = deepClone(params)
+      if (type === 'sort') {
+        savePatams.forEach((item, index) => { item.sortNum = index * 1 + 1 })
       }
       saveDataApi(savePatams).then(response => {
-        this.layer_appsort = false;
-        this.getGridData(this.pageItems);
+        this.layer_appsort = false
+        this.getGridData(this.pageItems)
         this.$notify({
           title: '成功',
           message: '操作成功',
           type: 'success',
           duration: 2000
         })
-      });
+      })
     },
     /* 百度地图 */
     openBMap() {
       this.$nextTick(() => {
-        let map = new BMap.Map("addressMap");
+        // eslint-disable-next-line
+        const map = new BMap.Map('addressMap')
         if (this.temp.bmapData) {
-          let point = new BMap.Point(this.temp.longitude * 1 || 0, this.temp.latitude * 1 || 0);
-          map.centerAndZoom(point, 14);
-          map.addOverlay(new BMap.Marker(point));
+          // eslint-disable-next-line
+          const point = new BMap.Point(this.temp.longitude * 1 || 0, this.temp.latitude * 1 || 0)
+          map.centerAndZoom(point, 14)
+          // eslint-disable-next-line
+          map.addOverlay(new BMap.Marker(point))
         } else {
-          map.centerAndZoom('杭州市', 12);
+          map.centerAndZoom('杭州市', 12)
         }
-        map.addControl(new BMap.MapTypeControl());
-        map.enableScrollWheelZoom(true);
-        map.addEventListener("click", function (e) {
-          map.clearOverlays();
-          map.addOverlay(new BMap.Marker(new BMap.Point(e.point.lng, e.point.lat)));
-        });
+        // eslint-disable-next-line
+        map.addControl(new BMap.MapTypeControl())
+        map.enableScrollWheelZoom(true)
+        map.addEventListener('click', function(e) {
+          map.clearOverlays()
+          // eslint-disable-next-line
+          map.addOverlay(new BMap.Marker(new BMap.Point(e.point.lng, e.point.lat)))
+        })
       })
     }
   },
@@ -347,7 +351,7 @@ export default {
       })
     }
   }
-};
+}
 </script>
 <style rel="stylesheet/scss" lang="scss">
 .dialog-image .el-dialog {

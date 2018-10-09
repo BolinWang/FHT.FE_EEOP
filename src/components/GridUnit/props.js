@@ -120,7 +120,7 @@ const props = {
     type: Function
   },
 
-  indexMethod:{
+  indexMethod: {
     type: Function
   },
 

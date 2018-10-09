@@ -102,8 +102,8 @@ import { appIconApi } from '@/api/eeop'
 
 /* 阻止原生dragale打开新页面 */
 document.body.ondrop = function(event) {
-  event.preventDefault();
-  event.stopPropagation();
+  event.preventDefault()
+  event.stopPropagation()
 }
 
 export default {
@@ -147,14 +147,14 @@ export default {
       sort_tableData: []
     }
   },
-  created () {
+  created() {
     appIconApi.cityList().then(response => {
       this.cityList = response.data
     })
   },
   mounted() {
     /* 表格高度控制 */
-   this.$nextTick(() => {
+    this.$nextTick(() => {
       const offsetTop = this.$refs.refGridUnit.$el.offsetTop || 140
       const pagenationH = 5
       const containerPadding = 20
@@ -191,7 +191,7 @@ export default {
       this.temp = {
         ...deepClone(row),
         cityId: row.cityId || this.searchParams.cityId,
-        picList: row.picUrl ? [{url: row.picUrl, name: '查看图片'}] : []
+        picList: row.picUrl ? [{ url: row.picUrl, name: '查看图片' }] : []
       }
       this.temp.picList = row.picUrl ? [{
         url: row.picUrl,
@@ -227,7 +227,7 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           const saveApi = this.temp.iconId ? appIconApi.edit : appIconApi.add
-          let { configId, iconId, title, cityId } = this.temp
+          const { configId, iconId, title, cityId } = this.temp
           saveApi(ObjectMap({
             configId,
             iconId,
@@ -248,7 +248,9 @@ export default {
       })
     },
     saveSort() {
-      this.sort_tableData.forEach((item, index) => item.sortNum = index * 1 + 1)
+      this.sort_tableData.forEach((item, index) => {
+        item.sortNum = index * 1 + 1
+      })
       appIconApi.saveSort(ObjectMap({
         cityId: this.searchParams.cityId,
         list: this.sort_tableData
@@ -271,7 +273,7 @@ export default {
     /* 上传图片 */
     pictureUpload(file) {
       const isLt500K = file.size / 1024 / 1024 <= 0.5
-      if (['image/jpeg', 'image/jpg', 'image/png'].indexOf(file.type) == -1) {
+      if (['image/jpeg', 'image/jpg', 'image/png'].indexOf(file.type) === -1) {
         this.$message.error('请上传jpg/png的图片')
         return false
       }
@@ -286,12 +288,12 @@ export default {
     },
     picturePreview(file) {
       const _this = this
-      if (!this.temp.picList || this.temp.picList.length == 0) {
+      if (!this.temp.picList || this.temp.picList.length === 0) {
         this.$message.error('图片预览失败')
         return false
       }
-      let previewObj = {src: this.temp.picList[0].url}
-      let _img = new Image()
+      const previewObj = { src: this.temp.picList[0].url }
+      const _img = new Image()
       _img.src = this.temp.picList[0].url
       _img.onload = function() {
         previewObj.w = _img.width || 800
@@ -301,7 +303,7 @@ export default {
     },
     pictureSuccess(response, file, fileList) {
       console.log('success')
-      let picList = response.data.map(item => {
+      const picList = response.data.map(item => {
         return {
           url: item,
           name: '查看图片'
@@ -309,10 +311,11 @@ export default {
       })
       this.$set(this.temp, 'picList', picList)
       if (fileList.length > 1) {
-        fileList.splice(0,1)
+        fileList.splice(0, 1)
       }
     },
     pictureError(err, file) {
+      console.log(err)
       file = null
     },
     resetFile(file) {
@@ -321,7 +324,7 @@ export default {
     /* 列表排序 */
     sortApp() {
       this.sort_tableData = this.$refs.refGridUnit.tableData.sort((a, b) => a['sortNum'] * 1 - b['sortNum'] * 1)
-      if (this.sort_tableData.length == 0) {
+      if (this.sort_tableData.length === 0) {
         this.$message.error('没有可排序的数据')
         return false
       }

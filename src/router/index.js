@@ -223,6 +223,11 @@ export const asyncRouterMap = [
       name: '用户信息'
     },
     {
+      path: 'customerSource',
+      component: _import('userManage/customerSource'),
+      name: '意向客源'
+    },
+    {
       path: 'initOrgList',
       component: _import('userManage/initOrgList'),
       name: '组织列表'

@@ -117,8 +117,7 @@
 
 <script>
 import Preview from '@/components/Preview/Preview'
-import { ObjectMap, deepClone } from '@/utils'
-import noPic from '@/assets/noPic.jpg'
+import { deepClone } from '@/utils'
 import store from '@/store'
 export default {
   name: 'fhdPerson',
@@ -141,14 +140,14 @@ export default {
   filters: {
     picListFilter(list = []) {
       return list.map((src) => {
-        return {src}
+        return { src }
       })
     },
     filterNum(val) {
       if (!val) {
         return ''
       }
-      return val.replace(/\s/g,'').replace(/\D/g,'').replace(/(\d{4})(?=\d)/g,"$1 ")
+      return val.replace(/\s/g, '').replace(/\D/g, '').replace(/(\d{4})(?=\d)/g, '$1 ')
     },
     sexFilter(type) {
       const sexMap = ['先生', '女士']
@@ -186,7 +185,7 @@ export default {
     tempData: {
       handler(val) {
         this.temp = val
-        this.fhdPersonData= {
+        this.fhdPersonData = {
           status: '',
           reason: ''
         }

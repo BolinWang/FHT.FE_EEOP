@@ -185,7 +185,7 @@
 <script>
 import waves from '@/directive/waves'
 import GridUnit from '@/components/GridUnit/grid'
-import { parseTime, ObjectMap, deepClone } from '@/utils'
+import { parseTime } from '@/utils'
 import { fhdAuditApi } from '@/api/auditCenter'
 import { validateMobile, validateIntAndZero } from '@/utils/validate'
 import fhdPerson from '@/views/auditManage/components/fhdPerson'
@@ -241,7 +241,7 @@ export default {
       }
     }
     const validateSpiltRate = (rule, value, callback) => {
-      if(!validateIntAndZero(value) || value < 0 || value >= 100) {
+      if (!validateIntAndZero(value) || value < 0 || value >= 100) {
         callback(new Error('费率为0到100的正整数'))
       } else {
         callback()
@@ -255,7 +255,7 @@ export default {
       }
     }
     return {
-      inputMobie: true,  // 是否是第一步输入主账号手机号
+      inputMobie: true, // 是否是第一步输入主账号手机号
       filterManagerList: [],
       managerList: [], // 城市管家列表
       loading: false,
@@ -269,32 +269,32 @@ export default {
         { value: 2, label: '审核不通过' }
       ],
       bankList: [
-        { value: "01000000", name: "邮储银行" },
-        { value: "01020000", name: "工商银行" },
-        { value: "01030000", name: "农业银行" },
-        { value: "01040000", name: "中国银行" },
-        { value: "01050000", name: "建设银行" },
-        { value: "03010000", name: "交通银行" },
-        { value: "03020000", name: "中信银行" },
-        { value: "03030000", name: "光大银行" },
-        { value: "03040000", name: "华夏银行" },
-        { value: "03050000", name: "民生银行" },
-        { value: "03060000", name: "广发银行" },
-        { value: "03070000", name: "平安银行" },
-        { value: "03080000", name: "招商银行" },
-        { value: "03090000", name: "兴业银行" },
-        { value: "03100000", name: "浦发银行" },
-        { value: "03160000", name: "浙商银行" },
-        { value: "04012900", name: "上海银行" },
-        { value: "04031000", name: "北京银行" },
-        { value: "04083320", name: "宁波银行" },
-        { value: "04233310", name: "杭州银行" },
-        { value: "04256020", name: "东莞银行" },
-        { value: "04375850", name: "珠海华润" },
-        { value: "04791920", name: "包商银行" },
-        { value: "05083000", name: "江苏银行" },
-        { value: "64135810", name: "广州银行" },
-        { value: "64895910", name: "广东南粤" }
+        { value: '01000000', name: '邮储银行' },
+        { value: '01020000', name: '工商银行' },
+        { value: '01030000', name: '农业银行' },
+        { value: '01040000', name: '中国银行' },
+        { value: '01050000', name: '建设银行' },
+        { value: '03010000', name: '交通银行' },
+        { value: '03020000', name: '中信银行' },
+        { value: '03030000', name: '光大银行' },
+        { value: '03040000', name: '华夏银行' },
+        { value: '03050000', name: '民生银行' },
+        { value: '03060000', name: '广发银行' },
+        { value: '03070000', name: '平安银行' },
+        { value: '03080000', name: '招商银行' },
+        { value: '03090000', name: '兴业银行' },
+        { value: '03100000', name: '浦发银行' },
+        { value: '03160000', name: '浙商银行' },
+        { value: '04012900', name: '上海银行' },
+        { value: '04031000', name: '北京银行' },
+        { value: '04083320', name: '宁波银行' },
+        { value: '04233310', name: '杭州银行' },
+        { value: '04256020', name: '东莞银行' },
+        { value: '04375850', name: '珠海华润' },
+        { value: '04791920', name: '包商银行' },
+        { value: '05083000', name: '江苏银行' },
+        { value: '64135810', name: '广州银行' },
+        { value: '64895910', name: '广东南粤' }
       ],
       formData: {
         name: '',
@@ -350,7 +350,7 @@ export default {
           prop: 'gmtModified', label: '审核时间', width: 140,
           showOverflowTooltip: true,
           render(row) {
-            let filterTime = parseTime(row.gmtModified)
+            const filterTime = parseTime(row.gmtModified)
             return `${filterTime} ${row.auditName || ''}`
           }
         },
@@ -367,7 +367,7 @@ export default {
   },
   mounted() {
     /* 表格高度控制 */
-   this.$nextTick(() => {
+    this.$nextTick(() => {
       const offsetTop = this.$refs.refGridUnit.$el.offsetTop || 140
       const pagenationH = 64
       const containerPadding = 20
@@ -415,7 +415,7 @@ export default {
     },
     // 审核
     saveAuditResult() {
-      let typeMap = ['personal', 'business'][this.data_detail.type - 1]
+      const typeMap = ['personal', 'business'][this.data_detail.type - 1]
       const saveAuditApi = fhdAuditApi[typeMap]
       const store_fhdData = this.$store.getters.fhdAuditData[typeMap]
       if (!store_fhdData.status) {
@@ -427,7 +427,7 @@ export default {
         return false
       }
       saveAuditApi(store_fhdData).then(response => {
-        if(response.message !== '操作成功') {
+        if (response.message !== '操作成功') {
           this.layer_showInfo = false
           this.$alert(response.message, '审核结果变更为【不通过】', {
             confirmButtonText: '确定',
@@ -479,7 +479,7 @@ export default {
       }
     },
     changeBank(value) {
-      let selectedItem = this.bankList.filter((item) => {
+      const selectedItem = this.bankList.filter((item) => {
         return item.value === value
       })
       this.$set(this.cardForm, 'bankName', selectedItem[0].name)

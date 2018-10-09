@@ -29,19 +29,31 @@
               <el-option v-for="item in overTypeList" :key="item.value" :label="item.label" :value="item.value">
               </el-option>
             </el-select>
-          </el-form-item>
-          <el-form-item>
-            <el-select size="small" style="width:180px;" v-model="formData.status" placeholder="请选择订单状态"  clearable >
+            <el-select size="small" class="filter-item" style="width:120px;" v-model="formData.status" placeholder="请选择订单状态"  clearable >
               <el-option v-for="item in statusList" :key="item.value" :label="item.label" :value="item.value" >
               </el-option>
             </el-select>
+          </el-form-item>
+          <el-form-item>
+
             <el-input
               placeholder="房东／房东手机号码"
-              style="width:180px;"
+              style="width:160px;"
               v-model='formData.orgKeyword'
               @keydown.native.enter="searchParam"
-              class="filter-item">
+              >
             </el-input>
+             <el-date-picker
+              v-model="dateLineTime"
+              size="small"
+              type="datetimerange"
+              class="filter-item"
+              range-separator="至"
+              start-placeholder="最迟支付开始日期"
+              end-placeholder="最迟支付结束日期"
+              style="width:360px"
+              @change="searchParam">
+            </el-date-picker>
             <el-input  v-model='formData.managerKeyword' placeholder="城市管家／城市管家手机号码" style="width:220px;"  @keydown.native.enter="searchParam" class="filter-item"></el-input>
             <el-button type="primary" size="small" icon="el-icon-search" @click.native="searchParam"  class="filter-item">查询</el-button>
             <el-button plain size="small" icon="el-icon-remove-outline" @click.native="clearForm">清空</el-button>
@@ -50,7 +62,7 @@
         </el-form>
           <div class="table-box">
             <div class="model-table"  style="margin-top: 0;">
-              <el-table :data="tableData" v-loading.body="listLoading" style="width: 100%"  :max-height="tableHeight" size="small" fit stripe highlight-current-row>
+              <el-table :data="tableData" v-loading.body="listLoading" style="width: 100%" :height="tableHeight" size="small" fit stripe highlight-current-row>
                 <el-table-column type="index" width="50" align="center"></el-table-column>
                   <el-table-column type="expand">
                     <template slot-scope="props">
@@ -177,11 +189,12 @@
     </div>
 </template>
 <script>
+const FLY = process.env.FLY_API + '/back'
+import { debounce } from '@/utils'
 import rentingABill from './components/overDue'
 import followUp from './components/followUp'
 import { parseTime, delObjectItem, ObjectMap } from '@/utils'
-import { getRentingListApi, exportExcelApi } from '@/api/renting'
-import { getSessionId } from '@/utils/auth'
+import { getRentingListApi } from '@/api/renting'
 export default {
   components: {
     rentingABill, followUp
@@ -210,14 +223,16 @@ export default {
         startTime: '', // 开始时间
         endTime: '', // 结束时间
         customerKeyword: '', // 租客姓名／手机号
-        overType: null, // 订单逾期状态
+        overType: '', // 订单逾期状态
         address: '', // 小区或公寓名称
         status: 0, // 订单状态
         orgKeyword: '', // 房东姓名／房东手机号
-        managerKeyword: '' // 城市管家
+        managerKeyword: '', // 城市管家
+        startDeadlineTime: '',
+        endDeadlineTime: ''
       },
       select: '',
-      tableHeight: '',
+      tableHeight: 300,
       tableData: [],
       cityData: [{
         value: 330100,
@@ -228,6 +243,7 @@ export default {
       }
       ],
       dateTime: [], // 时间数组
+      dateLineTime: [], // 最迟支付时间
       overTypeList: [{ // 逾期状态
         value: 0,
         label: '已逾期'
@@ -235,7 +251,7 @@ export default {
         value: 1,
         label: '尚未逾期'
       }, {
-        value: null,
+        value: '',
         label: '全部'
       }],
       statusList: [{ // 订单状态
@@ -268,6 +284,7 @@ export default {
     const lastD = lw.getDate()
     this.formData.startTime = `${lastY}-${(lastM < 10 ? '0' + lastM : lastM)}-${(lastD < 10 ? '0' + lastD : lastD)} 00:00:00`// 三十天之前日期
     this.dateTime = [this.formData.startTime, this.formData.endTime]
+    // this.dateLineTime = [this.formData.startTime, this.formData.endTime]
   },
   filters: {
     filterBtn(val) {
@@ -304,14 +321,11 @@ export default {
     }
   },
   mounted() {
-    let temp_height = document.body.clientHeight - 252
-    this.tableHeight = temp_height > 300 ? temp_height : 300
-    window.onresize = () => {
-      return (() => {
-        temp_height = document.body.clientHeight - 252
-        this.tableHeight = this.tableHeight = temp_height > 300 ? temp_height : 300
-      })()
-    }
+    const changeTableSize = debounce(() => {
+      this.tableHeight = Math.max(document.body.clientHeight - 252, 300)
+    }, 100)
+    changeTableSize()
+    window.addEventListener('resize', changeTableSize)
     this.searchParam()
   },
   watch: {
@@ -319,50 +333,67 @@ export default {
       val = val || []
       this.formData.startTime = val[0] ? parseTime(val[0]) : ''
       this.formData.endTime = val[1] ? parseTime(val[1]) : ''
+    },
+    dateLineTime(val) {
+      val = val || []
+      this.formData.startDeadlineTime = val[0] ? parseTime(val[0]) : ''
+      this.formData.endDeadlineTime = val[1] ? parseTime(val[1]) : ''
     }
-
   },
   methods: {
     filterOver(type) {
-      if (type == 1 || type == null) {
+      if (type === 1 || type == null) {
         return false
       } else {
         return true
       }
     },
     exportExcel() {
-      const loading = this.$loading({
-        lock: true,
-        text: 'Loading',
-        spinner: 'el-icon-loading',
-        background: 'rgba(0, 0, 0, 0.7)'
-      })
-      this.formData.sessionId = getSessionId()
-      const data = this.formData
-      console.log(data)
-      const form = document.createElement('form')
-      form.id = 'formExcel'
-      form.name = 'forms'
-      form.enctype = 'application/json'
-      document.body.appendChild(form)
+      console.log(this.formData.overType)
+      const href = `${FLY}/bill/exportExcel?cityId=${this.formData.cityId}&startTime=${this.formData.startTime}&endTime=${this.formData.endTime}&customerKeyword=${this.formData.customerKeyword}&overType=${this.formData.overType}&address=${this.formData.address}
+      &status=${this.formData.status}&orgKeyword=${this.formData.orgKeyword}&managerKeyword=${this.formData.managerKeyword}&startDeadlineTime=
+      ${this.formData.startDeadlineTime}&endDeadlineTime=${this.formData.endDeadlineTime}`
+      var elink = document.createElement('a')
+      elink.style.display = 'none'
+      console.log(href)
+      elink.href = encodeURI(href)
+      console.log(elink.href)
+      document.body.appendChild(elink)
+      elink.click()
 
-      for (const obj in data) {
-        if (data.hasOwnProperty(obj)) {
-          const input = document.createElement('input')
-          input.type = 'hidden'
-          input.name = obj
-          input.value = data[obj]
-          form.appendChild(input)
-        }
-      }
-      form.method = 'post'// 请求方式
-      form.action = process.env.BASE_API + '/flying/leaseBill/exportExcel'
-      form.submit()
-      const child = document.getElementById('formExcel')
-      document.body.removeChild(form)
-      this.$nextTick(() => { // 以服务的方式调用的 Loading 需要异步关闭
-        loading.close()
-      })
+      // document.body.removeChild(elink)
+      // const loading = this.$loading({
+      //   lock: true,
+      //   text: 'Loading',
+      //   spinner: 'el-icon-loading',
+      //   background: 'rgba(0, 0, 0, 0.7)'
+      // })
+      // this.formData.sessionId = getSessionId()
+      // const data = this.formData
+      // console.log(data)
+      // const form = document.createElement('form')
+      // form.id = 'formExcel'
+      // form.name = 'forms'
+      // form.enctype = 'application/json'
+      // document.body.appendChild(form)
+
+      // for (const obj in data) {
+      //   if (data.hasOwnProperty(obj)) {
+      //     const input = document.createElement('input')
+      //     input.type = 'hidden'
+      //     input.name = obj
+      //     input.value = data[obj]
+      //     form.appendChild(input)
+      //   }
+      // }
+      // form.method = 'post'// 请求方式
+      // form.action = process.env.BASE_API + '/flying/leaseBill/exportExcel'
+      // form.submit()
+      // const child = document.getElementById('formExcel')
+      // document.body.removeChild(form)
+      // this.$nextTick(() => { // 以服务的方式调用的 Loading 需要异步关闭
+      //   loading.close()
+      // })
     },
     handleSizeChange(val) {
       this.pageItems.pageSize = val
@@ -397,9 +428,9 @@ export default {
         })
       } else {
         getRentingListApi(ObjectMap(searchParams)).then(response => {
-          this.tableData = response.data.content
+          this.tableData = response.data.result
           this.listLoading = false
-          this.total = response.data.totalElements
+          this.total = response.data.total
         }).catch()
       }
     }

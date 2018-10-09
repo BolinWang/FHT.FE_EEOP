@@ -22,7 +22,6 @@
 </template>
 
 <script>
-import { deepClone } from '@/utils'
 const activeTabMap = {
   first: 'services',
   second: 'storeServices',
@@ -51,10 +50,10 @@ export default {
     },
     estateDeviceModelVisible: {
       immediate: true,
-      handler: function (val) {
+      handler: function(val) {
         if (val) {
           this.deviceActiveTab = 'first'
-          let estateInfo = this.$store.state.estateDetailData.estateInfo
+          const estateInfo = this.$store.state.estateDetailData.estateInfo
           const checkedList = {
             services: estateInfo.services ? estateInfo.services.split(',') : [],
             storeServices: estateInfo.storeServices ? estateInfo.storeServices.split(',') : [],
@@ -70,7 +69,7 @@ export default {
   },
   methods: {
     handleCheckAllChange(status) {
-      let curType = activeTabMap[this.deviceActiveTab]
+      const curType = activeTabMap[this.deviceActiveTab]
       this.checkedList[curType] = status ? this.checkList[curType] : []
       this.isIndeterminate = false
     },
@@ -78,7 +77,7 @@ export default {
       this.setStatus(value.length, activeTabMap[this.deviceActiveTab])
     },
     saveDeviceData(type) {
-      const curChecked ={}
+      const curChecked = {}
       for (const key in this.checkedList) {
         curChecked[key] = this.checkedList[key].join(',')
       }

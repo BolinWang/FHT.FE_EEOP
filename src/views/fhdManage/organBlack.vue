@@ -1,8 +1,8 @@
 /*
  * @Author: ghost
  * @Date: 2018-08-31 11:27:54
- * @Last Modified by: 
- * @Last Modified time: 2018-09-13 14:51:48
+ * @Last Modified by: chudequan
+ * @Last Modified time: 2018-10-09 16:56:55
  */
  <template>
     <div class="container">
@@ -21,10 +21,10 @@
                 <el-button type="primary" class="btn-right" size="small" @click.native="relieveOrnFun">机构解除合作</el-button>
             </el-form>
         </div>
-        <div class="table-box" :style="styleHeight">
+        <div class="table-box">
            <el-table
             :data="backList"
-            :max-height="tableHeight"
+            :height="tableHeight"
             style="width: 100%">
             <el-table-column
               prop="gmtRelieveStr"
@@ -120,10 +120,11 @@
           <el-button type="primary" @click="saveRecover">确 定</el-button>
         </div>
       </el-dialog>
-      <relieve-Org ref="relieveOrg" v-on:searchStart="searchParam"></relieve-Org> 
+      <relieve-Org ref="relieveOrg" v-on:searchStart="searchParam"></relieve-Org>
     </div>
 </template>
 <script>
+import { debounce } from '@/utils'
 import relieveOrg from './components/relieveOrg'
 import {
   delObjectItem
@@ -184,14 +185,6 @@ export default {
       gridData: []
     }
   },
-  computed: {
-    styleHeight() {
-      return {
-        width: '100%',
-        height: this.tableHeight + 'px'
-      }
-    }
-  },
   filters: {
     filererType(val) {
       const typeName = val === 1 ? '个人' : '企业'
@@ -199,15 +192,12 @@ export default {
     }
   },
   mounted() {
+    const changeTableSize = debounce(() => {
+      this.tableHeight = Math.max(document.body.clientHeight - 200, 300)
+    }, 100)
+    changeTableSize()
+    window.addEventListener('resize', changeTableSize)
     this.searchParam()
-    let temp_height = document.body.clientHeight - 190
-    this.tableHeight = temp_height > 300 ? temp_height : 300
-    window.onresize = () => {
-      return (() => {
-        temp_height = document.body.clientHeight - 190
-        this.tableHeight = this.tableHeight = temp_height > 300 ? temp_height : 300
-      })()
-    }
   },
   methods: {
     relieveOrnFun() {

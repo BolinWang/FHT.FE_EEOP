@@ -1,4 +1,4 @@
-import fetch from '@/utils/fetch';
+import fetch from '@/utils/fetch'
 
 /* 登录获取sessionId */
 export function login(mobile, password) {
@@ -12,7 +12,7 @@ export function login(mobile, password) {
         password
       }
     }
-  });
+  })
 }
 
 /* sessionId获取用户信息 */
@@ -26,7 +26,7 @@ export function getInfo(sessionId) {
         sessionId
       }
     }
-  });
+  })
 }
 
 /* 退出系统 */
@@ -38,5 +38,5 @@ export function logout(params = {}) {
       method: 'logout',
       params
     }
-  });
+  })
 }

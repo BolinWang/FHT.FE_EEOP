@@ -1,8 +1,8 @@
 /*
  * @Author: ghost
  * @Date: 2018-08-31 14:55:54
- * @Last Modified by: 
- * @Last Modified time: 2018-09-13 16:45:27
+ * @Last Modified by: chudequan
+ * @Last Modified time: 2018-10-09 16:55:35
  */
 <template>
   <div class="container">
@@ -25,7 +25,7 @@
       </el-form>
     </div>
     <div class="table-box">
-      <el-table :data="organAllList" border style="width: 100%" size="small" :max-height="tableHeight">
+      <el-table :data="organAllList" border style="width: 100%" size="small" :height="tableHeight">
         <el-table-column type="index" width="50">
         </el-table-column>
         <el-table-column prop="gmtCreateStr" width="160" label="创建时间">
@@ -184,6 +184,7 @@
 
 <script>
 const FLY = process.env.FLY_API + '/bop'
+import { debounce } from '@/utils'
 import {
   parseTime,
   delObjectItem,
@@ -262,14 +263,11 @@ export default {
     }
   },
   mounted() {
-    let temp_height = document.body.clientHeight - 200
-    this.tableHeight = temp_height > 300 ? temp_height : 300
-    window.onresize = () => {
-      return (() => {
-        temp_height = document.body.clientHeight - 200
-        this.tableHeight = this.tableHeight = temp_height > 300 ? temp_height : 300
-      })()
-    }
+    const changeTableSize = debounce(() => {
+      this.tableHeight = Math.max(document.body.clientHeight - 210, 300)
+    }, 100)
+    changeTableSize()
+    window.addEventListener('resize', changeTableSize)
     this.searchParam()
   },
   created() {
@@ -352,8 +350,13 @@ export default {
     searchParam() {
       const searchParams = Object.assign(this.pageItems, this.formData)
       orgManageListApi(ObjectMap(searchParams)).then(res => {
-        this.organAllList = res.data.result
-        this.total = res.data.total
+        if (res.success) {
+          this.organAllList = res.data.result || []
+          this.total = res.data.total
+        } else {
+          this.$message.error('请求飞虎队失败')
+          return false
+        }
       })
     },
     clearForm() {
@@ -365,7 +368,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-   
+
   .container {
     padding: 20px;
   }

@@ -55,7 +55,7 @@
 </template>
 <script>
 import waves from '@/directive/waves' // 水波纹指令
-import { parseTime, ObjectMap, deepClone } from '@/utils'
+import { ObjectMap, deepClone } from '@/utils'
 import { getGridApi, saveDataApi } from '@/api/userManage'
 import { validateMobile } from '@/utils/validate'
 
@@ -66,38 +66,38 @@ export default {
   },
   filters: {
     formatAdminFilter(val) {
-      return val == 1 ? `超级管理员` : `普通用户`
+      return val * 1 === 1 ? `超级管理员` : `普通用户`
     }
   },
   data() {
     const validatePhone = (rule, value, callback) => {
       if (!validateMobile(value)) {
-        callback(new Error('请输入正确的手机号'));
+        callback(new Error('请输入正确的手机号'))
       } else {
-        callback();
+        callback()
       }
-    };
+    }
     const validatePass = (rule, value, callback) => {
       if (value === '') {
-        callback(new Error('请输入密码'));
+        callback(new Error('请输入密码'))
       } else if (value.length < 6) {
-        callback(new Error('密码不能小于6位'));
+        callback(new Error('密码不能小于6位'))
       } else {
         if (this.ruleForm.checkPass !== '') {
-          this.$refs.ruleForm.validateField('checkPass');
+          this.$refs.ruleForm.validateField('checkPass')
         }
-        callback();
+        callback()
       }
-    };
+    }
     const validateCheckPass = (rule, value, callback) => {
       if (value === '') {
-        callback(new Error('请再次输入密码'));
+        callback(new Error('请再次输入密码'))
       } else if (value !== this.ruleForm.password) {
-        callback(new Error('两次输入密码不一致!'));
+        callback(new Error('两次输入密码不一致!'))
       } else {
-        callback();
+        callback()
       }
-    };
+    }
     return {
       colModels: [
         { prop: 'name', label: '用户名' },
@@ -135,16 +135,16 @@ export default {
     }
   },
   created() {
-    this.getGridData(this.pageItems);
+    this.getGridData(this.pageItems)
   },
   mounted() {
     /* 表格高度控制 */
-    let temp_height = document.body.clientHeight - 200;
-    this.tableHeight = temp_height > 300 ? temp_height : 300;
+    let temp_height = document.body.clientHeight - 200
+    this.tableHeight = temp_height > 300 ? temp_height : 300
     window.onresize = () => {
       return (() => {
-        temp_height = document.body.clientHeight - 200;
-        this.tableHeight = this.tableHeight = temp_height > 300 ? temp_height : 300;
+        temp_height = document.body.clientHeight - 200
+        this.tableHeight = this.tableHeight = temp_height > 300 ? temp_height : 300
       })()
     }
   },
@@ -158,35 +158,35 @@ export default {
   },
   methods: {
     handleAdd() {
-      this.layer_showInfo = true;
+      this.layer_showInfo = true
       if (this.$refs.ruleForm) {
         this.$refs.ruleForm.clearValidate()
       }
     },
     /* 弹窗关闭时的回调 */
     dialogClose() {
-      this.$refs.ruleForm.resetFields();
+      this.$refs.ruleForm.resetFields()
     },
     /* 查询列表 */
     change(value) {
-      this.getGridData(this.pageItems);
+      this.getGridData(this.pageItems)
     },
     handleSizeChange(val) {
-      this.pageItems.pageSize = val;
-      this.getGridData(this.pageItems);
+      this.pageItems.pageSize = val
+      this.getGridData(this.pageItems)
     },
     handleCurrentChange(val) {
-      this.pageItems.pageNo = val;
-      this.getGridData(this.pageItems);
+      this.pageItems.pageNo = val
+      this.getGridData(this.pageItems)
     },
     /* 列表渲染，数据请求 */
     getGridData(params) {
-      this.listLoading = true;
-      this.searchParams = deepClone(params);
+      this.listLoading = true
+      this.searchParams = deepClone(params)
       getGridApi(ObjectMap(this.searchParams)).then(response => {
-        this.tableData = response.data.content;
-        this.total = response.data.totalElements;
-        this.listLoading = false;
+        this.tableData = response.data.content
+        this.total = response.data.totalElements
+        this.listLoading = false
       })
     },
     /* 密码重置 */
@@ -196,8 +196,8 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        row.password = '123456';
-        this.saveData([row], row.isAdmin == 1 ? 'toLogin' : '');
+        row.password = '123456'
+        this.saveData([row], row.isAdmin * 1 === 1 ? 'toLogin' : '')
       }).catch(() => {})
     },
     /* 删除 */
@@ -207,30 +207,30 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.pop_visible = false;
-        row.isDelete = 1;
-        this.saveData([row]);
+        this.pop_visible = false
+        row.isDelete = 1
+        this.saveData([row])
       }).catch(() => {})
     },
     /* 保存 */
     saveData(params, type) {
-      let savePatams = deepClone(params);
+      const savePatams = deepClone(params)
       saveDataApi(savePatams).then(response => {
-        this.layer_showInfo = false;
-        if (type == 'toLogin') {
+        this.layer_showInfo = false
+        if (type === 'toLogin') {
           this.$store.dispatch('LogOut').then(() => {
-            location.reload(); // 为了重新实例化vue-router对象 避免bug
-          });
-          return false;
+            location.reload() // 为了重新实例化vue-router对象 避免bug
+          })
+          return false
         }
-        this.getGridData(this.pageItems);
+        this.getGridData(this.pageItems)
         this.$notify({
           title: '成功',
           message: '操作成功',
           type: 'success',
           duration: 2000
         })
-      });
+      })
     },
     handleSaveData() {
       this.$refs.ruleForm.validate(valid => {
@@ -238,15 +238,15 @@ export default {
           this.saveData([{
             mobile: this.ruleForm.mobile,
             password: this.ruleForm.password
-          }]);
+          }])
         } else {
-          console.log('error submit!!');
-          return false;
+          console.log('error submit!!')
+          return false
         }
-      });
+      })
     }
   }
-};
+}
 
 </script>
 <style rel="stylesheet/scss" lang="scss">

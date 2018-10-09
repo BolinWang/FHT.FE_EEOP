@@ -168,17 +168,17 @@ export default {
         ineffectiveTime: [
           { required: true, message: '请选择下线时间', trigger: 'change' }
         ]
-      },
+      }
     }
   },
-  created () {
+  created() {
     appIconApi.cityList().then(response => {
       this.cityList = response.data
     })
   },
   mounted() {
     /* 表格高度控制 */
-   this.$nextTick(() => {
+    this.$nextTick(() => {
       const offsetTop = this.$refs.refGridUnit.$el.offsetTop || 140
       const pagenationH = 64
       const containerPadding = 20
@@ -216,15 +216,15 @@ export default {
     /**
      * checkbox切换
      */
-    changeOnline(val){
+    changeOnline(val) {
       this.temp.effectiveTime = parseTime(new Date())
-      if (val){
+      if (val) {
         this.temp.nowOffline = false
       }
     },
-    changeOffline(val){
+    changeOffline(val) {
       this.temp.ineffectiveTime = parseTime(new Date())
-      if (val){
+      if (val) {
         this.temp.nowOnline = false
       }
     },
@@ -255,7 +255,7 @@ export default {
      */
     handleDetail(row = {}) {
       const cloneRow = deepClone(row)
-      const {effectiveTime, ineffectiveTime} = cloneRow
+      const { effectiveTime, ineffectiveTime } = cloneRow
       this.temp = {
         ...cloneRow,
         effectiveTime: effectiveTime ? parseTime(effectiveTime) : '',
@@ -274,9 +274,9 @@ export default {
             return false
           }
           const saveApi = this.temp.id ? infomationApi.edit : infomationApi.add
-          const {id, title, newsUrl, effectiveTime, ineffectiveTime, cityId } = this.temp
-          let status = this.temp.nowOnline ? 2 : (this.temp.nowOffline ? 3 : 1)
-          saveApi(ObjectMap({id, title, newsUrl, effectiveTime, ineffectiveTime, cityId, status })).then(response => {
+          const { id, title, newsUrl, effectiveTime, ineffectiveTime, cityId } = this.temp
+          const status = this.temp.nowOnline ? 2 : (this.temp.nowOffline ? 3 : 1)
+          saveApi(ObjectMap({ id, title, newsUrl, effectiveTime, ineffectiveTime, cityId, status })).then(response => {
             this.searchParam()
             this.layer_showInfo = false
             this.$notify({

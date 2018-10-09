@@ -68,6 +68,8 @@
               <el-form-item label="房源管理权限" prop="orgId">
                 <el-select class="estate-model-select" v-model="estateModel.orgId" filterable remote :clearable="true" placeholder="组织名称" :remote-method="searchOrgListByKeywords" :loading="loading" @clear="setOrg" :disabled="type === '编辑公寓'">
                   <el-option v-for="item in orgList" :key="item.ordId" :value="item.orgId" :label="item.orgName" @click.native="setOrg(item)">
+                    <span style="float: left">{{ item.orgName }}</span>
+                    <span style="float: right; color: #8492a6; font-size: 13px">{{ item.adminMobile }}</span>
                   </el-option>
                 </el-select>
               </el-form-item>
@@ -258,15 +260,27 @@
 <script>
 import areaSelect from '@/components/AreaSelect'
 import mapSelect from './mapSelect'
-import { estateAddressByKeywordsApi, estateZoneListByAreaIdApi, estateDeviceListApi, estateOrgListApi, estateRoomDetailApi, estateBatchCopyRoomListApi, estateNewSubdistrictApi } from '@/api/houseManage'
+import { estateZoneListByAreaIdApi, estateDeviceListApi, estateOrgListApi, estateBatchCopyRoomListApi } from '@/api/houseManage'
 import { fhdAuditApi } from '@/api/auditCenter'
 import Preview from '@/components/Preview/Preview'
 import ImageCropper from '@/components/ImageCropper/Cropper'
 import RoomListSelecter from '@/components/RoomListSelecter'
 import estateDeviceGroup from './estateDeviceGroup'
 import { deepClone } from '@/utils'
-import cityData from '@/components/AreaSelect/cityData'
 let tempNames = []
+const checkDiff = (a, b) => {
+  let diffCount = 0
+  if (a.length !== b.length) {
+    diffCount++
+    return diffCount
+  }
+  a.forEach((item, index) => {
+    if (item.imageName !== b[index].imageName) {
+      diffCount++
+    }
+  })
+  return diffCount > 0
+}
 export default {
   name: 'estateModel',
   components: {
@@ -283,7 +297,7 @@ export default {
   ],
   data() {
     return {
-      currentPicList: [],  //当前展示图片
+      currentPicList: [], // 当前展示图片
       estateModel: {},
       estateModelRules: {
         estateName: [
@@ -335,7 +349,7 @@ export default {
           ],
           roomTypeId: [
             { required: true, message: '请选择房间类型', trigger: 'change' }
-          ],
+          ]
         },
         roomTypeList: [
           { required: true, message: '', trigger: 'change' }
@@ -476,7 +490,7 @@ export default {
       this.estateModel.adminUserId = item ? item.adminUserId : ''
     },
     initEstateData() {
-      let estateInfo = this.$store.state.estateDetailData.estateInfo
+      const estateInfo = this.$store.state.estateDetailData.estateInfo
 
       estateInfo.areaCode = [estateInfo.provinceId, estateInfo.cityId, estateInfo.regionId]
       if (this.type === '新建公寓') {
@@ -484,7 +498,7 @@ export default {
         this.orgList = []
         this.zoneList = []
       } else {
-        estateInfo.tag = estateInfo.tag === 1 ? true : false
+        estateInfo.tag = estateInfo.tag === 1
         estateInfo.address = estateInfo.subdistrictName ? (estateInfo.subdistrictName + ' - ' + estateInfo.subdistrictAddress) : ''
         estateInfo.floors.forEach((item) => { item.forbbidenEdit = true })
         if (estateInfo.sourceInfo) {
@@ -541,7 +555,7 @@ export default {
       let estateData = false
       this.$refs.estateModel.validate((status) => {
         if (status) {
-          let roomDetailData = deepClone(this.estateModel)
+          const roomDetailData = deepClone(this.estateModel)
           roomDetailData.tag = roomDetailData.tag === true ? 1 : 0
           const sourceInfo = roomDetailData.tag ? this.filterManagerList.filter((item) => item.id === roomDetailData.sourceInfo) : ''
           roomDetailData.sourceInfo = sourceInfo.length ? (sourceInfo[0].id + ',' + sourceInfo[0].name) : ''
@@ -587,7 +601,7 @@ export default {
     checkEditFlag() {
       let differentFlag = false
       Object.keys(this.tempFormData).forEach((key) => {
-        if (JSON.stringify(this.tempFormData[key]) != JSON.stringify(this.estateModel[key])) {
+        if (JSON.stringify(this.tempFormData[key]) !== JSON.stringify(this.estateModel[key])) {
           if (key === 'pictureList') {
             differentFlag = checkDiff(this.tempFormData[key], this.estateModel[key])
           } else if (key === 'roomTypeList') {
@@ -596,19 +610,6 @@ export default {
             })
           } else {
             differentFlag = true
-          }
-          function checkDiff(a, b) {
-            let diffCount = 0
-            if (a.length !== b.length) {
-              diffCount++
-              return diffCount
-            }
-            a.forEach((item, index) => {
-              if (item.imageName !== b[index].imageName) {
-                diffCount++
-              }
-            })
-            return diffCount > 0 ? true : false
           }
         }
       })
@@ -626,7 +627,7 @@ export default {
       })
     },
     saveBatchCobyRoom() {
-      let checkedList = this.$refs.batchCopyRoom.returnCheckedList()
+      const checkedList = this.$refs.batchCopyRoom.returnCheckedList()
       this.batchCopyModelVisible = false
       if (checkedList.length) {
         this.estateModel.roomTypeList.forEach((roomType, index) => {
@@ -715,7 +716,8 @@ export default {
           v.isBase64 = 1
         }
       })
-      let picList = this.curPicListIndex === -1 ? this.estateModel.pictureList : this.estateModel.roomTypeList[this.curPicListIndex].pictureList
+      const picList = this.curPicListIndex === -1 ? this.estateModel.pictureList : this.estateModel.roomTypeList[this.curPicListIndex].pictureList
+      console.log(picList)
       if (this.curPicListIndex === -1) {
         this.estateModel.pictureList = [...this.estateModel.pictureList, ...list]
       } else {
@@ -731,8 +733,8 @@ export default {
       }
       const uploadList = []
       const readFileAsync = file => new Promise(resolve => {
-        let reader = new FileReader()
-        reader.onerror = function (e) {
+        const reader = new FileReader()
+        reader.onerror = function(e) {
           console.log('读取异常....')
         }
         reader.onload = e => {
@@ -741,7 +743,7 @@ export default {
             ? window.URL.createObjectURL(new Blob([e.target.result]))
             : e.target.result
           let imageName = ''
-          let type = 1
+          const type = 1
           if (!file.name) {
             imageName = ''
           } else {
@@ -762,7 +764,7 @@ export default {
       })
 
       const files = e.target.files
-      let picList = this.curPicListIndex === -1 ? this.estateModel.pictureList : this.estateModel.roomTypeList[this.curPicListIndex].pictureList
+      const picList = this.curPicListIndex === -1 ? this.estateModel.pictureList : this.estateModel.roomTypeList[this.curPicListIndex].pictureList
       if (picList.length + files.length > 15) {
         this.$message.error(`您已上传${picList.length}张图片，最多还能上传${15 - picList.length}张图片`)
         e.target.value = null
@@ -791,7 +793,7 @@ export default {
   watch: {
     showEstateModel: {
       immediate: true,
-      handler: function (val) {
+      handler: function(val) {
         if (val) {
           this.initEstateData()
         } else {

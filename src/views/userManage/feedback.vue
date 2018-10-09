@@ -55,7 +55,7 @@ export default {
   },
   methods: {
     clearForm() {
-      this.dateTime = [];
+      this.dateTime = []
       this.formData = {
         feedbackType: '',
         startTime: '',
@@ -65,24 +65,24 @@ export default {
       this.pageItems = {
         pageNo: 1,
         pageSize: 20
-      };
-      this.$refs.feedbacktable[0].searchParam();
+      }
+      this.$refs.feedbacktable[0].searchParam()
     },
     searchParam() {
-      this.$refs.feedbacktable[0].searchParam();
+      this.$refs.feedbacktable[0].searchParam()
     },
     multiDelete() {
-      this.$refs.feedbacktable[0].handleDelete(undefined, undefined, 'multi');
+      this.$refs.feedbacktable[0].handleDelete(undefined, undefined, 'multi')
     }
   },
   watch: {
     dateTime(val) {
-      val = val || [];
-      this.formData.startTime = val[0] ? parseTime(val[0]) : '';
-      this.formData.endTime = val[1] ? parseTime(val[1]) : '';
+      val = val || []
+      this.formData.startTime = val[0] ? parseTime(val[0]) : ''
+      this.formData.endTime = val[1] ? parseTime(val[1]) : ''
     }
   }
-};
+}
 </script>
 <style rel="stylesheet/scss" lang="scss">
 .model-search .filter-item {

@@ -171,7 +171,7 @@ export default {
         e.target.value = null
         return false
       }
-      let reader = new FileReader()
+      const reader = new FileReader()
       reader.onerror = function(e) {
         console.log('读取异常....')
       }

@@ -223,6 +223,8 @@
         <el-form-item label-width="110px" label="房源管理权限" prop="orgId">
           <el-select class="estate-model-select" v-model="hostingRoomDetail.orgId" filterable remote :clearable="true" placeholder="组织名称" :remote-method="searchOrgListByKeywords" :loading="loading" @clear="setOrg" :disabled="hostingRoomDetail.isEditFlag">
             <el-option v-for="item in orgList" :key="item.ordId" :value="item.orgId" :label="item.orgName" @click.native="setOrg(item)">
+              <span style="float: left">{{ item.orgName }}</span>
+              <span style="float: right; color: #8492a6; font-size: 13px">{{ item.adminMobile }}</span>
             </el-option>
           </el-select>
         </el-form-item>
@@ -280,6 +282,19 @@ import { fhdAuditApi } from '@/api/auditCenter'
 import Preview from '@/components/Preview/Preview'
 import ImageCropper from '@/components/ImageCropper/Cropper'
 import { deepClone } from '@/utils'
+const checkDiff = (a, b) => {
+  let diffCount = 0
+  if (a.length !== b.length) {
+    diffCount++
+    return diffCount
+  }
+  a.forEach((item, index) => {
+    if (item.imageName !== b[index].imageName) {
+      diffCount++
+    }
+  })
+  return diffCount > 0
+}
 export default {
   components: {
     areaSelect,
@@ -658,13 +673,13 @@ export default {
     checkEditFlag() {
       let differentFlag = false
       Object.keys(this.tempFormData).forEach((key) => {
-        if (JSON.stringify(this.tempFormData[key]) != JSON.stringify(this.hostingRoomDetail[key])) {
+        if (JSON.stringify(this.tempFormData[key]) !== JSON.stringify(this.hostingRoomDetail[key])) {
           if (key === 'pictures') {
             differentFlag = checkDiff(this.tempFormData[key], this.hostingRoomDetail[key])
           } else if (key === 'hostingRooms') {
             this.tempFormData['hostingRooms'].forEach((v, i) => {
               Object.keys(v).forEach((k) => {
-                if (JSON.stringify(v[k]) != JSON.stringify(this.hostingRoomDetail['hostingRooms'][i][k])) {
+                if (JSON.stringify(v[k]) !== JSON.stringify(this.hostingRoomDetail['hostingRooms'][i][k])) {
                   if (k === 'pictures') {
                     differentFlag = checkDiff(v[k], this.hostingRoomDetail['hostingRooms'][i]['pictures'])
                   } else {
@@ -675,18 +690,6 @@ export default {
             })
           } else {
             differentFlag = true
-          }
-          function checkDiff(a, b) {
-            let diffCount = 0
-            if (a.length !== b.length) {
-              return true
-            }
-            a.forEach((item, index) => {
-              if (item.imageName !== b[index].imageName) {
-                diffCount++
-              }
-            })
-            return diffCount > 0
           }
         }
       })
