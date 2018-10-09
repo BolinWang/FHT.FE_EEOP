@@ -19,6 +19,7 @@ Vue.use(ElementUI)
 Vue.use(VuePreview)
 Vue.use(VueLazyload, {
   /* error: errorPic, */
+
   loading: lazyLoadPic
 })
 Vue.component('icon-svg', IconSvg)
