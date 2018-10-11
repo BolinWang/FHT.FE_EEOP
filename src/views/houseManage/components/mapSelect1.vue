@@ -43,7 +43,7 @@
         </div>
         <el-card class="search-list" :body-style="{padding: '10px 0'}">
           <a class="search-list-item" v-for="(o, i) in searchResult" :key="i" @click="setMapPosition(o.point, o)">
-            <p class="title">{{o.name}}</p>
+            <p class="title">{{o.title}}</p>
             <p class="address">{{o.address}}</p>
           </a>
         </el-card>
@@ -162,11 +162,8 @@ export default {
       }
     },
     initBMap() { // 初始化百度地图
-      /* global AMap */
       const self = this
       let selectAddr = ''
-      let marker
-      let geocoder
       const cityArr = cityData.filter((n) => n.value === this.tempAreaCode[0])
       if (cityArr[0] && cityArr[0].children) {
         selectAddr = cityArr[0].label
@@ -178,65 +175,31 @@ export default {
         selectAddr += selectRegion[0].label
       }
 
-      self.map = new AMap.Map('bm-view', { zooms: [13, 19], resizeEnable: true }) // 创建地图实例
+      // eslint-disable-next-line
+      self.map = new BMap.Map('bm-view', { minZoom: 13, maxZoom: 19 }) // 创建地图实例
+      self.map.centerAndZoom(selectAddr || '杭州市', 15)
+      self.map.enableScrollWheelZoom(true)
 
-      if (!geocoder) {
-        geocoder = new AMap.Geocoder()
-      }
-      geocoder.getLocation(selectAddr || '杭州市', (status, result) => {
-        if (status === 'complete' && result.geocodes.length) {
-          console.log(result)
-          const lnglat = result.geocodes[0].location
-          if (!marker) {
-            marker = new AMap.Marker()
-            self.map.add(marker)
+      self.map.addEventListener('click', function(e) {
+        self.setMapPosition(e.point)
+      })
+      const options = {
+        onSearchComplete: function(results) {
+          // 判断状态是否正确
+          // eslint-disable-next-line
+          if (self.local.getStatus() === BMAP_STATUS_SUCCESS) {
+            self.searchResult = []
+            for (var i = 0; i < results.getCurrentNumPois(); i++) {
+              self.searchResult.push(results.getPoi(i))
+            }
           }
-          marker.setPosition(lnglat)
-          self.map.setZoomAndCenter(15, [lnglat.getLng(), lnglat.getLat()])
-          // self.map.setFitView(marker)
-        } else {
-          alert(JSON.stringify(result))
         }
-      })
-
-      // self.map.setCity(selectAddr || '杭州市')
-      self.map.on('click', function(e) {
-        // self.setMapPosition([e.lnglat.getLng(), e.lnglat.getLat()])
-        self.map.setZoomAndCenter(15, [e.lnglat.getLng(), e.lnglat.getLat()])
-        self.map.clearMap()
-        marker = new AMap.Marker({
-          icon: 'https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png',
-          position: [e.lnglat.getLng(), e.lnglat.getLat()]
-        })
-        self.map.add(marker)
-        geocoder.getAddress([e.lnglat.getLng(), e.lnglat.getLat()], function(status, result) {
-          if (status === 'complete' && result.regeocode) {
-            console.log(result)
-            // var address = result.regeocode.formattedAddress
-          } else {
-            alert(JSON.stringify(result))
-          }
-        })
-      })
+      }
+      // eslint-disable-next-line
+      self.local = new BMap.LocalSearch(self.map, options)
     },
     searchPositionByKeywords() { // 关键字搜索小区列表
-      if (!this.searchKeywords) {
-        return
-      }
-      AMap.plugin('AMap.PlaceSearch', () => {
-        var autoOptions = {
-          city: '全国'
-        }
-        var placeSearch = new AMap.PlaceSearch(autoOptions)
-        placeSearch.search(this.searchKeywords, (status, result) => {
-          console.log(result)
-          if (status === 'complete' && result.poiList.pois) {
-            this.searchResult = result.poiList.pois
-          } else {
-            this.searchResult = []
-          }
-        })
-      })
+      this.local.search(this.searchKeywords)
     },
     setMapPosition(position, o) { // 设置地图中心位置
       if (o) {
@@ -369,15 +332,6 @@ export default {
       })
     }
   },
-  mounted() {
-    this.mapModelVisible = true
-    this.$set(this, 'mapSelectForm', {
-      city: '',
-      name: '',
-      region: '',
-      address: ''
-    })
-  },
   watch: {
     mapModelVisible(val) {
       if (val) {
@@ -423,7 +377,7 @@ export default {
     .bm-view {
       width: 400px;
       height: 400px;
-      background-color: #fff;
+      background-color: #ff0000;
     }
     .search-input {
       position: absolute;
