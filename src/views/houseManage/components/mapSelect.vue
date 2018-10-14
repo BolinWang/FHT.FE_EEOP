@@ -16,8 +16,10 @@
           <div id="bm-view" class="bm-view">
 
           </div>
-          <el-input class="search-input" placeholder="请输入公寓地址" v-model="searchKeywords" clearable size="small" @keyup.native="searchPositionByKeywords">
-          </el-input>
+          <el-form-item class="search-input-form" label="" label-width="0">
+            <el-input class="search-input" placeholder="请输入公寓地址" v-model="searchKeywords" clearable size="small" @keyup.native="searchPositionByKeywords">
+            </el-input>
+          </el-form-item>
           <el-popover popper-class="selected-house-position" ref="popover" placement="bottom" width="360" trigger="manual">
             <el-form label-position="right" label-width="80px" :model="mapSelectForm" :rules="mapSelectFormRules" size="mini" ref="mapSelectForm">
               <i class="el-icon-close close-icon" @click="$refs.popover.doClose()"></i>
@@ -42,7 +44,7 @@
           </el-popover>
         </div>
         <el-card class="search-list" :body-style="{padding: '10px 0'}">
-          <a class="search-list-item" v-for="(o, i) in searchResult" :key="i" @click="setMapPosition(o.point, o)">
+          <a class="search-list-item" v-for="(o, i) in searchResult" :key="i" @click="setMapPosition(o.location, o)">
             <p class="title">{{o.name}}</p>
             <p class="address">{{o.address}}</p>
           </a>
@@ -96,7 +98,8 @@ export default {
       },
       tempAreaCode: [],
       tempMapData: {},
-      regionOptions: []
+      regionOptions: [],
+      geocoder: null
     }
   },
   methods: {
@@ -166,7 +169,6 @@ export default {
       const self = this
       let selectAddr = ''
       let marker
-      let geocoder
       const cityArr = cityData.filter((n) => n.value === this.tempAreaCode[0])
       if (cityArr[0] && cityArr[0].children) {
         selectAddr = cityArr[0].label
@@ -180,10 +182,10 @@ export default {
 
       self.map = new AMap.Map('bm-view', { zooms: [13, 19], resizeEnable: true }) // 创建地图实例
 
-      if (!geocoder) {
-        geocoder = new AMap.Geocoder()
+      if (!this.geocoder) {
+        this.geocoder = new AMap.Geocoder()
       }
-      geocoder.getLocation(selectAddr || '杭州市', (status, result) => {
+      this.geocoder.getLocation(selectAddr || '杭州市', (status, result) => {
         if (status === 'complete' && result.geocodes.length) {
           console.log(result)
           const lnglat = result.geocodes[0].location
@@ -193,30 +195,30 @@ export default {
           }
           marker.setPosition(lnglat)
           self.map.setZoomAndCenter(15, [lnglat.getLng(), lnglat.getLat()])
-          // self.map.setFitView(marker)
         } else {
           alert(JSON.stringify(result))
         }
       })
 
       // self.map.setCity(selectAddr || '杭州市')
-      self.map.on('click', function(e) {
-        // self.setMapPosition([e.lnglat.getLng(), e.lnglat.getLat()])
-        self.map.setZoomAndCenter(15, [e.lnglat.getLng(), e.lnglat.getLat()])
-        self.map.clearMap()
-        marker = new AMap.Marker({
-          icon: 'https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png',
-          position: [e.lnglat.getLng(), e.lnglat.getLat()]
-        })
-        self.map.add(marker)
-        geocoder.getAddress([e.lnglat.getLng(), e.lnglat.getLat()], function(status, result) {
-          if (status === 'complete' && result.regeocode) {
-            console.log(result)
-            // var address = result.regeocode.formattedAddress
-          } else {
-            alert(JSON.stringify(result))
-          }
-        })
+      self.map.on('click', (e) => {
+        console.log(e)
+        self.setMapPosition(e.lnglat)
+        // self.map.setZoomAndCenter(15, [e.lnglat.getLng(), e.lnglat.getLat()])
+        // self.map.clearMap()
+        // marker = new AMap.Marker({
+        //   icon: 'https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png',
+        //   position: [e.lnglat.getLng(), e.lnglat.getLat()]
+        // })
+        // self.map.add(marker)
+        // this.geocoder.getAddress([e.lnglat.getLng(), e.lnglat.getLat()], function(status, result) {
+        //   if (status === 'complete' && result.regeocode) {
+        //     console.log(result)
+        //     var address = result.regeocode.formattedAddress
+        //   } else {
+        //     alert(JSON.stringify(result))
+        //   }
+        // })
       })
     },
     searchPositionByKeywords() { // 关键字搜索小区列表
@@ -225,7 +227,7 @@ export default {
       }
       AMap.plugin('AMap.PlaceSearch', () => {
         var autoOptions = {
-          city: '全国'
+          city: '杭州市'
         }
         var placeSearch = new AMap.PlaceSearch(autoOptions)
         placeSearch.search(this.searchKeywords, (status, result) => {
@@ -239,55 +241,42 @@ export default {
       })
     },
     setMapPosition(position, o) { // 设置地图中心位置
-      if (o) {
-        this.$set(this, 'mapSelectForm', Object.assign(this.mapSelectForm, {
-          baiduUid: o.uid,
-          longitude: o.point.lng + '',
-          latitude: o.point.lat + '',
-          address: o.address
-        }))
-      }
-      // eslint-disable-next-line
-      const point = new BMap.Point(position.lng, position.lat)
-      // eslint-disable-next-line
-      const marker = new BMap.Marker(point)
-      // eslint-disable-next-line
-      const geoc = new BMap.Geocoder()
-      this.map.clearOverlays()
-      this.map.addOverlay(marker)
-      this.map.panTo(point)
-      this.map.setZoom(15)
-      geoc.getLocation(point, rs => {
-        const addressInfo = rs.addressComponents
-        if (addressInfo.city !== this.mapSelectForm.city) {
-          this.mapSelectForm.city = addressInfo.city
-          const provinceArr = cityData.filter((item) => item.label === addressInfo.province)
-          if (provinceArr[0] && provinceArr[0].children) {
-            this.tempAreaCode[0] = provinceArr[0].value
-            const cityArr = provinceArr[0].children.filter((n) => n.label === addressInfo.city)
-
-            if (cityArr[0] && cityArr[0].children) {
-              this.tempAreaCode[1] = cityArr[0].value
-              this.regionOptions = cityArr[0].children
+      const point = [position.lng, position.lat]
+      const marker = new AMap.Marker({
+        icon: 'https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png',
+        position: point
+      })
+      this.map.clearMap()
+      this.map.add(marker)
+      this.map.setZoomAndCenter(15, point)
+      this.geocoder.getAddress(point, (status, result) => {
+        if (status === 'complete' && result.regeocode) {
+          console.log(result)
+          const addressInfo = result.regeocode.addressComponent
+          if (addressInfo.city !== this.mapSelectForm.city) {
+            this.mapSelectForm.city = addressInfo.city
+            const provinceArr = cityData.filter((item) => item.label === addressInfo.province)
+            if (provinceArr[0] && provinceArr[0].children) {
+              this.tempAreaCode[0] = provinceArr[0].value
+              const cityArr = provinceArr[0].children.filter((n) => n.label === addressInfo.city)
+              if (cityArr[0] && cityArr[0].children) {
+                this.tempAreaCode[1] = cityArr[0].value
+                this.regionOptions = cityArr[0].children
+              }
             }
           }
-        }
-
-        if (o) {
-          this.mapSelectForm.name = o.title
-        } else {
+          this.regionOptions.forEach((item) => {
+            if (item.label === addressInfo.district) {
+              this.mapSelectForm.region = item.value
+            }
+          })
           this.$set(this, 'mapSelectForm', Object.assign(this.mapSelectForm, {
-            name: rs.surroundingPois[0] ? rs.surroundingPois[0].title : rs.address,
-            address: rs.address,
-            longitude: rs.point.lng + '',
-            latitude: rs.point.lat + ''
+            name: o ? o.name : (addressInfo.building || result.regeocode.formattedAddress),
+            address: addressInfo.province + addressInfo.city + addressInfo.district + addressInfo.street + addressInfo.streetNumber,
+            longitude: point[0] + '',
+            latitude: point[1] + ''
           }))
         }
-        this.regionOptions.forEach((item) => {
-          if (item.label === addressInfo.district) {
-            this.mapSelectForm.region = item.value
-          }
-        })
         this.tempMapData = deepClone(this.mapSelectForm)
       })
       this.$refs.popover.doShow()
@@ -370,12 +359,8 @@ export default {
     }
   },
   mounted() {
-    this.mapModelVisible = true
-    this.$set(this, 'mapSelectForm', {
-      city: '',
-      name: '',
-      region: '',
-      address: ''
+    this.setAddress({
+      cityId: '-1'
     })
   },
   watch: {
@@ -425,11 +410,13 @@ export default {
       height: 400px;
       background-color: #fff;
     }
-    .search-input {
+    .search-input-form {
       position: absolute;
       top: 10px;
       left: 10px;
-      width: 340px;
+      .search-input {
+        width: 340px;
+      }
     }
   }
   .search-list {
