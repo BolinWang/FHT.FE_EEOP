@@ -324,7 +324,9 @@ export default {
     const changeTableSize = debounce(() => {
       this.tableHeight = Math.max(document.body.clientHeight - 252, 300)
     }, 100)
-    changeTableSize()
+    this.$nextTick(() => {
+      changeTableSize()
+    })
     window.addEventListener('resize', changeTableSize)
     this.searchParam()
   },

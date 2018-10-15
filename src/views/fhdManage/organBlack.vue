@@ -1,8 +1,8 @@
 /*
  * @Author: ghost
  * @Date: 2018-08-31 11:27:54
- * @Last Modified by: chudequan
- * @Last Modified time: 2018-10-09 16:56:55
+ * @Last Modified by: FT.FE.Bolin
+ * @Last Modified time: 2018-10-15 11:04:52
  */
  <template>
     <div class="container">
@@ -195,7 +195,9 @@ export default {
     const changeTableSize = debounce(() => {
       this.tableHeight = Math.max(document.body.clientHeight - 200, 300)
     }, 100)
-    changeTableSize()
+    this.$nextTick(() => {
+      changeTableSize()
+    })
     window.addEventListener('resize', changeTableSize)
     this.searchParam()
   },

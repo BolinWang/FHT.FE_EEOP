@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-tabs v-model="activeName" type="border-card">
+    <el-tabs v-model="activeName">
       <el-tab-pane v-for="(item,index) in tabMapOptions" :label="item" :key='index' :name="item">
         <!-- <keep-alive> -->
         <published v-if='activeName==item' ref="published" :type='2 - index'></published>

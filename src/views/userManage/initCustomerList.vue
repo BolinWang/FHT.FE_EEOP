@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-tabs v-model="activeName" type="border-card">
+    <el-tabs v-model="activeName">
       <el-tab-pane v-for="(item,index) in tabMapOptions" :label="item" :key='index' :name="item">
         <customer-table v-if='activeName==item' ref="querycenter" :customer-type="index * 1 + 1"></customer-table>
       </el-tab-pane>

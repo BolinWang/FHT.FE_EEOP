@@ -2,12 +2,12 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-07-11 13:49:21
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-10-08 11:36:01
+ * @Last Modified time: 2018-10-15 11:17:20
  */
 
  <template>
   <div class="app-container">
-    <el-tabs v-model="activeName" type="border-card" @tab-click="handleClickTab">
+    <el-tabs v-model="activeName" @tab-click="handleClickTab">
       <el-tab-pane v-for="(item,index) in tabMapOptions" :label="item" :key='index' :name="item">
       </el-tab-pane>
       <el-form class="model-search clearfix" :inline="true" size="small">
@@ -276,7 +276,7 @@ export default {
   mounted() {
     /* 表格高度控制 */
     this.$nextTick(() => {
-      const offsetTop = 255
+      const offsetTop = 240
       const pagenationH = 64
       const containerPadding = 20
       let temp_height = document.body.clientHeight - offsetTop - pagenationH - containerPadding

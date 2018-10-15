@@ -15,7 +15,7 @@
         <el-button class="right" type="danger" size="small" icon="el-icon-remove" @click.native="multiDelete">批量删除</el-button>
       </el-form>
     </div>
-    <el-tabs style='margin-top:10px;' v-model="activeName" type="border-card">
+    <el-tabs style='margin-top:10px;' v-model="activeName">
       <el-tab-pane v-for="(item,index) in tabMapOptions" :label="item" :key='index' :name="item">
         <!-- <keep-alive> -->
         <feedback-table v-if='activeName==item' ref="feedbacktable" :type='index' :form-data='formData' :date-time='dateTime'></feedback-table>

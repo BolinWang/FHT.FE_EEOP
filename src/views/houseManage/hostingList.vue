@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-tabs v-model="activeName" type="border-card" @tab-click="handleClickTab">
+    <el-tabs v-model="activeName" @tab-click="handleClickTab">
       <el-tab-pane v-for="(item, index) in houseRentTypeList" :key="index" :label="item" :name="item">
       </el-tab-pane>
       <el-form :model="roomSearchForm" size="small" :inline="true">
@@ -792,9 +792,11 @@ export default {
   },
   mounted() {
     const changeTableSize = debounce(() => {
-      this.tableHeight = Math.max(document.body.clientHeight - 340, 250)
+      this.tableHeight = Math.max(document.body.clientHeight - 320, 250)
     }, 100)
-    changeTableSize()
+    this.$nextTick(() => {
+      changeTableSize()
+    })
     window.addEventListener('resize', changeTableSize)
   },
   beforeDestroy() {
