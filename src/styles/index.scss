@@ -17,6 +17,7 @@ body,
   height: 100%;
   min-width: 1280px;
   overflow: auto;
+  background: #fff;
 }
 
 *,
@@ -76,7 +77,13 @@ a:hover {
 }
 
 .app-container {
-  padding: 20px;
+  margin: 20px;
+}
+
+.layout_pageHeader {
+  background: #fff;
+  margin: -20px -20px 20px -20px;
+  padding: 20px 20px 0;
 }
 
 .model-table {
@@ -296,9 +303,9 @@ a:hover {
         width: 40%;
       }
     }
-    .room-detail-floor-input {
+    // .room-detail-floor-input {
 
-    }
+    // }
     // .room-detail-floor-input {
     //   &:first-child {
     //     input {

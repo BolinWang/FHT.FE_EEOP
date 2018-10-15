@@ -3,22 +3,22 @@
         <div class="model-search clearfix">
             <el-form size="small" :inline="true" :model="formData">
                 <div class="clearfix">
-                    <el-input size="small" v-model="formData.code" 
-                        placeholder="优惠批次编码"  
+                    <el-input size="small" v-model="formData.code"
+                        placeholder="优惠批次编码"
                         style="width:160px;"
-                        @keydown.native.enter="searchParam">    
+                        @keydown.native.enter="searchParam">
                     </el-input>
-                    <el-input size="small" v-model="formData.mobile" 
-                        placeholder="租客手机号码"  
+                    <el-input size="small" v-model="formData.mobile"
+                        placeholder="租客手机号码"
                         style="width:130px;"
-                        @keydown.native.enter="searchParam">    
+                        @keydown.native.enter="searchParam">
                     </el-input>
-                    <el-input size="small" v-model="formData.type1" 
-                        placeholder="消费账单号"  
+                    <el-input size="small" v-model="formData.type1"
+                        placeholder="消费账单号"
                         style="width:150px;"
-                        @keydown.native.enter="searchParam">    
+                        @keydown.native.enter="searchParam">
                     </el-input>
-                    <el-select size="small" v-model="formData.type2" 
+                    <el-select size="small" v-model="formData.type2"
                         placeholder="优惠券状态" class="item-select" style="width: 120px;"
                         clearable>
                         <el-option
@@ -28,7 +28,7 @@
                             :value="item.value">
                         </el-option>
                     </el-select>
-                    <el-select size="small" v-model="formData.type3" 
+                    <el-select size="small" v-model="formData.type3"
                         placeholder="费用类型" class="item-select" style="width: 100px;"
                         clearable>
                         <el-option
@@ -38,7 +38,7 @@
                             :value="item.value">
                         </el-option>
                     </el-select>
-                    <el-select size="small" v-model="formData.type4" 
+                    <el-select size="small" v-model="formData.type4"
                         placeholder="获取渠道" class="item-select" style="width: 130px;"
                         clearable>
                         <el-option
@@ -77,17 +77,17 @@
             </el-form>
         </div>
         <div class="model-table" :style="tableStyle">
-            <el-table 
-                :data="tableData" 
-                v-loading.body="listLoading" 
-                :max-height="tableHeight" 
+            <el-table
+                :data="tableData"
+                v-loading.body="listLoading"
+                :max-height="tableHeight"
                 size="small"
                 fit stripe highlight-current-row>
                 <el-table-column type="index" width="60" align="center"></el-table-column>
                 <el-table-column v-for="(item,index) in colModels"
-                    :label="item.label" 
+                    :label="item.label"
                     :width="item.width"
-                    key="index"
+                    :key="index"
                     fit
                     show-overflow-tooltip>
                     <template slot-scope="scope">
@@ -103,26 +103,26 @@
                 <el-table-column label="操作" width="220">
                     <template slot-scope="scope">
                         <el-button type="primary" icon="el-icon-edit" size="small" @click.native="lookData(scope.row)">查看关联信息</el-button>
-                        
+
                     </template>
                 </el-table-column>
             </el-table>
         </div>
         <div class="model-pagination">
-            <el-pagination 
+            <el-pagination
                 background
-                @size-change="handleSizeChange" 
-                @current-change="handleCurrentChange" 
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
                 :current-page.sync="pageItems.pageNo"
-                :page-sizes="pageSizeList" 
-                :page-size="pageItems.pageSize" 
-                layout="total, sizes, prev, pager, next, jumper" 
+                :page-sizes="pageSizeList"
+                :page-size="pageItems.pageSize"
+                layout="total, sizes, prev, pager, next, jumper"
                 :total="total">
             </el-pagination>
         </div>
         <div class="dialog-info">
-            <el-dialog 
-                title="关联信息" 
+            <el-dialog
+                title="关联信息"
                 :visible.sync="layer_showInfo" width="800px"
                 @close="dialogClose">
                 <el-form size="small" status-icon :model="dialogForm" ref="dialogForm" label-width="110px">
@@ -256,17 +256,17 @@
       },
       mounted() {
         /* 表格高度控制 */
-        let temp_height = document.body.clientHeight - 220
-        this.tableHeight = temp_height > 300 ? temp_height : 300
-        window.onresize = () => {
-          return (() => {
-            temp_height = document.body.clientHeight - 220
-            this.tableHeight = this.tableHeight = temp_height > 300 ? temp_height : 300
-          })()
-        }
-        this.getGridData(this.pageItems)
-        console.log((1187.50 + 255) * 2)
-        console.log((701.37 + 250) * 3)
+        this.$nextTick(() => {
+          let temp_height = document.body.clientHeight - 220
+          this.tableHeight = temp_height > 300 ? temp_height : 300
+          window.onresize = () => {
+            return (() => {
+              temp_height = document.body.clientHeight - 220
+              this.tableHeight = this.tableHeight = temp_height > 300 ? temp_height : 300
+            })()
+          }
+          this.getGridData(this.pageItems)
+        })
       },
       computed: {
         tableStyle: function() {
@@ -318,7 +318,7 @@
           this.layer_showInfo = true
         },
         dialogClose() {
-    
+
         },
         handleSizeChange(val) {
           this.pageItems.pageSize = val
@@ -345,5 +345,5 @@
 </script>
 
 <style rel="stylesheet/scss" lang="scss">
-    
+
 </style>
