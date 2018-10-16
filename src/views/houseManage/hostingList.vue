@@ -1,8 +1,19 @@
 <template>
   <div class="app-container">
-    <el-tabs v-model="activeName" @tab-click="handleClickTab">
+    <el-tabs v-model="activeName" @tab-click="handleClickTab" class="page_tabs">
       <el-tab-pane v-for="(item, index) in houseRentTypeList" :key="index" :label="item" :name="item">
       </el-tab-pane>
+      <div class="tools_box">
+        <el-dropdown class="room-options-dropdown" @command="handleCommand">
+          <el-button type="primary" plain size="small" style="width:120px">批量房态管理</el-button>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item :command="2">空房</el-dropdown-item>
+            <el-dropdown-item :command="9">已出租无租客</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+        <el-button type="primary" plain size="small" style="width:120px; margin-left:10px" @click="openRoomDetail(2)">添加合租房源</el-button>
+        <el-button type="primary" plain size="small" style="width:120px" @click="openRoomDetail(1)">添加整租房源</el-button>
+      </div>
       <el-form :model="roomSearchForm" size="small" :inline="true">
         <el-form-item>
           <area-select v-model="roomSearchForm.cityArea" placeholder="请选择城市" style="width:120px" :filterable="true" :showAllLevels="false" :level="0"></area-select>
@@ -26,21 +37,25 @@
           <el-button type="primary" icon="el-icon-search" @click="searchHostingHouseList('search')" class="filter-item">查询</el-button>
           <el-button icon="el-icon-remove-outline" @click="searchHostingHouseList('clear')">清空</el-button>
         </el-form-item>
-        <div>
-          <el-form-item>
-            <el-dropdown class="room-options-dropdown" @command="handleCommand">
-              <el-button type="primary" plain size="small" style="width:120px">批量房态管理</el-button>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item :command="2">空房</el-dropdown-item>
-                <el-dropdown-item :command="9">已出租无租客</el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
-            <el-button type="primary" plain style="width:120px;margin-left:10px" @click="openRoomDetail(2)">添加合租房源</el-button>
-            <el-button type="primary" plain style="width:120px" @click="openRoomDetail(1)">添加整租房源</el-button>
-          </el-form-item>
-        </div>
       </el-form>
-      <GridUnit ref="hostingHouseList" :showRowIndex="false" :spanMethod="objectSpanMethod" :formOptions="roomSearchForm" :url="houstingListUrl" :dataMethod="method" listField="data.houseList" totalField="data.record" :columns="colModels" :height="tableHeight" :showSelection="true" @selection-change="handleSelectionChange" @select="handleSelectChange" :dataHandler="dataHandler" :pageSizes="[50, 100, 200]" :border="activeName === '合租'">
+      <GridUnit
+        style="margin-top: -15px;"
+        ref="hostingHouseList"
+        :showRowIndex="false"
+        :spanMethod="objectSpanMethod"
+        :formOptions="roomSearchForm"
+        :url="houstingListUrl"
+        :dataMethod="method"
+        listField="data.houseList"
+        totalField="data.record"
+        :columns="colModels"
+        :height="tableHeight"
+        :showSelection="true"
+        @selection-change="handleSelectionChange"
+        @select="handleSelectChange"
+        :dataHandler="dataHandler"
+        :pageSizes="[50, 100, 200]"
+        :border="activeName === '合租'">
         <template slot="index" slot-scope="scope">
           {{scope.row.index + 1}}
         </template>
@@ -230,7 +245,7 @@ export default {
         }
       ],
       colModels: [
-        { label: '#', slotName: 'index', fixed: 'left', width: 50, align: 'center' },
+        { label: '#', slotName: 'index', width: 50, align: 'center' },
         {
           prop: 'checkHoleRooms',
           label: '',
@@ -341,6 +356,15 @@ export default {
         this.roomSearchForm.cityId = ''
       }
     }
+  },
+  mounted() {
+    const changeTableSize = debounce(() => {
+      this.tableHeight = Math.max(document.body.clientHeight - 255, 300)
+    }, 100)
+    this.$nextTick(() => {
+      changeTableSize()
+    })
+    window.addEventListener('resize', changeTableSize)
   },
   methods: {
     searchParam() {
@@ -790,15 +814,6 @@ export default {
       this.checkAllCopyItem = this.checkedCopyList.length === this.allCheckedOptionsList.length
     }
   },
-  mounted() {
-    const changeTableSize = debounce(() => {
-      this.tableHeight = Math.max(document.body.clientHeight - 320, 250)
-    }, 100)
-    this.$nextTick(() => {
-      changeTableSize()
-    })
-    window.addEventListener('resize', changeTableSize)
-  },
   beforeDestroy() {
     const dialog = document.querySelectorAll('body > .el-dialog__wrapper')
     if (dialog) {
@@ -852,5 +867,16 @@ export default {
 .romm-type-tags + .romm-type-tags {
   margin-left: 5px;
 }
+.tools_box {
+  position: absolute;
+  top: -50px;
+  right: 0;
+  z-index: 9;
+}
+</style>
+<style>
+  .page_tabs .el-tabs__content {
+    overflow: initial;
+  }
 </style>
 
