@@ -3,9 +3,9 @@
     <div class="previewItems">
       <Preview :pic-list="currentPicList" :delete-icon="`delete`" :disabled="``" @emitDelete="emitDelete">
       </Preview>
-      <label class="el-upload el-upload--picture-card uploadImage" for="uploadImages">
+      <label class="el-upload el-upload--picture-card uploadImage" for="core_uploadImages">
         <i class="el-icon-plus"></i>
-        <input type="file" id="uploadImages" :accept="accept" multiple @change="uploadImg($event)">
+        <input type="file" id="core_uploadImages" :accept="accept" multiple @change="uploadImg($event)">
       </label>
     </div>
     <p class="upload-pics-info">温馨提示： </p>
@@ -15,9 +15,12 @@
     <!-- 图片裁剪 -->
     <ImageCropper :cropperList="cropperList" @emitCropperList="emitCropperList" @emitCropperData="emitCropperData">
     </ImageCropper>
-    <span slot="footer">
+    <span slot="footer" v-if="type === `total`">
       <el-button @click="savePics" size="small" type="primary">确定</el-button>
       <el-button @click="dialog_showPic = false" size="small" type="primary">取消</el-button>
+    </span>
+    <span slot="footer" v-else>
+      <el-button @click="dialog_showPic = false" size="small" type="primary">关闭</el-button>
     </span>
   </el-dialog>
 </template>
@@ -47,12 +50,18 @@ export default {
       default: () => {
         return []
       }
+    },
+    picList: {
+      type: Array,
+      default: () => {
+        return []
+      }
     }
   },
   data() {
     return {
       cropperList: [],
-      currentPicList: [],
+      currentPicList: this.picList,
       accept: 'image/png, image/jpeg, image/jpg',
       dialog_showPic: false,
       dataListMap: this.dataList
@@ -71,10 +80,18 @@ export default {
   },
   methods: {
     dialogClose() {
-      this.currentPicList = []
       this.$emit('emitHandleSubEnv', {
-        isShow: false
+        isShow: false,
+        picList: this.currentPicList.map(item => {
+          return {
+            imageName: item.imageName,
+            isBase64: 1,
+            src: item.src,
+            picTag: '小区环境'
+          }
+        })
       })
+      this.currentPicList = []
     },
     savePics() {
       if (this.currentPicList.length < 2) {

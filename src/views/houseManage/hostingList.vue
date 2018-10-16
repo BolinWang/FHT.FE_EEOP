@@ -57,8 +57,8 @@
               key="dateTime"
               unlink-panels
               range-separator="至"
-              start-placeholder="发布开始日期"
-              end-placeholder="发布结束日期"
+              start-placeholder="录入开始日期"
+              end-placeholder="录入结束日期"
               value-format="yyyy-MM-dd"
               :picker-options="pickerOptions"
               @change="changeDate">
@@ -82,7 +82,7 @@
         @selection-change="handleSelectionChange"
         @select="handleSelectChange"
         :dataHandler="dataHandler"
-        :pageSizes="[50, 100, 200]"
+        :pageSizes="[10, 100, 200]"
         :border="activeName === '合租'">
         <template slot="index" slot-scope="scope">
           {{scope.row.index + 1}}
@@ -170,7 +170,12 @@
         <el-button size="small" @click="copyItemsModelVisible = false">取 消</el-button>
       </span>
     </el-dialog>
-    <updateSubEnvPics :type="`total`" :is-show="showSubEnvPics" :data-list="selectedRooms" @emitHandleSubEnv="emitHandleSubEnv"></updateSubEnvPics>
+    <updateSubEnvPics
+      :type="`total`"
+      :is-show="showSubEnvPics"
+      :data-list="subEnvData"
+      @emitHandleSubEnv="emitHandleSubEnv">
+    </updateSubEnvPics>
   </div>
 </template>
 
@@ -247,6 +252,7 @@ export default {
     return {
       pickerOptions,
       dateTime: [],
+      subEnvData: [],
       showSubEnvPics: false,
       checkedList: [],
       tableCheckboxList: [],
@@ -876,6 +882,7 @@ export default {
         this.$message.error('请选择需要添加小区环境图的房间')
         return
       }
+      this.subEnvData = this.selectedRooms
       this.showSubEnvPics = true
     },
     emitHandleSubEnv(data) {
