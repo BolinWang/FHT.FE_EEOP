@@ -724,7 +724,7 @@ export default {
       this.$refs.hostingRoomDetail.validate((status) => {
         if (status) {
           // 房源图片：小区环境图片+房源图片
-          this.hostingRoomDetail.pictures = [...this.housePicList, ...this.subEnvPics]
+          this.hostingRoomDetail.pictures = this.hostingRoomDetail.tag ? [...this.housePicList, ...this.subEnvPics] : this.housePicList
           roomDetailData = deepClone(this.hostingRoomDetail)
           roomDetailData.facilityItems = roomDetailData.facilityItemsList.join(',')
           roomDetailData.tag = roomDetailData.tag ? 1 : 0
@@ -765,7 +765,6 @@ export default {
       this.currentPicList = index === -1 ? this.housePicList : this.hostingRoomDetail.hostingRooms[index].pictures
       this.uploadPicsModelVisible = true
     },
-    // TODO
     uploadModelClose() { // 关闭上传图片列表
       this.curPicListIndex === -1 ? (this.housePicList = this.currentPicList) : (this.hostingRoomDetail.hostingRooms[this.curPicListIndex].pictures = this.currentPicList)
       this.currentPicList = []

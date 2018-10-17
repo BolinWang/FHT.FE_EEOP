@@ -76,6 +76,12 @@ export default {
       handler(val) {
         this.dataListMap = (val || []).slice()
       }
+    },
+    picList: {
+      immediate: true,
+      handler(val) {
+        this.currentPicList = (val || []).slice()
+      }
     }
   },
   methods: {
@@ -87,7 +93,7 @@ export default {
             imageName: item.imageName,
             isBase64: 1,
             src: item.src,
-            picTag: '小区环境'
+            picTag: item.picTag || '小区环境'
           }
         })
       })
@@ -112,7 +118,8 @@ export default {
           return {
             imageName: item.imageName,
             isBase64: 1,
-            src: item.src
+            src: item.src,
+            picTag: item.picTag || '小区环境'
           }
         })
       }).then(res => {
@@ -136,7 +143,8 @@ export default {
         return {
           imageName: item.title,
           isBase64: 1,
-          src: item.src
+          src: item.src,
+          picTag: item.picTag || '小区环境'
         }
       })
       console.log(listMap)
