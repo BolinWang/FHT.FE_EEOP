@@ -123,9 +123,14 @@ export default {
           }
         })
       }).then(res => {
-        console.log(res)
         this.$emit('emitHandleSubEnv', {
           isShow: false
+        })
+        this.$notify({
+          title: '成功',
+          message: '操作成功',
+          type: 'success',
+          duration: 2000
         })
       }).catch()
     },

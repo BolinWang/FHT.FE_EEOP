@@ -886,7 +886,6 @@ export default {
       this.showSubEnvPics = true
     },
     emitHandleSubEnv(data) {
-      console.log(data)
       this.showSubEnvPics = data.isShow || false
     }
   },
