@@ -82,7 +82,7 @@
         @selection-change="handleSelectionChange"
         @select="handleSelectChange"
         :dataHandler="dataHandler"
-        :pageSizes="[10, 100, 200]"
+        :pageSizes="[50, 100, 200]"
         :border="activeName === '合租'">
         <template slot="index" slot-scope="scope">
           {{scope.row.index + 1}}
@@ -457,6 +457,7 @@ export default {
         for (const key in this.roomSearchForm) {
           this.roomSearchForm[key] = key === 'cityArea' ? [] : ''
         }
+        this.dateTime = []
       }
       this.searchParam()
     },
