@@ -147,7 +147,7 @@
       <el-col :span="4">
         <el-form-item v-if="hostingRoomDetail.tag" label="公区照片">
           <el-badge :value="subEnvPics.length">
-            <el-button type="primary" size="mini" @click="showSubEnvPics = true">查看照片</el-button>
+            <el-button type="primary" size="mini" @click="uploadEnvPics">查看照片</el-button>
           </el-badge>
         </el-form-item>
       </el-col>
@@ -526,6 +526,13 @@ export default {
     }
   },
   methods: {
+    uploadEnvPics() {
+      if (!this.subEnvPics || !this.subEnvPics.length) {
+        this.$message.error('暂无图片，可在页面【添加小区环境图】添加')
+        return false
+      }
+      this.showSubEnvPics = true
+    },
     searchZoneList(flag) { // 搜索板块列表
       [this.hostingRoomDetail.provinceId, this.hostingRoomDetail.cityId, this.hostingRoomDetail.regionId] = this.hostingRoomDetail.areaCode
       if (!flag) {

@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :title="type !== 'total' ? '编辑小区环境图' : '上传小区环境图'" :visible.sync="dialog_showPic" :append-to-body="true" @close="dialogClose" width="600px">
+  <el-dialog :title="type !== 'total' ? '查看小区环境图' : '上传小区环境图'" :visible.sync="dialog_showPic" :append-to-body="true" @close="dialogClose" width="600px">
     <div class="previewItems">
       <Preview
         :pic-list="currentPicList"
