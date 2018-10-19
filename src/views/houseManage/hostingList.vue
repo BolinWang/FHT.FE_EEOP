@@ -94,7 +94,8 @@
           <el-tag :type="[2].includes(scope.row.roomStatus) ? 'success' : ([5, 6, 8, 10].includes(scope.row.roomStatus) ? 'info' : 'danger')">{{scope.row.roomStatus | setRoomStatus(roomStatusList)}}</el-tag>
         </template>
         <template slot="tags" slot-scope="scope">
-          <el-tag class="romm-type-tags" v-for="(item,index) in scope.row.tags" :key="index" :label="item">{{item}}</el-tag>
+          <el-tag class="romm-type-tags" v-for="(item,index) in scope.row.tags" :key="index"
+            :label="item" :type="item === '金融' ? 'warning' : item === '飞虎队' ? 'success' : 'primary' ">{{item}}</el-tag>
         </template>
         <template slot="operateHosting" slot-scope="scope">
           <el-row>
