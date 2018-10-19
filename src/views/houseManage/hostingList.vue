@@ -888,7 +888,9 @@ export default {
     },
     emitHandleSubEnv(data) {
       this.showSubEnvPics = data.isShow || false
-      this.searchParam()
+      if (data.callback) {
+        this.searchParam()
+      }
     }
   },
   watch: {

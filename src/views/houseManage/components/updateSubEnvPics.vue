@@ -1,17 +1,27 @@
 <template>
-  <el-dialog title="上传小区环境图" :visible.sync="dialog_showPic" :append-to-body="true" @close="dialogClose" width="600px">
+  <el-dialog :title="type !== 'total' ? '编辑小区环境图' : '上传小区环境图'" :visible.sync="dialog_showPic" :append-to-body="true" @close="dialogClose" width="600px">
     <div class="previewItems">
-      <Preview :pic-list="currentPicList" :delete-icon="`delete`" :disabled="``" @emitDelete="emitDelete">
+      <Preview
+        :pic-list="currentPicList"
+        :delete-icon="`delete`"
+        :disabled="``"
+        @emitDelete="emitDelete">
       </Preview>
-      <label class="el-upload el-upload--picture-card uploadImage" for="core_uploadImages">
+      <label class="el-upload el-upload--picture-card uploadImage" :for="uploadId" v-if="type === 'total'">
         <i class="el-icon-plus"></i>
-        <input type="file" id="core_uploadImages" :accept="accept" multiple @change="uploadImg($event)">
+        <input type="file" :id="uploadId" :accept="accept" multiple @change="uploadImg($event)">
       </label>
     </div>
-    <p class="upload-pics-info">温馨提示： </p>
-    <p class="upload-pics-info">1.请勿上传虚假、模糊、与小区环境信息无关、含有其他公司水印的照片； </p>
-    <p class="upload-pics-info">2.上传小区环境照片不得少于两张； </p>
-    <p class="upload-pics-info">3.目前最多支持15张，支持JPG/JPEG/PNG，可以拖动图片进行排序，支持批量上传。</p>
+    <div v-if="type === 'total'">
+      <p class="upload-pics-info">温馨提示： </p>
+      <p class="upload-pics-info">1.请勿上传虚假、模糊、与小区环境信息无关、含有其他公司水印的照片； </p>
+      <p class="upload-pics-info">2.上传小区环境照片不得少于两张； </p>
+      <p class="upload-pics-info">3.目前最多支持15张，支持JPG/JPEG/PNG，可以拖动图片进行排序，支持批量上传。</p>
+    </div>
+    <div v-else>
+      <p class="upload-pics-info">温馨提示： </p>
+      <p class="upload-pics-info">此处只能查看/删除图片，若要上传，请使用页面【添加小区环境图】功能</p>
+    </div>
     <!-- 图片裁剪 -->
     <ImageCropper :cropperList="cropperList" @emitCropperList="emitCropperList" @emitCropperData="emitCropperData">
     </ImageCropper>
@@ -20,7 +30,7 @@
       <el-button @click="dialog_showPic = false" size="small">取消</el-button>
     </span>
     <span slot="footer" v-else>
-      <el-button @click="dialog_showPic = false" size="small">关闭</el-button>
+      <el-button @click="dialog_showPic = false" size="small" type="primary">关闭</el-button>
     </span>
   </el-dialog>
 </template>
@@ -64,7 +74,8 @@ export default {
       currentPicList: this.picList,
       accept: 'image/png, image/jpeg, image/jpg',
       dialog_showPic: false,
-      dataListMap: this.dataList
+      dataListMap: this.dataList,
+      uploadId: 'core_upload-' + this.type
     }
   },
   watch: {
@@ -91,7 +102,7 @@ export default {
         picList: this.currentPicList.map(item => {
           return {
             imageName: item.imageName,
-            isBase64: 1,
+            isBase64: item.isBase64 !== 0 ? 1 : 0,
             src: item.src,
             picTag: item.picTag || '小区环境'
           }
@@ -117,14 +128,15 @@ export default {
         pictures: this.currentPicList.map(item => {
           return {
             imageName: item.imageName,
-            isBase64: 1,
+            isBase64: item.isBase64 !== 0 ? 1 : 0,
             src: item.src,
             picTag: item.picTag || '小区环境'
           }
         })
       }).then(res => {
         this.$emit('emitHandleSubEnv', {
-          isShow: false
+          isShow: false,
+          callback: true
         })
         this.$notify({
           title: '成功',
@@ -147,12 +159,11 @@ export default {
       const listMap = list.map(item => {
         return {
           imageName: item.title,
-          isBase64: 1,
+          isBase64: item.isBase64 !== 0 ? 1 : 0,
           src: item.src,
           picTag: item.picTag || '小区环境'
         }
       })
-      console.log(listMap)
       this.currentPicList = [...this.currentPicList, ...listMap]
     },
     /* 选择图片 */

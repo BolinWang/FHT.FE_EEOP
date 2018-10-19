@@ -147,7 +147,7 @@
       <el-col :span="4">
         <el-form-item v-if="hostingRoomDetail.tag" label="公区照片">
           <el-badge :value="subEnvPics.length">
-            <el-button type="primary" size="mini" @click="showSubEnvPics = true">上传照片</el-button>
+            <el-button type="primary" size="mini" @click="showSubEnvPics = true">查看照片</el-button>
           </el-badge>
         </el-form-item>
       </el-col>
@@ -724,6 +724,10 @@ export default {
       this.$refs.hostingRoomDetail.validate((status) => {
         if (status) {
           // 房源图片：小区环境图片+房源图片
+          if (this.hostingRoomDetail.tag && this.subEnvPics.length && this.subEnvPics.length < 2) {
+            this.$message.error('请上传至少2张小区环境图片')
+            return false
+          }
           this.hostingRoomDetail.pictures = this.hostingRoomDetail.tag ? [...this.housePicList, ...this.subEnvPics] : this.housePicList
           roomDetailData = deepClone(this.hostingRoomDetail)
           roomDetailData.facilityItems = roomDetailData.facilityItemsList.join(',')
@@ -795,7 +799,7 @@ export default {
         v.imageName = v.title
         v.image = v.src
         v.key = v.key || Math.random().toFixed(5)
-        if (v.isBase64 === undefined) {
+        if (v.isBase64 !== 0) {
           v.isBase64 = 1
         }
       })
