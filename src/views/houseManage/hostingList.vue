@@ -565,7 +565,7 @@ export default {
     // 表格数据合并
     objectSpanMethod({ row, column, rowIndex, columnIndex }) {
       if (this.roomSearchForm.houseRentType === 2) {
-        if (columnIndex < 5 || columnIndex === 11) {
+        if (columnIndex < 5 || column.label === '设置/操作') {
           if (row.spanArr < 1) {
             return {
               rowspan: 0,
