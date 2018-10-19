@@ -724,10 +724,10 @@ export default {
       this.$refs.hostingRoomDetail.validate((status) => {
         if (status) {
           // 房源图片：小区环境图片+房源图片
-          if (this.hostingRoomDetail.tag && this.subEnvPics.length && this.subEnvPics.length < 2) {
-            this.$message.error('请上传至少2张小区环境图片')
-            return false
-          }
+          // if (this.hostingRoomDetail.tag && this.subEnvPics.length && this.subEnvPics.length < 2) {
+          //   this.$message.error('请上传至少2张小区环境图片')
+          //   return false
+          // }
           this.hostingRoomDetail.pictures = this.hostingRoomDetail.tag ? [...this.housePicList, ...this.subEnvPics] : this.housePicList
           roomDetailData = deepClone(this.hostingRoomDetail)
           roomDetailData.facilityItems = roomDetailData.facilityItemsList.join(',')
