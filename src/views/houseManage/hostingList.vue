@@ -888,6 +888,7 @@ export default {
     },
     emitHandleSubEnv(data) {
       this.showSubEnvPics = data.isShow || false
+      this.searchParam()
     }
   },
   watch: {

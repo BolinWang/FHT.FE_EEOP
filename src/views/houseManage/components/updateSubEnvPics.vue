@@ -17,10 +17,10 @@
     </ImageCropper>
     <span slot="footer" v-if="type === `total`">
       <el-button @click="savePics" size="small" type="primary">确定</el-button>
-      <el-button @click="dialog_showPic = false" size="small" type="primary">取消</el-button>
+      <el-button @click="dialog_showPic = false" size="small">取消</el-button>
     </span>
     <span slot="footer" v-else>
-      <el-button @click="dialog_showPic = false" size="small" type="primary">关闭</el-button>
+      <el-button @click="dialog_showPic = false" size="small">关闭</el-button>
     </span>
   </el-dialog>
 </template>
