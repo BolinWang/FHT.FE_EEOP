@@ -351,15 +351,12 @@ export default {
       }
     },
     exportExcel() {
-      console.log(this.formData.overType)
       const href = `${FLY}/bill/exportExcel?cityId=${this.formData.cityId}&startTime=${this.formData.startTime}&endTime=${this.formData.endTime}&customerKeyword=${this.formData.customerKeyword}&overType=${this.formData.overType}&address=${this.formData.address}
       &status=${this.formData.status}&orgKeyword=${this.formData.orgKeyword}&managerKeyword=${this.formData.managerKeyword}&startDeadlineTime=
       ${this.formData.startDeadlineTime}&endDeadlineTime=${this.formData.endDeadlineTime}`
       var elink = document.createElement('a')
       elink.style.display = 'none'
-      console.log(href)
       elink.href = encodeURI(href)
-      console.log(elink.href)
       document.body.appendChild(elink)
       elink.click()
 
