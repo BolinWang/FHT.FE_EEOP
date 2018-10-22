@@ -208,8 +208,6 @@ export default {
     }, 100)
     changeTableSize()
     window.addEventListener('resize', changeTableSize)
-
-    this.openEstateModel(1)
   },
   beforeDestroy() {
     const dialog = document.querySelectorAll('body > .el-dialog__wrapper')
