@@ -1,8 +1,20 @@
 <template>
   <div class="app-container">
-    <el-tabs v-model="activeName" type="border-card" @tab-click="handleClickTab">
+    <el-tabs v-model="activeName" @tab-click="handleClickTab" class="page_tabs">
       <el-tab-pane v-for="(item, index) in houseRentTypeList" :key="index" :label="item" :name="item">
       </el-tab-pane>
+      <div class="tools_box">
+        <el-dropdown class="room-options-dropdown" @command="handleCommand">
+          <el-button type="primary" size="small">批量房态管理 <i class="el-icon-arrow-down el-icon--right"></i></el-button>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item :command="2">空房</el-dropdown-item>
+            <el-dropdown-item :command="9">已出租无租客</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+        <el-button type="primary" size="small" style="margin-left:10px" @click="openRoomDetail(2)">添加合租房源</el-button>
+        <el-button type="primary" size="small" @click="openRoomDetail(1)">添加整租房源</el-button>
+        <el-button type="primary" size="small" @click="addSubEnvPic">添加小区环境图</el-button>
+      </div>
       <el-form :model="roomSearchForm" size="small" :inline="true">
         <el-form-item>
           <area-select v-model="roomSearchForm.cityArea" placeholder="请选择城市" style="width:120px" :filterable="true" :showAllLevels="false" :level="0"></area-select>
@@ -13,14 +25,12 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-select v-model="roomSearchForm.roomStatus" filterable clearable size="small" placeholder="房间状态" style="width:120px">
+          <el-select v-model="roomSearchForm.roomStatus" filterable clearable size="small" placeholder="房间状态" style="width:150px">
             <el-option v-for="(statusItem,index) in roomStatusList" :key="index" :label="statusItem.label" :value="statusItem.value"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-input v-model="roomSearchForm.orgName" size="small" placeholder="组织名称" style="width:120px" />
-          <el-input v-model="roomSearchForm.subdistrictName" size="small" placeholder="公寓/小区" style="width:120px;margin-left:10px" />
-          <el-input v-model="roomSearchForm.roomCode" size="small" placeholder="房源编码" style="width:120px;margin-left:10px" class="deal" />
+          <el-input v-model="roomSearchForm.orgName" size="small" placeholder="组织名称" style="width:185px" />
         </el-form-item>
         <el-form-item class="house-search-form-group">
           <el-button type="primary" icon="el-icon-search" @click="searchHostingHouseList('search')" class="filter-item">查询</el-button>
@@ -28,19 +38,52 @@
         </el-form-item>
         <div>
           <el-form-item>
-            <el-dropdown class="room-options-dropdown" @command="handleCommand">
-              <el-button type="primary" plain size="small" style="width:120px">批量房态管理</el-button>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item :command="2">空房</el-dropdown-item>
-                <el-dropdown-item :command="9">已出租无租客</el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
-            <el-button type="primary" plain style="width:120px;margin-left:10px" @click="openRoomDetail(2)">添加合租房源</el-button>
-            <el-button type="primary" plain style="width:120px" @click="openRoomDetail(1)">添加整租房源</el-button>
+            <el-input v-model="roomSearchForm.roomCode" size="small" placeholder="房源编码" style="width:120px;" class="deal" />
+          </el-form-item>
+          <el-form-item>
+            <el-input v-model="roomSearchForm.provider" size="small" placeholder="房源提供者" style="width:120px" />
+          </el-form-item>
+          <el-form-item>
+            <el-input v-model="roomSearchForm.subdistrictName" size="small" placeholder="公寓/小区" style="width:150px;" />
+          </el-form-item>
+          <el-form-item>
+            <el-date-picker
+              v-model="dateTime"
+              type="daterange"
+              size="small"
+              class="filter-item"
+              style="width: 360px;"
+              align="right"
+              key="dateTime"
+              unlink-panels
+              range-separator="至"
+              start-placeholder="录入开始日期"
+              end-placeholder="录入结束日期"
+              value-format="yyyy-MM-dd"
+              :picker-options="pickerOptions"
+              @change="changeDate">
+            </el-date-picker>
           </el-form-item>
         </div>
       </el-form>
-      <GridUnit ref="hostingHouseList" :showRowIndex="false" :spanMethod="objectSpanMethod" :formOptions="roomSearchForm" :url="houstingListUrl" :dataMethod="method" listField="data.houseList" totalField="data.record" :columns="colModels" :height="tableHeight" :showSelection="true" @selection-change="handleSelectionChange" @select="handleSelectChange" :dataHandler="dataHandler" :pageSizes="[50, 100, 200]" :border="activeName === '合租'">
+      <GridUnit
+        style="margin-top: -15px;"
+        ref="hostingHouseList"
+        :showRowIndex="false"
+        :spanMethod="objectSpanMethod"
+        :formOptions="roomSearchForm"
+        :url="houstingListUrl"
+        :dataMethod="method"
+        listField="data.houseList"
+        totalField="data.record"
+        :columns="colModels"
+        :height="tableHeight"
+        :showSelection="true"
+        @selection-change="handleSelectionChange"
+        @select="handleSelectChange"
+        :dataHandler="dataHandler"
+        :pageSizes="[50, 100, 200]"
+        :border="activeName === '合租'">
         <template slot="index" slot-scope="scope">
           {{scope.row.index + 1}}
         </template>
@@ -51,7 +94,8 @@
           <el-tag :type="[2].includes(scope.row.roomStatus) ? 'success' : ([5, 6, 8, 10].includes(scope.row.roomStatus) ? 'info' : 'danger')">{{scope.row.roomStatus | setRoomStatus(roomStatusList)}}</el-tag>
         </template>
         <template slot="tags" slot-scope="scope">
-          <el-tag class="romm-type-tags" v-for="(item,index) in scope.row.tags" :key="index" :label="item">{{item}}</el-tag>
+          <el-tag class="romm-type-tags" v-for="(item,index) in scope.row.tags" :key="index"
+            :label="item" :type="item === '金融' ? 'warning' : item === '飞虎队' ? 'success' : 'primary' ">{{item}}</el-tag>
         </template>
         <template slot="operateHosting" slot-scope="scope">
           <el-row>
@@ -127,20 +171,59 @@
         <el-button size="small" @click="copyItemsModelVisible = false">取 消</el-button>
       </span>
     </el-dialog>
+    <updateSubEnvPics
+      :type="`total`"
+      :is-show="showSubEnvPics"
+      :data-list="subEnvData"
+      @emitHandleSubEnv="emitHandleSubEnv">
+    </updateSubEnvPics>
   </div>
 </template>
 
 <script>
 import { debounce, deepClone } from '@/utils'
 import hostingRoomDetail from './components/hostingRoomDetail'
+import updateSubEnvPics from './components/updateSubEnvPics'
 import rentPayWay from './components/rentPayWay'
 import areaSelect from '@/components/AreaSelect'
 import RoomListSelecter from '@/components/RoomListSelecter'
 import GridUnit from '@/components/GridUnit/grid'
-import { hostingRoomDetailApi, hostingRoomRentTypeApi, saveEstateRoomRentPayWayApi, hostingCopyItemsRoomsApi, hostingSaveCopyItemsApi, hostingSaveHouseInfoApi, hostingEditHouseInfoApi, changeRoomStatusApi, estateDeleteEstateApi } from '@/api/houseManage'
+import {
+  hostingRoomDetailApi, hostingRoomRentTypeApi, saveEstateRoomRentPayWayApi, hostingCopyItemsRoomsApi,
+  hostingSaveCopyItemsApi, hostingSaveHouseInfoApi, hostingEditHouseInfoApi,
+  changeRoomStatusApi, estateDeleteEstateApi
+} from '@/api/houseManage'
+const pickerOptions = {
+  shortcuts: [{
+    text: '最近一周',
+    onClick(picker) {
+      const end = new Date()
+      const start = new Date()
+      start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+      picker.$emit('pick', [start, end])
+    }
+  }, {
+    text: '最近一个月',
+    onClick(picker) {
+      const end = new Date()
+      const start = new Date()
+      start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+      picker.$emit('pick', [start, end])
+    }
+  }, {
+    text: '最近三个月',
+    onClick(picker) {
+      const end = new Date()
+      const start = new Date()
+      start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
+      picker.$emit('pick', [start, end])
+    }
+  }]
+}
 export default {
   name: 'hostingList',
   components: {
+    updateSubEnvPics,
     hostingRoomDetail,
     rentPayWay,
     areaSelect,
@@ -168,6 +251,10 @@ export default {
   },
   data() {
     return {
+      pickerOptions,
+      dateTime: [],
+      subEnvData: [],
+      showSubEnvPics: false,
       checkedList: [],
       tableCheckboxList: [],
       roomSearchForm: {
@@ -230,7 +317,7 @@ export default {
         }
       ],
       colModels: [
-        { label: '#', slotName: 'index', fixed: 'left', width: 50, align: 'center' },
+        { label: '#', slotName: 'index', width: 50, align: 'center' },
         // {
         //   prop: 'checkHoleRooms',
         //   label: '',
@@ -252,12 +339,17 @@ export default {
         { prop: 'roomCode', label: '平台房源编码' },
         {
           prop: 'operate',
-          label: '设置',
+          label: '设置/操作',
           slotName: 'operateHosting',
           width: '340',
           fixed: 'right'
         },
         { prop: 'provider', label: '房源提供者', width: 100 },
+        { prop: 'photoProvider', label: '照片提供者', width: 100 },
+        { prop: 'photoOperator', label: '照片操作者', width: 100 },
+        { prop: 'sourceAuditor', label: '房源审核者', width: 100 },
+        { prop: 'createTimestamp', label: '房源录入时间', width: 100 },
+        { prop: 'housingReleaseTimestamp', label: '房源发布时间', width: 100 },
         {
           prop: 'operateRecord',
           label: '操作记录',
@@ -324,23 +416,14 @@ export default {
       return this.roomSearchForm.cityArea
     }
   },
-  watch: {
-    roomSearchForm: {
-      handler: function(val) {
-        if (this.roomSearchForm.cityArea && this.roomSearchForm.cityArea[1]) {
-          this.roomSearchForm.cityId = this.roomSearchForm.cityArea[1]
-        } else {
-          this.roomSearchForm.cityId = ''
-        }
-      }
-    },
-    cityArea(val) {
-      if (val && val[1]) {
-        this.roomSearchForm.cityId = val[1]
-      } else {
-        this.roomSearchForm.cityId = ''
-      }
-    }
+  mounted() {
+    const changeTableSize = debounce(() => {
+      this.tableHeight = Math.max(document.body.clientHeight - 305, 300)
+    }, 100)
+    this.$nextTick(() => {
+      changeTableSize()
+    })
+    window.addEventListener('resize', changeTableSize)
   },
   methods: {
     searchParam() {
@@ -375,6 +458,7 @@ export default {
         for (const key in this.roomSearchForm) {
           this.roomSearchForm[key] = key === 'cityArea' ? [] : ''
         }
+        this.dateTime = []
       }
       this.searchParam()
     },
@@ -394,7 +478,7 @@ export default {
       // }
     },
     handleSelectionChange(list) {
-      this.selectedRooms = list
+      this.selectedRooms = list || []
       // if (list.length === this.checkedList.length) {
       //   const checkedList = []
       //   this.checkedList.forEach((item, index) => {
@@ -482,7 +566,7 @@ export default {
     // 表格数据合并
     objectSpanMethod({ row, column, rowIndex, columnIndex }) {
       if (this.roomSearchForm.houseRentType === 2) {
-        if (columnIndex < 5 || columnIndex === 11) {
+        if (columnIndex < 5 || column.label === '设置/操作') {
           if (row.spanArr < 1) {
             return {
               rowspan: 0,
@@ -788,14 +872,45 @@ export default {
     // 复制到checkbox选择状态
     handleOptionsChange() {
       this.checkAllCopyItem = this.checkedCopyList.length === this.allCheckedOptionsList.length
+    },
+    // 日期选择
+    changeDate(value) {
+      this.roomSearchForm.createTimestampStart = value ? value[0] : ''
+      this.roomSearchForm.createTimestampEnd = value ? value[1] : ''
+    },
+    // 添加小区环境图
+    addSubEnvPic() {
+      if (this.selectedRooms.length === 0) {
+        this.$message.error('请选择需要添加小区环境图的房间')
+        return
+      }
+      this.subEnvData = this.selectedRooms
+      this.showSubEnvPics = true
+    },
+    emitHandleSubEnv(data) {
+      this.showSubEnvPics = data.isShow || false
+      if (data.callback) {
+        this.searchParam()
+      }
     }
   },
-  mounted() {
-    const changeTableSize = debounce(() => {
-      this.tableHeight = Math.max(document.body.clientHeight - 340, 250)
-    }, 100)
-    changeTableSize()
-    window.addEventListener('resize', changeTableSize)
+  watch: {
+    roomSearchForm: {
+      handler: function(val) {
+        if (this.roomSearchForm.cityArea && this.roomSearchForm.cityArea[1]) {
+          this.roomSearchForm.cityId = this.roomSearchForm.cityArea[1]
+        } else {
+          this.roomSearchForm.cityId = ''
+        }
+      }
+    },
+    cityArea(val) {
+      if (val && val[1]) {
+        this.roomSearchForm.cityId = val[1]
+      } else {
+        this.roomSearchForm.cityId = ''
+      }
+    }
   },
   beforeDestroy() {
     const dialog = document.querySelectorAll('body > .el-dialog__wrapper')
@@ -850,5 +965,16 @@ export default {
 .romm-type-tags + .romm-type-tags {
   margin-left: 5px;
 }
+.tools_box {
+  position: absolute;
+  top: -50px;
+  right: 0;
+  z-index: 9;
+}
+</style>
+<style>
+  .page_tabs .el-tabs__content {
+    overflow: initial;
+  }
 </style>
 

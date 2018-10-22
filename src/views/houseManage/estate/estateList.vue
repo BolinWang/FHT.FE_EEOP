@@ -10,6 +10,9 @@
       <el-form-item class="house-search-form-group">
         <el-input v-model="houseSearchForm.estateName" placeholder="公寓名称"></el-input>
       </el-form-item>
+      <el-form-item>
+        <el-input v-model="houseSearchForm.provider" size="small" placeholder="房源提供者" style="width:120px" />
+      </el-form-item>
       <el-form-item class="house-search-form-group">
         <el-button type="primary" icon="el-icon-search" @click="searchEstateHouseList('search')">查询</el-button>
         <el-button icon="el-icon-remove-outline" @click="searchEstateHouseList('clear')">清空</el-button>
@@ -70,6 +73,7 @@ export default {
         { prop: 'orgName', label: '组织名称' },
         { prop: 'displayCityName', label: '城市' },
         { prop: 'estateName', label: '公寓名称' },
+        { prop: 'provider', label: '房源提供者' },
         {
           prop: 'operate',
           label: '操作',
@@ -206,7 +210,9 @@ export default {
     const changeTableSize = debounce(() => {
       this.tableHeight = Math.max(document.body.clientHeight - 190, 250)
     }, 100)
-    changeTableSize()
+    this.$nextTick(() => {
+      changeTableSize()
+    })
     window.addEventListener('resize', changeTableSize)
   },
   beforeDestroy() {

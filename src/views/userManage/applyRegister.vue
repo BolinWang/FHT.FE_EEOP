@@ -220,14 +220,16 @@ export default {
   },
   mounted() {
     /* 表格高度控制 */
-    let temp_height = document.body.clientHeight - 200
-    this.tableHeight = temp_height > 300 ? temp_height : 300
-    window.onresize = () => {
-      return (() => {
-        temp_height = document.body.clientHeight - 200
-        this.tableHeight = this.tableHeight = temp_height > 300 ? temp_height : 300
-      })()
-    }
+    this.$nextTick(() => {
+      let temp_height = document.body.clientHeight - 200
+      this.tableHeight = temp_height > 300 ? temp_height : 300
+      window.onresize = () => {
+        return (() => {
+          temp_height = document.body.clientHeight - 200
+          this.tableHeight = this.tableHeight = temp_height > 300 ? temp_height : 300
+        })()
+      }
+    })
   },
   computed: {
     tableStyle: function() {

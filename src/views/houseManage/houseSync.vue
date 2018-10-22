@@ -2,14 +2,18 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-07-11 13:49:21
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-10-08 11:36:01
+ * @Last Modified time: 2018-10-16 17:37:59
  */
 
  <template>
   <div class="app-container">
-    <el-tabs v-model="activeName" type="border-card" @tab-click="handleClickTab">
+    <el-tabs v-model="activeName" @tab-click="handleClickTab" class="page_tabs">
       <el-tab-pane v-for="(item,index) in tabMapOptions" :label="item" :key='index' :name="item">
       </el-tab-pane>
+      <div class="tools_box">
+        <el-button size="small" type="success" icon="el-icon-upload" @click="syncItems('on')">发布</el-button>
+        <el-button size="small" type="danger" icon="el-icon-remove" @click="syncItems('off')">撤销</el-button>
+      </div>
       <el-form class="model-search clearfix" :inline="true" size="small">
         <el-form-item>
           <area-select v-model="searchParams.cityArea" placeholder="请选择城市" :filterable="true" :showAllLevels="false" :level="0" class="item-select"></area-select>
@@ -43,12 +47,11 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button-group>
-            <el-button size="small" type="primary" icon="el-icon-search" @click="searchParam">查询</el-button>
-            <el-button size="small" icon="el-icon-remove-outline" @click="searchParam('clear')">清空</el-button>
-            <el-button size="small" type="success" icon="el-icon-upload" @click="syncItems('on')">发布</el-button>
-            <el-button size="small" type="danger" icon="el-icon-remove" @click="syncItems('off')">撤销</el-button>
-          </el-button-group>
+          <el-input v-model="searchParams.provider" size="small" placeholder="房源提供者" style="width:120px" />
+        </el-form-item>
+        <el-form-item>
+          <el-button size="small" type="primary" icon="el-icon-search" @click="searchParam">查询</el-button>
+          <el-button size="small" icon="el-icon-remove-outline" @click="searchParam('clear')">清空</el-button>
         </el-form-item>
         <div>
           <el-form-item>
@@ -217,6 +220,7 @@ export default {
         { prop: 'name', label: '姓名', width: 100 },
         { prop: 'mobile', label: '手机号', width: 150 },
         { prop: 'userType', label: '用户类型', width: 100 },
+        { prop: 'provider', label: '房源提供者' },
         { prop: 'createTimestamp', label: '创建时间', width: 150, filter: 'parseTime' },
         {
           prop: 'roomStatus',
@@ -276,7 +280,7 @@ export default {
   mounted() {
     /* 表格高度控制 */
     this.$nextTick(() => {
-      const offsetTop = 255
+      const offsetTop = 240
       const pagenationH = 64
       const containerPadding = 20
       let temp_height = document.body.clientHeight - offsetTop - pagenationH - containerPadding
@@ -437,7 +441,7 @@ export default {
   }
 }
 </script>
-<style rel="stylesheet/scss" lang="scss" scoped>
+<style lang="scss" scoped>
 .item-select {
   width: 130px;
 }
@@ -500,4 +504,15 @@ export default {
   position: absolute;
   clip: rect(0, 0, 0, 0);
 }
+.tools_box {
+  position: absolute;
+  top: -50px;
+  right: 0;
+  z-index: 9;
+}
+</style>
+<style>
+  .page_tabs .el-tabs__content {
+    overflow: initial;
+  }
 </style>

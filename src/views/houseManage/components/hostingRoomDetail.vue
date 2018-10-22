@@ -127,7 +127,7 @@
       </el-col>
       <el-col :span="4">
         <el-form-item v-if="hostingRoomDetail.houseRentType === 1" label="房间照片">
-          <el-badge :value="hostingRoomDetail.pictures.length">
+          <el-badge :value="housePicList.length">
             <el-button type="primary" size="mini" @click="openPicModel(-1)">上传照片</el-button>
           </el-badge>
         </el-form-item>
@@ -142,6 +142,13 @@
               </el-option>
             </el-option-group>
           </el-select>
+        </el-form-item>
+      </el-col>
+      <el-col :span="4">
+        <el-form-item v-if="hostingRoomDetail.tag" label="公区照片">
+          <el-badge :value="subEnvPics.length">
+            <el-button type="primary" size="mini" @click="uploadEnvPics">查看照片</el-button>
+          </el-badge>
         </el-form-item>
       </el-col>
     </el-row>
@@ -271,6 +278,13 @@
         <el-button @click="uploadPicsModelVisible = false" size="small" type="primary">关 闭</el-button>
       </span>
     </el-dialog>
+    <updateSubEnvPics
+      :type="`single`"
+      :is-show="showSubEnvPics"
+      :data-list="[hostingRoomDetail]"
+      :picList="subEnvPics"
+      @emitHandleSubEnv="emitHandleSubEnv">
+    </updateSubEnvPics>
   </el-form>
 </template>
 
@@ -282,6 +296,7 @@ import { fhdAuditApi } from '@/api/auditCenter'
 import Preview from '@/components/Preview/Preview'
 import ImageCropper from '@/components/ImageCropper/Cropper'
 import { deepClone } from '@/utils'
+import updateSubEnvPics from './updateSubEnvPics'
 const checkDiff = (a, b) => {
   let diffCount = 0
   if (a.length !== b.length) {
@@ -300,10 +315,14 @@ export default {
     areaSelect,
     Preview,
     ImageCropper,
-    mapSelect
+    mapSelect,
+    updateSubEnvPics
   },
   data() {
     return {
+      housePicList: [],
+      showSubEnvPics: false,
+      subEnvPics: [],
       hostingRoomDetail: {},
       tempFormData: {},
       hostingRoomDetailRules: {
@@ -507,6 +526,13 @@ export default {
     }
   },
   methods: {
+    uploadEnvPics() {
+      if (!this.subEnvPics || !this.subEnvPics.length) {
+        this.$message.error('暂无图片，可在页面【添加小区环境图】添加')
+        return false
+      }
+      this.showSubEnvPics = true
+    },
     searchZoneList(flag) { // 搜索板块列表
       [this.hostingRoomDetail.provinceId, this.hostingRoomDetail.cityId, this.hostingRoomDetail.regionId] = this.hostingRoomDetail.areaCode
       if (!flag) {
@@ -659,6 +685,11 @@ export default {
         val.sourceInfo = val.sourceInfo.split(',')[0]
       }
 
+      // 图片处理
+      val.pictures = val.pictures || []
+      this.housePicList = val.pictures.filter(item => item.picTag !== '小区环境')
+      this.subEnvPics = val.pictures.filter(item => item.picTag === '小区环境')
+
       this.$nextTick(() => {
         this.$set(this, 'hostingRoomDetail', val)
         this.$set(this, 'tempFormData', deepClone(val))
@@ -699,6 +730,12 @@ export default {
       let roomDetailData = false
       this.$refs.hostingRoomDetail.validate((status) => {
         if (status) {
+          // 房源图片：小区环境图片+房源图片
+          // if (this.hostingRoomDetail.tag && this.subEnvPics.length && this.subEnvPics.length < 2) {
+          //   this.$message.error('请上传至少2张小区环境图片')
+          //   return false
+          // }
+          this.hostingRoomDetail.pictures = this.hostingRoomDetail.tag ? [...this.housePicList, ...this.subEnvPics] : this.housePicList
           roomDetailData = deepClone(this.hostingRoomDetail)
           roomDetailData.facilityItems = roomDetailData.facilityItemsList.join(',')
           roomDetailData.tag = roomDetailData.tag ? 1 : 0
@@ -736,11 +773,11 @@ export default {
     },
     openPicModel(index) { // 打开上传图片列表
       this.curPicListIndex = index
-      this.currentPicList = index === -1 ? this.hostingRoomDetail.pictures : this.hostingRoomDetail.hostingRooms[index].pictures
+      this.currentPicList = index === -1 ? this.housePicList : this.hostingRoomDetail.hostingRooms[index].pictures
       this.uploadPicsModelVisible = true
     },
     uploadModelClose() { // 关闭上传图片列表
-      this.curPicListIndex === -1 ? (this.hostingRoomDetail.pictures = this.currentPicList) : (this.hostingRoomDetail.hostingRooms[this.curPicListIndex].pictures = this.currentPicList)
+      this.curPicListIndex === -1 ? (this.housePicList = this.currentPicList) : (this.hostingRoomDetail.hostingRooms[this.curPicListIndex].pictures = this.currentPicList)
       this.currentPicList = []
     },
     deleteCurRoom(curRoom, index) {
@@ -769,7 +806,7 @@ export default {
         v.imageName = v.title
         v.image = v.src
         v.key = v.key || Math.random().toFixed(5)
-        if (v.isBase64 === undefined) {
+        if (v.isBase64 !== 0) {
           v.isBase64 = 1
         }
       })
@@ -837,6 +874,10 @@ export default {
         }
       })
       e.target.value = null
+    },
+    emitHandleSubEnv(data) {
+      this.showSubEnvPics = data.isShow || false
+      this.subEnvPics = data.picList
     }
   }
 }
