@@ -185,6 +185,7 @@ export default {
       if (!this.geocoder) {
         this.geocoder = new AMap.Geocoder()
       }
+      console.log(selectAddr)
       this.geocoder.getLocation(selectAddr || '杭州市', (status, result) => {
         if (status === 'complete' && result.geocodes.length) {
           console.log(result)
@@ -200,25 +201,8 @@ export default {
         }
       })
 
-      // self.map.setCity(selectAddr || '杭州市')
       self.map.on('click', (e) => {
-        console.log(e)
         self.setMapPosition(e.lnglat)
-        // self.map.setZoomAndCenter(15, [e.lnglat.getLng(), e.lnglat.getLat()])
-        // self.map.clearMap()
-        // marker = new AMap.Marker({
-        //   icon: 'https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png',
-        //   position: [e.lnglat.getLng(), e.lnglat.getLat()]
-        // })
-        // self.map.add(marker)
-        // this.geocoder.getAddress([e.lnglat.getLng(), e.lnglat.getLat()], function(status, result) {
-        //   if (status === 'complete' && result.regeocode) {
-        //     console.log(result)
-        //     var address = result.regeocode.formattedAddress
-        //   } else {
-        //     alert(JSON.stringify(result))
-        //   }
-        // })
       })
     },
     searchPositionByKeywords() { // 关键字搜索小区列表
@@ -227,7 +211,7 @@ export default {
       }
       AMap.plugin('AMap.PlaceSearch', () => {
         var autoOptions = {
-          city: '杭州市'
+          city: this.mapSelectForm.city || '杭州市'
         }
         var placeSearch = new AMap.PlaceSearch(autoOptions)
         placeSearch.search(this.searchKeywords, (status, result) => {
@@ -253,12 +237,12 @@ export default {
         if (status === 'complete' && result.regeocode) {
           console.log(result)
           const addressInfo = result.regeocode.addressComponent
-          if (addressInfo.city !== this.mapSelectForm.city) {
-            this.mapSelectForm.city = addressInfo.city
+          if ((addressInfo.city || addressInfo.province) !== this.mapSelectForm.city) {
+            this.mapSelectForm.city = (addressInfo.city || addressInfo.province)
             const provinceArr = cityData.filter((item) => item.label === addressInfo.province)
             if (provinceArr[0] && provinceArr[0].children) {
               this.tempAreaCode[0] = provinceArr[0].value
-              const cityArr = provinceArr[0].children.filter((n) => n.label === addressInfo.city)
+              const cityArr = provinceArr[0].children.filter((n) => n.label === (addressInfo.city || addressInfo.province))
               if (cityArr[0] && cityArr[0].children) {
                 this.tempAreaCode[1] = cityArr[0].value
                 this.regionOptions = cityArr[0].children
@@ -270,14 +254,22 @@ export default {
               this.mapSelectForm.region = item.value
             }
           })
+          if (!o) {
+            addressInfo.address = addressInfo.building || addressInfo.neighborhood
+            if (!addressInfo.address) {
+              addressInfo.address = addressInfo.township ? result.regeocode.formattedAddress.split(addressInfo.township)[1] : result.regeocode.formattedAddress
+            }
+          } else {
+            addressInfo.address = o.name
+          }
           this.$set(this, 'mapSelectForm', Object.assign(this.mapSelectForm, {
-            name: o ? o.name : (addressInfo.building || result.regeocode.formattedAddress),
+            name: addressInfo.address,
             address: addressInfo.province + addressInfo.city + addressInfo.district + addressInfo.street + addressInfo.streetNumber,
             longitude: point[0] + '',
             latitude: point[1] + ''
           }))
+          this.tempMapData = deepClone(this.mapSelectForm)
         }
-        this.tempMapData = deepClone(this.mapSelectForm)
       })
       this.$refs.popover.doShow()
     },
@@ -298,7 +290,7 @@ export default {
     },
     addEstateSubdistrict(status) { // 新增小区
       status = status || 0
-      let source = 1
+      let source = 6
       if (status === 0) {
         Object.keys(this.mapSelectForm).forEach((key) => {
           if (this.mapSelectForm[key] !== this.tempMapData[key]) {
@@ -359,9 +351,9 @@ export default {
     }
   },
   mounted() {
-    this.setAddress({
-      cityId: '-1'
-    })
+    // this.setAddress({
+    //   cityId: '-1'
+    // })
   },
   watch: {
     mapModelVisible(val) {
