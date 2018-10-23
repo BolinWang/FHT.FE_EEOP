@@ -79,10 +79,10 @@
         :columns="colModels"
         :height="tableHeight"
         :showSelection="true"
+        :selection-key="`fangyuanCode`"
         @selection-change="handleSelectionChange"
         @select="handleSelectChange"
         :dataHandler="dataHandler"
-        :pageSizes="[50, 100, 200]"
         :border="activeName === '合租'">
         <template slot="index" slot-scope="scope">
           {{scope.row.index + 1}}
@@ -478,7 +478,9 @@ export default {
       // }
     },
     handleSelectionChange(list) {
-      this.selectedRooms = list || []
+      this.$nextTick(() => {
+        this.selectedRooms = this.$refs.hostingHouseList.multipleSelectionAll || []
+      })
       // if (list.length === this.checkedList.length) {
       //   const checkedList = []
       //   this.checkedList.forEach((item, index) => {
@@ -512,29 +514,44 @@ export default {
       } else {
         roomStatusParams = command
       }
-      changeRoomStatusApi(roomStatusParams).then((res) => {
-        if (res.code === '0') {
-          let message = {}
-          if (res.data.success === roomStatusParams.roomCodes.length) {
-            message = {
-              message: res.message,
-              type: 'success'
+      this.$confirm(`已选择${this.selectedRooms.length}条数据，确定更改为【${command * 1 === 2 ? `空房` : `已出租无租客`}】吗`, '批量房态管理', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        const loading = this.$loading({
+          lock: true,
+          text: 'Loading',
+          spinner: 'el-icon-loading',
+          background: 'rgba(0, 0, 0, 0.7)'
+        })
+        changeRoomStatusApi(roomStatusParams).then((res) => {
+          loading.close()
+          if (res.code === '0') {
+            let message = {}
+            if (res.data.success === roomStatusParams.roomCodes.length) {
+              message = {
+                message: res.message,
+                type: 'success'
+              }
+            } else if (res.data.fail === roomStatusParams.roomCodes.length) {
+              message = {
+                message: `失败${res.data.fail}个房间`,
+                type: 'error'
+              }
+            } else {
+              const status = roomStatusParams.roomStatus === 2 ? '空房' : '已出租无租客'
+              message = {
+                message: `成功${res.data.success}个房间，失败${res.data.fail}个房间，${res.data.already}个房间已经是${status}状态`
+              }
             }
-          } else if (res.data.fail === roomStatusParams.roomCodes.length) {
-            message = {
-              message: `失败${res.data.fail}个房间`,
-              type: 'error'
-            }
-          } else {
-            const status = roomStatusParams.roomStatus === 2 ? '空房' : '已出租无租客'
-            message = {
-              message: `成功${res.data.success}个房间，失败${res.data.fail}个房间，${res.data.already}个房间已经是${status}状态`
-            }
+            this.$message(message)
+            this.searchParam()
           }
-          this.$message(message)
-          this.searchParam()
-        }
-      }).catch(err => { console.log(err) })
+        }).catch(() => {
+          loading.close()
+        })
+      }).catch(() => {})
     },
     // 删除房间
     deleteRoom(row) {
@@ -706,10 +723,16 @@ export default {
         return false
       }
       const api = roomDetailData.isEditFlag ? hostingEditHouseInfoApi : hostingSaveHouseInfoApi
-      console.log(roomDetailData)
+      const loading = this.$loading({
+        lock: true,
+        text: 'Loading',
+        spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 0.7)'
+      })
       api({
         hostingHouseInfo: JSON.stringify(roomDetailData)
       }).then((res) => {
+        loading.close()
         if (res.code === '0') {
           this.$message({
             message: res.message,
@@ -736,6 +759,8 @@ export default {
           }
           this.$refs.hostingHouseList.fetchHandler()
         }
+      }).catch(() => {
+        loading.close()
       })
     },
     // 检查是否修改房源信息
