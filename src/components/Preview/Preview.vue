@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-04-11 16:50:08
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-10-17 17:25:30
+ * @Last Modified time: 2018-10-23 15:52:34
  */
 
 <template>
@@ -142,8 +142,7 @@ export default {
       handler: function(val) {
         this.list = (val || []).slice()
         this.list.map((item, index) => {
-          // item.sortNum = item.sortNum !== undefined ? item.sortNum : Math.random().toFixed(5)
-          item.sortNum = index
+          item.sortNum = item.sortNum ? item.sortNum : Math.random().toFixed(5)
           item.type = item.type || 1
           item.title = item.picTag || ''
         })
