@@ -37,8 +37,12 @@
               <el-collapse-item
                 v-for="(item, index) in rentRecordList"
                 :key="index"
-                :title="`${item.startDate}   ${item.subdistrictName}`"
                 :name="index">
+                <template slot="title">
+                  <el-button type="primary" round size="mini" @click.stop="showBillDetail(item)">账单详情</el-button>
+                  {{item.startDate}}
+                  {{item.subdistrictName}}
+                </template>
                 <el-form label-position="left" inline class="customer-table-expand">
                   <el-form-item
                     v-for="(col, index) in overlayCol"
@@ -124,6 +128,16 @@
           <span v-else-if="devicePWDList[scope.$index]">{{devicePWDList[scope.$index]}}</span>
           <span v-else></span>
         </template>
+      </GridUnit>
+    </el-dialog>
+
+    <!-- 账单详情 -->
+    <el-dialog :title="`${billInfos.name}的账单详情`" width="1100px" :visible.sync="billInfos.isShow">
+      <GridUnit
+        ref="billGrid"
+        :columns="billInfos.colModel"
+        :url="'/market/customer/'"
+        :dataMethod="'deviceList'">
       </GridUnit>
     </el-dialog>
   </div>
@@ -276,6 +290,30 @@ export default {
           align: 'center'
         }
       ],
+      billInfos: {
+        isShow: false,
+        name: '',
+        colModel: [
+          { prop: '', label: '账单名称' },
+          { prop: '', label: '费用类型' },
+          { prop: 'startDate', label: '开始时间' },
+          { prop: 'endDate', label: '结束时间' },
+          { prop: 'rentTypeName', label: '账单金额' },
+          {
+            prop: 'status',
+            label: '账单状态',
+            filterType: 'status',
+            width: 80,
+            render(row) {
+              const statusStrData = ['未入住', '在住', '申请换房', '申请退房', '已搬离']
+              return statusStrData[row.status] || '未知'
+            }
+          },
+          { prop: '', label: '实收金额' },
+          { prop: '', label: '支付时间' },
+          { prop: '', label: '支付方式' }
+        ]
+      },
       rentRecord: false,
       deviceInfo: false,
       tableHeight: 300,
@@ -283,13 +321,12 @@ export default {
       customerTypeClone: this.customerType,
       searchParams: {},
       deviceParams: {},
-      detailData: {},
       total: null,
       pageItems: {
         pageNo: 1,
         pageSize: 20
       },
-      pageSizeList: [10, 20, 30, 50],
+      pageSizeList: [20, 30, 50],
       listLoading: false,
       devicePWDList: {}
     }
@@ -391,6 +428,9 @@ export default {
         this.activeName = 0
         queryRentRecordApi(ObjectMap(this.rentParams)).then(response => {
           this.rentRecordList = response.data.list
+          this.rentRecordList.map(item => {
+            item.realName = row.realName || '租客'
+          })
           this.rentRecord = false
           // this.expandKeys.push(row.customerId)
           this.expandKeys = [row.customerId]
@@ -408,10 +448,6 @@ export default {
       this.deviceParams = {
         customerId: row.customerId
       }
-    },
-    showDetail(row) {
-      this.lookDetail = true
-      this.detailData = row
     },
     /* 列表渲染 */
     getGridData(params) {
@@ -432,6 +468,11 @@ export default {
       }).then((res) => {
         this.$set(this.devicePWDList, i, res.data || '')
       })
+    },
+    /** 账单详情 */
+    showBillDetail(item) {
+      this.billInfos.name = item.realName
+      this.billInfos.isShow = true
     }
   }
 }
@@ -448,8 +489,8 @@ export default {
   margin-right: 0;
   margin-bottom: 0;
   width: 30%;
-  overflow: hidden;
   text-overflow: ellipsis;
+  overflow: hidden;
   white-space: nowrap;
 }
 .el-table__expand-icon:after {
