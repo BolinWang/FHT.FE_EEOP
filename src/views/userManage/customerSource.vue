@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-09-26 18:01:22
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-10-08 14:41:12
+ * @Last Modified time: 2018-10-25 11:19:23
  */
 <template>
   <div class="app-container">
@@ -210,7 +210,11 @@
                       </div>
                       <div style="color:#999;" v-else>无数据, 请选择条件进行房源搜索</div>
                     </el-collapse-item>
-                    <el-collapse-item title="您选择的房源信息展示" name="2">
+                    <el-collapse-item name="2">
+                      <template slot="title">
+                        您选择的房源信息展示
+                        <el-tag v-if="selectedRoomInfo.isFlying === '是'" type="success" size="mini">飞虎队</el-tag>
+                      </template>
                       <div class="roomInfo_container" v-if="JSON.stringify(selectedRoomInfo) !==`{}`">
                         <el-row :gutter="10">
                           <el-col :span="12">
@@ -687,6 +691,9 @@ export default {
         // 关闭当前手风琴，开启另一个
         this.activeName = '2'
         loadingInstance.close()
+      }).catch((err) => {
+        loadingInstance.close()
+        console.log(err)
       })
     },
 

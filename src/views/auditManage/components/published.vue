@@ -150,7 +150,7 @@ export default {
         { prop: 'roomType', label: '室卫厅', width: 100 },
         { prop: 'roomArea', label: '面积(㎡)', width: 80 },
         { prop: 'publishTime', label: '发布时间', width: 140, type: 'formatTime' },
-        { prop: 'publisher', label: '审核人', width: 140 }
+        { prop: 'auditor', label: '审核人', width: 140 }
       ],
       tableHeight: 300,
       tableData: [],

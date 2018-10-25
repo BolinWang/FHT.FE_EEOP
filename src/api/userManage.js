@@ -117,6 +117,19 @@ export function queryRentRecordApi(params = {}) {
     }
   })
 }
+
+// 租房记录
+export function queryLeaseBillInfoApi(params = {}) {
+  return fetch({
+    url: '/market/customer/',
+    method: 'post',
+    data: {
+      method: 'queryLeaseBillInfo',
+      params
+    }
+  })
+}
+
 // 智能设备
 export function deviceListApi(params = {}) {
   return fetch({

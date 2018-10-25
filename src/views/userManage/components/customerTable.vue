@@ -135,9 +135,11 @@
     <el-dialog :title="`${billInfos.name}的账单详情`" width="1100px" :visible.sync="billInfos.isShow">
       <GridUnit
         ref="billGrid"
+        v-if="billInfos.isShow"
         :columns="billInfos.colModel"
+        :formOptions="{orderId: billInfos.orderId}"
         :url="'/market/customer/'"
-        :dataMethod="'deviceList'">
+        :dataMethod="'queryLeaseBillInfo'">
       </GridUnit>
     </el-dialog>
   </div>
@@ -292,26 +294,18 @@ export default {
       ],
       billInfos: {
         isShow: false,
+        orderId: null,
         name: '',
         colModel: [
-          { prop: '', label: '账单名称' },
-          { prop: '', label: '费用类型' },
+          { prop: 'billName', label: '账单名称' },
+          { prop: 'billType', label: '费用类型' },
           { prop: 'startDate', label: '开始时间' },
           { prop: 'endDate', label: '结束时间' },
-          { prop: 'rentTypeName', label: '账单金额' },
-          {
-            prop: 'status',
-            label: '账单状态',
-            filterType: 'status',
-            width: 80,
-            render(row) {
-              const statusStrData = ['未入住', '在住', '申请换房', '申请退房', '已搬离']
-              return statusStrData[row.status] || '未知'
-            }
-          },
-          { prop: '', label: '实收金额' },
-          { prop: '', label: '支付时间' },
-          { prop: '', label: '支付方式' }
+          { prop: 'billFee', label: '账单金额' },
+          { prop: 'billStatus', label: '账单状态' },
+          { prop: 'actualPayFee', label: '实收金额' },
+          { prop: 'finishDate', label: '支付时间' },
+          { prop: 'payType', label: '支付方式' }
         ]
       },
       rentRecord: false,
@@ -472,6 +466,7 @@ export default {
     /** 账单详情 */
     showBillDetail(item) {
       this.billInfos.name = item.realName
+      this.billInfos.orderId = item.orderId
       this.billInfos.isShow = true
     }
   }
