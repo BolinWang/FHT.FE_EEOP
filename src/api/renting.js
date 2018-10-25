@@ -2,7 +2,7 @@
  * @Author: ghost
  * @Date: 2018-09-05 18:23:17
  * @Last Modified by: ghost
- * @Last Modified time: 2018-10-22 11:15:25
+ * @Last Modified time: 2018-10-25 14:48:38
 */
 
 import fetch from '@/utils/fetch'
@@ -270,7 +270,152 @@ export function	orgManageSave(params = {}) {
     })
   })
 }
-// 租房预约搜素
-// 客源列表搜索
+// 租房预约列表
+export function	getTenantBookingListApi(params = {}) {
+  return new Promise((resolve, reject) => {
+    fetch({
+      url: FLYSUn + '/tenant/tenantBookingList',
+      method: 'post',
+      data: {
+        params
+      }
+    }).then(res => {
+      resolve(res)
+    }).catch(error => {
+      reject(error)
+    })
+  })
+}
+// 忽略租房预约
+export function	getTenantcloseApi(params = {}) {
+  return new Promise((resolve, reject) => {
+    fetch({
+      url: FLYSUn + '/tenant/close',
+      method: 'post',
+      data: {
+        params
+      }
+    }).then(res => {
+      resolve(res)
+    }).catch(error => {
+      reject(error)
+    })
+  })
+}
 // 客源渠道列表
+// 客源跟进记录
+export function	getcustomerFollowListApi(params = {}) {
+  return new Promise((resolve, reject) => {
+    fetch({
+      url: FLYSUn + '/customerCenter/customerFollowList',
+      method: 'post',
+      data: {
+        params
+      }
+    }).then(res => {
+      resolve(res)
+    }).catch(error => {
+      reject(error)
+    })
+  })
+}
+// 关闭客源
+export function	customerCenterCloseApi(params = {}) {
+  return new Promise((resolve, reject) => {
+    fetch({
+      url: FLYSUn + '/customerCenter/close',
+      method: 'post',
+      data: {
+        params
+      }
+    }).then(res => {
+      resolve(res)
+    }).catch(error => {
+      reject(error)
+    })
+  })
+}
 // 新增客源
+export function	customerCenterSaveApi(params = {}) {
+  return new Promise((resolve, reject) => {
+    fetch({
+      url: FLYSUn + '/customerCenter/save',
+      method: 'post',
+      data: {
+        params
+      }
+    }).then(res => {
+      resolve(res)
+    }).catch(error => {
+      reject(error)
+    })
+  })
+}
+// 查询区域板块
+
+export function	getCheckZoneApi(params = {}) {
+  return new Promise((resolve, reject) => {
+    fetch({
+      url: FLYSUn + '/customerCenter/checkZone',
+      method: 'post',
+      data: {
+        params
+      }
+    }).then(res => {
+      resolve(res)
+    }).catch(error => {
+      reject(error)
+    })
+  })
+}
+
+// 客户来源列表
+export function	getSourceListApi(params = {}) {
+  return new Promise((resolve, reject) => {
+    fetch({
+      url: FLYSUn + '/customerCenter/sourceList',
+      method: 'post',
+      data: {
+        params
+      }
+    }).then(res => {
+      resolve(res)
+    }).catch(error => {
+      reject(error)
+    })
+  })
+}
+// 查看客源详情接口
+
+export function	getCustomerInfoApi(params = {}) {
+  return new Promise((resolve, reject) => {
+    fetch({
+      url: FLYSUn + '/customerCenter/customerInfo',
+      method: 'post',
+      data: {
+        params
+      }
+    }).then(res => {
+      resolve(res)
+    }).catch(error => {
+      reject(error)
+    })
+  })
+}
+
+// 租房预约消息通知
+export function	getMessageCounApi(params = {}) {
+  return new Promise((resolve, reject) => {
+    fetch({
+      url: FLY + '/orgManage/messageCount',
+      method: 'post',
+      data: {
+        params
+      }
+    }).then(res => {
+      resolve(res)
+    }).catch(error => {
+      reject(error)
+    })
+  })
+}

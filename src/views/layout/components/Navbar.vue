@@ -1,8 +1,8 @@
 /*
  * @Author: FT.FE.Bolin
  * @Date: 2018-04-11 17:22:27
- * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-09-29 15:27:23
+ * @Last Modified by: ghost
+ * @Last Modified time: 2018-10-25 14:56:29
  */
 
 <template>
@@ -65,6 +65,10 @@
                 <span class="infos__item">您有<i class="red">{{messageData.register || '0'}}</i>条飞虎队机构申请待审核</span>
                 <el-button type="text">前往审核</el-button>
               </el-dropdown-item>
+              <el-dropdown-item class="clearfix flex" @click.native="routerTo('/fhdManage/customersCenter')" v-if="bookingMessage> 0">
+                <span class="infos__item">您有<i class="red">{{bookingMessage || '0'}}</i>条飞虎队租房预约消息待处理</span>
+                <el-button type="text">前往审核</el-button>
+              </el-dropdown-item>
             </div>
             <div class="routerToItems" v-else>
               <el-dropdown-item class="clearfix flex">
@@ -100,6 +104,7 @@ import Screenfull from '@/components/Screenfull'
 import Guide from '@/components/Guide'
 import { default as TagsView } from './TagsView'
 import { saveSelfDetailApi, queryMessageQuantityApi } from '@/api/userManage'
+import { getMessageCounApi } from '@/api/renting'
 import { ObjectMap } from '@/utils'
 
 export default {
@@ -131,6 +136,7 @@ export default {
         name: this.$store.state.user.name,
         password: ''
       },
+      bookingMessage: '',
       rules: {
         password: [
           { trigger: 'blur', validator: validatePass }
@@ -173,6 +179,9 @@ export default {
         if (JSON.stringify(stateMessageData) !== JSON.stringify(responseData)) {
           this.$store.dispatch('UpdateMessageData', response.data || {})
         }
+      })
+      getMessageCounApi().then(res => {
+        this.bookingMessage = res.data.tenCount
       })
     },
     routerTo(path, type) {
