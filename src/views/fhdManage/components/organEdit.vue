@@ -1,8 +1,8 @@
 /*
  * @Author: ghost
  * @Date: 2018-09-05 18:34:04
- * @Last Modified by: chudequan
- * @Last Modified time: 2018-10-09 16:55:10
+ * @Last Modified by: ghost
+ * @Last Modified time: 2018-10-25 17:19:16
  */
 <template>
   <div class="organ-container">
@@ -336,6 +336,7 @@ export default {
     // 关闭弹窗
     closeDialog(key) {
       this[key] = false
+      this.$refs.ruleForm.resetFields()
       delObjectItem(this.companyForm)
     },
     submit(key) {
@@ -344,8 +345,6 @@ export default {
           orgManageSave(this.companyForm).then(res => {
             this[key] = false
             this.getData()
-            console.log('12')
-            console.log(res)
             // delObjectItem(this.companyForm)
           })
         }
