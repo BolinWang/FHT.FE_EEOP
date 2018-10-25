@@ -138,6 +138,7 @@
         v-if="billInfos.isShow"
         :columns="billInfos.colModel"
         :formOptions="{orderId: billInfos.orderId}"
+        listField="data.result"
         :url="'/market/customer/'"
         :dataMethod="'queryLeaseBillInfo'">
       </GridUnit>

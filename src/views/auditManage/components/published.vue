@@ -171,7 +171,7 @@ export default {
     if (this.housingType * 1 === 1) {
       this.$set(this.colModels[1], 'label', '精品公寓-房型')
       this.colModels.splice(2, 1)
-      this.colModels.splice(-1, 1)
+      this.colModels.splice(-2, 1)
     }
     this.getCityList()
     this.getGridData(this.pageItems)
