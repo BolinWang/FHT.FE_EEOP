@@ -2,7 +2,7 @@
  * @Author: ghost 
  * @Date: 2018-10-22 16:17:32 
  * @Last Modified by: ghost
- * @Last Modified time: 2018-10-25 14:26:15
+ * @Last Modified time: 2018-10-25 17:01:20
  */
 <template>
   <div class="compents-container">
@@ -11,7 +11,7 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="姓名" prop="name" >
-              <el-input :disabled="disabledALL" style="width:174px;" placeholder="请输入" v-model="formCustomers.name" autocomplete="off"></el-input>
+              <el-input :disabled="disabledALL" style="width:174px;" placeholder="请输入" v-model="formCustomers.name" auto-complete="off"></el-input>
               <el-select :disabled="disabledALL" style="width:94px;" v-model="formCustomers.gender" placeholder="性别">
                 <el-option :label="item.label" :value="item.value" v-for="(item,index) in genderList" :key='index'></el-option>
               </el-select>
@@ -19,7 +19,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="手机号码" prop="mobile">
-              <el-input :disabled="disabledALL" style="width:174px;" placeholder="请输入手机号码" v-model="formCustomers.mobile" autocomplete="off"></el-input>
+              <el-input :disabled="disabledALL" style="width:174px;" placeholder="请输入手机号码" v-model="formCustomers.mobile" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -364,7 +364,7 @@ export default {
       getCustomerInfoApi({ customerId: this.formCustomers.id }).then(res => {
         this.formCustomers = res.data
         this.formCustomers.houseFeature = res.data.houseFeature.split('+')
-
+        this.formCustomers.rentFee === -1 ? this.customrentFee = true : ''
         this.formCustomers.customerAreas.map(v => {
           this.customerAreasList.push(v.backName)
           this.customerAreasIDList.push(v.zoneId)

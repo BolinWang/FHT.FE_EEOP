@@ -3,7 +3,7 @@
     <el-dialog title="催租跟进" :visible.sync="dialogTableVisible">
         <el-row>
             <el-button type="primary" @click="addFllow">新增催租结果</el-button>
-            <el-button type="primary" @click="rentMessage">短信催租</el-button>
+            <el-button type="primary" @click="rentMessage" :disabled="status===3">短信催租</el-button>
             <el-button type="primary" @click="managerMessage">管家提醒</el-button>
         </el-row>
         <el-dialog

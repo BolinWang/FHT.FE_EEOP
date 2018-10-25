@@ -20,31 +20,23 @@
           </el-date-picker>
         </el-form-item>
         <el-form-item>
-          <el-select size="small" @change="chooseCity" style="width:94px;" v-model="customersSearchForm.cityId" placeholder="城市" class="item-select" clearable>
-            <el-option v-for="item in treeAllList" :key="item.value" :label="item.label" :value="item.value">
-            </el-option>
-          </el-select>
+          <el-cascader
+            style="width:290px;"
+            :options="treeAllList"
+            :props='props'
+            placeholder="请选择省市板块"
+            v-model="chooseZone"
+            @change="handleChangeZone">
+          </el-cascader>
         </el-form-item>
         <el-form-item>
-          <el-select size="small" style="width:94px;" v-model="customersSearchForm.regionId" placeholder="区域" class="item-select" clearable>
-            <el-option v-for="item in treeAllList" :key="item.value" :label="item.label" :value="item.value">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-select size="small" style="width:95px;" v-model="customersSearchForm.zoneId" placeholder="板块" class="item-select" clearable>
-            <el-option v-for="item in treeAllList" :key="item.value" :label="item.label" :value="item.value">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-select size="small" style="width:96px;" v-model="customersSearchForm.type" placeholder="创建来源" class="item-select" clearable>
+          <el-select @change="searchParam" size="small" style="width:106px;" v-model="customersSearchForm.type" placeholder="创建来源" class="item-select" clearable>
             <el-option v-for="item in typeList" :key="item.value" :label="item.label" :value="item.value">
             </el-option>
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-select size="small" style="width:120px;" v-model="customersSearchForm.sourceType" placeholder="客源渠道" class="item-select" clearable>
+          <el-select @change="searchParam" size="small" style="width:132px;" v-model="customersSearchForm.sourceType" placeholder="客源渠道" class="item-select" clearable>
             <el-option v-for="item in sourceTypeList" :key="item.value" :label="item.label" :value="item.value">
             </el-option>
           </el-select>
@@ -74,28 +66,28 @@
             </el-date-picker>
           </el-form-item>
           <el-form-item>
-            <el-select size="small" style="width:100px;" v-model="customersSearchForm.currentType" placeholder="客源类型" class="item-select" clearable>
+            <el-select @change="searchParam" size="small" style="width:100px;" v-model="customersSearchForm.currentType" placeholder="客源类型" class="item-select" clearable>
               <el-option v-for="item in currentTypeList" :key="item.value" :label="item.label" :value="item.value">
               </el-option>
             </el-select>
           </el-form-item>
           <el-form-item>
-            <el-select size="small" style="width:100px;" v-model="customersSearchForm.status" placeholder="客源状态" class="item-select" clearable>
+            <el-select @change="searchParam" size="small" style="width:100px;" v-model="customersSearchForm.status" placeholder="客源状态" class="item-select" clearable>
               <el-option v-for="item in statusList" :key="item.value" :label="item.label" :value="item.value">
               </el-option>
             </el-select>
           </el-form-item>
            <el-form-item>
-            <el-input v-model="customersSearchForm.customerKeyword" size="small" placeholder="租客／租客手机号码" style="width:152px" />
+            <el-input @keydown.native.enter="searchParam"  v-model="customersSearchForm.customerKeyword" size="small" placeholder="租客／租客手机号码" style="width:152px" />
           </el-form-item>
           <el-form-item>
-           <el-input v-model="customersSearchForm.currentKeyword" size="small" placeholder="接单人姓名／手机号码" style="width:162px" />
+           <el-input @keydown.native.enter="searchParam"  v-model="customersSearchForm.currentKeyword" size="small" placeholder="接单人姓名／手机号码" style="width:162px" />
           </el-form-item>
           <el-form-item>
             <el-button plain size="small" icon="el-icon-remove-outline" class="filter-item" @click.native="clearForm('customersSearchForm')">清空</el-button>
           </el-form-item>
           <el-form-item  class="fl-right">
-            <el-button  size="small" type="primary" class="filter-item" @click.native="clearForm('addOrEditCustomers')">导出</el-button>
+            <el-button  size="small" type="primary" class="filter-item" @click.native="exportExcel">导出</el-button>
           </el-form-item>
         </div>
       </el-form>
@@ -181,6 +173,7 @@ const pickerOptions = {
 import GridUnit from '@/components/GridUnit/grid'
 import StatusChange from './statusChange'
 import FollowUpCusTomers from './followUpCustomers'
+import { getCheckZoneApi } from '@/api/renting'
 const FLYSUn = process.env.FLY_API + '/back'
 export default {
   components: {
@@ -225,22 +218,28 @@ export default {
       pickerOptions: pickerOptions,
       sourceTypeList: [], // 客源渠道列表
       treeAllList: [],
+      chooseZone: [],
       typeList: [
         { label: '全部', value: '' },
         { label: '自建客', value: 1 },
         { label: '总部', value: 2 }
       ],
+      props: {
+        value: 'id',
+        label: 'name',
+        children: 'childrens'
+      },
       currentTypeList: [
         { label: '全部', value: '' },
-        { label: '私有', value: 1 },
-        { label: '公开', value: 2 }
+        { label: '私有', value: '1' },
+        { label: '公开', value: '2' }
       ],
       statusList: [ // 客源状态
         { label: '全部', value: '' },
-        { label: '未签约', value: 1 },
-        { label: '已签约', value: 2 },
-        { label: '关闭', value: 3 },
-        { label: '待接单', value: 4 }
+        { label: '未签约', value: '1' },
+        { label: '已签约', value: '2' },
+        { label: '关闭', value: '3' },
+        { label: '待接单', value: '4' }
       ],
       customersSearchForm: {
         cityId: '',
@@ -251,7 +250,7 @@ export default {
         regionId: '',
         zoneId: '',
         type: '',
-        status: 4,
+        status: '4',
         sourceType: '',
         currentType: '',
         currentKeyword: '',
@@ -299,6 +298,7 @@ export default {
     this.dateCreatTime = [start, end]
     this.customersSearchForm.createStart = start
     this.customersSearchForm.createEnd = end
+    this.gettreeAllList()
   },
   mounted() {
     /* 表格高度控制 */
@@ -317,6 +317,33 @@ export default {
     })
   },
   methods: {
+    handleChangeZone(val) {
+      this.customersSearchForm.cityId = val[0] || ''
+      this.customersSearchForm.regionId = val[1] || ''
+      this.customersSearchForm.zoneId = val[2] || ''
+      this.searchParam()
+    },
+    exportExcel() {
+      const href = `${FLYSUn}/customerCenter/exportExcel?
+        cityId=${this.customersSearchForm.cityId}
+        &createStart=${this.customersSearchForm.createStart}
+        &createEnd=${this.customersSearchForm.createEnd}
+        &currentStart=${this.customersSearchForm.currentStart}
+        &currentEnd=${this.customersSearchForm.currentEnd}
+        &regionId=${this.customersSearchForm.regionId}
+        &zoneId=${this.customersSearchForm.zoneId}
+        &type=${this.customersSearchForm.type}
+        &status=${this.customersSearchForm.status}
+        &sourceType=${this.customersSearchForm.sourceType}
+        &currentType=${this.customersSearchForm.currentType}
+        &currentKeyword=${this.customersSearchForm.currentKeyword}
+        &customerKeyword=${this.customersSearchForm.customerKeyword}`
+      const elink = document.createElement('a')
+      elink.style.display = 'none'
+      elink.href = encodeURI(href)
+      document.body.appendChild(elink)
+      elink.click()
+    },
     lookCustomers(id) {
       this.$refs.addOrEditCustomers.showDialog(id, false)
     },
@@ -330,7 +357,9 @@ export default {
       this.$refs[ref].showDialog()
     },
     gettreeAllList() {
-
+      getCheckZoneApi().then(res => {
+        this.treeAllList = res.data
+      })
     },
     clearForm(formName) {
       this.$refs[formName].resetFields()
@@ -346,10 +375,12 @@ export default {
     changeCreatDate(value) { // 创建开始时间
       this.customersSearchForm.createStart = value ? `${value[0]} 00:00:00` : ''
       this.customersSearchForm.createEnd = value ? `${value[1]} 00:00:00` : ''
+      this.searchParam()
     },
     changeCurrentDate(value) { // 接单开始时间
       this.customersSearchForm.currentStart = value ? `${value[0]} 00:00:00` : ''
       this.customersSearchForm.currentEnd = value ? `${value[1]} 00:00:00` : ''
+      this.searchParam()
     }
   }
 }

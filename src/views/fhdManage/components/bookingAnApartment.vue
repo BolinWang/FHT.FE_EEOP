@@ -2,40 +2,45 @@
  * @Author: ghost 
  * @Date: 2018-10-22 09:35:00 
  * @Last Modified by: ghost
- * @Last Modified time: 2018-10-24 15:26:17
+ * @Last Modified time: 2018-10-25 16:53:16
  */
 <template>
   <div class="compents-container">
     <div class="model-search clearfix">
       <el-form :model="bookingSearchForm" ref="bookingSearchForm" size="small" :inline="true">
         <el-form-item>
-          <el-input v-model="bookingSearchForm.keyword" size="small" placeholder="租客／租客手机号码" style="width:155px" />
+          <el-input 
+            @keydown.native.enter="searchParam" 
+            v-model="bookingSearchForm.keyword" 
+            size="small" 
+            placeholder="租客／租客手机号码" 
+            style="width:155px" />
         </el-form-item>
         <el-form-item>
           <el-date-picker 
-          v-model="dateTime" 
-          type="daterange" 
-          size="small" 
-          class="filter-item" 
-          style="width: 240px;" 
-          align="right" 
-          key="dateTime" 
-          unlink-panels 
-          range-separator="-" 
-          start-placeholder="开始日期" 
-          end-placeholder="结束日期" 
-          value-format="yyyy-MM-dd" 
-          :picker-options="pickerOptions" 
-          @change="changeDate">
+            v-model="dateTime" 
+            type="daterange" 
+            size="small" 
+            class="filter-item" 
+            style="width: 240px;" 
+            align="right" 
+            key="dateTime" 
+            unlink-panels 
+            range-separator="-" 
+            start-placeholder="开始日期" 
+            end-placeholder="结束日期" 
+            value-format="yyyy-MM-dd" 
+            :picker-options="pickerOptions" 
+            @change="changeDate">
           </el-date-picker>
         </el-form-item>
         <el-form-item>
-          <el-select v-model="bookingSearchForm.housingType" filterable clearable size="small" placeholder="房源类型" style="width:120px">
+          <el-select @change="searchParam" v-model="bookingSearchForm.housingType" filterable clearable size="small" placeholder="房源类型" style="width:120px">
             <el-option v-for="(item,index) in houseTypeList" :key="index" :label="item.label" :value="item.value"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-select v-model="bookingSearchForm.status" filterable clearable size="small" placeholder="操作" style="width:120px">
+          <el-select @change="searchParam" v-model="bookingSearchForm.status" filterable clearable size="small" placeholder="操作" style="width:120px">
             <el-option v-for="(item,index) in status" :key="index" :label="item.label" :value="item.value"></el-option>
           </el-select>
         </el-form-item>
@@ -160,13 +165,13 @@ export default {
         status: ''
       },
       houseTypeList: [
-        { label: '集中式', value: 1 },
-        { label: '分散式', value: 2 }
+        { label: '集中式', value: '1' },
+        { label: '分散式', value: '2' }
       ],
       status: [
-        { label: '已登记', value: 0 },
-        { label: '待登记', value: 1 },
-        { label: '忽略', value: 2 }
+        { label: '已登记', value: '0' },
+        { label: '待登记', value: '1' },
+        { label: '忽略', value: '2' }
       ],
       pickerOptions: pickerOptions,
       dateTime: []
@@ -195,7 +200,7 @@ export default {
       &end=${this.bookingSearchForm.end}
       &housingType=${this.bookingSearchForm.housingType}
       &status=${this.bookingSearchForm.status}`
-      var elink = document.createElement('a')
+      const elink = document.createElement('a')
       elink.style.display = 'none'
       elink.href = encodeURI(href)
       document.body.appendChild(elink)
@@ -222,6 +227,7 @@ export default {
       this.$refs[formName].resetFields()
     },
     changeDate(value) {
+      this.searchParam()
       this.bookingSearchForm.start = value ? `${value[0]} 00:00:00` : ''
       this.bookingSearchForm.end = value ? `${value[1]} 00:00:00` : ''
     }

@@ -55,6 +55,7 @@
               @change="searchParam">
             </el-date-picker>
             <el-input  v-model='formData.managerKeyword' placeholder="城市管家／城市管家手机号码" style="width:220px;"  @keydown.native.enter="searchParam" class="filter-item"></el-input>
+            <el-input  v-model='formData.orderNo' placeholder="订单号" style="width:180px;"  @keydown.native.enter="searchParam" class="filter-item"></el-input>
             <el-button type="primary" size="small" icon="el-icon-search" @click.native="searchParam"  class="filter-item">查询</el-button>
             <el-button plain size="small" icon="el-icon-remove-outline" @click.native="clearForm">清空</el-button>
             <el-button class="right" type="primary" size="small" icon="el-icon-upload" @click.native="exportExcel">导出</el-button>
@@ -105,6 +106,11 @@
                   <el-table-column
                     label="账单名称"
                     prop="billName">
+                  </el-table-column>
+                  <el-table-column
+                    label="订单号"
+                    min-width='110px'
+                    prop="orderNo">
                   </el-table-column>
                   <el-table-column
                     label="账单金额"
@@ -229,7 +235,8 @@ export default {
         orgKeyword: '', // 房东姓名／房东手机号
         managerKeyword: '', // 城市管家
         startDeadlineTime: '',
-        endDeadlineTime: ''
+        endDeadlineTime: '',
+        orderNo: ''
       },
       select: '',
       tableHeight: 300,

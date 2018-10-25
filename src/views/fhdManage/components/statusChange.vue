@@ -2,7 +2,7 @@
  * @Author: ghost 
  * @Date: 2018-10-24 17:34:00 
  * @Last Modified by: ghost
- * @Last Modified time: 2018-10-24 21:09:21
+ * @Last Modified time: 2018-10-25 16:58:08
  */
 <template>
   <el-dialog :before-close="dialogHandleClose" title="关闭客源" :visible.sync="dialogChangeStatus">
@@ -11,7 +11,7 @@
         确定要关闭此客源么？
       </el-form-item>
       <el-form-item label="活动名称" prop="remark">
-        <el-input :rows="2" :maxlength='100' v-model="form.remark" type="textarea" placeholder="请输入关闭原因，最多100字符" autocomplete="off"></el-input>
+        <el-input :rows="2" :maxlength='100' v-model="form.remark" type="textarea" placeholder="请输入关闭原因，最多100字符" auto-complete="off"></el-input>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
