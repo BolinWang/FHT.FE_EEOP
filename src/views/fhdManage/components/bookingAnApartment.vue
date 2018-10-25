@@ -2,13 +2,13 @@
  * @Author: ghost 
  * @Date: 2018-10-22 09:35:00 
  * @Last Modified by: ghost
- * @Last Modified time: 2018-10-25 16:53:16
+ * @Last Modified time: 2018-10-25 20:37:40
  */
 <template>
   <div class="compents-container">
     <div class="model-search clearfix">
-      <el-form :model="bookingSearchForm" ref="bookingSearchForm" size="small" :inline="true">
-        <el-form-item>
+      <el-form :rules="rules" :model="bookingSearchForm" ref="bookingSearchForm" size="small" :inline="true">
+        <el-form-item prop="keyword">
           <el-input 
             @keydown.native.enter="searchParam" 
             v-model="bookingSearchForm.keyword" 
@@ -16,7 +16,7 @@
             placeholder="租客／租客手机号码" 
             style="width:155px" />
         </el-form-item>
-        <el-form-item>
+        <el-form-item >
           <el-date-picker 
             v-model="dateTime" 
             type="daterange" 
@@ -34,12 +34,12 @@
             @change="changeDate">
           </el-date-picker>
         </el-form-item>
-        <el-form-item>
+        <el-form-item prop="housingType">
           <el-select @change="searchParam" v-model="bookingSearchForm.housingType" filterable clearable size="small" placeholder="房源类型" style="width:120px">
             <el-option v-for="(item,index) in houseTypeList" :key="index" :label="item.label" :value="item.value"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item>
+        <el-form-item prop="status">
           <el-select @change="searchParam" v-model="bookingSearchForm.status" filterable clearable size="small" placeholder="操作" style="width:120px">
             <el-option v-for="(item,index) in status" :key="index" :label="item.label" :value="item.value"></el-option>
           </el-select>
@@ -53,6 +53,7 @@
       ref="refGridUnit"
       :columns="colModels"
       :url="url"
+      totalField='data.total'
       listField="data.result"
       :formOptions="bookingSearchForm"
       :dataMethod="method"
@@ -74,7 +75,9 @@
          </div>
       </template>
     </GridUnit>
-    <AddOrEditCustomers ref="addOrEditCustomers"></AddOrEditCustomers>
+    <AddOrEditCustomers  
+      @searchAll='searchParam'
+      ref="addOrEditCustomers"></AddOrEditCustomers>
   </div>
 </template>
 
@@ -123,6 +126,7 @@ export default {
 
   data() {
     return {
+      rules: {},
       url: FLYSUn + '/tenant/tenantBookingList',
       tableHeight: 300,
       colModels: [
@@ -224,6 +228,7 @@ export default {
       })
     },
     clearForm(formName) {
+      this.dateTime = []
       this.$refs[formName].resetFields()
     },
     changeDate(value) {

@@ -1,7 +1,7 @@
 <template>
   <div class="components-container">
     <div class="model-search clearfix">
-      <el-form :model="customersSearchForm" ref="customersSearchForm" size="small" :inline="true">
+      <el-form :rules="rulesCustmers" :model="customersSearchForm" ref="customersSearchForm" size="small" :inline="true">
         <el-form-item>
           <el-date-picker
             v-model="dateCreatTime"
@@ -29,19 +29,19 @@
             @change="handleChangeZone">
           </el-cascader>
         </el-form-item>
-        <el-form-item>
+        <el-form-item prop="type">
           <el-select @change="searchParam" size="small" style="width:106px;" v-model="customersSearchForm.type" placeholder="创建来源" class="item-select" clearable>
             <el-option v-for="item in typeList" :key="item.value" :label="item.label" :value="item.value">
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item>
+        <el-form-item prop="sourceType">
           <el-select @change="searchParam" size="small" style="width:132px;" v-model="customersSearchForm.sourceType" placeholder="客源渠道" class="item-select" clearable>
             <el-option v-for="item in sourceTypeList" :key="item.value" :label="item.label" :value="item.value">
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item>
+        <el-form-item >
           <el-button type="primary" size="small" icon="el-icon-search" @click.native="searchParam" class="filter-item">查询</el-button>
         </el-form-item>
         <el-form-item class="fl-right">
@@ -65,22 +65,22 @@
               @change="changeCurrentDate">
             </el-date-picker>
           </el-form-item>
-          <el-form-item>
+          <el-form-item prop="currentType">
             <el-select @change="searchParam" size="small" style="width:100px;" v-model="customersSearchForm.currentType" placeholder="客源类型" class="item-select" clearable>
               <el-option v-for="item in currentTypeList" :key="item.value" :label="item.label" :value="item.value">
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item>
+          <el-form-item prop="status">
             <el-select @change="searchParam" size="small" style="width:100px;" v-model="customersSearchForm.status" placeholder="客源状态" class="item-select" clearable>
               <el-option v-for="item in statusList" :key="item.value" :label="item.label" :value="item.value">
               </el-option>
             </el-select>
           </el-form-item>
-           <el-form-item>
+           <el-form-item prop="customerKeyword">
             <el-input @keydown.native.enter="searchParam"  v-model="customersSearchForm.customerKeyword" size="small" placeholder="租客／租客手机号码" style="width:152px" />
           </el-form-item>
-          <el-form-item>
+          <el-form-item prop="currentKeyword">
            <el-input @keydown.native.enter="searchParam"  v-model="customersSearchForm.currentKeyword" size="small" placeholder="接单人姓名／手机号码" style="width:162px" />
           </el-form-item>
           <el-form-item>
@@ -97,6 +97,7 @@
       :columns="colModels"
       :url="url"
       listField="data.result"
+      totalField='data.total'
       :formOptions="customersSearchForm"
       :dataMethod="method"
       :height="tableHeight"
@@ -132,13 +133,14 @@
       <el-button @click="lookFollowList(scope.row.id)" style="width:80px"  type="primary" size="mini" >跟进记录</el-button>
     </template>
     </GridUnit>
-    <AddOrEditCustomers ref="addOrEditCustomers"></AddOrEditCustomers>
+    <AddOrEditCustomers @searchAll='searchParam'  ref="addOrEditCustomers"></AddOrEditCustomers>
     <!-- 修改客源状态 -关闭 -->
     <StatusChange
-     @getSearch="searchParam"
-     ref="statusChange"></StatusChange>
+      @getSearch="searchParam"
+      ref="statusChange"></StatusChange>
      <!-- 跟进记录 -->
-    <FollowUpCusTomers ref="followUpCusTomers"></FollowUpCusTomers>
+    <FollowUpCusTomers 
+      ref="followUpCusTomers"></FollowUpCusTomers>
   </div>
 </template>
 <script>
@@ -210,6 +212,7 @@ export default {
   },
   data() {
     return {
+      rulesCustmers: {},
       tableHeight: 300,
       method: 'POST',
       dateTime: [],
@@ -362,9 +365,13 @@ export default {
       })
     },
     clearForm(formName) {
+      this.dateCreatTime = []
+      this.chooseZone = []
+      this.dateCurrentTime = []
       this.$refs[formName].resetFields()
     },
     searchParam() {
+      console.log('1')
       this.$nextTick(() => {
         this.$refs.refGridUnit.searchHandler()
       })

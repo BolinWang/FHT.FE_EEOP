@@ -2,12 +2,12 @@
  * @Author: ghost 
  * @Date: 2018-10-20 04:20:02 
  * @Last Modified by: ghost
- * @Last Modified time: 2018-10-22 10:01:09
+ * @Last Modified time: 2018-10-25 19:39:46
  */
 <template>
   <div class="container">
     <el-tabs tab-position="top">
-      <el-tab-pane label="房租预约">
+      <el-tab-pane label="租房预约">
         <BookingAnApartment ref="bookingAnApartment"></BookingAnApartment>
       </el-tab-pane>
       <el-tab-pane label="客源列表">
