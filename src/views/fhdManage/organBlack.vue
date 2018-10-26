@@ -1,20 +1,20 @@
 /*
  * @Author: ghost
  * @Date: 2018-08-31 11:27:54
- * @Last Modified by: chudequan
- * @Last Modified time: 2018-10-09 16:56:55
+ * @Last Modified by: FT.FE.Bolin
+ * @Last Modified time: 2018-10-15 11:04:52
  */
  <template>
     <div class="container">
         <div class="model-search clearfix">
             <el-form size="small" :inline="true" >
               <el-input
-              size="small"
-              placeholder="房东／房东手机号码"
-              v-model="orgKeyWord"
-              style="width:180px;"
-              @keydown.native.enter="searchParam"
-              class="filter-item">
+                size="small"
+                placeholder="房东／房东手机号码"
+                v-model="orgKeyWord"
+                style="width:180px;"
+                @keydown.native.enter="searchParam"
+                class="filter-item">
               </el-input>
                 <el-button type="primary" size="small" icon="el-icon-search" @click.native="searchParam"  class="filter-item">查询</el-button>
                 <el-button plain size="small" icon="el-icon-remove-outline" @click.native="clearForm">清空</el-button>
@@ -195,7 +195,9 @@ export default {
     const changeTableSize = debounce(() => {
       this.tableHeight = Math.max(document.body.clientHeight - 200, 300)
     }, 100)
-    changeTableSize()
+    this.$nextTick(() => {
+      changeTableSize()
+    })
     window.addEventListener('resize', changeTableSize)
     this.searchParam()
   },

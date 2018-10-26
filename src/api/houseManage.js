@@ -515,3 +515,15 @@ export function hostingSaveCopyItemsApi(params) {
     }
   })
 }
+
+/* 上传小区环境图片 */
+export function uploadHousesPicturesApi(params) {
+  return fetch({
+    url: '/market/fangyuan',
+    method: 'post',
+    data: {
+      method: 'uploadHousesPictures',
+      params
+    }
+  })
+}

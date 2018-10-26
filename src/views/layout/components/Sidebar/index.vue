@@ -1,8 +1,8 @@
 /*
  * @Author: FT.FE.Bolin
  * @Date: 2018-04-11 17:11:31
- * @Last Modified by: chudequan
- * @Last Modified time: 2018-07-30 18:53:09
+ * @Last Modified by: FT.FE.Bolin
+ * @Last Modified time: 2018-10-15 10:33:44
  */
 
 <template>
@@ -40,6 +40,7 @@ export default {
   -moz-user-select:none;
   -webkit-user-select:none;
   user-select:none;
+  border-right: 0;
 }
 .scrollbar-wrapper {
   overflow-x: hidden!important;

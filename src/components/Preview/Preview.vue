@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-04-11 16:50:08
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-09-29 14:56:29
+ * @Last Modified time: 2018-10-17 17:25:30
  */
 
 <template>
@@ -225,7 +225,7 @@ export default {
       bottom: 0;
       text-align: center;
       width: 100%;
-      height: 30px;
+      line-height: 30px;
       background: rgba(0, 0, 0, 0.5);
       color: #fff;
       font-size: 12px;
