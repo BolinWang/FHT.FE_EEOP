@@ -24,6 +24,7 @@
             style="width:290px;"
             :options="treeAllList"
             :props='props'
+            change-on-select
             placeholder="请选择省市板块"
             v-model="chooseZone"
             @change="handleChangeZone">
@@ -35,11 +36,16 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item prop="sourceType">
-          <el-select @change="searchParam" size="small" style="width:132px;" v-model="customersSearchForm.sourceType" placeholder="客源渠道" class="item-select" clearable>
-            <el-option v-for="item in sourceTypeList" :key="item.value" :label="item.label" :value="item.value">
-            </el-option>
-          </el-select>
+        <el-form-item>
+          <el-cascader
+            style="width:134px;"
+            :options="sourceList"
+            :props='propsSource'
+            change-on-select
+            placeholder="客源渠道"
+            v-model="sourceChooseType"
+            @change="handleChangeZone">
+          </el-cascader>
         </el-form-item>
         <el-form-item >
           <el-button type="primary" size="small" icon="el-icon-search" @click.native="searchParam" class="filter-item">查询</el-button>
@@ -103,7 +109,7 @@
       :height="tableHeight"
     >
     <template slot="customersType" slot-scope="scope">
-      <span class="text">
+      <span class="text" :class="{colorType:scope.row.type===2}">
         {{scope.row.type | filterType }}
       </span>
     </template>
@@ -175,7 +181,7 @@ const pickerOptions = {
 import GridUnit from '@/components/GridUnit/grid'
 import StatusChange from './statusChange'
 import FollowUpCusTomers from './followUpCustomers'
-import { getCheckZoneApi } from '@/api/renting'
+import { getCheckZoneApi, getSourceListApi } from '@/api/renting'
 const FLYSUn = process.env.FLY_API + '/back'
 export default {
   components: {
@@ -183,6 +189,18 @@ export default {
     GridUnit,
     StatusChange,
     FollowUpCusTomers
+  },
+  watch: {
+    chooseZone(val) {
+      this.customersSearchForm.cityId = val[0] || ''
+      this.customersSearchForm.regionId = val[1] || ''
+      this.customersSearchForm.zoneId = val[2] || ''
+      this.searchParam()
+    },
+    sourceChooseType(val) {
+      this.customersSearchForm.source = val[0] || ''
+      this.customersSearchForm.sourceType = val[1] || ''
+    }
   },
   filters: {
     filterType(val) {
@@ -212,10 +230,12 @@ export default {
   },
   data() {
     return {
+      sourceChooseType: [],
       rulesCustmers: {},
       tableHeight: 300,
       method: 'POST',
       dateTime: [],
+      sourceList: [],
       dateCreatTime: [],
       dateCurrentTime: [],
       pickerOptions: pickerOptions,
@@ -231,6 +251,11 @@ export default {
         value: 'id',
         label: 'name',
         children: 'childrens'
+      },
+      propsSource: {
+        value: 'id',
+        label: 'name',
+        children: 'sourceTypes'
       },
       currentTypeList: [
         { label: '全部', value: '' },
@@ -255,6 +280,7 @@ export default {
         type: '',
         status: '4',
         sourceType: '',
+        source: '',
         currentType: '',
         currentKeyword: '',
         customerKeyword: ''
@@ -297,7 +323,7 @@ export default {
     const lastY = myDate.getFullYear()
     const lastM = myDate.getMonth() + 1
     const lastD = myDate.getDate()
-    const end = `${lastY}-${(lastM < 10 ? '0' + lastM : lastM + 1)}-${(lastD < 10 ? '0' + lastD : lastD)} 00:00:00`
+    const end = `${lastY}-${(lastM < 10 ? '0' + lastM : lastM)}-${(lastD < 10 ? '0' + lastD : lastD)} 23:59:59`
     this.dateCreatTime = [start, end]
     this.customersSearchForm.createStart = start
     this.customersSearchForm.createEnd = end
@@ -318,8 +344,14 @@ export default {
         })()
       }
     })
+    this.getSourceList()
   },
   methods: {
+    getSourceList() { // 获取客源渠道列表
+      getSourceListApi().then(res => {
+        this.sourceList = res.data.sourceList
+      })
+    },
     handleChangeZone(val) {
       this.customersSearchForm.cityId = val[0] || ''
       this.customersSearchForm.regionId = val[1] || ''
@@ -337,10 +369,12 @@ export default {
         &zoneId=${this.customersSearchForm.zoneId}
         &type=${this.customersSearchForm.type}
         &status=${this.customersSearchForm.status}
+        &source=${this.customersSearchForm.source}
         &sourceType=${this.customersSearchForm.sourceType}
         &currentType=${this.customersSearchForm.currentType}
         &currentKeyword=${this.customersSearchForm.currentKeyword}
         &customerKeyword=${this.customersSearchForm.customerKeyword}`
+      console.log(href)
       const elink = document.createElement('a')
       elink.style.display = 'none'
       elink.href = encodeURI(href)
@@ -359,6 +393,7 @@ export default {
     addCustomers(ref) { // 登记客源
       this.$refs[ref].showDialog()
     },
+
     gettreeAllList() {
       getCheckZoneApi().then(res => {
         this.treeAllList = res.data
@@ -368,6 +403,7 @@ export default {
       this.dateCreatTime = []
       this.chooseZone = []
       this.dateCurrentTime = []
+      this.sourceChooseType = []
       this.$refs[formName].resetFields()
     },
     searchParam() {
@@ -376,17 +412,14 @@ export default {
         this.$refs.refGridUnit.searchHandler()
       })
     },
-    chooseCity() {
-
-    },
     changeCreatDate(value) { // 创建开始时间
       this.customersSearchForm.createStart = value ? `${value[0]} 00:00:00` : ''
-      this.customersSearchForm.createEnd = value ? `${value[1]} 00:00:00` : ''
+      this.customersSearchForm.createEnd = value ? `${value[1]} 23:59:59` : ''
       this.searchParam()
     },
     changeCurrentDate(value) { // 接单开始时间
       this.customersSearchForm.currentStart = value ? `${value[0]} 00:00:00` : ''
-      this.customersSearchForm.currentEnd = value ? `${value[1]} 00:00:00` : ''
+      this.customersSearchForm.currentEnd = value ? `${value[1]} 23:59:59` : ''
       this.searchParam()
     }
   }
@@ -395,6 +428,9 @@ export default {
 <style lang="scss" scoped>
 .boxTag{
   padding-bottom:4px;
+}
+.colorType{
+  color: #5BACFB;
 }
   .fl-right{
     float: right;

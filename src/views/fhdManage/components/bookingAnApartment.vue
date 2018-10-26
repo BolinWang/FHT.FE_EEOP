@@ -129,6 +129,7 @@ export default {
       rules: {},
       url: FLYSUn + '/tenant/tenantBookingList',
       tableHeight: 300,
+      sourceList: [],
       colModels: [
         { prop: 'gmtCreate', label: '申请时间' },
         { prop: '', label: '意向租客', slotName: 'bookingApar', align: 'center' },
@@ -198,6 +199,7 @@ export default {
     })
   },
   methods: {
+
     exportExcel() {
       const href = `${FLYSUn}/tenant/exportExcel?keyword=${this.bookingSearchForm.keyword}&
       start=${this.bookingSearchForm.start}

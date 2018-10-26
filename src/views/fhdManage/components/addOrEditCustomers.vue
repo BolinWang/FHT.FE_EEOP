@@ -289,9 +289,10 @@ export default {
       })
     },
     addNewCustomers(ref) {
+      console.log(this.formCustomers.houseFeature)
       this.$refs[ref].validate((valid) => {
         if (valid) {
-          this.formCustomers.houseFeature = this.formCustomers.houseFeature.join(',')
+          this.formCustomers.houseFeature = this.formCustomers.houseFeature.join()
           customerCenterSaveApi(this.formCustomers).then(res => {
             this.$refs.formCunstomers.resetFields()
             this.$emit('searchAll')
@@ -301,6 +302,7 @@ export default {
             this.formCustomers.source = ''
             this.customerAreasList = []
             this.customerAreasIDList = []
+            this.$refs.zoneTreeTwo.setCheckedKeys(this.customerAreasIDList)
             this.$message({
               message: '新增客源成功',
               type: 'success'
