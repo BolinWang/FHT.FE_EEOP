@@ -6,7 +6,7 @@
  */
 <template>
   <div class="compents-container">
-    <el-dialog width="960px" :before-close="handleClose" :title="formCustomers.id?'编辑客源':'新增客源'" :visible.sync="editOrAdd">
+    <el-dialog width="960px" :before-close="handleClose" :title="formCustomers.id?'编辑客源':'新增客源'" :visible.sync="editOrAdd" v-if="editOrAdd">
       <el-form size="small" ref="formCunstomers" :rules="rulesFormCunstomers" :model="formCustomers" :label-width="formLabelWidth">
         <el-row>
           <el-col :span="12">
@@ -146,7 +146,6 @@
              :remote-method="findNewZone"
              size="small" 
              multiple
-             @change='changeCustomerAreasList'
              :loading="loading"
              :multiple-limit='3'
              style='width:100%'
@@ -157,7 +156,6 @@
                   :props="defaultProps"
                   node-key="id"
                   show-checkbox
-                  :highlight-current="true"
                   ref="zoneTreeTwo"
                   :filter-node-method="filterNode"
                   @check-change="overlayNodeClick">
@@ -283,7 +281,7 @@ export default {
   watch: {
     customerAreasList(val) {
       this.customerAreasIDList = []
-      this.formCustomers.customerAreas = this.formCustomers.customerAreas.filter(item => {
+      this.formCustomers.customerAreas = this.formCustomers.customerAreas.forEach(item => {
         let customerAreas = ''
         this.customerAreasList.map(v => {
           if (item.backName === v) {
@@ -293,13 +291,14 @@ export default {
         })
         return customerAreas
       })
-      console.log(this.formCustomers.customerAreas)
-      this.$refs.zoneTreeTwo.setCheckedKeys(this.customerAreasIDList)
+      if (this.customerAreasIDList.length > 0) {
+        this.$refs.zoneTreeTwo.setCheckedKeys(this.customerAreasIDList)
+      }
     }
   },
   methods: {
     changeCustomerAreasList(val) {
-
+      this.$refs.zoneTreeTwo.filter('')
     },
     addNewCustomers(ref) {
       this.$refs[ref].validate((valid) => {
@@ -314,6 +313,7 @@ export default {
             this.formCustomers.source = ''
             this.customerAreasList = []
             this.customerAreasIDList = []
+            this.formCustomers.customerAreas = []
             this.$refs.zoneTreeTwo.setCheckedKeys(this.customerAreasIDList)
             this.$message({
               message: '新增客源成功',
@@ -339,22 +339,22 @@ export default {
           })
         })
       })
-
       if (check) {
         if (this.customerAreasList.length < 3) {
           this.validateNum(name, zoneId)
         } else {
-          this.$refs.zoneTreeTwo.filter('')
           this.$refs.zoneTreeTwo.setChecked(zoneId, false)
           this.$message({
             message: '您选中的客源意向板块已经超过三个',
             type: 'error'
           })
         }
-      } else if (data.id !== 310100) {
-        this.customerAreasList = this.customerAreasList.filter(v => {
-          return v !== name
-        })
+      } else {
+        if (!data.childrens) {
+          this.customerAreasList = this.customerAreasList.filter(v =>
+            v !== name
+          )
+        }
       }
     },
     validateNum(name, zoneId) {
@@ -406,7 +406,6 @@ export default {
         this.formCustomers = res.data
         this.formCustomers.houseFeature = res.data.houseFeature.split(',')
         this.formCustomers.rentFee === -1 ? this.customrentFee = true : this.customrentFee = false
-
         this.formCustomers.customerAreas.map(v => {
           this.customerAreasList.push(v.backName)
           this.customerAreasIDList.push(v.zoneId)
@@ -416,19 +415,22 @@ export default {
             this.oneSourceIndex = index
           }
         })
+
         this.$refs.zoneTreeTwo.setCheckedKeys(this.customerAreasIDList)
       })
     },
     showDialog(id, tenantBookingId) {
-      this.formCustomers.id = ''
-      if (id) {
-        this.formCustomers.id = id
-        this.getCusTomersInfo()
-        this.disabledALL = true
-      }
-      tenantBookingId ? this.formCustomers.tenantBookingId = tenantBookingId : ''
-
       this.editOrAdd = true
+      this.getZoneList()
+      this.$nextTick(res => {
+        this.formCustomers.id = ''
+        if (id) {
+          this.formCustomers.id = id
+          this.getCusTomersInfo()
+          this.disabledALL = true
+        }
+        tenantBookingId ? this.formCustomers.tenantBookingId = tenantBookingId : ''
+      })
     },
     handleEdit() {
       this.disabledALL = false
@@ -442,6 +444,7 @@ export default {
       this.formCustomers.source = ''
       this.customerAreasIDList = []
       this.formCustomers.gender = 1
+      this.formCustomers.customerAreas = []
       this.$refs.formCunstomers.resetFields()
       this.editOrAdd = false
     }
