@@ -23,7 +23,7 @@
            </div>
     </div>
     <span slot="footer" class="dialog-footer">
-      <el-button type="primary" @click="centerDialogVisible = false">关闭</el-button>
+      <el-button type="primary" @click="followUpDialogClose">关闭</el-button>
     </span>
   </el-dialog>
 </template>
@@ -58,6 +58,11 @@ export default {
     }
   },
   methods: {
+    followUpDialogClose() {
+      this.followUpDialogVisible = false
+      this.customerId = ''
+      this.gridData = []
+    },
     getList() {
       getcustomerFollowListApi({ customerId: this.customerId }).then(res => {
         this.gridData = res.data.result

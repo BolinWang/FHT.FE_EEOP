@@ -233,7 +233,16 @@
     </el-dialog>
 
     <el-dialog title="公共基础设施" :visible.sync="estateDeviceModelVisible" width="600px" :append-to-body="true" custom-class="estate-device-model">
-      <estate-device-group ref="deviceModel" :deviceMap="deviceMap" :checkList="deviceList" :estateDeviceModelVisible="estateDeviceModelVisible"></estate-device-group>
+      <estate-device-group
+        ref="deviceModel"
+        :checkedData="{
+          services: estateModel.services,
+          storeServices: estateModel.storeServices,
+          surroundings: estateModel.surroundings
+        }"
+        :deviceMap="deviceMap"
+        :checkList="deviceList"
+        :estateDeviceModelVisible="estateDeviceModelVisible"></estate-device-group>
       <span slot="footer">
         <el-button @click="saveDeviceData('save')" size="small" type="primary">确 定</el-button>
         <el-button @click="saveDeviceData('clear')" size="small">取 消</el-button>
@@ -450,12 +459,13 @@ export default {
         this.estateDeviceModelVisible = true
       }
     },
-    saveDeviceData() {
+    saveDeviceData(type) {
       const curChecked = this.$refs.deviceModel.saveDeviceData()
-
-      this.estateModel.services = curChecked.services
-      this.estateModel.storeServices = curChecked.storeServices
-      this.estateModel.surroundings = curChecked.surroundings
+      if (type === 'save') {
+        this.estateModel.services = curChecked.services
+        this.estateModel.storeServices = curChecked.storeServices
+        this.estateModel.surroundings = curChecked.surroundings
+      }
 
       this.estateDeviceModelVisible = false
     },

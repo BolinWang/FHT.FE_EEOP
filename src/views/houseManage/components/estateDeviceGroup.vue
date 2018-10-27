@@ -32,7 +32,8 @@ export default {
   props: [
     'estateDeviceModelVisible',
     'deviceMap',
-    'checkList'
+    'checkList',
+    'checkedData'
   ],
   data() {
     return {
@@ -53,7 +54,7 @@ export default {
       handler: function(val) {
         if (val) {
           this.deviceActiveTab = 'first'
-          const estateInfo = this.$store.state.estateDetailData.estateInfo
+          const estateInfo = this.checkedData
           const checkedList = {
             services: estateInfo.services ? estateInfo.services.split(',') : [],
             storeServices: estateInfo.storeServices ? estateInfo.storeServices.split(',') : [],
@@ -76,13 +77,12 @@ export default {
     handleCheckedCitiesChange(value) {
       this.setStatus(value.length, activeTabMap[this.deviceActiveTab])
     },
-    saveDeviceData(type) {
+    saveDeviceData() {
       const curChecked = {}
       for (const key in this.checkedList) {
         curChecked[key] = this.checkedList[key].join(',')
       }
       return curChecked
-      // this.$store.commit('UPDATE_ESTATE_DETAIL_DATA', curChecked)
     },
     setStatus(checkedCount, curType) {
       this.checkAll = checkedCount === this.checkList[curType].length

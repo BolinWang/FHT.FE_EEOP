@@ -280,19 +280,31 @@ export default {
     this.getZoneList()
     this.getSourceList()
   },
+  watch: {
+    customerAreasList(val) {
+      this.customerAreasIDList = []
+      this.formCustomers.customerAreas = this.formCustomers.customerAreas.filter(item => {
+        let customerAreas = ''
+        this.customerAreasList.map(v => {
+          if (item.backName === v) {
+            this.customerAreasIDList.push(item.zoneId)
+            customerAreas = item
+          }
+        })
+        return customerAreas
+      })
+      console.log(this.formCustomers.customerAreas)
+      this.$refs.zoneTreeTwo.setCheckedKeys(this.customerAreasIDList)
+    }
+  },
   methods: {
     changeCustomerAreasList(val) {
-      this.customerAreasList.map(v => {
-        this.formCustomers.customerAreas = this.formCustomers.customerAreas.filter(item => {
-          return item.backName === v
-        })
-      })
+
     },
     addNewCustomers(ref) {
-      console.log(this.formCustomers.houseFeature)
       this.$refs[ref].validate((valid) => {
         if (valid) {
-          this.formCustomers.houseFeature = this.formCustomers.houseFeature.join()
+          this.formCustomers.houseFeature = this.formCustomers.houseFeature.toString()
           customerCenterSaveApi(this.formCustomers).then(res => {
             this.$refs.formCunstomers.resetFields()
             this.$emit('searchAll')
@@ -307,6 +319,7 @@ export default {
               message: '新增客源成功',
               type: 'success'
             })
+            this.formCustomers.houseFeature = []
           })
         } else {
           return false
@@ -314,20 +327,20 @@ export default {
       })
     },
     overlayNodeClick(data, check) {
-      if (check) {
-        let name = ''
-        let zoneId = ''
-        this.zoneTreeList.map(item => {
-          item.childrens.map(v => {
-            v.childrens.map(value => {
-              if (value.name === data.name) {
-                name = `${item.name}-${v.name}-${value.name}`
-                zoneId = data.id
-              }
-            })
+      let name = ''
+      let zoneId = ''
+      this.zoneTreeList.map(item => {
+        item.childrens.map(v => {
+          v.childrens.map(value => {
+            if (value.name === data.name) {
+              name = `${item.name}-${v.name}-${value.name}`
+              zoneId = data.id
+            }
           })
         })
+      })
 
+      if (check) {
         if (this.customerAreasList.length < 3) {
           this.validateNum(name, zoneId)
         } else {
@@ -338,6 +351,10 @@ export default {
             type: 'error'
           })
         }
+      } else if (data.id !== 310100) {
+        this.customerAreasList = this.customerAreasList.filter(v => {
+          return v !== name
+        })
       }
     },
     validateNum(name, zoneId) {

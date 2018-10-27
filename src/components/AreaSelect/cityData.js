@@ -235,6 +235,10 @@ module.exports = [{
       'parentvalue': 130100,
       'label': '赵县'
     }, {
+      'value': 130181,
+      'parentvalue': 130100,
+      'label': '辛集市'
+    }, {
       'value': 130183,
       'parentvalue': 130100,
       'label': '晋州市'
@@ -370,9 +374,13 @@ module.exports = [{
       'parentvalue': 130400,
       'label': '峰峰矿区'
     }, {
-      'value': 130421,
+      'value': 130407,
       'parentvalue': 130400,
-      'label': '邯郸县'
+      'label': '肥乡区'
+    }, {
+      'value': 130408,
+      'parentvalue': 130400,
+      'label': '永年区'
     }, {
       'value': 130423,
       'parentvalue': 130400,
@@ -393,14 +401,6 @@ module.exports = [{
       'value': 130427,
       'parentvalue': 130400,
       'label': '磁县'
-    }, {
-      'value': 130428,
-      'parentvalue': 130400,
-      'label': '肥乡县'
-    }, {
-      'value': 130429,
-      'parentvalue': 130400,
-      'label': '永年县'
     }, {
       'value': 130430,
       'parentvalue': 130400,
@@ -608,6 +608,10 @@ module.exports = [{
       'parentvalue': 130600,
       'label': '涿州市'
     }, {
+      'value': 130682,
+      'parentvalue': 130600,
+      'label': '定州市'
+    }, {
       'value': 130683,
       'parentvalue': 130600,
       'label': '安国市'
@@ -718,10 +722,6 @@ module.exports = [{
       'parentvalue': 130800,
       'label': '兴隆县'
     }, {
-      'value': 130823,
-      'parentvalue': 130800,
-      'label': '平泉县'
-    }, {
       'value': 130824,
       'parentvalue': 130800,
       'label': '滦平县'
@@ -741,6 +741,10 @@ module.exports = [{
       'value': 130828,
       'parentvalue': 130800,
       'label': '围场满族蒙古族自治县'
+    }, {
+      'value': 130881,
+      'parentvalue': 130800,
+      'label': '平泉市'
     }]
   }, {
     'value': 130900,
@@ -916,19 +920,6 @@ module.exports = [{
       'value': 131182,
       'parentvalue': 131100,
       'label': '深州市'
-    }]
-  }, {
-    'value': 139000,
-    'parentvalue': 130000,
-    'label': '省直辖县级行政区划',
-    'children': [{
-      'value': 139001,
-      'parentvalue': 139000,
-      'label': '定州市'
-    }, {
-      'value': 139002,
-      'parentvalue': 139000,
-      'label': '辛集市'
     }]
   }]
 }, {
@@ -3494,6 +3485,10 @@ module.exports = [{
     'parentvalue': 230000,
     'label': '大兴安岭地区',
     'children': [{
+      'value': 232701,
+      'parentvalue': 232700,
+      'label': '加格达奇区'
+    }, {
       'value': 232721,
       'parentvalue': 232700,
       'label': '呼玛县'
@@ -4136,6 +4131,10 @@ module.exports = [{
       'parentvalue': 330100,
       'label': '富阳区'
     }, {
+      'value': 330112,
+      'parentvalue': 330100,
+      'label': '临安区'
+    }, {
       'value': 330122,
       'parentvalue': 330100,
       'label': '桐庐县'
@@ -4147,10 +4146,6 @@ module.exports = [{
       'value': 330182,
       'parentvalue': 330100,
       'label': '建德市'
-    }, {
-      'value': 330185,
-      'parentvalue': 330100,
-      'label': '临安市'
     }]
   }, {
     'value': 330200,
@@ -4164,10 +4159,6 @@ module.exports = [{
       'value': 330203,
       'parentvalue': 330200,
       'label': '海曙区'
-    }, {
-      'value': 330204,
-      'parentvalue': 330200,
-      'label': '江东区'
     }, {
       'value': 330205,
       'parentvalue': 330200,
@@ -4185,6 +4176,10 @@ module.exports = [{
       'parentvalue': 330200,
       'label': '鄞州区'
     }, {
+      'value': 330213,
+      'parentvalue': 330200,
+      'label': '奉化区'
+    }, {
       'value': 330225,
       'parentvalue': 330200,
       'label': '象山县'
@@ -4200,10 +4195,6 @@ module.exports = [{
       'value': 330282,
       'parentvalue': 330200,
       'label': '慈溪市'
-    }, {
-      'value': 330283,
-      'parentvalue': 330200,
-      'label': '奉化市'
     }]
   }, {
     'value': 330300,
@@ -4481,10 +4472,6 @@ module.exports = [{
       'parentvalue': 331000,
       'label': '路桥区'
     }, {
-      'value': 331021,
-      'parentvalue': 331000,
-      'label': '玉环县'
-    }, {
       'value': 331022,
       'parentvalue': 331000,
       'label': '三门县'
@@ -4504,6 +4491,10 @@ module.exports = [{
       'value': 331082,
       'parentvalue': 331000,
       'label': '临海市'
+    }, {
+      'value': 331083,
+      'parentvalue': 331000,
+      'label': '玉环市'
     }]
   }, {
     'value': 331100,
@@ -5153,6 +5144,10 @@ module.exports = [{
       'parentvalue': 350100,
       'label': '晋安区'
     }, {
+      'value': 350112,
+      'parentvalue': 350100,
+      'label': '长乐区'
+    }, {
       'value': 350121,
       'parentvalue': 350100,
       'label': '闽侯县'
@@ -5180,10 +5175,6 @@ module.exports = [{
       'value': 350181,
       'parentvalue': 350100,
       'label': '福清市'
-    }, {
-      'value': 350182,
-      'parentvalue': 350100,
-      'label': '长乐市'
     }]
   }, {
     'value': 350200,
@@ -5666,9 +5657,9 @@ module.exports = [{
       'parentvalue': 360400,
       'label': '浔阳区'
     }, {
-      'value': 360421,
+      'value': 360404,
       'parentvalue': 360400,
-      'label': '九江县'
+      'label': '柴桑区'
     }, {
       'value': 360423,
       'parentvalue': 360400,
@@ -5765,9 +5756,9 @@ module.exports = [{
       'parentvalue': 360700,
       'label': '南康区'
     }, {
-      'value': 360721,
+      'value': 360704,
       'parentvalue': 360700,
-      'label': '赣县'
+      'label': '赣县区'
     }, {
       'value': 360722,
       'parentvalue': 360700,
@@ -5952,6 +5943,10 @@ module.exports = [{
       'parentvalue': 361000,
       'label': '临川区'
     }, {
+      'value': 361003,
+      'parentvalue': 361000,
+      'label': '东乡区'
+    }, {
       'value': 361021,
       'parentvalue': 361000,
       'label': '南城县'
@@ -5984,10 +5979,6 @@ module.exports = [{
       'parentvalue': 361000,
       'label': '资溪县'
     }, {
-      'value': 361029,
-      'parentvalue': 361000,
-      'label': '东乡县'
-    }, {
       'value': 361030,
       'parentvalue': 361000,
       'label': '广昌县'
@@ -6011,7 +6002,7 @@ module.exports = [{
     }, {
       'value': 361121,
       'parentvalue': 361100,
-      'label': '上饶县'
+      'label': '广信区'
     }, {
       'value': 361123,
       'parentvalue': 361100,
@@ -6087,6 +6078,10 @@ module.exports = [{
       'parentvalue': 370100,
       'label': '长清区'
     }, {
+      'value': 370114,
+      'parentvalue': 370100,
+      'label': '章丘区'
+    }, {
       'value': 370124,
       'parentvalue': 370100,
       'label': '平阴县'
@@ -6098,10 +6093,6 @@ module.exports = [{
       'value': 370126,
       'parentvalue': 370100,
       'label': '商河县'
-    }, {
-      'value': 370181,
-      'parentvalue': 370100,
-      'label': '章丘市'
     }]
   }, {
     'value': 370200,
@@ -6136,13 +6127,13 @@ module.exports = [{
       'parentvalue': 370200,
       'label': '城阳区'
     }, {
+      'value': 370215,
+      'parentvalue': 370200,
+      'label': '即墨区'
+    }, {
       'value': 370281,
       'parentvalue': 370200,
       'label': '胶州市'
-    }, {
-      'value': 370282,
-      'parentvalue': 370200,
-      'label': '即墨市'
     }, {
       'value': 370283,
       'parentvalue': 370200,
@@ -6842,10 +6833,6 @@ module.exports = [{
       'parentvalue': 410200,
       'label': '禹王台区'
     }, {
-      'value': 410211,
-      'parentvalue': 410200,
-      'label': '金明区'
-    }, {
       'value': 410212,
       'parentvalue': 410200,
       'label': '祥符区'
@@ -7210,9 +7197,9 @@ module.exports = [{
       'parentvalue': 411000,
       'label': '魏都区'
     }, {
-      'value': 411023,
+      'value': 411003,
       'parentvalue': 411000,
-      'label': '许昌县'
+      'label': '建安区'
     }, {
       'value': 411024,
       'parentvalue': 411000,
@@ -7544,15 +7531,6 @@ module.exports = [{
       'value': 411729,
       'parentvalue': 411700,
       'label': '新蔡县'
-    }]
-  }, {
-    'value': 419000,
-    'parentvalue': 410000,
-    'label': '省直辖县级行政区划',
-    'children': [{
-      'value': 419001,
-      'parentvalue': 419000,
-      'label': '济源市'
     }]
   }]
 }, {
@@ -8131,13 +8109,13 @@ module.exports = [{
       'parentvalue': 430100,
       'label': '长沙县'
     }, {
-      'value': 430124,
-      'parentvalue': 430100,
-      'label': '宁乡县'
-    }, {
       'value': 430181,
       'parentvalue': 430100,
       'label': '浏阳市'
+    }, {
+      'value': 430182,
+      'parentvalue': 430100,
+      'label': '宁乡市'
     }]
   }, {
     'value': 430200,
@@ -8844,21 +8822,13 @@ module.exports = [{
       'parentvalue': 440300,
       'label': '盐田区'
     }, {
-      'value': 440396,
+      'value': 440309,
       'parentvalue': 440300,
-      'label': '龙华新区'
+      'label': '龙华区'
     }, {
-      'value': 440397,
+      'value': 440310,
       'parentvalue': 440300,
-      'label': '坪山新区'
-    }, {
-      'value': 440398,
-      'parentvalue': 440300,
-      'label': '大鹏新区'
-    }, {
-      'value': 440399,
-      'parentvalue': 440300,
-      'label': '光明新区'
+      'label': '坪山区'
     }]
   }, {
     'value': 440400,
@@ -9296,20 +9266,15 @@ module.exports = [{
   }, {
     'value': 441900,
     'parentvalue': 440000,
-    'label': '东莞市',
-    'children': [{
-      'value': 441999,
-      'parentvalue': 441900,
-      'label': '东莞市'
-    }]
+    'label': '东莞市'
   }, {
     'value': 442000,
     'parentvalue': 440000,
     'label': '中山市',
     'children': [{
-      'value': 442099,
+      'value': 442101,
       'parentvalue': 442000,
-      'label': '中山市'
+      'label': '东沙群岛'
     }]
   }, {
     'value': 445100,
@@ -9771,7 +9736,7 @@ module.exports = [{
     }, {
       'value': 451021,
       'parentvalue': 451000,
-      'label': '田阳县'
+      'label': '田阳区'
     }, {
       'value': 451022,
       'parentvalue': 451000,
@@ -9855,6 +9820,10 @@ module.exports = [{
       'parentvalue': 451200,
       'label': '金城江区'
     }, {
+      'value': 451203,
+      'parentvalue': 451200,
+      'label': '宜州区'
+    }, {
       'value': 451221,
       'parentvalue': 451200,
       'label': '南丹县'
@@ -9890,10 +9859,6 @@ module.exports = [{
       'value': 451229,
       'parentvalue': 451200,
       'label': '大化瑶族自治县'
-    }, {
-      'value': 451281,
-      'parentvalue': 451200,
-      'label': '宜州市'
     }]
   }, {
     'value': 451300,
@@ -10025,84 +9990,26 @@ module.exports = [{
     'parentvalue': 460000,
     'label': '三沙市',
     'children': [{
-      'value': 460399,
+      'value': 460301,
       'parentvalue': 460300,
-      'label': '三沙市'
+      'label': '三沙市市辖区'
+    }, {
+      'value': 460321,
+      'parentvalue': 460300,
+      'label': '西沙群岛'
+    }, {
+      'value': 460322,
+      'parentvalue': 460300,
+      'label': '南沙群岛'
+    }, {
+      'value': 460323,
+      'parentvalue': 460300,
+      'label': '中沙群岛的岛礁及其海域'
     }]
   }, {
     'value': 460400,
     'parentvalue': 460000,
-    'label': '儋州市',
-    'children': [{
-      'value': 460499,
-      'parentvalue': 460400,
-      'label': '儋州市'
-    }]
-  }, {
-    'value': 469000,
-    'parentvalue': 460000,
-    'label': '省直辖县级行政区划',
-    'children': [{
-      'value': 469001,
-      'parentvalue': 469000,
-      'label': '五指山市'
-    }, {
-      'value': 469002,
-      'parentvalue': 469000,
-      'label': '琼海市'
-    }, {
-      'value': 469005,
-      'parentvalue': 469000,
-      'label': '文昌市'
-    }, {
-      'value': 469006,
-      'parentvalue': 469000,
-      'label': '万宁市'
-    }, {
-      'value': 469007,
-      'parentvalue': 469000,
-      'label': '东方市'
-    }, {
-      'value': 469021,
-      'parentvalue': 469000,
-      'label': '定安县'
-    }, {
-      'value': 469022,
-      'parentvalue': 469000,
-      'label': '屯昌县'
-    }, {
-      'value': 469023,
-      'parentvalue': 469000,
-      'label': '澄迈县'
-    }, {
-      'value': 469024,
-      'parentvalue': 469000,
-      'label': '临高县'
-    }, {
-      'value': 469025,
-      'parentvalue': 469000,
-      'label': '白沙黎族自治县'
-    }, {
-      'value': 469026,
-      'parentvalue': 469000,
-      'label': '昌江黎族自治县'
-    }, {
-      'value': 469027,
-      'parentvalue': 469000,
-      'label': '乐东黎族自治县'
-    }, {
-      'value': 469028,
-      'parentvalue': 469000,
-      'label': '陵水黎族自治县'
-    }, {
-      'value': 469029,
-      'parentvalue': 469000,
-      'label': '保亭黎族苗族自治县'
-    }, {
-      'value': 469030,
-      'parentvalue': 469000,
-      'label': '琼中黎族苗族自治县'
-    }]
+    'label': '儋州市'
   }]
 }, {
   'value': 500000,
@@ -10209,9 +10116,13 @@ module.exports = [{
       'parentvalue': 500100,
       'label': '开州区'
     }, {
-      'value': 500228,
+      'value': 500155,
       'parentvalue': 500100,
-      'label': '梁平县'
+      'label': '梁平区'
+    }, {
+      'value': 500156,
+      'parentvalue': 500100,
+      'label': '武隆区'
     }, {
       'value': 500229,
       'parentvalue': 500100,
@@ -10224,10 +10135,6 @@ module.exports = [{
       'value': 500231,
       'parentvalue': 500100,
       'label': '垫江县'
-    }, {
-      'value': 500232,
-      'parentvalue': 500100,
-      'label': '武隆县'
     }, {
       'value': 500233,
       'parentvalue': 500100,
@@ -10265,6 +10172,10 @@ module.exports = [{
       'parentvalue': 500100,
       'label': '彭水苗族土家族自治县'
     }]
+  }, {
+    'value': 500200,
+    'parentvalue': 500000,
+    'label': '重庆市郊县'
   }]
 }, {
   'value': 510000,
@@ -10319,13 +10230,13 @@ module.exports = [{
       'parentvalue': 510100,
       'label': '双流区'
     }, {
+      'value': 510117,
+      'parentvalue': 510100,
+      'label': '郫都区'
+    }, {
       'value': 510121,
       'parentvalue': 510100,
       'label': '金堂县'
-    }, {
-      'value': 510124,
-      'parentvalue': 510100,
-      'label': '郫县'
     }, {
       'value': 510129,
       'parentvalue': 510100,
@@ -10358,10 +10269,6 @@ module.exports = [{
       'value': 510185,
       'parentvalue': 510100,
       'label': '简阳市'
-    }, {
-      'value': 510199,
-      'parentvalue': 510100,
-      'label': '高新区'
     }]
   }, {
     'value': 510300,
@@ -10481,7 +10388,7 @@ module.exports = [{
     }, {
       'value': 510626,
       'parentvalue': 510600,
-      'label': '罗江县'
+      'label': '罗江区'
     }, {
       'value': 510681,
       'parentvalue': 510600,
@@ -10631,9 +10538,9 @@ module.exports = [{
       'parentvalue': 511000,
       'label': '资中县'
     }, {
-      'value': 511028,
+      'value': 511083,
       'parentvalue': 511000,
-      'label': '隆昌县'
+      'label': '隆昌市'
     }]
   }, {
     'value': 511100,
@@ -11003,7 +10910,7 @@ module.exports = [{
     }, {
       'value': 513225,
       'parentvalue': 513200,
-      'label': '九寨沟县'
+      'label': '九寨沟市'
     }, {
       'value': 513226,
       'parentvalue': 513200,
@@ -11254,9 +11161,9 @@ module.exports = [{
       'parentvalue': 520200,
       'label': '水城县'
     }, {
-      'value': 520222,
+      'value': 520281,
       'parentvalue': 520200,
-      'label': '盘县'
+      'label': '盘州市'
     }]
   }, {
     'value': 520300,
@@ -11361,10 +11268,6 @@ module.exports = [{
     'parentvalue': 520000,
     'label': '毕节市',
     'children': [{
-      'value': 520501,
-      'parentvalue': 520500,
-      'label': '市辖区'
-    }, {
       'value': 520502,
       'parentvalue': 520500,
       'label': '七星关区'
@@ -11402,10 +11305,6 @@ module.exports = [{
     'parentvalue': 520000,
     'label': '铜仁市',
     'children': [{
-      'value': 520601,
-      'parentvalue': 520600,
-      'label': '市辖区'
-    }, {
       'value': 520602,
       'parentvalue': 520600,
       'label': '碧江区'
@@ -11643,9 +11542,9 @@ module.exports = [{
       'parentvalue': 530100,
       'label': '呈贡区'
     }, {
-      'value': 530122,
+      'value': 530115,
       'parentvalue': 530100,
-      'label': '晋宁县'
+      'label': '晋宁区'
     }, {
       'value': 530124,
       'parentvalue': 530100,
@@ -12260,6 +12159,10 @@ module.exports = [{
       'parentvalue': 540100,
       'label': '堆龙德庆区'
     }, {
+      'value': 540104,
+      'parentvalue': 540100,
+      'label': '达孜区'
+    }, {
       'value': 540121,
       'parentvalue': 540100,
       'label': '林周县'
@@ -12275,10 +12178,6 @@ module.exports = [{
       'value': 540124,
       'parentvalue': 540100,
       'label': '曲水县'
-    }, {
-      'value': 540126,
-      'parentvalue': 540100,
-      'label': '达孜县'
     }, {
       'value': 540127,
       'parentvalue': 540100,
@@ -12442,20 +12341,12 @@ module.exports = [{
       'value': 540426,
       'parentvalue': 540400,
       'label': '朗县'
-    }, {
-      'value': 540499,
-      'parentvalue': 540400,
-      'label': '市辖区'
     }]
   }, {
     'value': 540500,
     'parentvalue': 540000,
     'label': '山南市',
     'children': [{
-      'value': 540501,
-      'parentvalue': 540500,
-      'label': '市辖区'
-    }, {
       'value': 540502,
       'parentvalue': 540500,
       'label': '乃东区'
@@ -12505,52 +12396,52 @@ module.exports = [{
       'label': '浪卡子县'
     }]
   }, {
-    'value': 542400,
+    'value': 540600,
     'parentvalue': 540000,
-    'label': '那曲地区',
+    'label': '那曲市',
     'children': [{
-      'value': 542421,
-      'parentvalue': 542400,
-      'label': '那曲县'
+      'value': 540602,
+      'parentvalue': 540600,
+      'label': '色尼区'
     }, {
-      'value': 542422,
-      'parentvalue': 542400,
+      'value': 540621,
+      'parentvalue': 540600,
       'label': '嘉黎县'
     }, {
-      'value': 542423,
-      'parentvalue': 542400,
+      'value': 540622,
+      'parentvalue': 540600,
       'label': '比如县'
     }, {
-      'value': 542424,
-      'parentvalue': 542400,
+      'value': 540623,
+      'parentvalue': 540600,
       'label': '聂荣县'
     }, {
-      'value': 542425,
-      'parentvalue': 542400,
+      'value': 540624,
+      'parentvalue': 540600,
       'label': '安多县'
     }, {
-      'value': 542426,
-      'parentvalue': 542400,
+      'value': 540625,
+      'parentvalue': 540600,
       'label': '申扎县'
     }, {
-      'value': 542427,
-      'parentvalue': 542400,
+      'value': 540626,
+      'parentvalue': 540600,
       'label': '索县'
     }, {
-      'value': 542428,
-      'parentvalue': 542400,
+      'value': 540627,
+      'parentvalue': 540600,
       'label': '班戈县'
     }, {
-      'value': 542429,
-      'parentvalue': 542400,
+      'value': 540628,
+      'parentvalue': 540600,
       'label': '巴青县'
     }, {
-      'value': 542430,
-      'parentvalue': 542400,
+      'value': 540629,
+      'parentvalue': 540600,
       'label': '尼玛县'
     }, {
-      'value': 542431,
-      'parentvalue': 542400,
+      'value': 540630,
+      'parentvalue': 540600,
       'label': '双湖县'
     }]
   }, {
@@ -12640,6 +12531,10 @@ module.exports = [{
       'parentvalue': 610100,
       'label': '高陵区'
     }, {
+      'value': 610118,
+      'parentvalue': 610100,
+      'label': '鄠邑区'
+    }, {
       'value': 610122,
       'parentvalue': 610100,
       'label': '蓝田县'
@@ -12647,10 +12542,6 @@ module.exports = [{
       'value': 610124,
       'parentvalue': 610100,
       'label': '周至县'
-    }, {
-      'value': 610125,
-      'parentvalue': 610100,
-      'label': '户县'
     }]
   }, {
     'value': 610200,
@@ -12926,9 +12817,9 @@ module.exports = [{
       'parentvalue': 610700,
       'label': '汉台区'
     }, {
-      'value': 610721,
+      'value': 610703,
       'parentvalue': 610700,
-      'label': '南郑县'
+      'label': '南郑区'
     }, {
       'value': 610722,
       'parentvalue': 610700,
@@ -12983,10 +12874,6 @@ module.exports = [{
       'parentvalue': 610800,
       'label': '横山区'
     }, {
-      'value': 610821,
-      'parentvalue': 610800,
-      'label': '神木县'
-    }, {
       'value': 610822,
       'parentvalue': 610800,
       'label': '府谷县'
@@ -13022,6 +12909,10 @@ module.exports = [{
       'value': 610831,
       'parentvalue': 610800,
       'label': '子洲县'
+    }, {
+      'value': 610881,
+      'parentvalue': 610800,
+      'label': '神木市'
     }]
   }, {
     'value': 610900,
@@ -13796,6 +13687,10 @@ module.exports = [{
       'value': 632823,
       'parentvalue': 632800,
       'label': '天峻县'
+    }, {
+      'value': 632825,
+      'parentvalue': 632800,
+      'label': '海西蒙古族藏族自治州直辖'
     }]
   }]
 }, {
@@ -14022,10 +13917,6 @@ module.exports = [{
       'value': 650422,
       'parentvalue': 650400,
       'label': '托克逊县'
-    }, {
-      'value': 650499,
-      'parentvalue': 650400,
-      'label': '市辖区'
     }]
   }, {
     'value': 650500,
@@ -14043,10 +13934,6 @@ module.exports = [{
       'value': 650522,
       'parentvalue': 650500,
       'label': '伊吾县'
-    }, {
-      'value': 650599,
-      'parentvalue': 650500,
-      'label': '市辖区'
     }]
   }, {
     'value': 652300,
@@ -14409,49 +14296,22 @@ module.exports = [{
       'value': 654326,
       'parentvalue': 654300,
       'label': '吉木乃县'
-    }]
-  }, {
-    'value': 659000,
-    'parentvalue': 650000,
-    'label': '自治区直辖县级行政区划',
-    'children': [{
-      'value': 659001,
-      'parentvalue': 659000,
-      'label': '石河子市'
     }, {
-      'value': 659002,
-      'parentvalue': 659000,
-      'label': '阿拉尔市'
+      'value': 659005,
+      'parentvalue': 654300,
+      'label': '北屯市'
     }, {
-      'value': 659003,
-      'parentvalue': 659000,
-      'label': '图木舒克市'
+      'value': 659007,
+      'parentvalue': 654300,
+      'label': '双河市'
     }, {
-      'value': 659004,
-      'parentvalue': 659000,
-      'label': '五家渠市'
+      'value': 659008,
+      'parentvalue': 654300,
+      'label': '可克达拉市'
     }, {
-      'value': 659006,
-      'parentvalue': 659000,
-      'label': '铁门关市'
+      'value': 659009,
+      'parentvalue': 654300,
+      'label': '昆玉市'
     }]
   }]
-}, {
-  'value': 710000,
-  'parentvalue': 1,
-  'label': '台湾省',
-  disabled: true,
-  'children': []
-}, {
-  'value': 810000,
-  'parentvalue': 1,
-  'label': '香港特别行政区',
-  disabled: true,
-  'children': []
-}, {
-  'value': 820000,
-  'parentvalue': 1,
-  'label': '澳门特别行政区',
-  disabled: true,
-  'children': []
 }]

@@ -182,6 +182,13 @@ export default {
       dateTime: []
     }
   },
+  watch: {
+    dateTime(value) {
+      this.bookingSearchForm.start = value.length > 0 ? `${value[0]} 00:00:00` : ''
+      this.bookingSearchForm.end = value.length > 0 ? `${value[1]} 23:59:59` : ''
+      this.searchParam()
+    }
+  },
   mounted() {
     /* 表格高度控制 */
     this.$nextTick(() => {
@@ -234,9 +241,9 @@ export default {
       this.$refs[formName].resetFields()
     },
     changeDate(value) {
-      this.searchParam()
-      this.bookingSearchForm.start = value ? `${value[0]} 00:00:00` : ''
-      this.bookingSearchForm.end = value ? `${value[1]} 00:00:00` : ''
+      // this.bookingSearchForm.start = value ? `${value[0]} 00:00:00` : ''
+      // this.bookingSearchForm.end = value ? `${value[1]} 23:59:59` : ''
+      // this.searchParam()
     }
   }
 }

@@ -6,8 +6,8 @@
  */
 <template>
   <div class="container">
-    <el-tabs tab-position="top">
-      <el-tab-pane label="租房预约">
+    <el-tabs tab-position="top" @tab-click="searchBooking">
+      <el-tab-pane label="租房预约" >
         <BookingAnApartment ref="bookingAnApartment"></BookingAnApartment>
       </el-tab-pane>
       <el-tab-pane label="客源列表">
@@ -30,8 +30,9 @@ export default {
     }
   },
   methods: {
-    searchParam() {
-
+    searchBooking() {
+      this.$refs.bookingAnApartment.searchParam()
+      this.$refs.customersList.searchParam()
     }
   }
 }

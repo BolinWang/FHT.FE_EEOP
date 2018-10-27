@@ -317,7 +317,7 @@ export default {
         }
       ],
       colModels: [
-        { label: '#', slotName: 'index', width: 50, align: 'center' },
+        { label: '#', slotName: 'index', fixed: 'left', width: 50, align: 'center' },
         // {
         //   prop: 'checkHoleRooms',
         //   label: '',

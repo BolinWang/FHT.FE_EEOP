@@ -1,8 +1,13 @@
 /*
  * @Author: FT.FE.Bolin
  * @Date: 2018-04-11 17:22:27
+<<<<<<< HEAD
  * @Last Modified by: ghost
  * @Last Modified time: 2018-10-25 14:56:29
+=======
+ * @Last Modified by: chudequan
+ * @Last Modified time: 2018-10-21 18:55:12
+>>>>>>> 1cda27c436e128115862fba54f638de987941279
  */
 
 <template>

@@ -119,8 +119,11 @@
       </span>
     </template>
     <template slot="intentlist" slot-scope="scope">
-      <div class="boxTag" :key="index" v-for="(item,index ) in scope.row.list">
-        <el-tag >{{item}}</el-tag>
+      <div>
+        <div v-if="scope.row.list.length>0" class="boxTag" :key="index" v-for="(item,index ) in scope.row.list">
+          <el-tag >{{item}}</el-tag>
+        </div>
+        <div class="komng" v-show="scope.row.list.length===0">-</div>
       </div>
     </template>
     <template slot="currentStatus" slot-scope="scope">
@@ -200,6 +203,7 @@ export default {
     sourceChooseType(val) {
       this.customersSearchForm.source = val[0] || ''
       this.customersSearchForm.sourceType = val[1] || ''
+      this.searchParam()
     }
   },
   filters: {
@@ -374,7 +378,6 @@ export default {
         &currentType=${this.customersSearchForm.currentType}
         &currentKeyword=${this.customersSearchForm.currentKeyword}
         &customerKeyword=${this.customersSearchForm.customerKeyword}`
-      console.log(href)
       const elink = document.createElement('a')
       elink.style.display = 'none'
       elink.href = encodeURI(href)
@@ -407,19 +410,18 @@ export default {
       this.$refs[formName].resetFields()
     },
     searchParam() {
-      console.log('1')
       this.$nextTick(() => {
         this.$refs.refGridUnit.searchHandler()
       })
     },
     changeCreatDate(value) { // 创建开始时间
-      this.customersSearchForm.createStart = value ? `${value[0]} 00:00:00` : ''
-      this.customersSearchForm.createEnd = value ? `${value[1]} 23:59:59` : ''
+      this.customersSearchForm.createStart = value.length > 0 ? `${value[0]} 00:00:00` : ''
+      this.customersSearchForm.createEnd = value.length > 0 ? `${value[1]} 23:59:59` : ''
       this.searchParam()
     },
     changeCurrentDate(value) { // 接单开始时间
-      this.customersSearchForm.currentStart = value ? `${value[0]} 00:00:00` : ''
-      this.customersSearchForm.currentEnd = value ? `${value[1]} 23:59:59` : ''
+      this.customersSearchForm.currentStart = value.length > 0 ? `${value[0]} 00:00:00` : ''
+      this.customersSearchForm.currentEnd = value.length > 0 ? `${value[1]} 23:59:59` : ''
       this.searchParam()
     }
   }
