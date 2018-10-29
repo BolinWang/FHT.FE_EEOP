@@ -23,6 +23,7 @@
             style="width:290px;"
             :options="treeAllList"
             :props='props'
+            clearable
             change-on-select
             placeholder="请选择省市板块"
             v-model="chooseZone">
@@ -40,6 +41,7 @@
             :options="sourceList"
             :props='propsSource'
             change-on-select
+            clearable
             placeholder="客源渠道"
             v-model="sourceChooseType">
           </el-cascader>
@@ -385,10 +387,13 @@ export default {
       elink.click()
     },
     lookCustomers(id, type, status) {
-      let disabled = ''
-      type === 1 || status === 3 ? disabled = true : disabled = false
-
-      this.$refs.addOrEditCustomers.showDialog(id, false, disabled)
+      const param = {
+        editID: id,
+        bookingID: false,
+        disabled: !!(type === 1 || status === 3),
+        bookMessage: ''
+      }
+      this.$refs.addOrEditCustomers.showDialog(param)
     },
     lookFollowList(id) {
       this.$refs.followUpCusTomers.showFollowList(id)

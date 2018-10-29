@@ -448,18 +448,24 @@ export default {
         this.$refs.zoneTreeTwo.setCheckedKeys(this.customerAreasIDList)
       })
     },
-    showDialog(id, tenantBookingId, disabled) {
+    showDialog(param) {
       this.editOrAdd = true
       this.getZoneList()
       this.$nextTick(res => {
         this.formCustomers.id = ''
-        if (id) {
-          this.editDisabled = disabled
-          this.formCustomers.id = id
+        if (param.editID) {
+          this.editDisabled = param.disabled
+          this.formCustomers.id = param.editID
           this.getCusTomersInfo()
           this.disabledALL = true
+        } else if (param.bookingID) {
+          this.formCustomers.tenantBookingId = param.bookingID
+          this.formCustomers.mobile = param.bookMessage.mobile || ''
+          this.formCustomers.rentFee = 0
+          this.formCustomers.name = param.bookMessage.name
+          this.formCustomers.source = 1
+          this.formCustomers.sourceType = 19
         }
-        tenantBookingId ? this.formCustomers.tenantBookingId = tenantBookingId : ''
       })
     },
     handleEdit() {

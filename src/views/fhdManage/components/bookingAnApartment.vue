@@ -75,7 +75,7 @@
          <el-button style="width:120px" v-if="scope.row.status===0" plain disabled type="info" size="mini" >已登记</el-button>
          <el-button style="width:120px" v-else-if="scope.row.status===2" plain disabled type="info" size="mini" >已忽略</el-button>
          <div class="group-box" v-else>
-           <el-button style="width:70px" type="primary" @click="registerCustomers('addOrEditCustomers',scope.row.id)" size="mini" >登记客源</el-button>
+           <el-button style="width:70px" type="primary" @click="registerCustomers('addOrEditCustomers',scope.row)" size="mini" >登记客源</el-button>
            <el-button style="width:70px" type="primary" @click='closeBooking(scope.row.id)' size="mini" >忽略</el-button>
          </div>
       </template>
@@ -224,8 +224,14 @@ export default {
       document.body.appendChild(elink)
       elink.click()
     },
-    registerCustomers(ref, id) {
-      this.$refs[ref].showDialog(false, id)
+    registerCustomers(ref, row) {
+      const param = {
+        editID: false,
+        bookingID: row.id,
+        disabled: false,
+        bookMessage: row
+      }
+      this.$refs[ref].showDialog(param)
     },
     closeBooking(id) {
       getTenantcloseApi({ id: id }).then(res => {
