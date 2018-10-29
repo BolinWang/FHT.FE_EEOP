@@ -465,6 +465,12 @@ export default {
           this.formCustomers.name = param.bookMessage.name
           this.formCustomers.source = 1
           this.formCustomers.sourceType = 19
+          this.formCustomers.customerAreas = param.bookMessage.customerAreaDTO
+          this.formCustomers.customerAreas.map(v => {
+            this.customerAreasList.push(v.backName)
+            this.customerAreasIDList.push(v.zoneId)
+          })
+          this.$refs.zoneTreeTwo.setCheckedKeys(this.customerAreasIDList)
         }
       })
     },
