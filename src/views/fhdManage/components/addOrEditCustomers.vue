@@ -281,7 +281,7 @@ export default {
   watch: {
     customerAreasList(val) {
       this.customerAreasIDList = []
-      this.formCustomers.customerAreas = this.formCustomers.customerAreas.forEach(item => {
+      this.formCustomers.customerAreas = this.formCustomers.customerAreas.filter(item => {
         let customerAreas = ''
         this.customerAreasList.map(v => {
           if (item.backName === v) {
@@ -301,6 +301,7 @@ export default {
       this.$refs.zoneTreeTwo.filter('')
     },
     addNewCustomers(ref) {
+      console.log(this.formCustomers.customerAreas)
       this.$refs[ref].validate((valid) => {
         if (valid) {
           this.formCustomers.houseFeature = this.formCustomers.houseFeature.toString()
@@ -316,7 +317,7 @@ export default {
             this.formCustomers.customerAreas = []
             this.$refs.zoneTreeTwo.setCheckedKeys(this.customerAreasIDList)
             this.$message({
-              message: '新增客源成功',
+              message: `${this.formCustomers.id ? '编辑' : '新增'}客源成功`,
               type: 'success'
             })
             this.formCustomers.houseFeature = []

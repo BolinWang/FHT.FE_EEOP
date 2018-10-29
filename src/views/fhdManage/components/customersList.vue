@@ -128,7 +128,7 @@
     </template>
     <template slot="currentStatus" slot-scope="scope">
       <div class="statusBox">
-        <el-button @click="changeStatus(scope.row.id)" v-if="scope.row.currentType === 2 && scope.row.currentTime&&scope.row.currentName" type="danger" plain size="mini">待签约</el-button>
+        <el-button @click="changeStatus(scope.row.id)" v-if="scope.row.currentType === 2 && !scope.row.currentTime&&!scope.row.currentName" type="danger" plain size="mini">待接单</el-button>
         <el-button @click="changeStatus(scope.row.id)" v-else :disabled="scope.row.status===2||scope.row.status===3" type="info" plain size="mini">{{scope.row.status | filterstatus}}</el-button>
       </div>
     </template>
