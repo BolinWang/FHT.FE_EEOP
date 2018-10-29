@@ -14,8 +14,8 @@
              <div class="box" v-for="Item in gridData" :key="Item.id">
                <div class="name-box">{{Item.followTime}} {{Item.gmtCreateName}}</div>
                 <div class="name-box">
-                  {{Item.followType | filterCreat}}——
-                  <span class="colorType">备注： {{Item.remark}}</span>
+                  <span class="colorType">{{Item.followType | filterCreat}}</span>——
+                  备注： {{Item.remark}}
                 </div>
              </div>
            </div>
