@@ -15,8 +15,7 @@
             start-placeholder="创建开始日期"
             end-placeholder="创建结束日期"
             value-format="yyyy-MM-dd"
-            :picker-options="pickerOptions"
-            @change="changeCreatDate">
+            :picker-options="pickerOptions">
           </el-date-picker>
         </el-form-item>
         <el-form-item>
@@ -67,8 +66,7 @@
               start-placeholder="接单开始日期"
               end-placeholder="接单结束日期"
               value-format="yyyy-MM-dd"
-              :picker-options="pickerOptions"
-              @change="changeCurrentDate">
+              :picker-options="pickerOptions">
             </el-date-picker>
           </el-form-item>
           <el-form-item prop="currentType">
