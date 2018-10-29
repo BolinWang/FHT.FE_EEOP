@@ -75,7 +75,7 @@
                             :min="1"
                             :disabled="disabledALL"
                             placeholder="最低"
-                            type='number'
+                            @keyup.native="changeNumMin"
                             v-model="formCustomers.rentMin"/>
                           </el-col>
                           <el-col :span="4" style="text-align:center;">
@@ -84,9 +84,9 @@
                           <el-col :span="9">
                             <el-input
                               size="small"
-                              type='number'
                               :disabled="disabledALL"
                               placeholder="最高"
+                              @keyup.native="changeNumMax"
                               v-model="formCustomers.rentMax"/>
                           </el-col>
                         </el-row>
@@ -128,7 +128,7 @@
         </el-row>
         <el-row>
           <el-form-item label="房间类型" prop="houseType">
-            <el-radio-group v-model="formCustomers.houseType">
+            <el-radio-group v-model="formCustomers.houseType" @change='changeHouse'>
               <el-radio 
                 :disabled="disabledALL"
                 v-for="(item,index) in houseTypeList" 
@@ -137,7 +137,7 @@
             </el-radio-group>
           </el-form-item>
         </el-row>
-        <el-row v-show='formCustomers.houseType===1' >
+        <el-row v-if='formCustomers.houseType===1' >
           <el-form-item label="房间特色（多选）" prop="houseFeature">
             <el-checkbox-group v-model="formCustomers.houseFeature">
               <el-checkbox 
@@ -201,12 +201,7 @@ import { getCustomerInfoApi, getCheckZoneApi, getSourceListApi, customerCenterSa
 export default {
   data() {
     const validateRent = (rule, value, callback) => {
-      if (!value) {
-        callback(new Error('请选择月租金'))
-      } else if (!this.formCustomers.rentMin) {
-        this.formCustomers.rentMax = ''
-        callback(new Error('请先输入最低租金月'))
-      } else if (this.formCustomers.rentMax <= this.formCustomers.rentMin) {
+      if (this.formCustomers.rentMax !== '' && this.formCustomers.rentMax <= this.formCustomers.rentMin) {
         callback(new Error('最高租金需大于最低租金'))
       } else {
         callback()
@@ -318,12 +313,21 @@ export default {
         })
         return customerAreas
       })
-      if (this.customerAreasIDList.length > 0) {
-        this.$refs.zoneTreeTwo.setCheckedKeys(this.customerAreasIDList)
-      }
+      this.$refs.zoneTreeTwo.setCheckedKeys(this.customerAreasIDList)
     }
   },
   methods: {
+    changeNumMax() {
+      this.formCustomers.rentMax = this.formCustomers.rentMax.replace(/[^\.\d]/g, '')
+      this.formCustomers.rentMax = this.formCustomers.rentMax.replace('.', '')
+    },
+    changeNumMin() {
+      this.formCustomers.rentMin = this.formCustomers.rentMin.replace(/[^\.\d]/g, '')
+      this.formCustomers.rentMin = this.formCustomers.rentMin.replace('.', '')
+    },
+    changeHouse(val) {
+      val === 1 ? this.formCustomers.houseFeature = [] : ''
+    },
     changeCustomerAreasList(val) {
       this.$refs.zoneTreeTwo.filter('')
     },
@@ -340,6 +344,7 @@ export default {
             this.formCustomers.source = ''
             this.formCustomers.rentMin = ''
             this.formCustomers.rentMax = ''
+            this.formCustomers.rentFee = ''
             this.customerAreasList = []
             this.customerAreasIDList = []
             this.formCustomers.customerAreas = []
@@ -481,6 +486,7 @@ export default {
       this.customerAreasList = []
       this.disabledALL = false
       this.customrentFee = false
+      this.formCustomers.rentFee = ''
       this.formCustomers.rentMin = ''
       this.formCustomers.rentMax = ''
       this.formCustomers.source = ''

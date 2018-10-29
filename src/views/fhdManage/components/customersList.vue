@@ -126,7 +126,15 @@
     </template>
     <template slot="currentStatus" slot-scope="scope">
       <div class="statusBox">
-        <el-button @click="changeStatus(scope.row.id)" v-if="scope.row.currentType === 2 && !scope.row.currentTime&&!scope.row.currentName" type="danger" plain size="mini">待接单</el-button>
+        <el-button 
+        @click="changeStatus(scope.row.id)" 
+        v-if="scope.row.currentType === 2
+         && scope.row.currentTime==='-'&&
+         scope.row.currentName==='-'&&
+         scope.row.status!==3" 
+        type="danger" 
+        plain 
+        size="mini">待接单</el-button>
         <el-button @click="changeStatus(scope.row.id)" v-else :disabled="scope.row.status===2||scope.row.status===3" type="info" plain size="mini">{{scope.row.status | filterstatus}}</el-button>
       </div>
     </template>
@@ -402,7 +410,13 @@ export default {
       this.$refs.statusChange.showDialog(id)
     },
     addCustomers(ref) { // 登记客源
-      this.$refs[ref].showDialog()
+      const param = {
+        editID: false,
+        bookingID: false,
+        disabled: false,
+        bookMessage: ''
+      }
+      this.$refs[ref].showDialog(param)
     },
 
     gettreeAllList() {

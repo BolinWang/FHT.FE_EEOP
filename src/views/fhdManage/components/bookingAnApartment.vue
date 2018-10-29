@@ -161,7 +161,7 @@ export default {
         },
         { prop: 'position', label: '意向房间', width: '200' },
         { prop: 'remark', label: '备注' },
-        { label: '房源位置', slotName: 'bookingPosition' },
+        { label: '房源位置', slotName: 'bookingPosition', width: '200' },
         { prop: '', label: '房东/手机号', slotName: 'bookingOrgan' },
         { prop: 'bookingTime', label: '预约时间' },
         { prop: 'status', label: '操作', width: '200', align: 'center', slotName: 'bookingHandle', fixed: 'right' }
