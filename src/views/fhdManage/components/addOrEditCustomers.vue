@@ -326,7 +326,7 @@ export default {
       this.formCustomers.rentMin = this.formCustomers.rentMin.replace('.', '')
     },
     changeHouse(val) {
-      val === 1 ? this.formCustomers.houseFeature = [] : ''
+      this.formCustomers.houseFeature = []
     },
     changeCustomerAreasList(val) {
       this.$refs.zoneTreeTwo.filter('')
