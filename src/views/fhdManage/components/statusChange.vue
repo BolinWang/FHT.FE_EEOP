@@ -6,12 +6,10 @@
  */
 <template>
   <el-dialog :before-close="dialogHandleClose" title="关闭客源" :visible.sync="dialogChangeStatus">
-    <el-form :rules="rules" ref="formName" :model="form" label-width="80px">
-      <el-form-item>
-        确定要关闭此客源么？
-      </el-form-item>
-      <el-form-item label="活动名称" prop="remark">
-        <el-input :rows="2" :maxlength='100' v-model="form.remark" type="textarea" placeholder="请输入关闭原因，最多100字符" auto-complete="off"></el-input>
+    <el-form :rules="rules" ref="formName" :model="form" >
+      <div class="text-box">确定要关闭此客源么？</div> 
+      <el-form-item  prop="remark">
+        <el-input :rows="4" :maxlength='100' v-model="form.remark" type="textarea" placeholder="请输入关闭原因，最多100字符" auto-complete="off"></el-input>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
@@ -43,12 +41,19 @@ export default {
         if (valid) {
           customerCenterCloseApi(this.form).then(res => {
             this.dialogChangeStatus = false
+            this.$refs.formName.resetFields()
+            if (res.code === '000') {
+              this.$message({
+                message: '此客源正在带看中，暂时无法关闭',
+                type: 'warning'
+              })
+              return
+            }
             this.$message({
               message: '客源状态已关闭',
               type: 'success'
             })
             this.$emit('getSearch')
-            this.$refs.formName.resetFields()
           })
         } else {
           console.log('error submit!!')
@@ -68,6 +73,8 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-
+  .text-box{
+    line-height:40px;
+  }
 </style>
 

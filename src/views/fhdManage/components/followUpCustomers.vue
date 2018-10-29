@@ -13,7 +13,7 @@
            <div class="table-container" v-if="gridData.length">
              <div class="box" v-for="Item in gridData" :key="Item.id">
                <div class="name-box">{{Item.followTime}} {{Item.gmtCreateName}}</div>
-                <div class="name-box">{{Item.followType | filterCreat}} {{Item.remark}}</div>
+                <div class="name-box"><span class="colorType">{{Item.followType | filterCreat}}</span> {{Item.remark}}</div>
              </div>
            </div>
            <div class="table-container" v-else>
@@ -88,5 +88,8 @@ export default {
       line-height: 60px;
       text-align: center;
       border-top: 1px solid #e0e0e0;
+  }
+  .colorType{
+    color: #5BACFB;
   }
 </style>

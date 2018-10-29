@@ -62,6 +62,11 @@
         <div>{{scope.row.name}}</div>
         <div>{{scope.row.mobile}}</div>
       </template>
+      <template slot="bookingPosition" slot-scope="scope">
+        <div>
+          {{scope.row.city}}-{{scope.row.region}}-{{scope.row.zone}}
+        </div>
+      </template>
       <template slot="bookingOrgan" slot-scope="scope">
         <div>{{scope.row.orgName}}</div>
         <div>{{scope.row.orgMobile}}</div>
@@ -156,7 +161,7 @@ export default {
         },
         { prop: 'position', label: '意向房间', width: '200' },
         { prop: 'remark', label: '备注' },
-        { prop: 'remark', label: '房源位置' },
+        { label: '房源位置', slotName: 'bookingPosition' },
         { prop: '', label: '房东/手机号', slotName: 'bookingOrgan' },
         { prop: 'bookingTime', label: '预约时间' },
         { prop: 'status', label: '操作', width: '200', align: 'center', slotName: 'bookingHandle', fixed: 'right' }

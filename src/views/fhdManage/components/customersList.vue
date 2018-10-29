@@ -25,8 +25,7 @@
             :props='props'
             change-on-select
             placeholder="请选择省市板块"
-            v-model="chooseZone"
-            @change="handleChangeZone">
+            v-model="chooseZone">
           </el-cascader>
         </el-form-item>
         <el-form-item prop="type">
@@ -42,8 +41,7 @@
             :props='propsSource'
             change-on-select
             placeholder="客源渠道"
-            v-model="sourceChooseType"
-            @change="handleChangeZone">
+            v-model="sourceChooseType">
           </el-cascader>
         </el-form-item>
         <el-form-item >
@@ -136,7 +134,7 @@
       </span>
     </template>
     <template slot="customersHandle" slot-scope="scope">
-      <el-button @click="lookCustomers(scope.row.id)" style="width:80px"  type="primary" size="mini" >查看</el-button>
+      <el-button @click="lookCustomers(scope.row.id,scope.row.currentType,scope.row.status)" style="width:80px"  type="primary" size="mini" >查看</el-button>
       <el-button @click="lookFollowList(scope.row.id)" style="width:80px"  type="primary" size="mini" >跟进记录</el-button>
     </template>
     </GridUnit>
@@ -202,6 +200,16 @@ export default {
       this.customersSearchForm.source = val[0] || ''
       this.customersSearchForm.sourceType = val[1] || ''
       this.searchParam()
+    },
+    dateCurrentTime(value) { // 接单开始时间
+      this.customersSearchForm.currentStart = value.length > 0 ? `${value[0]} 00:00:00` : ''
+      this.customersSearchForm.currentEnd = value.length > 0 ? `${value[1]} 23:59:59` : ''
+      this.searchParam()
+    },
+    dateCreatTime(value) { // 创建开始时间
+      this.customersSearchForm.createStart = value.length > 0 ? `${value[0]} 00:00:00` : ''
+      this.customersSearchForm.createEnd = value.length > 0 ? `${value[1]} 23:59:59` : ''
+      this.searchParam()
     }
   },
   filters: {
@@ -246,8 +254,8 @@ export default {
       chooseZone: [],
       typeList: [
         { label: '全部', value: '' },
-        { label: '自建客', value: 1 },
-        { label: '总部', value: 2 }
+        { label: '自建客', value: '1' },
+        { label: '总部', value: '2' }
       ],
       props: {
         value: 'id',
@@ -354,12 +362,6 @@ export default {
         this.sourceList = res.data.sourceList
       })
     },
-    handleChangeZone(val) {
-      this.customersSearchForm.cityId = val[0] || ''
-      this.customersSearchForm.regionId = val[1] || ''
-      this.customersSearchForm.zoneId = val[2] || ''
-      this.searchParam()
-    },
     exportExcel() {
       const href = `${FLYSUn}/customerCenter/exportExcel?
         cityId=${this.customersSearchForm.cityId}
@@ -382,8 +384,11 @@ export default {
       document.body.appendChild(elink)
       elink.click()
     },
-    lookCustomers(id) {
-      this.$refs.addOrEditCustomers.showDialog(id, false)
+    lookCustomers(id, type, status) {
+      let disabled = ''
+      type === 1 || status === 3 ? disabled = true : disabled = false
+
+      this.$refs.addOrEditCustomers.showDialog(id, false, disabled)
     },
     lookFollowList(id) {
       this.$refs.followUpCusTomers.showFollowList(id)
@@ -411,16 +416,6 @@ export default {
       this.$nextTick(() => {
         this.$refs.refGridUnit.searchHandler()
       })
-    },
-    changeCreatDate(value) { // 创建开始时间
-      this.customersSearchForm.createStart = value.length > 0 ? `${value[0]} 00:00:00` : ''
-      this.customersSearchForm.createEnd = value.length > 0 ? `${value[1]} 23:59:59` : ''
-      this.searchParam()
-    },
-    changeCurrentDate(value) { // 接单开始时间
-      this.customersSearchForm.currentStart = value.length > 0 ? `${value[0]} 00:00:00` : ''
-      this.customersSearchForm.currentEnd = value.length > 0 ? `${value[1]} 23:59:59` : ''
-      this.searchParam()
     }
   }
 }

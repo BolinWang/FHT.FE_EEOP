@@ -11,7 +11,7 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="姓名" prop="name" >
-              <el-input :disabled="disabledALL" style="width:174px;" placeholder="请输入" v-model="formCustomers.name" auto-complete="off"></el-input>
+              <el-input :maxlength="10" :disabled="disabledALL" style="width:174px;" placeholder="请输入" v-model="formCustomers.name" auto-complete="off"></el-input>
               <el-select :disabled="disabledALL" style="width:94px;" v-model="formCustomers.gender" placeholder="性别">
                 <el-option :label="item.label" :value="item.value" v-for="(item,index) in genderList" :key='index'></el-option>
               </el-select>
@@ -27,10 +27,10 @@
           <el-col :span="12">
             <el-form-item label="客源渠道" prop="sourceType">
               <el-select 
-                :disabled="disabledALL" 
-                @change="chooseOneSourceList" 
-                style="width:94px;" 
-                v-model="formCustomers.source" 
+                :disabled="disabledALL"
+                @change="chooseOneSourceList"
+                style="width:94px;"
+                v-model="formCustomers.source"
                 placeholder="一级渠道">
                 <el-option 
                   :label="item.name" 
@@ -51,24 +51,31 @@
                   :value="item.id"></el-option> 
               </el-select>
             </el-form-item>
-            
           </el-col>
           <el-col :span="12">
             <el-row>
-              <el-col :span="24">
-                <el-form-item   label="月租金范围" prop="rentFee">
+              <el-col :span="19">
+                <el-form-item v-if='!customrentFee'  label="月租金范围" prop="rentFee">
                   <el-row>
-                    <el-col :span="15">
-                      <el-select :disabled="disabledALL" v-if='!customrentFee' style="width:174px;" v-model="formCustomers.rentFee" placeholder="月租金范围">
+                    <el-col :span="15" >
+                      <el-select :disabled="disabledALL"  style="width:174px;" v-model="formCustomers.rentFee" placeholder="月租金范围">
                         <el-option  :label="item.label" :value="item.value" v-for="(item,index) in rentFeeList" :key='index'></el-option>
                       </el-select>
-                      <div v-if='customrentFee'>
+                    </el-col>
+                  </el-row>
+                </el-form-item>
+                <el-form-item v-else  label="月租金范围" prop="rentMax">
+                   <el-row>
+                    <el-col :span="22" >
+                      <div >
                         <el-row>
                           <el-col :span="9">
                             <el-input
                             size="small"
+                            :min="1"
                             :disabled="disabledALL"
                             placeholder="最低"
+                            type='number'
                             v-model="formCustomers.rentMin"/>
                           </el-col>
                           <el-col :span="4" style="text-align:center;">
@@ -77,6 +84,7 @@
                           <el-col :span="9">
                             <el-input
                               size="small"
+                              type='number'
                               :disabled="disabledALL"
                               placeholder="最高"
                               v-model="formCustomers.rentMax"/>
@@ -84,11 +92,14 @@
                         </el-row>
                       </div>
                     </el-col>
-                    <el-col :span="6">
-                      <el-checkbox :disabled="disabledALL" @change='customRentFree' v-model="customrentFee">自定义</el-checkbox>
-                    </el-col>
+                    
                   </el-row>
                 </el-form-item>
+              </el-col>
+              <el-col :span="4">
+                <el-col :span="6">
+                  <el-checkbox class="lineCheck" :disabled="disabledALL" @change='customRentFree' v-model="customrentFee">自定义</el-checkbox>
+                </el-col>
               </el-col>
             </el-row>
           </el-col>
@@ -179,7 +190,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="handleClose">取 消</el-button>
-        <el-button type="primary" v-show='disabledALL' @click="handleEdit">编 辑</el-button>
+        <el-button type="primary" :disabled="editDisabled" v-show='disabledALL' @click="handleEdit">编 辑</el-button>
         <el-button v-show='!disabledALL' type="primary" @click="addNewCustomers('formCunstomers')">确 定</el-button>
       </div>
     </el-dialog>
@@ -189,10 +200,25 @@
 import { getCustomerInfoApi, getCheckZoneApi, getSourceListApi, customerCenterSaveApi } from '@/api/renting'
 export default {
   data() {
+    const validateRent = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error('请选择月租金'))
+      } else if (!this.formCustomers.rentMin) {
+        this.formCustomers.rentMax = ''
+        callback(new Error('请先输入最低租金月'))
+      } else if (this.formCustomers.rentMax <= this.formCustomers.rentMin) {
+        callback(new Error('最高租金需大于最低租金'))
+      } else {
+        callback()
+      }
+    }
     return {
       rulesFormCunstomers: {
         name: [
           { required: true, message: '请输入租客姓名', trigger: 'blur' }
+        ],
+        rentMax: [
+          { validator: validateRent, trigger: 'blur' }
         ],
         sourceType: [
           { required: true, message: '请选择客源渠道', trigger: 'change' }
@@ -214,6 +240,7 @@ export default {
       oneSourceIndex: 0, // 一级渠道
       customerArea: [],
       customerAreasList: [],
+      editDisabled: false,
       customerAreasIDList: [],
       genderList: [
         { value: 1, label: '先生' },
@@ -301,7 +328,6 @@ export default {
       this.$refs.zoneTreeTwo.filter('')
     },
     addNewCustomers(ref) {
-      console.log(this.formCustomers.customerAreas)
       this.$refs[ref].validate((valid) => {
         if (valid) {
           this.formCustomers.houseFeature = this.formCustomers.houseFeature.toString()
@@ -312,6 +338,8 @@ export default {
             this.customrentFee = false
             this.formCustomers.gender = 1
             this.formCustomers.source = ''
+            this.formCustomers.rentMin = ''
+            this.formCustomers.rentMax = ''
             this.customerAreasList = []
             this.customerAreasIDList = []
             this.formCustomers.customerAreas = []
@@ -420,12 +448,13 @@ export default {
         this.$refs.zoneTreeTwo.setCheckedKeys(this.customerAreasIDList)
       })
     },
-    showDialog(id, tenantBookingId) {
+    showDialog(id, tenantBookingId, disabled) {
       this.editOrAdd = true
       this.getZoneList()
       this.$nextTick(res => {
         this.formCustomers.id = ''
         if (id) {
+          this.editDisabled = disabled
           this.formCustomers.id = id
           this.getCusTomersInfo()
           this.disabledALL = true
@@ -453,5 +482,7 @@ export default {
 }
 </script>
 <style scoped>
-
+  .lineCheck{
+    line-height: 32px;
+  }
 </style>
