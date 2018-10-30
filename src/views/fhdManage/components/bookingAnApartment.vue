@@ -2,7 +2,7 @@
  * @Author: ghost 
  * @Date: 2018-10-22 09:35:00 
  * @Last Modified by: ghost
- * @Last Modified time: 2018-10-30 17:17:34
+ * @Last Modified time: 2018-10-30 18:16:51
  */
 <template>
   <div class="compents-container">
@@ -214,8 +214,9 @@ export default {
   methods: {
 
     exportExcel() {
-      const href = `${FLYSUn}/tenant/exportExcel?keyword=${this.bookingSearchForm.keyword}&
-      start=${this.bookingSearchForm.start}
+      console.log(this.bookingSearchForm.start)
+      const href = `${FLYSUn}/tenant/exportExcel?keyword=${this.bookingSearchForm.keyword}
+      &start=${this.bookingSearchForm.start}
       &end=${this.bookingSearchForm.end}
       &housingType=${this.bookingSearchForm.housingType}
       &status=${this.bookingSearchForm.status}`
