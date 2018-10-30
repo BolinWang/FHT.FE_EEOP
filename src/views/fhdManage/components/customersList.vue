@@ -116,6 +116,14 @@
         {{scope.row.sourceName}}-{{scope.row.sourceTypeName}}
       </span>
     </template>
+    <template slot="cunstomerCreat" slot-scope="scope">
+      <div>{{scope.row.name}}</div>
+      <div>{{scope.row.mobile}}</div>
+    </template>
+    <template slot="currentSlot" slot-scope="scope">
+      <div>{{scope.row.currentName}}</div>
+      <div v-show="scope.row.currentMobile!=='-'">{{scope.row.currentMobile}}</div>
+    </template>
     <template slot="intentlist" slot-scope="scope">
       <div>
         <div v-if="scope.row.list.length>0" class="boxTag" :key="index" v-for="(item,index ) in scope.row.list">
@@ -313,7 +321,7 @@ export default {
         { prop: '', label: '创建来源', align: 'center', slotName: 'customersType' },
         { prop: 'createName', label: '创建人' },
         { prop: 'createTime', label: '创建时间', width: '150' },
-        { prop: 'name', label: '租客姓名' },
+        { prop: '', label: '租客姓名/手机号', slotName: 'cunstomerCreat', width: '200' },
         { prop: '', label: '客源渠道', align: 'center', slotName: 'customersSource' },
         { prop: 'rentFeeName', label: '月租金范围' },
         { prop: 'list',
@@ -328,7 +336,7 @@ export default {
           label: '状态',
           slotName: 'currentStatus'
         },
-        { prop: 'currentName', label: '接单人' },
+        { prop: '', label: '接单人', slotName: 'currentSlot' },
         { prop: 'currentTime', label: '接单时间' },
         { prop: '', label: '操作', width: '200', align: 'center', slotName: 'customersHandle', fixed: 'right' }
       ]
