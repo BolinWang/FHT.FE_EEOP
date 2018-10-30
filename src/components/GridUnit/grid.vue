@@ -1,8 +1,13 @@
 /*
  * @Author: FT.FE.Bolin
  * @Date: 2018-04-11 16:47:22
+<<<<<<< HEAD
  * @Last Modified by: ghost
  * @Last Modified time: 2018-10-25 19:25:31
+=======
+ * @Last Modified by: chudequan
+ * @Last Modified time: 2018-10-30 13:43:38
+>>>>>>> 4b231a5098870dcf7d4349531db512814923864e
  */
 <template>
   <div class="model-table-pagenation">
@@ -280,6 +285,9 @@
       } else if (type === 'local' && Array.isArray(data)) {
         this.tableData = data
         this.total = data.length
+      } else if (!autoLoad) {
+        // 不自动加载直接返回
+        return false
       } else {
         this.$message.error('请联系柏林Grid组件使用姿势')
       }
