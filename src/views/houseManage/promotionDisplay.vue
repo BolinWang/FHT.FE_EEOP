@@ -2,7 +2,7 @@
   <div class="app-container">
     <div class="model-search clearfix">
       <el-form size="small" :inline="true" :model="formData">
-        <el-select size="small" v-model="formData.cityId" @change=change placeholder="城市加载中..." class="item-select" style="width: 150px;">
+        <el-select size="small" v-model="formData.cityId" @change="change" placeholder="城市加载中..." class="item-select" style="width: 150px;">
           <el-option v-for="item in cityOptions" :key="item.value" :label="item.label" :value="item.value">
           </el-option>
         </el-select>
@@ -10,7 +10,7 @@
       </el-form>
     </div>
     <div class="model-table" :style="tableStyle">
-      <GridUnit ref="refGridUnit" :columns="colModels" :url="url" :formOptions="formData" :dataMethod="method" :height="tableHeight">
+      <GridUnit ref="refGridUnit" :columns="colModels" :url="url" :formOptions="formData" :dataMethod="method" :height="tableHeight" :autoLoad="false">
         <template slot="slot_status" slot-scope="scope">
           <el-tag v-model="formData.status" :type="scope.row['prop']">
             {{scope.row['prop']}}
@@ -283,6 +283,7 @@ export default {
         this.tableData = response.data.content
         this.total = response.data.totalElements
         this.listLoading = false
+        this.$refs.refGridUnit.searchHandler()
       })
     },
     /* 列表排序 */
