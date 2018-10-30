@@ -2,7 +2,7 @@
  * @Author: ghost 
  * @Date: 2018-10-22 09:35:00 
  * @Last Modified by: ghost
- * @Last Modified time: 2018-10-30 17:08:50
+ * @Last Modified time: 2018-10-30 17:17:34
  */
 <template>
   <div class="compents-container">
@@ -22,7 +22,7 @@
             type="daterange" 
             size="small" 
             class="filter-item" 
-            style="width: 240px;" 
+            style="width: 290px;" 
             align="right" 
             key="dateTime" 
             unlink-panels 
