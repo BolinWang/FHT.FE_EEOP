@@ -2,7 +2,7 @@
  * @Author: ghost 
  * @Date: 2018-10-22 09:35:00 
  * @Last Modified by: ghost
- * @Last Modified time: 2018-10-25 20:37:40
+ * @Last Modified time: 2018-10-30 17:08:50
  */
 <template>
   <div class="compents-container">
@@ -189,6 +189,7 @@ export default {
   },
   watch: {
     dateTime(value) {
+      value = value || []
       this.bookingSearchForm.start = value.length > 0 ? `${value[0]} 00:00:00` : ''
       this.bookingSearchForm.end = value.length > 0 ? `${value[1]} 23:59:59` : ''
       this.searchParam()

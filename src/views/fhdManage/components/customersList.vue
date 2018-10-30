@@ -212,11 +212,13 @@ export default {
       this.searchParam()
     },
     dateCurrentTime(value) { // 接单开始时间
+      value = value || []
       this.customersSearchForm.currentStart = value.length > 0 ? `${value[0]} 00:00:00` : ''
       this.customersSearchForm.currentEnd = value.length > 0 ? `${value[1]} 23:59:59` : ''
       this.searchParam()
     },
     dateCreatTime(value) { // 创建开始时间
+      value = value || []
       this.customersSearchForm.createStart = value.length > 0 ? `${value[0]} 00:00:00` : ''
       this.customersSearchForm.createEnd = value.length > 0 ? `${value[1]} 23:59:59` : ''
       this.searchParam()
@@ -354,7 +356,7 @@ export default {
     this.$nextTick(() => {
       const offsetTop = this.$refs.refGridUnit.$el.offsetTop || 140
       const pagenationH = 55
-      const containerPadding = 164
+      const containerPadding = 144
       let temp_height = document.body.clientHeight - offsetTop - pagenationH - containerPadding
       this.tableHeight = temp_height > 300 ? temp_height : 300
       window.onresize = () => {
