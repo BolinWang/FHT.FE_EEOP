@@ -321,7 +321,7 @@ export default {
         { prop: '', label: '创建来源', align: 'center', slotName: 'customersType' },
         { prop: 'createName', label: '创建人' },
         { prop: 'createTime', label: '创建时间', width: '150' },
-        { prop: '', label: '租客姓名/手机号', slotName: 'cunstomerCreat', width: '200' },
+        { prop: '', label: '租客姓名/手机号', slotName: 'cunstomerCreat', width: '110' },
         { prop: '', label: '客源渠道', align: 'center', slotName: 'customersSource' },
         { prop: 'rentFeeName', label: '月租金范围' },
         { prop: 'list',
