@@ -366,6 +366,7 @@ export default {
       elink.href = encodeURI(href)
       document.body.appendChild(elink)
       elink.click()
+      ejwnjk
 
       // document.body.removeChild(elink)
       // const loading = this.$loading({
