@@ -30,6 +30,7 @@ export default {
     }
   },
   methods: {
+    len
     searchBooking() {
       this.$refs.bookingAnApartment.searchParam()
       this.$refs.customersList.searchParam()
