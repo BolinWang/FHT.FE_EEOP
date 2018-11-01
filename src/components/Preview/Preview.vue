@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-04-11 16:50:08
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-10-23 15:52:34
+ * @Last Modified time: 2018-11-01 14:10:06
  */
 
 <template>
@@ -16,7 +16,7 @@
         :style="itemStyle">
         <img class="preview-img img-center" v-lazy="item.src">
         <span class="preview-tags" v-if="item.picTag">{{item.picTag}}</span>
-        <span class="preview-item-actions">
+        <span class="preview-item-actions" :class="{'unmoveable': disabled}">
           <span class="preview-item__item-preview" @click="handlePreview(index)">
             <i class="el-icon-zoom-in"></i>
           </span>
@@ -255,6 +255,9 @@ export default {
         position: static;
         font-size: inherit;
         color: inherit;
+      }
+      &.unmoveable {
+        cursor: auto;
       }
     }
     &:hover {
