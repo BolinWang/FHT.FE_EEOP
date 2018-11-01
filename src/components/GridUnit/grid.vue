@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-04-11 16:47:22
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-10-23 15:42:28
+ * @Last Modified time: 2018-11-01 13:39:20
  */
 <template>
   <div class="model-table-pagenation">
@@ -32,6 +32,7 @@
         :sum-text="sumText"
         :summary-method="summaryMethod"
         :cell-class-name="cellClassName"
+        :span-method="spanMethod"
         style="width: 100%;"
         @select="(selection, row) => emitEventHandler('select', selection, row)"
         @select-all="selection => emitEventHandler('select-all', selection)"
