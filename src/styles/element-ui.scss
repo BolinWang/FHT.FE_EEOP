@@ -49,6 +49,10 @@
   font-weight: normal !important;
 }
 
+.el-loading-mask {
+  z-index: 99999 !important;
+}
+
 /* 改变主题色变量 */
 $--color-primary: #409EFF;
 

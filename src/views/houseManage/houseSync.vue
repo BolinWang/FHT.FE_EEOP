@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-07-11 13:49:21
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-10-16 17:37:59
+ * @Last Modified time: 2018-10-23 15:38:12
  */
 
  <template>
@@ -83,41 +83,18 @@
               @change="changeDate">
             </el-date-picker>
           </el-form-item>
-          <el-dialog class="select-dialog" :title='"选择"+dialogTitle+"平台"' :visible.sync="dialogVisible" width="450px">
-            <div class="select-platform-container clearfix">
-              <div class="left">
-                <input type="checkbox" v-model="publishSelect.mlzf" id="mlRent" />
-                <label for="mlRent">
-                  <div class="ml-selectName" v-bind:class="{changeBackground:publishSelect.mlzf}">麦邻租房</div>
-                  <div class="ml-selectStatus">
-                    <i class="el-icon-check" v-show="publishSelect.mlzf"></i>
-                  </div>
-                </label>
-                <el-select v-show="publishSelect.mlzf && dialogTitle === '发布'" class="item-select" v-model="sourceInfo" filterable remote placeholder="照片提供者" :remote-method="fetchFlyTigerList" :loading="loading" :clearable="true" size="small">
-                  <el-option v-for="item in filterManagerList" :key="item.id" :label="item.name" :value="item.id">
-                    <span style="float: left">{{ item.name }}</span>
-                    <span style="float: right; color: #8492a6; font-size: 13px">{{ item.mobile }}</span>
-                  </el-option>
-                </el-select>
-              </div>
-              <div class="right">
-                <input type="checkbox" v-model="publishSelect.idlefish" id="idleFishRent" />
-                <label for="idleFishRent">
-                  <div class="ml-selectName" v-bind:class="{changeBackground:publishSelect.idlefish}">闲鱼租房</div>
-                  <div class="ml-selectStatus">
-                    <i class="el-icon-check" v-show="publishSelect.idlefish"></i>
-                  </div>
-                </label>
-              </div>
-            </div>
-            <span slot="footer" class="dialog-footer">
-              <span class="tips" v-show="dialogTitle === '发布'">温馨提示：飞虎队房源需填写照片提供者</span>
-              <el-button type="primary" size="small" @click="gotoHouseAsync">{{dialogTitle === "撤销"?"确定":"发布"}}</el-button>
-            </span>
-          </el-dialog>
         </div>
       </el-form>
-      <GridUnit ref="refGridUnit" :columns="colModels" :formOptions="searchParams" :url="url" :showSelection="true" :pageSizes="[50, 100, 150, 200]" :dataMethod="method" :height="tableHeight" @selection-change="handleSelectionChange">
+      <GridUnit
+        ref="houseSyncGrid"
+        :columns="colModels"
+        :formOptions="searchParams"
+        :url="url"
+        :showSelection="true"
+        :dataMethod="method"
+        :selection-key="`roomCode`"
+        :height="tableHeight"
+        @selection-change="handleSelectionChange">
         <template slot="slot_popover" slot-scope="scope">
           <el-popover v-if="scope.row.idlefishStatus === `发布失败` || scope.row.publishStatus === `发布失败` " trigger="hover" placement="top">
             <p>发布失败原因: {{ scope.row.failReason }}</p>
@@ -135,6 +112,39 @@
         </el-table-column>
       </GridUnit>
     </el-tabs>
+    <el-dialog class="select-dialog" :title='`选择${dialogTitle}平台`' :visible.sync="dialogVisible" width="450px">
+      <p>已选择{{selectedItems.length}}条数据，请选择{{dialogTitle}}平台</p>
+      <div class="select-platform-container clearfix">
+        <div class="left">
+          <input type="checkbox" v-model="publishSelect.mlzf" id="mlRent" />
+          <label for="mlRent">
+            <div class="ml-selectName" v-bind:class="{changeBackground:publishSelect.mlzf}">麦邻租房</div>
+            <div class="ml-selectStatus">
+              <i class="el-icon-check" v-show="publishSelect.mlzf"></i>
+            </div>
+          </label>
+          <el-select v-show="publishSelect.mlzf && dialogTitle === '发布'" class="item-select" v-model="sourceInfo" filterable remote placeholder="照片提供者" :remote-method="fetchFlyTigerList" :loading="loading" :clearable="true" size="small">
+            <el-option v-for="item in filterManagerList" :key="item.id" :label="item.name" :value="item.id">
+              <span style="float: left">{{ item.name }}</span>
+              <span style="float: right; color: #8492a6; font-size: 13px">{{ item.mobile }}</span>
+            </el-option>
+          </el-select>
+        </div>
+        <div class="right">
+          <input type="checkbox" v-model="publishSelect.idlefish" id="idleFishRent" />
+          <label for="idleFishRent">
+            <div class="ml-selectName" v-bind:class="{changeBackground:publishSelect.idlefish}">闲鱼租房</div>
+            <div class="ml-selectStatus">
+              <i class="el-icon-check" v-show="publishSelect.idlefish"></i>
+            </div>
+          </label>
+        </div>
+      </div>
+      <span class="tips" v-show="dialogTitle === '发布'">温馨提示：飞虎队房源需填写照片提供者</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" size="small" @click="gotoHouseAsync">{{dialogTitle === "撤销"?"确定":"发布"}}</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -227,6 +237,7 @@ export default {
           label: '房间状态',
           width: 100,
           type: 'status',
+          fixed: 'right',
           unitFilters: {
             renderStatusType(status) {
               const statusMap = {
@@ -245,6 +256,7 @@ export default {
           label: '麦邻租房',
           width: 100,
           type: 'status',
+          fixed: 'right',
           unitFilters: {
             renderStatusType(status) {
               const statusMap = {
@@ -259,8 +271,8 @@ export default {
             }
           }
         },
-        { prop: 'idlefishStatus', label: '闲鱼租房', width: 100, slotName: 'slot_popover' },
-        { prop: 'operation', label: '操作记录', width: 180 }
+        { prop: 'idlefishStatus', label: '闲鱼租房', width: 100, slotName: 'slot_popover', fixed: 'right' },
+        { prop: 'operation', label: '操作记录', width: 180, fixed: 'right' }
       ],
       tableHeight: 300,
       url: houseAsyncApi.defaultOptions.requestUrl,
@@ -321,7 +333,7 @@ export default {
       this.searchParams.houseRentType = this.activeName === '整租' ? 1 : (this.activeName === '合租' ? 2 : 0)
       // 解决watch执行顺序
       this.$nextTick(() => {
-        this.$refs.refGridUnit.searchHandler()
+        this.$refs.houseSyncGrid.searchHandler()
       })
     },
     // 日期选择
@@ -335,7 +347,9 @@ export default {
     },
     // 选择列表
     handleSelectionChange(list) {
-      this.selectedItems = list
+      this.$nextTick(() => {
+        this.selectedItems = this.$refs.houseSyncGrid.multipleSelectionAll || []
+      })
     },
     // 选择数据
     syncItems(type = 'on') {
@@ -368,6 +382,12 @@ export default {
     },
     // 发布、撤销
     gotoHouseAsync() {
+      const loading = this.$loading({
+        lock: true,
+        text: 'Loading',
+        spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 0.7)'
+      })
       const roomCodes = this.selectedItems.map(item => item.roomCode)
       const platform = []
       for (var i in this.publishSelect) {
@@ -391,14 +411,16 @@ export default {
         }
       }
       publishHouseApi(params, this.dialogTitle === '发布' ? 1 : 2).then(response => {
+        loading.close()
         this.$notify({
           title: '成功',
           message: '操作成功',
           type: 'success',
           duration: 2000
         })
-        this.dialogVisible = false
         this.searchParam()
+      }).catch(() => {
+        loading.close()
       })
     },
     fetchFlyTigerList(query) {
