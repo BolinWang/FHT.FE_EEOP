@@ -139,6 +139,7 @@
         :columns="billInfos.colModel"
         :formOptions="{orderId: billInfos.orderId}"
         listField="data.result"
+        totalField='data.records'
         :url="'/market/customer/'"
         :dataMethod="'queryLeaseBillInfo'">
       </GridUnit>
