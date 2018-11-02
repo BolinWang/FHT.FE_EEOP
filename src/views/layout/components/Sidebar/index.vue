@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-04-11 17:11:31
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-10-15 10:33:44
+ * @Last Modified time: 2018-10-23 14:07:56
  */
 
 <template>
@@ -40,7 +40,7 @@ export default {
   -moz-user-select:none;
   -webkit-user-select:none;
   user-select:none;
-  border-right: 0;
+  border-right: 0 !important;
 }
 .scrollbar-wrapper {
   overflow-x: hidden!important;

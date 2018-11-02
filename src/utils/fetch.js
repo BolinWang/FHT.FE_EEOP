@@ -3,6 +3,11 @@ import { Message, MessageBox } from 'element-ui'
 import store from '../store'
 import { getSessionId } from '@/utils/auth'
 
+/* 防止重复提交，利用axios的cancelToken */
+let cancelPromise
+const requestPath = {}
+const CancelToken = axios.CancelToken
+
 // 创建axios实例
 const service = axios.create({
   baseURL: process.env.BASE_API,
@@ -13,6 +18,18 @@ const service = axios.create({
 
 // request拦截器
 service.interceptors.request.use(config => {
+  /* 发起请求时，取消掉当前正在进行的相同请求 */
+  config.cancelToken = new CancelToken(c => {
+    cancelPromise = c
+  })
+  const dataMethod = config.method.toUpperCase() === 'POST' ? config.data.method : config.params.method
+  const requestUrlAndMethod = (config.url.endsWith('/') ? config.url : `${config.url}/`) + dataMethod
+  if (requestPath[requestUrlAndMethod]) {
+    requestPath[requestUrlAndMethod]('取消重复请求')
+    requestPath[requestUrlAndMethod] = cancelPromise
+  } else {
+    requestPath[requestUrlAndMethod] = cancelPromise
+  }
   const defaultConfig = {
     version: '1.0',
     timestamp: new Date().getTime(),
@@ -36,7 +53,6 @@ service.interceptors.request.use(config => {
   }
   return config
 }, error => {
-  console.log('【REQUEST】' + error)
   Promise.reject(error)
 })
 
@@ -76,7 +92,9 @@ service.interceptors.response.use(
     return Promise.reject('error')
   },
   error => {
-    console.log('【response】' + error)
+    if (error.message === '取消重复请求') {
+      return Promise.reject(error)
+    }
     Message({
       message: error.message,
       type: 'error',

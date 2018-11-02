@@ -149,7 +149,8 @@ export default {
         { prop: 'tags', label: '标签', type: 'tags', width: 200 },
         { prop: 'roomType', label: '室卫厅', width: 100 },
         { prop: 'roomArea', label: '面积(㎡)', width: 80 },
-        { prop: 'publishTime', label: '发布时间', width: 140, type: 'formatTime' }
+        { prop: 'publishTime', label: '发布时间', width: 140, type: 'formatTime' },
+        { prop: 'auditor', label: '审核人', width: 140 }
       ],
       tableHeight: 300,
       tableData: [],
@@ -170,7 +171,7 @@ export default {
     if (this.housingType * 1 === 1) {
       this.$set(this.colModels[1], 'label', '精品公寓-房型')
       this.colModels.splice(2, 1)
-      this.colModels.splice(-1, 1)
+      this.colModels.splice(-2, 1)
     }
     this.getCityList()
     this.getGridData(this.pageItems)

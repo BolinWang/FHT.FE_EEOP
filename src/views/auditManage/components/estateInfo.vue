@@ -100,7 +100,7 @@
         <Preview
           :pic-list="estateInfoData.picList"
           :delete-icon="``"
-          :disabled="``"
+          :disabled="`disabled`"
           @emitDelete="emitDelete">
         </Preview>
         <!-- <label v-if="temp.reviewStatus === 1" class="el-upload el-upload--picture-card uploadImage" for="uploadImages">

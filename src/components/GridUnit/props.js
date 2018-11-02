@@ -1,8 +1,8 @@
 /*
  * @Author: FT.FE.Bolin
  * @Date: 2018-04-11 16:49:14
- * @Last Modified by: chudequan
- * @Last Modified time: 2018-09-06 11:34:31
+ * @Last Modified by: FT.FE.Bolin
+ * @Last Modified time: 2018-10-23 15:40:35
  */
 
 const props = {
@@ -63,6 +63,12 @@ const props = {
   // axios dataMethod
   dataMethod: {
     type: String
+  },
+
+  // selection表格数据的唯一key
+  selectionKey: {
+    type: String,
+    default: 'id'
   },
 
   // axios headers  一般不需要

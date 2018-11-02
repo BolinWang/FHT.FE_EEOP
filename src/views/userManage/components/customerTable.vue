@@ -16,13 +16,47 @@
         </el-select>
         <el-input size="small" v-model.trim="formData.keyWord" placeholder="姓名/手机号码/证件号" class="filter-item" style="width:180px;" @keydown.native.enter="searchParam">
         </el-input>
-        <el-button type="primary" size="small" icon="el-icon-search" @click.native="searchParam" v-waves class="filter-item">查询</el-button>
+        <el-button type="primary" size="small" icon="el-icon-search" @click.native="searchParam" class="filter-item">查询</el-button>
         <el-button plain size="small" icon="el-icon-remove-outline" @click.native="clearForm">清空</el-button>
       </el-form>
     </div>
     <div class="model-table" :style="tableStyle">
-      <el-table :data="tableData" v-loading.body="listLoading" :max-height="tableHeight" size="small" fit stripe highlight-current-row>
+      <el-table
+        :data="tableData"
+        v-loading.body="listLoading"
+        :max-height="tableHeight"
+        size="small" fit stripe highlight-current-row
+        row-key="customerId"
+        :expand-row-keys="expandKeys">
         <el-table-column type="index" width="60" align="center">
+        </el-table-column>
+        <!-- 租房记录 -->
+        <el-table-column width="0" type="expand" v-if="customerType * 1 === 1">
+          <template slot-scope="props">
+            <el-collapse v-model="activeName" accordion v-if="rentRecordList.length > 0">
+              <el-collapse-item
+                v-for="(item, index) in rentRecordList"
+                :key="index"
+                :name="index">
+                <template slot="title">
+                  <el-button type="primary" round size="mini" @click.stop="showBillDetail(item)">账单详情</el-button>
+                  {{item.startDate}}
+                  {{item.subdistrictName}}
+                </template>
+                <el-form label-position="left" inline class="customer-table-expand">
+                  <el-form-item
+                    v-for="(col, index) in overlayCol"
+                    :key="index"
+                    :label="col.label">
+                    <el-tooltip class="item" effect="dark" :content="col.render ? col.render(item) : item[col.prop]" placement="top-start">
+                      <span>{{ col.render ? col.render(item) : item[col.prop] }}</span>
+                    </el-tooltip>
+                  </el-form-item>
+                </el-form>
+              </el-collapse-item>
+            </el-collapse>
+            <p v-else>暂无数据</p>
+          </template>
         </el-table-column>
         <el-table-column v-for="(item,index) in colModels" :label="item.label" :width="item.width" :key="index" fit show-overflow-tooltip>
           <template slot-scope="scope">
@@ -40,13 +74,10 @@
             </span>
           </template>
         </el-table-column>
-        <el-table-column type="selection" width="40">
-          1111111111
-        </el-table-column>
-        <el-table-column fixed="right" label="操作" width="230" v-if="customerType == 1">
+        <el-table-column fixed="right" label="操作" align="center" width="200" v-if="customerType == 1">
           <template slot-scope="scope">
-            <el-button type="primary" icon="el-icon-tickets" size="small" @click.native="showRecord(scope.row)">租房记录</el-button>
-            <el-button type="primary" icon="el-icon-tickets" size="small" plain @click.native="showDevice(scope.row)">智能设备</el-button>
+            <el-button type="primary" size="small" @click.native="showRecord(scope.row)">租房记录</el-button>
+            <el-button type="primary" size="small" @click.native="showDevice(scope.row)">智能设备</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -55,19 +86,6 @@
       <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="pageItems.pageNo" :page-sizes="pageSizeList" :page-size="pageItems.pageSize" layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
     </div>
-    <!-- 租房记录 -->
-    <el-dialog title="租房记录" width="1000px" :visible.sync="rentRecord">
-      <GridUnit
-        v-if="rentRecord"
-        ref="refGridUnit"
-        :columns="overlayCol"
-        :formOptions="rentParams"
-        :listField="'data.list'"
-        :showPagination="false"
-        :url="'/market/customer/'"
-        :dataMethod="'queryRentRecord'">
-      </GridUnit>
-    </el-dialog>
     <!-- 智能设备 -->
     <el-dialog title="智能设备" width="1100px" :visible.sync="deviceInfo">
       <GridUnit
@@ -112,12 +130,25 @@
         </template>
       </GridUnit>
     </el-dialog>
+
+    <!-- 账单详情 -->
+    <el-dialog :title="`${billInfos.name}的账单详情`" width="1100px" :visible.sync="billInfos.isShow">
+      <GridUnit
+        ref="billGrid"
+        v-if="billInfos.isShow"
+        :columns="billInfos.colModel"
+        :formOptions="{orderId: billInfos.orderId}"
+        listField="data.result"
+        totalField='data.records'
+        :url="'/market/customer/'"
+        :dataMethod="'queryLeaseBillInfo'">
+      </GridUnit>
+    </el-dialog>
   </div>
 </template>
 <script>
-import waves from '@/directive/waves'
 import GridUnit from '@/components/GridUnit/grid'
-import { customerListApi, businessUserListApi, devicePasswordApi } from '@/api/userManage'
+import { customerListApi, businessUserListApi, devicePasswordApi, queryRentRecordApi } from '@/api/userManage'
 import { ObjectMap, deepClone, plusXing } from '@/utils'
 
 export default {
@@ -130,9 +161,6 @@ export default {
   },
   components: {
     GridUnit
-  },
-  directives: {
-    waves
   },
   filters: {
     statusFilter(status) {
@@ -168,6 +196,9 @@ export default {
   },
   data() {
     return {
+      activeName: 0,
+      expandKeys: [],
+      rentRecordList: [],
       attestation: [
         { value: 0, label: '未提交资料' },
         { value: 1, label: '审核中' },
@@ -197,15 +228,9 @@ export default {
           label: '入住状态',
           filterType: 'status',
           width: 80,
-          type: 'status',
-          unitFilters: {
-            renderStatusType(status) {
-              return status * 1 === 1 ? 'success' : 'info'
-            },
-            renderStatusValue(status) {
-              const statusStrData = ['未入住', '在住', '申请换房', '申请退房', '已搬离']
-              return statusStrData[status] || '待上线'
-            }
+          render(row) {
+            const statusStrData = ['未入住', '在住', '申请换房', '申请退房', '已搬离']
+            return statusStrData[row.status] || '未知'
           }
         },
         {
@@ -213,15 +238,9 @@ export default {
           label: '签约人',
           filterType: 'isContracter',
           width: 80,
-          type: 'status',
-          unitFilters: {
-            renderStatusType(status) {
-              return status * 1 === 1 ? 'success' : 'info'
-            },
-            renderStatusValue(status) {
-              const statusStrData = ['否', '是']
-              return statusStrData[status] || '待上线'
-            }
+          render(row) {
+            const statusStrData = ['否', '是']
+            return statusStrData[row.isContracter] || '未知'
           }
         },
         { prop: 'startDate', label: '入住时间' },
@@ -275,21 +294,35 @@ export default {
           align: 'center'
         }
       ],
+      billInfos: {
+        isShow: false,
+        orderId: null,
+        name: '',
+        colModel: [
+          { prop: 'billName', label: '账单名称' },
+          { prop: 'billType', label: '费用类型' },
+          { prop: 'startDate', label: '开始时间' },
+          { prop: 'endDate', label: '结束时间' },
+          { prop: 'billFee', label: '账单金额' },
+          { prop: 'billStatus', label: '账单状态' },
+          { prop: 'actualPayFee', label: '实收金额' },
+          { prop: 'finishDate', label: '支付时间' },
+          { prop: 'payType', label: '支付方式' }
+        ]
+      },
       rentRecord: false,
       deviceInfo: false,
       tableHeight: 300,
       tableData: [],
       customerTypeClone: this.customerType,
       searchParams: {},
-      rentParams: {},
       deviceParams: {},
-      detailData: {},
       total: null,
       pageItems: {
         pageNo: 1,
         pageSize: 20
       },
-      pageSizeList: [10, 20, 30, 50],
+      pageSizeList: [20, 30, 50],
       listLoading: false,
       devicePWDList: {}
     }
@@ -381,11 +414,28 @@ export default {
     },
     /* 租房记录 */
     showRecord(row) {
-      this.rentRecord = true
-      this.rentParams = {
-        pageNo: 1,
-        pageSize: 9999,
-        customerId: row.customerId
+      if (this.expandKeys.indexOf(row.customerId) < 0) {
+        this.rentRecord = true
+        this.rentParams = {
+          pageNo: 1,
+          pageSize: 9999,
+          customerId: row.customerId
+        }
+        this.activeName = 0
+        queryRentRecordApi(ObjectMap(this.rentParams)).then(response => {
+          this.rentRecordList = response.data.list
+          this.rentRecordList.map(item => {
+            item.realName = row.realName || '租客'
+          })
+          this.rentRecord = false
+          // this.expandKeys.push(row.customerId)
+          this.expandKeys = [row.customerId]
+        }).catch(() => {
+          this.rentRecord = false
+        })
+      } else {
+        // this.expandKeys.splice(this.expandKeys.findIndex(item => item === row.customerId), 1)
+        this.expandKeys = []
       }
     },
     /* 智能设备 */
@@ -394,10 +444,6 @@ export default {
       this.deviceParams = {
         customerId: row.customerId
       }
-    },
-    showDetail(row) {
-      this.lookDetail = true
-      this.detailData = row
     },
     /* 列表渲染 */
     getGridData(params) {
@@ -408,6 +454,7 @@ export default {
         this.tableData = response.data.list
         this.total = response.data.record
         this.listLoading = false
+        this.expandKeys = []
       })
     },
     /* 查看智能设备密码 */
@@ -417,9 +464,36 @@ export default {
       }).then((res) => {
         this.$set(this.devicePWDList, i, res.data || '')
       })
+    },
+    /** 账单详情 */
+    showBillDetail(item) {
+      this.billInfos.name = item.realName
+      this.billInfos.orderId = item.orderId
+      this.billInfos.isShow = true
     }
   }
 }
 </script>
-<style rel="stylesheet/scss" lang="scss">
+<style lang="scss">
+.customer-table-expand {
+  font-size: 0;
+}
+.customer-table-expand label {
+  width: 80px;
+  color: #99a9bf;
+}
+.customer-table-expand .el-form-item {
+  margin-right: 0;
+  margin-bottom: 0;
+  width: 30%;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.el-table__expand-icon:after {
+  content: " ";
+}
+.el-table__expand-icon .el-icon {
+  display: none !important;
+}
 </style>
