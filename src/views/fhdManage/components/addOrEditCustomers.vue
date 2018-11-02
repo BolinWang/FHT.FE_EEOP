@@ -2,7 +2,7 @@
  * @Author: ghost 
  * @Date: 2018-10-22 16:17:32 
  * @Last Modified by: ghost
- * @Last Modified time: 2018-11-02 16:42:05
+ * @Last Modified time: 2018-11-02 17:06:10
  */
 <template>
   <div class="compents-container">
@@ -458,7 +458,6 @@ export default {
       this.$nextTick(res => {
         this.formCustomers.id = ''
         this.getSourceList()
-        this.getZoneList()
         if (param.editID) {
           this.editDisabled = param.disabled
           this.formCustomers.id = param.editID
