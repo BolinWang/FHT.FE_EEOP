@@ -2,7 +2,7 @@
  * @Author: ghost 
  * @Date: 2018-10-20 04:20:02 
  * @Last Modified by: ghost
- * @Last Modified time: 2018-10-25 19:39:46
+ * @Last Modified time: 2018-11-02 17:01:33
  */
 <template>
   <div class="container">
@@ -26,13 +26,14 @@ export default {
   },
   data() {
     return {
-
+      tabActive: ''
     }
   },
   methods: {
-    searchBooking() {
-      this.$refs.bookingAnApartment.searchParam()
-      this.$refs.customersList.searchParam()
+    searchBooking(tab) {
+      console.log(tab.index)
+      this.tabActive = tab.index === '0'
+        ? this.$refs.bookingAnApartment.searchParam() : this.$refs.customersList.searchParam()
     }
   }
 }

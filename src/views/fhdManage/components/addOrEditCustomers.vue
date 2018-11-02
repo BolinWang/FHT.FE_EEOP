@@ -2,7 +2,7 @@
  * @Author: ghost 
  * @Date: 2018-10-22 16:17:32 
  * @Last Modified by: ghost
- * @Last Modified time: 2018-10-25 23:51:36
+ * @Last Modified time: 2018-11-02 16:42:05
  */
 <template>
   <div class="compents-container">
@@ -297,8 +297,7 @@ export default {
 
   },
   created() {
-    this.getZoneList()
-    this.getSourceList()
+
   },
   watch: {
     customerAreasList(val) {
@@ -458,6 +457,8 @@ export default {
       this.getZoneList()
       this.$nextTick(res => {
         this.formCustomers.id = ''
+        this.getSourceList()
+        this.getZoneList()
         if (param.editID) {
           this.editDisabled = param.disabled
           this.formCustomers.id = param.editID
