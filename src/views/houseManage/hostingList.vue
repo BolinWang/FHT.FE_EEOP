@@ -501,6 +501,7 @@ export default {
     // 批量房态管理
     handleCommand(command) {
       let roomStatusParams = {}
+      console.log(this.selectedRooms)
       if (typeof command === 'number') {
         if (!this.selectedRooms.length) {
           this.$message.error('请选择需要设置房态的房间')
