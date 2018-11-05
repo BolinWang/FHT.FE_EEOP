@@ -81,7 +81,6 @@
         :showSelection="true"
         :selection-key="`fangyuanCode`"
         @selection-change="handleSelectionChange"
-        @select="handleSelectChange"
         :dataHandler="dataHandler"
         :border="activeName === '合租'">
         <template slot="index" slot-scope="scope">
@@ -462,24 +461,11 @@ export default {
       }
       this.searchParam()
     },
-    handleSelectChange(selection, row) {
-      // const clickIndex = this.$refs.hostingHouseList.tableData.indexOf(row)
-      // this.tableCheckboxList[clickIndex].isChecked = !this.tableCheckboxList[clickIndex].isChecked
-      // if (this.tableCheckboxList[clickIndex].isChecked) {
-      //   const aaa = this.tableCheckboxList.filter(item => item.fangyuanCode === row.fangyuanCode && item.isChecked)
-      //   if (aaa.length === this.tableCheckboxList[clickIndex].columnLength) {
-      //     const curIndex = this.tableCheckboxList.indexOf(aaa[0])
-      //     this.checkedList[curIndex] = true
-      //   }
-      // } else {
-      //   const bbb = this.tableCheckboxList.filter(item => item.fangyuanCode === row.fangyuanCode)
-      //   const norIndex = this.tableCheckboxList.indexOf(bbb[0])
-      //   this.checkedList[norIndex] = false
-      // }
-    },
     handleSelectionChange(list) {
+      console.log(list)
       this.$nextTick(() => {
-        this.selectedRooms = this.$refs.hostingHouseList.multipleSelectionAll || []
+        this.selectedRooms = list
+        // this.selectedRooms = this.$refs.hostingHouseList.multipleSelectionAll || []
       })
       // if (list.length === this.checkedList.length) {
       //   const checkedList = []
@@ -501,7 +487,6 @@ export default {
     // 批量房态管理
     handleCommand(command) {
       let roomStatusParams = {}
-      console.log(this.selectedRooms)
       if (typeof command === 'number') {
         if (!this.selectedRooms.length) {
           this.$message.error('请选择需要设置房态的房间')
