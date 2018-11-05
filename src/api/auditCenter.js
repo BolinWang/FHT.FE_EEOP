@@ -1,5 +1,5 @@
 import fetch from '@/utils/fetch'
-
+const FLY = process.env.FLY_API + '/bop'
 /* 获取房源审核列表 */
 export function queryReviewCheckListByPageApi(params = {}) {
   return fetch({
@@ -136,55 +136,80 @@ export function batchRemoveRoomPictureApi(params) {
   })
 }
 
-/* 飞虎队机构 */
-export const fhdAuditApi = {
+/* 飞虎队机构列表 */
+export const fhdAuditList = {
   defaultOptions: {
-    requestUrl: '/market/audit',
+    requestUrl: FLY + '/orgManage/auditRecordList',
     method: 'auditRecordList'
-  },
-  detail(params) {
-    return fetch({
-      url: fhdAuditApi.defaultOptions.requestUrl,
+  }
+}
+/**
+ * 飞虎队机构详情
+ */
+export function fhdAuditDetailApi(params) {
+  return fetch({
+    url: FLY + '/orgManage/queryAuditRecordDetail ',
+    method: 'post',
+    data: {
       method: 'post',
-      data: {
-        method: 'queryAuditRecordDetail',
-        params
-      }
-    })
-  },
+      params
+    }
+  })
+}
+/**
+ * 飞虎队机构审核
+ */
+export const fhdAuditorgManageApi = {
   personal(params) {
     return fetch({
-      url: fhdAuditApi.defaultOptions.requestUrl,
+      url: FLY + '/orgManage/auditPersonal',
       method: 'post',
       data: {
-        method: 'auditPersonal',
         params
       }
     })
   },
   business(params) {
     return fetch({
-      url: fhdAuditApi.defaultOptions.requestUrl,
+      url: FLY + '/orgManage/auditBusiness',
       method: 'post',
       data: {
-        method: 'auditBusiness',
         params
       }
     })
-  },
-  markFhd(params) {
-    return fetch({
-      url: fhdAuditApi.defaultOptions.requestUrl,
+  }
+}
+/**
+ * 飞虎队机构查询城市管家
+ */
+export function fhdAuditQueryCityManagerApi(params) {
+  return fetch({
+    url: FLY + '/orgManage/queryCityManager',
+    method: 'post',
+    data: {
       method: 'post',
-      data: {
-        method: 'markFlying',
-        params
-      }
-    })
-  },
+      params
+    }
+  })
+}
+/**
+ * 飞虎队标记
+ * */
+export function fhdAuditMarkFlyingApi(params) {
+  return fetch({
+    url: FLY + '/orgManage/markFlying',
+    method: 'post',
+    data: {
+      method: 'post',
+      params
+    }
+  })
+}
+
+export const fhdAuditApi = {
   queryByMobile(params) {
     return fetch({
-      url: fhdAuditApi.defaultOptions.requestUrl,
+      url: FLY + '/orgManage/queryBankInfoByMobile',
       method: 'post',
       data: {
         method: 'queryByMobile',
@@ -194,30 +219,9 @@ export const fhdAuditApi = {
   },
   updateBankCard(params) {
     return fetch({
-      url: fhdAuditApi.defaultOptions.requestUrl,
+      url: FLY + '/orgManage/updateBankCard ',
       method: 'post',
       data: {
-        method: 'updateBankCard',
-        params
-      }
-    })
-  },
-  list(params) {
-    return fetch({
-      url: fhdAuditApi.defaultOptions.requestUrl,
-      method: 'post',
-      data: {
-        method: fhdAuditApi.defaultOptions.method,
-        params
-      }
-    })
-  },
-  queryCityManager(params) {
-    return fetch({
-      url: fhdAuditApi.defaultOptions.requestUrl,
-      method: 'post',
-      data: {
-        method: 'queryCityManager',
         params
       }
     })

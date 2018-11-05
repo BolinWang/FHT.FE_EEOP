@@ -25,6 +25,8 @@
       :columns="colModels"
       :url="url"
       :formOptions="formData"
+      totalField='data.total'
+      listField="data.result"
       :dataMethod="method"
       :height="tableHeight">
       <template slot="slot_status" slot-scope="scope">
@@ -186,7 +188,12 @@
 import waves from '@/directive/waves'
 import GridUnit from '@/components/GridUnit/grid'
 import { parseTime } from '@/utils'
-import { fhdAuditApi } from '@/api/auditCenter'
+import { fhdAuditApi,
+  fhdAuditList,
+  fhdAuditDetailApi,
+  fhdAuditorgManageApi,
+  fhdAuditQueryCityManagerApi,
+  fhdAuditMarkFlyingApi } from '@/api/auditCenter'
 import { validateMobile, validateIntAndZero } from '@/utils/validate'
 import fhdPerson from '@/views/auditManage/components/fhdPerson'
 import fhdBusiness from '@/views/auditManage/components/fhdBusiness'
@@ -358,8 +365,8 @@ export default {
       ],
       tableHeight: 300,
       data_detail: {},
-      url: fhdAuditApi.defaultOptions.requestUrl,
-      method: fhdAuditApi.defaultOptions.method,
+      url: fhdAuditList.defaultOptions.requestUrl,
+      method: fhdAuditList.defaultOptions.method,
       layer_showInfo: false,
       layer_sign: false,
       layer_card: false
@@ -403,7 +410,7 @@ export default {
     },
     // 查看详情
     showDetail(index, row) {
-      fhdAuditApi.detail({
+      fhdAuditDetailApi({
         id: row.id
       }).then(response => {
         this.data_detail = response.data
@@ -416,7 +423,7 @@ export default {
     // 审核
     saveAuditResult() {
       const typeMap = ['personal', 'business'][this.data_detail.type - 1]
-      const saveAuditApi = fhdAuditApi[typeMap]
+      const saveAuditApi = fhdAuditorgManageApi[typeMap]
       const store_fhdData = this.$store.getters.fhdAuditData[typeMap]
       if (!store_fhdData.status) {
         this.$message.error('请选择审核结果')
@@ -445,7 +452,7 @@ export default {
     },
     // 标记为飞虎队
     markFlying() {
-      fhdAuditApi.queryCityManager(this.signForm).then(response => {
+      fhdAuditQueryCityManagerApi(this.signForm).then(response => {
         this.managerList = response.data
         this.layer_sign = true
       }).catch()
@@ -453,7 +460,7 @@ export default {
     signSaveData() {
       this.$refs.signForm.validate(valid => {
         if (valid) {
-          fhdAuditApi.markFhd(this.signForm).then(response => {
+          fhdAuditMarkFlyingApi(this.signForm).then(response => {
             this.$message.success('标记成功')
             this.layer_sign = false
           }).catch()

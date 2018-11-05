@@ -229,7 +229,6 @@ export default {
       value = value || []
       this.customersSearchForm.createStart = value.length > 0 ? `${value[0]} 00:00:00` : ''
       this.customersSearchForm.createEnd = value.length > 0 ? `${value[1]} 23:59:59` : ''
-      this.searchParam()
     }
   },
   filters: {

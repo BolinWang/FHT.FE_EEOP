@@ -2,7 +2,7 @@
  * @Author: ghost 
  * @Date: 2018-10-22 16:17:32 
  * @Last Modified by: ghost
- * @Last Modified time: 2018-11-02 17:06:10
+ * @Last Modified time: 2018-11-05 14:08:21
  */
 <template>
   <div class="compents-container">
@@ -475,6 +475,9 @@ export default {
             this.customerAreasList.push(v.backName)
             this.customerAreasIDList.push(v.zoneId)
           })
+          this.formCustomers.remark = `意向房间：${param.bookMessage.position}、
+            房东/手机号码：${param.bookMessage.orgName}/${param.bookMessage.orgMobile}、
+            预约时间：${param.bookMessage.bookingTime}`.replace(new RegExp(/\s/g), '')
           this.$refs.zoneTreeTwo.setCheckedKeys(this.customerAreasIDList)
         }
       })
