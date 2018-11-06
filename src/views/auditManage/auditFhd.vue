@@ -211,7 +211,7 @@ export default {
   filters: {
     typeFilter(type) {
       const typeData = ['个人', '企业']
-      return `飞虎队${typeData[type - 1]}机构` || ''
+      return typeData[type - 1] ? `飞虎队${typeData[type - 1]}机构` : ''
     },
     renderStatusType(status) {
       const statusMap = {
@@ -358,7 +358,7 @@ export default {
           showOverflowTooltip: true,
           render(row) {
             const filterTime = parseTime(row.gmtModified)
-            return `${filterTime} ${row.auditName || ''}`
+            return `${filterTime || ''} - ${row.auditName || ''}`
           }
         },
         { label: '操作', slotName: 'handle', fixed: 'right', width: 100, align: 'center' }
@@ -461,8 +461,12 @@ export default {
       this.$refs.signForm.validate(valid => {
         if (valid) {
           fhdAuditMarkFlyingApi(this.signForm).then(response => {
-            this.$message.success('标记成功')
-            this.layer_sign = false
+            if (response.code === '000') {
+              this.$message.error(response.message)
+            } else {
+              this.$message.success('标记成功')
+              this.layer_sign = false
+            }
           }).catch()
         } else {
           console.log('error submit!!')
@@ -510,8 +514,12 @@ export default {
       this.$refs.cardForm.validate(valid => {
         if (valid) {
           fhdAuditApi.updateBankCard(this.cardForm).then(response => {
-            this.$message.success('银行卡绑定成功')
-            this.layer_card = false
+            if (response.code === '000') {
+              this.$message.error(response.message)
+            } else {
+              this.$message.success('银行卡绑定成功')
+              this.layer_card = false
+            }
           }).catch()
         } else {
           console.log('error submit!!')

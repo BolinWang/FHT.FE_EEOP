@@ -3,11 +3,11 @@
     <div class="model-search clearfix">
       <el-form size="small" :inline="true" :model="formData" >
         <el-form-item id="pad-b">
-          <el-select size="small" style="width:120px;" v-model="formData.cityId" placeholder="城市" class="item-select" >
+          <el-select size="small" style="width:80px;" v-model="formData.cityId" placeholder="城市" class="item-select" >
             <el-option v-for="item in cityData" :key="item.value" :label="item.label" :value="item.value">
             </el-option>
           </el-select>
-          <el-input v-model="formData.address"  placeholder="请输入小区／公寓名称" style="width:180px;"  @keydown.native.enter="searchParam" class="filter-item"></el-input>
+          <el-input v-model="formData.address"  placeholder="请输入小区／公寓名称" style="width:160px;"  @keydown.native.enter="searchParam" class="filter-item"></el-input>
             <el-date-picker
               v-model="dateTime"
               size="small"
@@ -16,46 +16,46 @@
               range-separator="至"
               start-placeholder="开始日期"
               end-placeholder="结束日期"
-              style="width:360px"
+              style="width:340px"
               @change="searchParam">
             </el-date-picker>
             <el-input v-model="formData.customerKeyword"
               placeholder="租客／租客手机号码"
-              style="width:180px;"
+              style="width:160px;"
               @keydown.native.enter="searchParam"
               class="filter-item">
             </el-input>
-            <el-select size="small" style="width:120px;" v-model="formData.overType" placeholder="逾期状态" class="filter-item"  clearable>
-              <el-option v-for="item in overTypeList" :key="item.value" :label="item.label" :value="item.value">
-              </el-option>
-            </el-select>
-            <el-select size="small" class="filter-item" style="width:120px;" v-model="formData.status" placeholder="请选择订单状态"  clearable >
+            
+            <el-select size="small" class="filter-item" style="width:90px;" v-model="formData.status" placeholder="请选择订单状态"  clearable >
               <el-option v-for="item in statusList" :key="item.value" :label="item.label" :value="item.value" >
               </el-option>
             </el-select>
-          </el-form-item>
-          <el-form-item>
-
             <el-input
+              class="filter-item"
               placeholder="房东／房东手机号码"
-              style="width:160px;"
+              style="width:170px;"
               v-model='formData.orgKeyword'
               @keydown.native.enter="searchParam"
               >
             </el-input>
-             <el-date-picker
+          </el-form-item>
+          <el-form-item>
+            <el-date-picker
               v-model="dateLineTime"
               size="small"
+              style="width:340px"
               type="datetimerange"
-              class="filter-item"
               range-separator="至"
               start-placeholder="最迟支付开始日期"
               end-placeholder="最迟支付结束日期"
-              style="width:360px"
               @change="searchParam">
             </el-date-picker>
-            <el-input  v-model='formData.managerKeyword' placeholder="城市管家／城市管家手机号码" style="width:220px;"  @keydown.native.enter="searchParam" class="filter-item"></el-input>
-            <el-input  v-model='formData.orderNo' placeholder="订单号" style="width:180px;"  @keydown.native.enter="searchParam" class="filter-item"></el-input>
+            <el-input  v-model='formData.managerKeyword' placeholder="城市管家／管家手机号码" style="width:170px;"  @keydown.native.enter="searchParam" class="filter-item"></el-input>
+            <el-input  v-model='formData.orderNo' placeholder="订单号" style="width:170px;"  @keydown.native.enter="searchParam" class="filter-item"></el-input>
+            <el-select size="small" style="width:90px;" v-model="formData.overType" placeholder="逾期状态" class="filter-item"  clearable>
+              <el-option v-for="item in overTypeList" :key="item.value" :label="item.label" :value="item.value">
+              </el-option>
+            </el-select>
             <el-button type="primary" size="small" icon="el-icon-search" @click.native="searchParam"  class="filter-item">查询</el-button>
             <el-button plain size="small" icon="el-icon-remove-outline" @click.native="clearForm">清空</el-button>
             <el-button class="right" type="primary" size="small" icon="el-icon-upload" @click.native="exportExcel">导出</el-button>
