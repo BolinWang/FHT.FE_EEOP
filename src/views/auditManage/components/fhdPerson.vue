@@ -139,8 +139,11 @@ export default {
   },
   filters: {
     picListFilter(list = []) {
-      return list.map((src) => {
-        return { src }
+      return list.map((src, index) => {
+        return {
+          src: src,
+          sortNum: index + 1
+        }
       })
     },
     filterNum(val) {
