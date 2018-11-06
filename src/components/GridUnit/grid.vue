@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-04-11 16:47:22
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-11-01 13:39:20
+ * @Last Modified time: 2018-11-05 10:59:46
  */
 <template>
   <div class="model-table-pagenation">
@@ -259,7 +259,7 @@ export default {
       this.loading = true
       let params
       const {
-        url, dataMethod,
+        url, dataMethod, isMock,
         listField, pageNoKey, pageSizeKey,
         totalField, showPagination, pagination
       } = this
@@ -278,6 +278,7 @@ export default {
       fetch({
         url,
         method: 'post',
+        isMock,
         data: {
           method: dataMethod,
           params

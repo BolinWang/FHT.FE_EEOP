@@ -5,8 +5,8 @@
  * @Last Modified by: ghost
  * @Last Modified time: 2018-10-25 14:56:29
 =======
- * @Last Modified by: chudequan
- * @Last Modified time: 2018-10-21 18:55:12
+ * @Last Modified by: FT.FE.Bolin
+ * @Last Modified time: 2018-11-05 11:24:43
 >>>>>>> 1cda27c436e128115862fba54f638de987941279
  */
 
@@ -186,7 +186,7 @@ export default {
         }
       })
       getMessageCounApi().then(res => {
-        this.bookingMessage = res.data.tenCount
+        this.bookingMessage = res.success ? res.data.tenCount : 0
       })
     },
     routerTo(path, type) {

@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-04-11 16:49:14
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-10-23 15:40:35
+ * @Last Modified time: 2018-11-05 11:00:10
  */
 
 const props = {
@@ -102,6 +102,10 @@ const props = {
   totalField: {
     type: String,
     default: 'data.totalElements'
+  },
+  isMock: {
+    type: Boolean,
+    default: false
   },
   /* 传参  基本上使用formOptions就好啦 */
   params: {
