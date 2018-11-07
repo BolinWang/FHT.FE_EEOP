@@ -3,17 +3,17 @@
     <div class="model-search clearfix">
       <div>
         <el-select
-          size="small" v-model="formData.cityId" placeholder="抵扣券状态"
+          size="small" v-model="formData.status" placeholder="抵扣券状态"
           style="width: 150px;" clearable filterable>
-          <el-option v-for="item in cityList" :key="item.value" :label="item.label" :value="item.value">
+          <el-option v-for="item in statusList" :key="item.value" :label="item.label" :value="item.value">
           </el-option>
         </el-select>
         <el-input size="small" style="width: auto;" class="filter-item"
-          v-model="formData.mobile" placeholder="抵扣券名称"
+          v-model="formData.couponName" placeholder="抵扣券名称"
           @keydown.native.enter="searchParam">
         </el-input>
         <el-input size="small" style="width: auto;" class="filter-item"
-          v-model="formData.mobile" placeholder="用户账号"
+          v-model="formData.userMobile" placeholder="用户账号"
           @keydown.native.enter="searchParam">
         </el-input>
         <el-button
@@ -30,35 +30,39 @@
       </div>
       <div style="margin-top: 10px;">
         <el-date-picker
-          v-model="dateTime"
+          v-model="dateTime1"
           type="daterange"
           size="small"
           style="width: 360px;"
           align="right"
-          key="dateTime"
+          key="dateTime1"
           unlink-panels
           range-separator="至"
           start-placeholder="领取开始日期"
           end-placeholder="领取结束日期"
           value-format="yyyy-MM-dd"
           :picker-options="pickerOptions"
-          @change="changeDate">
+          @change="value => {
+            return changeDate(value, 'receive')
+          }">
         </el-date-picker>
         <el-date-picker
-          v-model="dateTime"
+          v-model="dateTime2"
           type="daterange"
           size="small"
           class="filter-item"
           style="width: 360px;"
           align="right"
-          key="dateTime"
+          key="dateTime2"
           unlink-panels
           range-separator="至"
           start-placeholder="修改开始日期"
           end-placeholder="修改结束日期"
           value-format="yyyy-MM-dd"
           :picker-options="pickerOptions"
-          @change="changeDate">
+          @change="value => {
+            return changeDate(value, 'modified')
+          }">
         </el-date-picker>
       </div>
     </div>
@@ -74,8 +78,8 @@
   </div>
 </template>
 <script>
-import { parseTime, ObjectMap } from '@/utils'
-import { voucherManageApi } from '@/api/ticketManage'
+import { ObjectMap } from '@/utils'
+import { voucherRecordApi } from '@/api/ticketManage'
 import GridUnit from '@/components/GridUnit/grid'
 
 const pickerOptions = {
@@ -117,40 +121,42 @@ export default {
   data() {
     return {
       tableHeight: 300,
-      dateTime: '',
+      statusList: [{
+        label: '未使用',
+        value: 0
+      }, {
+        label: '已使用',
+        value: 1
+      }, {
+        label: '已过期',
+        value: 3
+      }],
+      dateTime1: '',
+      dateTime2: '',
       pickerOptions,
-      formData: {
-        startDate: '',
-        endDate: '',
-        processStatus: 0
-      },
+      formData: {},
+      downloadLoading: false,
       colModels: [
-        { prop: 'tenantName', label: '名称' },
-        { prop: 'tenantMobile', label: '面值', width: 100 },
-        { prop: 'tenantSource', label: '用户账号', width: 100 },
-        { prop: 'landlordMobile', label: '状态', width: 100 },
+        { prop: 'couponName', label: '名称' },
+        { prop: 'discountAmount', label: '面值', width: 100 },
+        { prop: 'userMobile', label: '用户账号', width: 100 },
+        { prop: 'statusStr', label: '状态', width: 100 },
         {
-          prop: 'bookingTime',
+          prop: 'createTimeStr',
           label: '领取时间',
-          width: 140,
-          render(row) {
-            return parseTime(row.bookingTime, '{y}-{m}-{d} {h}:{i}')
-          }
+          width: 140
         },
         {
-          prop: 'bookingTime',
+          prop: 'gmtModifiedStr',
           label: '修改时间',
-          width: 140,
-          render(row) {
-            return parseTime(row.bookingTime, '{y}-{m}-{d} {h}:{i}')
-          }
+          width: 140
         },
-        { prop: 'cityName', label: '领取方式' },
-        { prop: 'cityName', label: '操作人' }
+        { prop: 'receiveSourceStr', label: '领取方式' },
+        { prop: 'operateName', label: '操作人' }
       ],
       gridFetchOptions: {
-        url: voucherManageApi.baseUrl,
-        method: voucherManageApi.queryMethod,
+        url: voucherRecordApi.baseUrl,
+        method: voucherRecordApi.queryMethod,
         isMock: true
       }
     }
@@ -181,20 +187,21 @@ export default {
     // 清空
     clearForm() {
       this.formData = {}
-      this.dateTime = []
+      this.dateTime1 = []
+      this.dateTime2 = []
       this.searchParam()
     },
 
     // 日期选择
-    changeDate(value) {
-      this.formData.startDate = value ? value[0] : ''
-      this.formData.endDate = value ? value[1] : ''
+    changeDate(value, type) {
+      this.formData[`${type}StartTime`] = value ? value[0] : ''
+      this.formData[`${type}EndTime`] = value ? value[1] : ''
     },
 
     // 数据导出
     exportExcel() {
       this.downloadLoading = true
-      voucherManageApi.createCouponRedeemCode(
+      voucherRecordApi.list(
         ObjectMap({
           ...this.formData,
           pageNo: 1,
@@ -214,14 +221,13 @@ export default {
           const filterVal = ['index', ...(filterCols.map((item) => item.prop))]
           console.log(tHeader, filterVal)
           const data = this.formatJson(filterVal, resData)
-          export_json_to_excel(tHeader, data, '兑换码', '兑换码')
+          export_json_to_excel(tHeader, data, '抵扣券使用记录', '抵扣券使用记录')
           this.downloadLoading = false
         })
+      }).catch((err) => {
+        console.log(err)
+        this.downloadLoading = false
       })
-        .catch((err) => {
-          console.log(err)
-          this.downloadLoading = false
-        })
     },
     formatJson(filterVal, jsonData) {
       return jsonData.map(v => filterVal.map(j => {

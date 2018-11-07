@@ -3,26 +3,27 @@
     <div class="model-search clearfix">
       <div>
         <el-select
-          size="small" v-model="formData.cityId" placeholder="城市" style="width: 150px;" clearable filterable>
-          <el-option v-for="item in cityList" :key="item.value" :label="item.label" :value="item.value">
+          size="small" v-model="formData.cityName" placeholder="城市" style="width: 150px;" clearable filterable>
+          <el-option v-for="item in cityList" :key="item.cityId"
+            :label="item.cityName" :value="item.cityName">
           </el-option>
         </el-select>
         <el-select
-          size="small" v-model="formData.cityId" placeholder="抵扣类型"
+          size="small" v-model="formData.deductibleType" placeholder="抵扣类型"
           class="filter-item" style="width: 150px;" clearable filterable>
-          <el-option v-for="item in cityList" :key="item.value" :label="item.label" :value="item.value">
-          </el-option>
+          <el-option label="房租" value="房租"></el-option>
+          <el-option label="水费" value="水费"></el-option>
+          <el-option label="电费" value="电费"></el-option>
         </el-select>
         <el-select
-          size="small" v-model="formData.cityId" placeholder="触发类型"
+          size="small" v-model="formData.triggerType" placeholder="触发类型"
           class="filter-item" style="width: 150px;" clearable filterable>
-          <el-option v-for="item in cityList" :key="item.value" :label="item.label" :value="item.value">
-          </el-option>
+          <el-option label="注册" value="注册"></el-option>
         </el-select>
         <el-select
-          size="small" v-model="formData.cityId" placeholder="抵扣券状态"
+          size="small" v-model="formData.status" placeholder="抵扣券状态"
           class="filter-item" style="width: 150px;" clearable filterable>
-          <el-option v-for="item in cityList" :key="item.value" :label="item.label" :value="item.value">
+          <el-option v-for="item in statusList" :key="item.value" :label="item.label" :value="item.value">
           </el-option>
         </el-select>
         <el-button
@@ -35,7 +36,7 @@
       </div>
       <div style="margin-top: 10px;">
         <el-input size="small"
-          v-model="formData.mobile" placeholder="抵扣券名称"
+          v-model="formData.couponName" placeholder="抵扣券名称"
           style="width: 269px;"
           @keydown.native.enter="searchParam">
         </el-input>
@@ -62,7 +63,7 @@
         <el-button
           class="filter-item" type="primary"
           size="small" icon="el-icon-upload"
-          @click="openDialog('systemVoucher', '人工发放', {})">人工发放</el-button>
+          @click="openDialog('systemVoucher', '人工发放', selections)">人工发放</el-button>
       </div>
     </div>
     <GridUnit
@@ -116,8 +117,8 @@
   </div>
 </template>
 <script>
-import { parseTime } from '@/utils'
 import { voucherManageApi } from '@/api/ticketManage'
+import { appIconApi } from '@/api/eeop'
 import GridUnit from '@/components/GridUnit/grid'
 import addEditVoucher from './components/addEditVoucher'
 import codeVoucher from './components/codeVoucher'
@@ -169,33 +170,38 @@ export default {
       pickerOptions,
       cityList: [],
       formData: {
-        startDate: '',
-        endDate: '',
-        processStatus: 0
+        couponType: 1
       },
+      statusList: [{
+        label: '未开始',
+        value: 0
+      }, {
+        label: '进行中',
+        value: 1
+      }, {
+        label: '已结束',
+        value: 2
+      }, {
+        label: '已废弃',
+        value: 3
+      }],
       colModels: [
         { slot: 'selection' },
-        { prop: 'tenantName', label: '名称' },
-        { prop: 'tenantMobile', label: '面值', width: 100 },
-        { prop: 'tenantSource', label: '起用金额', width: 100 },
+        { prop: 'couponName', label: '名称' },
+        { prop: 'discountAmount', label: '面值', width: 100 },
+        { prop: 'fullMoney', label: '起用金额', width: 100 },
         {
-          prop: 'positionId',
+          prop: 'useRange',
           label: '抵扣类型',
-          render(row) {
-            return '类型'
-          },
           width: 100
         },
-        { prop: 'landlordName', label: '触发条件', width: 100 },
-        { prop: 'landlordMobile', label: '状态', width: 100 },
-        { prop: 'cityName', label: '发放总量' },
+        { prop: 'couponType', label: '触发条件', width: 100 },
+        { prop: 'statusStr', label: '状态', width: 100 },
+        { prop: 'totalNum', label: '发放总量' },
         {
-          prop: 'bookingTime',
+          prop: 'createTimeStr',
           label: '创建时间',
-          width: 140,
-          render(row) {
-            return parseTime(row.bookingTime, '{y}-{m}-{d} {h}:{i}')
-          }
+          width: 140
         },
         { label: '操作', slotName: 'handle', width: 265, fixed: 'right' }
       ],
@@ -207,6 +213,11 @@ export default {
       voucherDialog: {},
       selections: []
     }
+  },
+  created() {
+    appIconApi.cityList().then(response => {
+      this.cityList = response.data
+    })
   },
   mounted() {
     /* 表格高度控制 */
@@ -232,8 +243,17 @@ export default {
           return false
         }
       }
-      this.voucherDialog[`detailData_${type}`] = {
+      this.voucherDialog[`detailData_${type}`] = type === 'systemVoucher' ? {
         dialogtTitle,
+        list: data.map(item => {
+          return {
+            id: item.id,
+            couponName: item.couponName
+          }
+        })
+      } : {
+        dialogtTitle,
+        cityList: this.cityList,
         ...data
       }
       this.$set(this.voucherDialog, `show_${type}`, true)
@@ -251,15 +271,17 @@ export default {
     },
     // 清空
     clearForm() {
-      this.formData = {}
+      this.formData = {
+        couponType: 1
+      }
       this.dateTime = []
       this.searchParam()
     },
 
     // 日期选择
     changeDate(value) {
-      this.formData.startDate = value ? value[0] : ''
-      this.formData.endDate = value ? value[1] : ''
+      this.formData.createStartDate = value ? value[0] : ''
+      this.formData.createEndDate = value ? value[1] : ''
     },
 
     handleSelectionChange(selections) {

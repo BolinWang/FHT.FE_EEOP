@@ -174,7 +174,7 @@ export const asyncRouterMap = [
         name: '抵扣券管理'
       },
       {
-        path: 'auditSignatures',
+        path: 'voucherRecord',
         component: _import('ticketManage/voucherRecord'),
         name: '抵扣券记录'
       }

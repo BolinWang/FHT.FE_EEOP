@@ -2,7 +2,7 @@
  * @Author: FT.FE.Bolin
  * @Date: 2018-11-05 11:00:22
  * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-11-06 13:57:17
+ * @Last Modified time: 2018-11-07 13:49:32
  */
 
 import fetch from '@/utils/fetch'
@@ -10,7 +10,7 @@ import fetch from '@/utils/fetch'
 // 抵扣券管理
 export const voucherManageApi = {
   baseUrl: '/market/coupon',
-  queryMethod: 'list',
+  queryMethod: 'queryCouponListByPage',
   list(params = {}) {
     return fetch({
       url: this.baseUrl,
@@ -29,6 +29,33 @@ export const voucherManageApi = {
       method: 'post',
       data: {
         method: 'createCouponRedeemCode',
+        params
+      }
+    })
+  },
+  grantingCoupon(params = {}) {
+    return fetch({
+      url: this.baseUrl,
+      isMock: true,
+      method: 'post',
+      data: {
+        method: 'grantingCoupon',
+        params
+      }
+    })
+  }
+}
+
+export const voucherRecordApi = {
+  baseUrl: '/market/coupon',
+  queryMethod: 'queryCouponUsedList',
+  list(params = {}) {
+    return fetch({
+      url: this.baseUrl,
+      isMock: true,
+      method: 'post',
+      data: {
+        method: 'queryCouponUsedList',
         params
       }
     })

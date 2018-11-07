@@ -7,7 +7,7 @@
     <div class="voucherContent">
       <el-collapse v-model="activeNames">
         <el-collapse-item title="抵扣券" name="1">
-          <div>asfasf</div>
+          <div v-for="item in codeData.list" :key="item.id">{{item.couponName}}</div>
         </el-collapse-item>
       </el-collapse>
       <div class="container" style="margin-top: 20px;">
@@ -18,7 +18,7 @@
               <el-radio label="多用户"></el-radio>
             </el-radio-group>
             <div style="margin-top: 10px;">
-              <el-input v-if="formData.importType === '单用户'" v-model="formData.name" placeholder="请输入手机号" style="width: 200px;"></el-input>
+              <el-input required v-if="formData.importType === '单用户'" v-model="formData.mobile" placeholder="请输入手机号" style="width: 200px;"></el-input>
               <div v-else>
                 <label class="el-button el-button--primary el-button--small" for="imFile">
                   <i class="el-icon-upload"></i>
@@ -97,16 +97,14 @@ export default {
     emitEventHandler(event) {
       this.$emit(event, ...Array.from(arguments).slice(1))
     },
-    // 生成兑换码
+    // 发放抵扣券
     creatCode() {
-      const codeParams = {
-        couponId: '1',
-        redeemCodeNum: 1,
-        redeemCodeType: 2,
-        fixedCode: '周年快乐'
+      const sendParams = {
+        couponCodes: this.codeData.list.map(item => item.id),
+        userMobiles: this.formData.importType === '单用户' ? [this.formData.mobile] : this.excelData
       }
-      voucherManageApi.createCouponRedeemCode(ObjectMap(codeParams)).then(res => {
-        console.log(res)
+      voucherManageApi.grantingCoupon(ObjectMap(sendParams)).then(res => {
+        this.$message.success('抵扣券发放成功')
       })
     },
     // 数据导入
