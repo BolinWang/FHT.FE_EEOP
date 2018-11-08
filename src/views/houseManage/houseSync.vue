@@ -1,8 +1,8 @@
 /*
  * @Author: FT.FE.Bolin
  * @Date: 2018-07-11 13:49:21
- * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-10-23 15:38:12
+ * @Last Modified by: chudequan
+ * @Last Modified time: 2018-11-08 10:51:47
  */
 
  <template>
@@ -149,7 +149,7 @@
 </template>
 <script>
 import GridUnit from '@/components/GridUnit/grid'
-import { fhdAuditApi } from '@/api/auditCenter'
+import { fhdAuditQueryCityManagerApi } from '@/api/auditCenter'
 import { houseAsyncApi, publishHouseApi } from '@/api/houseManage'
 import areaSelect from '@/components/AreaSelect'
 const pickerOptions = {
@@ -432,7 +432,7 @@ export default {
             return (item.name.toLowerCase().includes(query.toLowerCase()) || item.mobile.includes(query))
           })
         } else {
-          fhdAuditApi.queryCityManager().then((res) => {
+          fhdAuditQueryCityManagerApi().then((res) => {
             this.loading = false
             if (res.code === '0' && res.data) {
               this.cityManagerList = res.data

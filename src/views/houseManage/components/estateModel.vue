@@ -270,7 +270,7 @@
 import areaSelect from '@/components/AreaSelect'
 import mapSelect from './mapSelect'
 import { estateZoneListByAreaIdApi, estateDeviceListApi, estateOrgListApi, estateBatchCopyRoomListApi } from '@/api/houseManage'
-import { fhdAuditApi } from '@/api/auditCenter'
+import { fhdAuditQueryCityManagerApi } from '@/api/auditCenter'
 import Preview from '@/components/Preview/Preview'
 import ImageCropper from '@/components/ImageCropper/Cropper'
 import RoomListSelecter from '@/components/RoomListSelecter'
@@ -674,7 +674,7 @@ export default {
             return (item.name.toLowerCase().includes(query.toLowerCase()) || item.mobile.includes(query))
           })
         } else {
-          fhdAuditApi.queryCityManager().then((res) => {
+          fhdAuditQueryCityManagerApi().then((res) => {
             this.loading = false
             if (res.code === '0' && res.data) {
               this.cityManagerList = res.data
