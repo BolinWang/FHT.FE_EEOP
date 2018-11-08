@@ -100,11 +100,22 @@ export default {
     // 发放抵扣券
     creatCode() {
       const sendParams = {
-        couponCodes: this.codeData.list.map(item => item.id),
+        couponIds: this.codeData.list.map(item => item.id),
+        couponCodes: this.codeData.list.map(item => item.couponCode),
         userMobiles: this.formData.importType === '单用户' ? [this.formData.mobile] : this.excelData
       }
       voucherManageApi.grantingCoupon(ObjectMap(sendParams)).then(res => {
-        this.$message.success('抵扣券发放成功')
+        if (res.data && res.data.errorNum) {
+          this.$notify({
+            title: '抵扣券发放详情',
+            message: `发放成功${sendParams.userMobiles.length - res.data.errorNum}个用户，失败${res.data.errorNum}个用户。原因：${res.data.errorMsg}`,
+            type: 'info',
+            duration: 5000
+          })
+        } else {
+          this.$message.success('抵扣券发放成功')
+        }
+        this.emitEventHandler('closeVoucher', 'systemVoucher')
       })
     },
     // 数据导入
@@ -175,12 +186,11 @@ export default {
           return true
         }
       })
-      console.log(isAccord)
       if (isAccord) {
         return false
       }
       const mapData = data.map(item => {
-        return item
+        return item.mobile
       })
       this.excelData = [...new Set(mapData)]
       const diffLen = data.length - this.excelData.length
