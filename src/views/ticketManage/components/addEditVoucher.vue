@@ -287,6 +287,7 @@ export default {
             this.emitEventHandler('closeVoucher', 'addEditVoucher', 'refresh')
           })
         } else {
+          this.$message.error('您还有信息未完善~')
           const unvalidateList = []
           Object.keys(obj).map(item => {
             unvalidateList.push(this.rules[item][0].baseForm)
