@@ -2,7 +2,8 @@
   <el-dialog
     :title="voucherDialog.title"
     :visible.sync="voucherDialog.show"
-    :before-close="closeDialog"
+    :before-close="beforeCloseDialog"
+    @close="closeDialog"
     width="600px">
     <div class="voucherContent">
       <el-form
@@ -253,16 +254,18 @@ export default {
     }
   },
   methods: {
-    closeDialog(done) {
+    beforeCloseDialog(done) {
       this.$confirm('您有信息未保存，确认退出？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.$refs['dataInfo'].clearValidate()
         done()
-        this.emitEventHandler('closeVoucher', 'addEditVoucher')
       }).catch()
+    },
+    closeDialog() {
+      this.$refs['dataInfo'].clearValidate()
+      this.emitEventHandler('closeVoucher', 'addEditVoucher')
     },
     emitEventHandler(event) {
       this.$emit(event, ...Array.from(arguments).slice(1))
