@@ -2,7 +2,7 @@
   <el-dialog
     :title="voucherDialog.title"
     :visible.sync="voucherDialog.show"
-    @close="closeDialog"
+    :before-close="closeDialog"
     width="600px">
     <div class="voucherContent">
       <el-form
@@ -253,9 +253,16 @@ export default {
     }
   },
   methods: {
-    closeDialog() {
-      this.$refs['dataInfo'].clearValidate()
-      this.emitEventHandler('closeVoucher', 'addEditVoucher')
+    closeDialog(done) {
+      this.$confirm('您有信息未保存，确认退出？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$refs['dataInfo'].clearValidate()
+        done()
+        this.emitEventHandler('closeVoucher', 'addEditVoucher')
+      }).catch()
     },
     emitEventHandler(event) {
       this.$emit(event, ...Array.from(arguments).slice(1))
@@ -284,7 +291,7 @@ export default {
             cityList: undefined
           })).then(res => {
             this.$message.success('保存成功')
-            this.emitEventHandler('closeVoucher', 'addEditVoucher', 'refresh')
+            this.emitEventHandler('closeVoucher', 'addEditVoucher')
           })
         } else {
           this.$message.error('您还有信息未完善~')

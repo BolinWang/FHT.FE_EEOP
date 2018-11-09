@@ -21,15 +21,15 @@
         </div>
       </el-card>
       <div class="container" style="margin-top: 20px;">
-        <el-form size="small" ref="ruleForm" label-width="100px" :model="formData">
-          <el-form-item label="兑换码数量">
+        <el-form size="small" ref="codeForm" :rules="rules" label-width="100px" :model="formData">
+          <el-form-item label="兑换码数量" prop="redeemCodeNum">
             <el-input v-if="!formData.existingExchangeCode" v-model="formData.redeemCodeNum" placeholder="请输入兑换码数量" style="width: 200px;"></el-input>
             <span v-else>{{formData.redeemCodeNum}}</span>
           </el-form-item>
           <el-form-item label="已兑换数量" v-if="formData.existingExchangeCode">
             <span>{{formData.redeemCodeConvertedQuantity}}</span>
           </el-form-item>
-          <el-form-item label="兑换码类型">
+          <el-form-item label="兑换码类型" prop="redeemCodeType">
             <el-radio-group v-if="!formData.existingExchangeCode" v-model="formData.redeemCodeType">
               <el-radio :label="2">固定码</el-radio>
               <el-radio :label="1">单次码</el-radio>
@@ -64,11 +64,23 @@ export default {
     }
   },
   data() {
+    const validateRedeemCodeType = (rule, obj, callback) => {
+      if (!this.formData.redeemCodeType) {
+        callback(new Error('请选择兑换码类型'))
+      } else {
+        if (this.formData.redeemCodeType === 2 && !this.formData.fixedCode) {
+          callback(new Error('请输入固定码'))
+        }
+        callback()
+      }
+    }
     return {
       rules: {
-        number: [
-          { required: true, message: '请输入。。。' },
-          { type: 'number', message: '请输入数字' }
+        redeemCodeNum: [
+          { required: true, message: '请输入兑换码数量', trigger: 'blur' }
+        ],
+        redeemCodeType: [
+          { required: true, validator: validateRedeemCodeType, trigger: 'change' }
         ]
       },
       voucherDialog: {
@@ -93,7 +105,7 @@ export default {
       })
     },
     closeDialog() {
-      this.$refs['ruleForm'].clearValidate()
+      this.$refs['codeForm'].clearValidate()
       this.emitEventHandler('closeVoucher', 'codeVoucher')
     },
     emitEventHandler(event) {
@@ -101,13 +113,19 @@ export default {
     },
     // 生成兑换码
     creatCode() {
-      const codeParams = {
-        couponId: this.codeData.id,
-        ...this.formData,
-        redeemCodeNum: this.formData.redeemCodeNum * 1
-      }
-      voucherManageApi.createCouponRedeemCode(ObjectMap(codeParams)).then(res => {
-        this.queryRedeemCodeUsedInfo()
+      this.$refs.codeForm.validate((valid, obj) => {
+        if (valid) {
+          const codeParams = {
+            couponId: this.codeData.id,
+            ...this.formData,
+            redeemCodeNum: this.formData.redeemCodeNum * 1
+          }
+          voucherManageApi.createCouponRedeemCode(ObjectMap(codeParams)).then(res => {
+            this.queryRedeemCodeUsedInfo()
+          })
+        } else {
+          return false
+        }
       })
     },
     // 数据导出

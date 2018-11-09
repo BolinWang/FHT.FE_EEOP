@@ -290,10 +290,10 @@ export default {
       }
       this.$set(this.voucherDialog, `show_${type}`, true)
     },
-    closeVoucher(type, isRefresh) {
+    closeVoucher(type) {
       this.voucherDialog[`detailData_${type}`] = {}
       this.voucherDialog[`show_${type}`] = false
-      if (isRefresh === 'refresh') {
+      if (type === 'addEditVoucher') {
         this.searchParam()
       }
     },
