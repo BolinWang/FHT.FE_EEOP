@@ -27,6 +27,7 @@
                     @change="importFile($event)"
                     accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"/>
                 </label>
+                <el-button v-if="excelData.length" size="small" type="danger" @click="excelData = []; importMessage = '请重新导入手机号'">删除已导入数据</el-button>
                 <div class="tips" style="color: #999;">{{importMessage}}</div>
               </div>
             </div>
@@ -99,10 +100,15 @@ export default {
     },
     // 发放抵扣券
     creatCode() {
+      const userMobiles = this.formData.importType === '单用户' ? [this.formData.mobile] : this.excelData
+      if (!userMobiles.length) {
+        this.$message.error('手机号不能为空')
+        return false
+      }
       const sendParams = {
         couponIds: this.codeData.list.map(item => item.id),
         couponCodes: this.codeData.list.map(item => item.couponCode),
-        userMobiles: this.formData.importType === '单用户' ? [this.formData.mobile] : this.excelData
+        userMobiles
       }
       voucherManageApi.grantingCoupon(ObjectMap(sendParams)).then(res => {
         if (res.data && res.data.errorNum) {

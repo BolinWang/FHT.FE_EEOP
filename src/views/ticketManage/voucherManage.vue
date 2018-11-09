@@ -62,7 +62,7 @@
           @click="openDialog('addEditVoucher', '新增', {})">新增抵扣券</el-button>
         <el-button
           class="filter-item" type="primary"
-          size="small" icon="el-icon-upload"
+          size="small" icon="el-icon-service"
           @click="openDialog('systemVoucher', '人工发放', selections)">人工发放</el-button>
       </div>
     </div>
@@ -86,13 +86,15 @@
           size="small"
           @click="openDialog('addEditVoucher', '编辑', scope.row)">编辑</el-button>
         <el-button
-          type="success"
+          type="warning"
           size="small"
           @click="openDialog('codeVoucher', '兑换码', scope.row)">兑换码</el-button>
         <el-button
-          type="warning"
-          size="small">
-          启用
+          v-if="scope.row.status !== 2"
+          :type="scope.row.status === 1 ? 'danger' : 'success'"
+          size="small"
+          @click="changeVoucherStatus(scope.row)">
+          {{scope.row.status === 1 ? '停用' : '启用'}}
         </el-button>
       </template>
     </GridUnit>
@@ -173,36 +175,43 @@ export default {
         couponType: 1
       },
       statusList: [{
-        label: '未开始',
+        label: '未启用',
         value: 0
       }, {
-        label: '进行中',
+        label: '启用中',
         value: 1
       }, {
-        label: '已结束',
+        label: '已过期',
         value: 2
-      }, {
-        label: '已废弃',
-        value: 3
       }],
       colModels: [
         { slot: 'selection' },
         { prop: 'couponName', label: '名称' },
         { prop: 'discountAmount', label: '面值', width: 100 },
         { prop: 'fullMoney', label: '起用金额', width: 100 },
-        {
-          prop: 'useRange',
-          label: '抵扣类型',
-          width: 100
+        { prop: 'useRange', label: '抵扣类型', width: 100 },
+        { prop: 'triggerTypeStr', label: '触发条件', width: 100 },
+        { prop: 'status',
+          label: '状态',
+          width: 100,
+          type: 'status',
+          unitFilters: {
+            renderStatusType(status) {
+              const statusMap = {
+                '2': 'danger',
+                '1': 'success',
+                '0': 'info'
+              }
+              return statusMap[status] || 'info'
+            },
+            renderStatusValue(status) {
+              const statusStrData = ['未启用', '启用中', '已过期']
+              return statusStrData[status] || '未知'
+            }
+          }
         },
-        { prop: 'couponType', label: '触发条件', width: 100 },
-        { prop: 'statusStr', label: '状态', width: 100 },
         { prop: 'totalNum', label: '发放总量' },
-        {
-          prop: 'createTimeStr',
-          label: '创建时间',
-          width: 140
-        },
+        { prop: 'createTimeStr', label: '创建时间', width: 140 },
         { label: '操作', slotName: 'handle', width: 265, fixed: 'right' }
       ],
       gridFetchOptions: {
@@ -243,6 +252,29 @@ export default {
           return false
         }
       }
+      if (dialogtTitle === '编辑') {
+        voucherManageApi.queryOneCouponInfo({
+          couponId: data.id
+        }).then(res => {
+          const resData = res.data || {}
+          const cpCouponTemplate = res.data.cpCouponTemplate || {}
+          data = {
+            ...resData,
+            ...cpCouponTemplate,
+            cpCouponTemplate: undefined,
+            discountAmount: (cpCouponTemplate.discountAmount || '') + '',
+            totalNum: (cpCouponTemplate.totalNum || '') + '',
+            fullMoney: (cpCouponTemplate.fullMoney || '') + '',
+            deductibleType: (resData.deductibleType || [])[0],
+            triggerType: (resData.triggerType || [])[0] || '无'
+          }
+          this.doOpenDialog(type, dialogtTitle, data)
+        })
+      } else {
+        this.doOpenDialog(type, dialogtTitle, data)
+      }
+    },
+    doOpenDialog(type, dialogtTitle, data = {}) {
       this.voucherDialog[`detailData_${type}`] = type === 'systemVoucher' ? {
         dialogtTitle,
         list: data.map(item => {
@@ -258,9 +290,12 @@ export default {
       }
       this.$set(this.voucherDialog, `show_${type}`, true)
     },
-    closeVoucher(type) {
+    closeVoucher(type, isRefresh) {
       this.voucherDialog[`detailData_${type}`] = {}
       this.voucherDialog[`show_${type}`] = false
+      if (isRefresh === 'refresh') {
+        this.searchParam()
+      }
     },
 
     // 查询数据
@@ -286,6 +321,16 @@ export default {
 
     handleSelectionChange(selections) {
       this.selections = selections || []
+    },
+
+    changeVoucherStatus(row) {
+      voucherManageApi.editCouponStatus({
+        couponId: row.id,
+        status: row.status === 1 ? 0 : 1
+      }).then(res => {
+        this.$message.success(`${row.status === 1 ? '停用' : '启用'}成功`)
+        this.searchParam()
+      })
     }
   }
 }

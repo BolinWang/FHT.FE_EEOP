@@ -9,7 +9,17 @@
         size="small"
         :model="dataInfo" :rules="rules" ref="dataInfo" label-width="100px">
         <el-collapse v-model="voucherDialog.activeName" accordion>
-          <el-collapse-item title="基础信息" name="baseInfo">
+          <el-collapse-item name="baseInfo">
+            <template slot="title">
+              基础信息
+              <div class="dataInfo_title right" :style="computedInfoColor('baseInfo')" v-if="EVPI !== 'EVPI'">
+                <i :class="{
+                  'el-icon-success': !EVPI.includes('baseInfo'),
+                  'el-icon-error': EVPI.includes('baseInfo')
+                }"></i>
+                {{EVPI.includes('baseInfo') ? '信息未完善' : '信息已完善'}}
+              </div>
+            </template>
             <div class="baseInfo">
               <el-form-item label="名称" prop="couponName">
                 <el-input v-model="dataInfo.couponName" :maxlength="20" placeholder="请输入名称"></el-input>
@@ -20,8 +30,8 @@
               <el-form-item label="触发条件" prop="triggerType">
                 <el-select
                   v-model="dataInfo.triggerType" placeholder="请选择触发条件" clearable style="width: 100%;">
-                  <el-option label="无" :value="0"></el-option>
-                  <el-option label="注册" :value="1"></el-option>
+                  <el-option label="无" value="无"></el-option>
+                  <el-option label="注册" value="注册"></el-option>
                 </el-select>
               </el-form-item>
               <el-form-item label="备注" prop="remark">
@@ -32,7 +42,17 @@
               </el-form-item>
             </div>
           </el-collapse-item>
-          <el-collapse-item title="限制条件" name="limitInfo">
+          <el-collapse-item name="limitInfo">
+            <template slot="title">
+              限制条件
+              <div class="dataInfo_title right" :style="computedInfoColor('limitInfo')" v-if="EVPI !== 'EVPI'">
+                <i :class="{
+                  'el-icon-success': !EVPI.includes('limitInfo'),
+                  'el-icon-error': EVPI.includes('limitInfo')
+                }"></i>
+                {{EVPI.includes('limitInfo') ? '信息未完善' : '信息已完善'}}
+              </div>
+            </template>
             <el-form-item size="small" label="发放总量" prop="totalNum">
               <el-input v-model="dataInfo.totalNum" :maxlength="20" placeholder="请输入发放总量" style="width: 220px;"></el-input>
             </el-form-item>
@@ -45,21 +65,22 @@
                 <el-radio :label="1">限城市</el-radio>
               </el-radio-group>
               <div class="checkbox_group cityLimit" v-if="cityType === 1">
-                <el-checkbox-group v-model="dataInfo.cityIds">
-                  <el-checkbox
+                <el-select v-model="dataInfo.cityIds" multiple clearable filterable placeholder="请选择限制城市，可搜索快速匹配" style="width: 100%;">
+                  <el-option
                     v-for="item in dataInfo.cityList"
                     :key="item.cityId"
-                    :label="item.cityId">{{item.cityName}}
-                  </el-checkbox>
-                </el-checkbox-group>
+                    :label="item.cityName"
+                    :value="item.cityId">
+                  </el-option>
+                </el-select>
               </div>
             </el-form-item>
             <el-form-item size="small" label="抵扣类型" prop="deductibleType">
               <el-select
                 v-model="dataInfo.deductibleType" placeholder="请选择抵扣类型" clearable style="width: 220px;">
-                <el-option label="房租" :value="0"></el-option>
-                <el-option label="手续费" disabled :value="1"></el-option>
-                <el-option label="水电费" disabled :value="1"></el-option>
+                <el-option label="房租" value="房租"></el-option>
+                <el-option label="手续费" disabled value="手续费"></el-option>
+                <el-option label="水电费" disabled value="水电费"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item label="房源类型" prop="housingType">
@@ -115,6 +136,8 @@
   </el-dialog>
 </template>
 <script>
+import { voucherManageApi } from '@/api/ticketManage'
+import { ObjectMap } from '@/utils'
 export default {
   name: 'addEditVoucher',
   props: {
@@ -157,39 +180,40 @@ export default {
       callback()
     }
     return {
+      EVPI: 'EVPI',
       rules: {
         couponName: [
-          { required: true, message: '请输入名称', trigger: 'blur' }
+          { required: true, message: '请输入名称', trigger: 'blur', baseForm: 'baseInfo' }
         ],
         discountAmount: [
-          { required: true, message: '请输入面值', trigger: 'blur' }
+          { required: true, message: '请输入面值', trigger: 'blur', baseForm: 'baseInfo' }
         ],
         triggerType: [
-          { required: true, message: '请选择触发类型', trigger: 'change' }
+          { required: true, message: '请选择触发类型', trigger: 'change', baseForm: 'baseInfo' }
         ],
         couponDesc: [
-          { required: true, message: '请输入使用说明', trigger: 'change' }
+          { required: true, message: '请输入使用说明', trigger: 'change', baseForm: 'baseInfo' }
         ],
         totalNum: [
-          { required: true, message: '请输入发放总量', trigger: 'blur' }
+          { required: true, message: '请输入发放总量', trigger: 'blur', baseForm: 'limitInfo' }
         ],
         fullMoney: [
-          { required: true, message: '请输入起用金额', trigger: 'blur' }
+          { required: true, message: '请输入起用金额', trigger: 'blur', baseForm: 'limitInfo' }
         ],
         deductibleType: [
-          { required: true, message: '请选择抵扣类型', trigger: 'blur' }
+          { required: true, message: '请选择抵扣类型', trigger: 'blur', baseForm: 'limitInfo' }
         ],
         housingType: [
-          { required: true, type: 'array', message: '请选择房源类型', trigger: 'change' }
+          { required: true, type: 'array', message: '请选择房源类型', trigger: 'change', baseForm: 'limitInfo' }
         ],
         effectiveDate: [
-          { required: true, type: 'object', validator: validateEffectiveDate, trigger: 'change' }
+          { required: true, type: 'object', validator: validateEffectiveDate, trigger: 'change', baseForm: 'limitInfo' }
         ],
         expirationDate: [
-          { required: true, type: 'object', validator: validateExpirationDate, trigger: 'change' }
+          { required: true, type: 'object', validator: validateExpirationDate, trigger: 'change', baseForm: 'limitInfo' }
         ],
         cityIds: [
-          { required: true, type: 'array', validator: validateCity, trigger: 'change' }
+          { required: true, type: 'array', validator: validateCity, trigger: 'change', baseForm: 'limitInfo' }
         ]
       },
       voucherDialog: {
@@ -201,20 +225,32 @@ export default {
         effectiveDate: {},
         expirationDate: {}
       },
-      dateTime: '',
-      dateTime1: '',
       cityType: ''
     }
   },
+  computed: {
+    computedInfoColor() {
+      return str => {
+        return {
+          color: this.EVPI.includes(str) ? '#F56C6C' : '#67C23A'
+        }
+      }
+    }
+  },
   created() {
+    const cityIds = (this.voucherData.cityIds || []).map(item => item * 1)
     this.$set(this.voucherDialog, 'title', `${this.voucherData.dialogtTitle}抵扣券`)
     this.$set(this, 'dataInfo', {
-      effectiveDate: this.voucherData.effectiveDate || {},
-      expirationDate: this.voucherData.expirationDate || {},
-      housingType: this.voucherData.housingType || [],
-      cityIds: this.voucherData.cityIds || [],
       ...this.voucherData
     })
+    this.$set(this.dataInfo, 'cityIds', cityIds)
+    this.$set(this.dataInfo, 'housingType', this.voucherData.housingType || [])
+    this.$set(this.dataInfo, 'effectiveDate', this.voucherData.effectiveDate || {})
+    this.$set(this.dataInfo, 'expirationDate', this.voucherData.expirationDate || {})
+    this.$set(this, 'cityType', this.dataInfo.cityIds.length ? 1 : 0)
+    if (this.dataInfo.expirationDate.type === 1) {
+      this.$set(this.dataInfo.expirationDate, 'days', (this.dataInfo.expirationDate.days || '') + '')
+    }
   },
   methods: {
     closeDialog() {
@@ -225,11 +261,37 @@ export default {
       this.$emit(event, ...Array.from(arguments).slice(1))
     },
     saveData() {
-      this.$refs.dataInfo.validate((valid) => {
+      this.$refs.dataInfo.validate((valid, obj) => {
         if (valid) {
-          alert('submit!')
+          const cityNames = this.dataInfo.cityList.filter(item => {
+            return this.dataInfo.cityIds.find(cityId => item.cityId === cityId)
+          }).map(item => item.cityName)
+          voucherManageApi.saveCoupon(ObjectMap({
+            couponType: 1,
+            ...this.dataInfo,
+            deductibleType: this.dataInfo.deductibleType.split(','),
+            triggerType: this.dataInfo.triggerType.split(','),
+            cityNames: this.cityType ? cityNames : [],
+            expirationDate: ObjectMap({
+              ...this.dataInfo.expirationDate,
+              days: this.dataInfo.expirationDate.type === 1 ? this.dataInfo.expirationDate.days : undefined,
+              fixedDate: this.dataInfo.expirationDate.type === 2 ? this.dataInfo.expirationDate.fixedDate : undefined
+            }),
+            effectiveDate: ObjectMap({
+              ...this.dataInfo.effectiveDate,
+              fixedDate: this.dataInfo.effectiveDate.type === 2 ? this.dataInfo.effectiveDate.fixedDate : undefined
+            }),
+            cityList: undefined
+          })).then(res => {
+            this.$message.success('保存成功')
+            this.emitEventHandler('closeVoucher', 'addEditVoucher', 'refresh')
+          })
         } else {
-          console.log('error submit!!')
+          const unvalidateList = []
+          Object.keys(obj).map(item => {
+            unvalidateList.push(this.rules[item][0].baseForm)
+          })
+          this.EVPI = [...new Set(unvalidateList)].join(',')
           return false
         }
       })

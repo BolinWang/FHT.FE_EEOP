@@ -1,10 +1,6 @@
 let path = require('path')
 let proxyIPs = {
-  // YYY: 'http://192.168.5.243:1234/',
-  // WANLI: 'http://192.168.1.121:1234/', // 万里小哥哥
-  // HONGDENG: 'http://192.168.5.241:1234/' // 水滴灯小哥哥
-  //  ghost:'http://192.168.5.115:1234'
-  IP: 'http://192.168.5.164:1234'
+  IP: 'http://192.168.0.58:1234'
 }
 module.exports = {
   dev: {

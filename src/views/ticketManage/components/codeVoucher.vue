@@ -9,13 +9,13 @@
         <div class="container_voucher">
           <el-form size="small" ref="form" :model="codeData" label-width="80px">
             <el-form-item label="名称">
-              <span>阿发沙发舒服</span>
+              <span>{{codeData.couponName}}</span>
             </el-form-item>
             <el-form-item label="面值">
-              <span>12</span>
+              <span>{{codeData.discountAmount}}</span>
             </el-form-item>
             <el-form-item label="发放总量">
-              <span>222</span>
+              <span>{{codeData.totalNum}}</span>
             </el-form-item>
           </el-form>
         </div>
@@ -23,30 +23,30 @@
       <div class="container" style="margin-top: 20px;">
         <el-form size="small" ref="ruleForm" label-width="100px" :model="formData">
           <el-form-item label="兑换码数量">
-            <el-input v-model="formData.name" placeholder="请输入兑换码数量" style="width: 200px;"></el-input>
-            <span>1231</span>
+            <el-input v-if="!formData.existingExchangeCode" v-model="formData.redeemCodeNum" placeholder="请输入兑换码数量" style="width: 200px;"></el-input>
+            <span v-else>{{formData.redeemCodeNum}}</span>
           </el-form-item>
-          <el-form-item label="已兑换数量">
-            <span>0</span>
+          <el-form-item label="已兑换数量" v-if="formData.existingExchangeCode">
+            <span>{{formData.redeemCodeConvertedQuantity}}</span>
           </el-form-item>
           <el-form-item label="兑换码类型">
-            <el-radio-group v-model="formData.resource">
-              <el-radio label="固定码"></el-radio>
-              <el-radio label="单次码"></el-radio>
+            <el-radio-group v-if="!formData.existingExchangeCode" v-model="formData.redeemCodeType">
+              <el-radio :label="2">固定码</el-radio>
+              <el-radio :label="1">单次码</el-radio>
             </el-radio-group>
-            <span>固定码</span>
-            <div class="kouling">
-              <el-input v-model="formData.name" placeholder="自定义固定码" style="width: 200px;"></el-input>
-              <span>阿发沙发</span>
+            <span v-else>{{formData.redeemCodeType === 1 ? '单次码' : '固定码'}}</span>
+            <div class="kouling" v-if="formData.redeemCodeType === 2">
+              <el-input v-if="!formData.existingExchangeCode" v-model="formData.fixedCode" placeholder="自定义固定码" style="width: 200px;"></el-input>
+              <span v-else>{{formData.fixedCode}}</span>
             </div>
           </el-form-item>
         </el-form>
       </div>
     </div>
     <span slot="footer" class="dialog-footer">
-      <el-button @click="voucherDialog.show = false">取 消</el-button>
-      <el-button size="small" type="primary" @click="creatCode">生成兑换码</el-button>
-      <el-button size="small" type="primary" @click="exportExcel" :loading="downloadLoading">下载兑换码Excel</el-button>
+      <el-button size="small" @click="voucherDialog.show = false">{{formData.existingExchangeCode ? '关 闭' : '取消'}}</el-button>
+      <el-button v-if="!formData.existingExchangeCode" size="small" type="primary" @click="creatCode">生成兑换码</el-button>
+      <el-button v-else-if="formData.redeemCodeType === 1" size="small" type="primary" @click="exportExcel" :loading="downloadLoading">下载兑换码Excel</el-button>
     </span>
   </el-dialog>
 </template>
@@ -80,9 +80,18 @@ export default {
     }
   },
   created() {
-
+    this.queryRedeemCodeUsedInfo()
   },
   methods: {
+    queryRedeemCodeUsedInfo() {
+      voucherManageApi.queryRedeemCodeUsedInfo({
+        couponId: this.codeData.id
+      }).then(res => {
+        this.formData = res.data && res.data.existingExchangeCode ? res.data : {
+          existingExchangeCode: false
+        }
+      })
+    },
     closeDialog() {
       this.$refs['ruleForm'].clearValidate()
       this.emitEventHandler('closeVoucher', 'codeVoucher')
@@ -93,39 +102,36 @@ export default {
     // 生成兑换码
     creatCode() {
       const codeParams = {
-        couponId: '1',
-        redeemCodeNum: 1,
-        redeemCodeType: 2,
-        fixedCode: '周年快乐'
+        couponId: this.codeData.id,
+        ...this.formData,
+        redeemCodeNum: this.formData.redeemCodeNum * 1
       }
       voucherManageApi.createCouponRedeemCode(ObjectMap(codeParams)).then(res => {
-        console.log(res)
+        this.queryRedeemCodeUsedInfo()
       })
     },
     // 数据导出
     exportExcel() {
       this.downloadLoading = true
-      voucherManageApi.createCouponRedeemCode(
-        ObjectMap({
-          ...this.formData,
-          pageNo: 1,
-          pageSize: 999999
-        })
-      ).then(response => {
-        const resData = (response.data.content || []).slice()
+      voucherManageApi.queryRedeemCodeByCouponId({
+        couponId: this.codeData.id
+      }).then(response => {
+        const resData = (response.data || []).slice()
         resData.map((item, index) => {
           item.index = index * 1 + 1
         })
         require.ensure([], () => {
           const { export_json_to_excel } = require('@/vendor/Export2Excel')
-          const filterCols = this.colModels.filter((item) => {
-            return !item.noExport
-          })
+          const filterCols = [
+            { prop: 'couponName', label: '抵扣券名称' },
+            { prop: 'redeemCode', label: '兑换码' },
+            { prop: 'statusStr', label: '状态' },
+            { prop: 'exchangeTimeStr', label: '兑换时间' }
+          ]
           const tHeader = ['序号', ...(filterCols.map((item) => item.label))]
           const filterVal = ['index', ...(filterCols.map((item) => item.prop))]
-          console.log(tHeader, filterVal)
           const data = this.formatJson(filterVal, resData)
-          export_json_to_excel(tHeader, data, '兑换码', '兑换码')
+          export_json_to_excel(tHeader, data, `${this.codeData.couponName}-兑换码`, '兑换码')
           this.downloadLoading = false
         })
       })
