@@ -163,7 +163,7 @@ export const asyncRouterMap = [
     component: Layout,
     redirect: 'noredirect',
     name: '优惠券管理',
-    icon: 'icon_audit',
+    icon: 'icon_tickets',
     meta: {
       role: ['admin', 'global']
     },
