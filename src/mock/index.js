@@ -1,14 +1,13 @@
 import Mock from 'mockjs'
-import authorizeApi from './authorize'
+import { voucherManageApi, voucherRecordApi } from './ticketManage/voucherManage'
 
-// Mock.setup({
-//   timeout: '350-600'
-// })
-
-// OTA
-Mock.mock(/\/market\/ota\/list/, 'post', authorizeApi.list)
-Mock.mock(/\/market\/ota\/account\/binding/, 'post', authorizeApi.bind)
-Mock.mock(/\/market\/account\/binding\/status/, 'post', authorizeApi.status)
-Mock.mock(/\/market\/account\/acquire\/picture/, 'post', authorizeApi.picture)
+/**
+ * 优惠券管理
+ * -抵扣券管理
+ */
+Mock.mock(/\/market\/coupon\/queryCouponListByPage/, 'post', voucherManageApi.list)
+Mock.mock(/\/market\/coupon\/grantingCoupon/, 'post', voucherManageApi.grantingCoupon)
+Mock.mock(/\/market\/coupon\/createCouponRedeemCode/, 'post', voucherManageApi.createCouponRedeemCode)
+Mock.mock(/\/market\/coupon\/queryCouponUsedList/, 'post', voucherRecordApi.list)
 
 export default Mock

@@ -52,6 +52,10 @@ service.interceptors.request.use(config => {
       config.params = Object.assign(config.params, defaultConfig)
     }
   }
+  // 处理mock
+  if (process.env.MOCK && config.isMock) {
+    config.url = `${config.url}/${config.data.method || 'isMock'}`
+  }
   return config
 }, error => {
   Promise.reject(error)
