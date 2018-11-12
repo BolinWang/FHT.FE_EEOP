@@ -64,6 +64,16 @@ export default {
     }
   },
   data() {
+    const validateInteger = (rule, value, callback) => {
+      value = value * 1
+      if (!Number.isInteger(value) || value < 0) {
+        return callback(new Error('请输入正整数'))
+      }
+      if (value > this.codeData.totalNum) {
+        return callback(new Error(`不能大于抵扣券发放总量：${this.codeData.totalNum}`))
+      }
+      callback()
+    }
     const validateRedeemCodeType = (rule, obj, callback) => {
       if (!this.formData.redeemCodeType) {
         callback(new Error('请选择兑换码类型'))
@@ -77,7 +87,8 @@ export default {
     return {
       rules: {
         redeemCodeNum: [
-          { required: true, message: '请输入兑换码数量', trigger: 'blur' }
+          { required: true, message: '请输入兑换码数量', trigger: 'blur' },
+          { validator: validateInteger, trigger: 'blur' }
         ],
         redeemCodeType: [
           { required: true, validator: validateRedeemCodeType, trigger: 'change' }

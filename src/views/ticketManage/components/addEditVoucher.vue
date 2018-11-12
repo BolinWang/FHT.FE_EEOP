@@ -150,6 +150,24 @@ export default {
     }
   },
   data() {
+    const validateInteger = (rule, value, callback) => {
+      value = value * 1
+      if (!Number.isInteger(value) || value < 0) {
+        return callback(new Error('请输入正整数'))
+      }
+      if (value > 100000) {
+        return callback(new Error('不能大于100000'))
+      }
+      callback()
+    }
+    const validateDeci = (rule, value, callback) => {
+      value = value * 1
+      const reg = /^\d+(\.\d{1,2})?$/
+      if (!reg.test(value)) {
+        return callback(new Error('请输入精度为两位小数内的正数'))
+      }
+      callback()
+    }
     const validateEffectiveDate = (rule, obj, callback) => {
       if (!obj.type) {
         callback(new Error('请选择'))
@@ -166,8 +184,17 @@ export default {
       }
       if (obj.type === 2 && !obj.fixedDate) {
         return callback(new Error('请选择失效日期'))
-      } else if (obj.type === 1 && !obj.days) {
-        return callback(new Error('请输入固定天数'))
+      }
+      if (obj.type === 1) {
+        if (!obj.days) {
+          return callback(new Error('请输入固定天数'))
+        }
+        if (!Number.isInteger(obj.days * 1) || obj.days * 1 < 0) {
+          return callback(new Error('请输入正整数'))
+        }
+        if (obj.days * 1 > 100000) {
+          return callback(new Error('不能大于100000'))
+        }
       }
       callback()
     }
@@ -187,7 +214,8 @@ export default {
           { required: true, message: '请输入名称', trigger: 'blur', baseForm: 'baseInfo' }
         ],
         discountAmount: [
-          { required: true, message: '请输入面值', trigger: 'blur', baseForm: 'baseInfo' }
+          { required: true, message: '请输入面值', trigger: 'blur', baseForm: 'baseInfo' },
+          { validator: validateInteger, trigger: 'blur' }
         ],
         triggerType: [
           { required: true, message: '请选择触发类型', trigger: 'change', baseForm: 'baseInfo' }
@@ -196,10 +224,12 @@ export default {
           { required: true, message: '请输入使用说明', trigger: 'change', baseForm: 'baseInfo' }
         ],
         totalNum: [
-          { required: true, message: '请输入发放总量', trigger: 'blur', baseForm: 'limitInfo' }
+          { required: true, message: '请输入发放总量', trigger: 'blur', baseForm: 'limitInfo' },
+          { validator: validateInteger, trigger: 'blur' }
         ],
         fullMoney: [
-          { required: true, message: '请输入起用金额', trigger: 'blur', baseForm: 'limitInfo' }
+          { required: true, message: '请输入起用金额', trigger: 'blur', baseForm: 'limitInfo' },
+          { validator: validateDeci, trigger: 'blur' }
         ],
         deductibleType: [
           { required: true, message: '请选择抵扣类型', trigger: 'blur', baseForm: 'limitInfo' }

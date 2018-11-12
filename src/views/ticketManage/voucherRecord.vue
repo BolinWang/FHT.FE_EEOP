@@ -229,6 +229,7 @@ export default {
         const resData = (response.data.content || []).slice()
         resData.map((item, index) => {
           item.index = index * 1 + 1
+          item.status = item.statusStr
         })
         require.ensure([], () => {
           const { export_json_to_excel } = require('@/vendor/Export2Excel')
