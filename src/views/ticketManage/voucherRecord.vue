@@ -140,7 +140,25 @@ export default {
         { prop: 'couponName', label: '名称' },
         { prop: 'discountAmount', label: '面值', width: 100 },
         { prop: 'userMobile', label: '用户账号', width: 100 },
-        { prop: 'statusStr', label: '状态', width: 100 },
+        { prop: 'status',
+          label: '状态',
+          width: 100,
+          type: 'status',
+          unitFilters: {
+            renderStatusType(status) {
+              const statusMap = {
+                '3': 'danger',
+                '1': 'success',
+                '0': 'info'
+              }
+              return statusMap[status] || 'info'
+            },
+            renderStatusValue(status) {
+              const statusStrData = ['未使用', '已使用', '未知', '已过期']
+              return statusStrData[status] || '未知'
+            }
+          }
+        },
         {
           prop: 'createTimeStr',
           label: '领取时间',
