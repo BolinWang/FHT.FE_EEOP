@@ -2,12 +2,12 @@
  * @Author: ghost 
  * @Date: 2018-11-12 14:17:21 
  * @Last Modified by: ghost
- * @Last Modified time: 2018-11-14 18:34:50
+ * @Last Modified time: 2018-11-14 19:28:55
  */
 <template>
   <div class="container">
      <div class="label-box">
-        <span class='text'>未处理小区 {{count}}</span>
+        <span class='text'>未处理小区14c {{count}}</span>
         <span class="circle orange"></span>
         <span class="text">认证小区</span>
         <span class="circle blue"></span>
