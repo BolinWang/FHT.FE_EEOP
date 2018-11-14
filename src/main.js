@@ -19,10 +19,11 @@ Vue.use(ElementUI)
 Vue.use(VuePreview)
 Vue.use(VueLazyload, {
   /* error: errorPic, */
-
   loading: lazyLoadPic
 })
 Vue.component('icon-svg', IconSvg)
+
+process.env.MOCK && require('./mock')
 
 Object.keys(filters).forEach(key => {
   Vue.filter(key, filters[key])

@@ -1,8 +1,13 @@
 /*
  * @Author: FT.FE.Bolin
  * @Date: 2018-04-11 17:22:27
+<<<<<<< HEAD
  * @Last Modified by: ghost
- * @Last Modified time: 2018-11-06 13:47:23
+ * @Last Modified time: 2018-10-25 14:56:29
+=======
+ * @Last Modified by: FT.FE.Bolin
+ * @Last Modified time: 2018-11-05 11:24:43
+>>>>>>> 1cda27c436e128115862fba54f638de987941279
  */
 
 <template>
@@ -61,8 +66,8 @@
                 <span class="infos__item">您有<i class="red">{{messageData.concentrate || '0'}}</i>条[集中式]房源信息待审核</span>
                 <el-button type="text">前往审核</el-button>
               </el-dropdown-item>
-              <el-dropdown-item class="clearfix flex" @click.native="routerTo('/auditManage/auditFhd')" v-if="register > 0">
-                <span class="infos__item">您有<i class="red">{{register || '0'}}</i>条飞虎队机构申请待审核</span>
+              <el-dropdown-item class="clearfix flex" @click.native="routerTo('/auditManage/auditFhd')" v-if="messageData.register > 0">
+                <span class="infos__item">您有<i class="red">{{messageData.register || '0'}}</i>条飞虎队机构申请待审核</span>
                 <el-button type="text">前往审核</el-button>
               </el-dropdown-item>
               <el-dropdown-item class="clearfix flex" @click.native="routerTo('/fhdManage/customersCenter')" v-if="bookingMessage> 0">
@@ -137,7 +142,6 @@ export default {
         password: ''
       },
       bookingMessage: '',
-      register: '',
       rules: {
         password: [
           { trigger: 'blur', validator: validatePass }
@@ -182,8 +186,7 @@ export default {
         }
       })
       getMessageCounApi().then(res => {
-        this.bookingMessage = res.data.tenCount
-        this.register = res.data.register
+        this.bookingMessage = res.success ? res.data.tenCount : 0
       })
     },
     routerTo(path, type) {
