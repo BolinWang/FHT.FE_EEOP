@@ -24,7 +24,6 @@ service.interceptors.request.use(config => {
   })
   const dataMethod = config.method.toUpperCase() === 'POST' ? config.data.method : config.params.method
   const requestUrlAndMethod = (config.url.endsWith('/') ? config.url : `${config.url}/`) + dataMethod
-  console.log(requestPath)
   if (requestPath[requestUrlAndMethod]) {
     requestPath[requestUrlAndMethod]('取消重复请求')
     requestPath[requestUrlAndMethod] = cancelPromise

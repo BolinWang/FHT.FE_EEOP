@@ -258,6 +258,27 @@ export const asyncRouterMap = [
       component: _import('fhdManage/customersCenter'),
       name: '客源中心'
     }]
+  }, {
+    path: '/communityStandard',
+    component: Layout,
+    name: '小区标准库',
+    icon: 'icon_community',
+    meta: {
+      role: ['admin', 'global']
+    },
+    children: [{
+      path: 'authenticationCommunity',
+      component: _import('communityStandard/authenticationCommunity'),
+      name: '认证小区'
+    }, {
+      path: 'collectionCorrection',
+      component: _import('communityStandard/collectionCorrection'),
+      name: '采集更正'
+    }, {
+      path: 'lookupContrast',
+      component: _import('communityStandard/lookupContrast'),
+      name: '查找对比'
+    }]
   },
   // {
   //   path: '/serviceManage',

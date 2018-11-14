@@ -7,6 +7,7 @@
       :size="size"
       :clearable="clearable"
       :filterable="filterable"
+      :change-on-select='changeOnelect'
       :show-all-levels="showAllLevels"
       v-model="selectedOptions"
       @change="handleChange"
@@ -31,6 +32,10 @@ export default {
       default: '请选择'
     },
     filterable: {
+      type: Boolean,
+      default: true
+    },
+    changeOnelect: {
       type: Boolean,
       default: true
     },
