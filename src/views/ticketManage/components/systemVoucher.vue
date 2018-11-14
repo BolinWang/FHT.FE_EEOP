@@ -181,13 +181,13 @@ export default {
         return false
       }
       const isAccord = data.some(item => {
-        if (!item.mobile) {
-          this.importMessage = '格式不正确：Excel表首行请填写为mobile'
+        if (!item['用户手机号']) {
+          this.importMessage = '格式不正确：Excel表首行请填写为【用户手机号】'
           this.$message.error(this.importMessage)
           return true
         }
-        if (!validateMobile(item.mobile)) {
-          this.importMessage = `格式不正确：${item.mobile} 为无效号码`
+        if (!validateMobile(item['用户手机号'])) {
+          this.importMessage = `格式不正确：${item['用户手机号']} 为无效号码`
           this.$message.error(this.importMessage)
           return true
         }
@@ -196,7 +196,7 @@ export default {
         return false
       }
       const mapData = data.map(item => {
-        return item.mobile
+        return item['用户手机号']
       })
       this.excelData = [...new Set(mapData)]
       const diffLen = data.length - this.excelData.length

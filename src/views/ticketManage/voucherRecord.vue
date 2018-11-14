@@ -123,10 +123,10 @@ export default {
       tableHeight: 300,
       statusList: [{
         label: '未使用',
-        value: 0
+        value: 1
       }, {
         label: '已使用',
-        value: 1
+        value: 2
       }, {
         label: '已过期',
         value: 3
@@ -148,13 +148,13 @@ export default {
             renderStatusType(status) {
               const statusMap = {
                 '3': 'danger',
-                '1': 'success',
-                '0': 'info'
+                '2': 'success',
+                '1': 'info'
               }
               return statusMap[status] || 'info'
             },
             renderStatusValue(status) {
-              const statusStrData = ['未使用', '已使用', '未知', '已过期']
+              const statusStrData = ['未知', '未使用', '已使用', '已过期']
               return statusStrData[status] || '未知'
             }
           }
