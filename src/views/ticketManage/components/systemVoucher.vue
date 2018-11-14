@@ -7,7 +7,10 @@
     <div class="voucherContent">
       <el-collapse v-model="activeNames">
         <el-collapse-item title="抵扣券" name="1">
-          <div v-for="item in codeData.list" :key="item.id">{{item.couponName}}</div>
+          <div v-for="item in codeData.list" :key="item.id" class="coupon_box">
+            <div class="couponName">{{item.couponName}}</div>
+            <div>剩余可发：<span class="residualQuantityNum">{{item.residualQuantityNum}}</span></div>
+          </div>
         </el-collapse-item>
       </el-collapse>
       <div class="container" style="margin-top: 20px;">
@@ -20,7 +23,7 @@
             <div style="margin-top: 10px;">
               <el-input required v-if="formData.importType === '单用户'" v-model="formData.mobile" placeholder="请输入手机号" style="width: 200px;"></el-input>
               <div v-else>
-                <label class="el-button el-button--primary el-button--small" for="imFile">
+                <label class="el-button el-button--primary el-button--small" for="imFile" :loading="downloadLoading">
                   <i class="el-icon-upload"></i>
                   导入Excel
                   <input type="file" id="imFile" style="display: none"
@@ -78,7 +81,6 @@ export default {
     }
   },
   created() {
-
   },
   mounted() {
     this.$nextTick(() => {
@@ -151,9 +153,7 @@ export default {
             type: 'binary'
           })
         }
-        console.log($t.wb.Sheets)
         const json = XLSX.utils.sheet_to_json($t.wb.Sheets[$t.wb.SheetNames[0]])
-        console.log(typeof json)
         $t.dealFile($t.analyzeData(json))
       }
       if (this.rABS) {
@@ -167,7 +167,6 @@ export default {
       return data
     },
     dealFile(data) {
-      console.log(data)
       this.imFile.value = null
       this.downloadLoading = false
       if (!data || !(data instanceof Array)) {
@@ -195,10 +194,16 @@ export default {
       if (isAccord) {
         return false
       }
-      const mapData = data.map(item => {
+      const mapData = [...new Set(data.map(item => {
         return item['用户手机号']
-      })
-      this.excelData = [...new Set(mapData)]
+      }))]
+      const numMin = Math.min(...(this.codeData.list.map(item => item.residualQuantityNum)))
+      if (mapData.length > numMin) {
+        this.importMessage = `导入失败：最小可发数量为${numMin}，您导入了${mapData.length}个用户`
+        this.$message.error(this.importMessage)
+        return false
+      }
+      this.excelData = mapData
       const diffLen = data.length - this.excelData.length
       this.importMessage = `成功导入${data.length}条数据，系统已自动去重${diffLen}条数据`
       this.$message.success(this.importMessage)
@@ -211,6 +216,19 @@ export default {
    .el-form-item {
      margin-bottom: 0;
    }
+  }
+  .coupon_box {
+    display: flex;
+    justify-content: space-between;
+    .couponName {
+      width: 300px;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+    .residualQuantityNum {
+      color: #f00;
+    }
   }
 </style>
 

@@ -7,6 +7,7 @@
     width="600px">
     <div class="voucherContent">
       <el-form
+        :disabled="voucherData.dialogtTitle === '查看'"
         size="small"
         :model="dataInfo" :rules="rules" ref="dataInfo" label-width="100px">
         <el-collapse v-model="voucherDialog.activeName" accordion>
@@ -59,6 +60,14 @@
             </el-form-item>
             <el-form-item size="small" label="起用金额" prop="fullMoney">
               <el-input v-model="dataInfo.fullMoney" placeholder="请输入起用金额" style="width: 220px;"></el-input>
+            </el-form-item>
+            <el-form-item size="small" label="起用租期" prop="monthNum">
+              <el-slider
+                v-model="dataInfo.monthNum"
+                :max="24"
+                :format-tooltip="formatTooltip"
+                show-input>
+              </el-slider>
             </el-form-item>
             <el-form-item label="城市" prop="cityIds">
               <el-radio-group v-model="cityType">
@@ -131,8 +140,8 @@
       </el-form>
     </div>
     <span slot="footer" class="dialog-footer">
-      <el-button size="small" @click="voucherDialog.show = false">取 消</el-button>
-      <el-button size="small" type="primary" @click="saveData">确 定</el-button>
+      <el-button size="small" @click="voucherDialog.show = false">{{voucherData.dialogtTitle === '查看' ? '关 闭' : '取消'}}</el-button>
+      <el-button v-if="voucherData.dialogtTitle !== '查看'" size="small" type="primary" @click="saveData">确 定</el-button>
     </span>
   </el-dialog>
 </template>
@@ -231,6 +240,9 @@ export default {
           { required: true, message: '请输入起用金额', trigger: 'blur', baseForm: 'limitInfo' },
           { validator: validateDeci, trigger: 'blur' }
         ],
+        // monthNum: [
+        //   { required: true, message: '请完善起用租期', trigger: 'blur', baseForm: 'limitInfo' }
+        // ],
         deductibleType: [
           { required: true, message: '请选择抵扣类型', trigger: 'blur', baseForm: 'limitInfo' }
         ],
@@ -284,7 +296,14 @@ export default {
     }
   },
   methods: {
+    formatTooltip(val) {
+      return `${val}个月`
+    },
     beforeCloseDialog(done) {
+      if (this.voucherData.dialogtTitle === '查看') {
+        done()
+        return false
+      }
       this.$confirm('您有信息未保存，确认退出？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',

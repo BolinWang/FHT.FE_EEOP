@@ -85,7 +85,7 @@
         <el-button
           type="primary"
           size="small"
-          @click="openDialog('addEditVoucher', '编辑', scope.row)">编辑</el-button>
+          @click="openDialog('addEditVoucher', '查看', scope.row)">查看</el-button>
         <el-button
           type="warning"
           size="small"
@@ -126,33 +126,10 @@ import GridUnit from '@/components/GridUnit/grid'
 import addEditVoucher from './components/addEditVoucher'
 import codeVoucher from './components/codeVoucher'
 import systemVoucher from './components/systemVoucher'
+import { pickerOptions } from '@/utils'
 
-const pickerOptions = {
-  shortcuts: [{
-    text: '最近一周',
-    onClick(picker) {
-      const end = new Date()
-      const start = new Date()
-      start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
-      picker.$emit('pick', [start, end])
-    }
-  }, {
-    text: '最近一个月',
-    onClick(picker) {
-      const end = new Date()
-      const start = new Date()
-      start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
-      picker.$emit('pick', [start, end])
-    }
-  }, {
-    text: '最近三个月',
-    onClick(picker) {
-      const end = new Date()
-      const start = new Date()
-      start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
-      picker.$emit('pick', [start, end])
-    }
-  }]
+const pickerOptionsObj = {
+  shortcuts: pickerOptions
 }
 
 export default {
@@ -170,7 +147,7 @@ export default {
     return {
       tableHeight: 300,
       dateTime: '',
-      pickerOptions,
+      pickerOptions: pickerOptionsObj,
       cityList: [],
       formData: {
         couponType: 1
@@ -191,6 +168,7 @@ export default {
         { prop: 'discountAmount', label: '面值', width: 100 },
         { prop: 'fullMoney', label: '起用金额', width: 100 },
         { prop: 'useRange', label: '抵扣类型', width: 100 },
+        { prop: 'residualQuantityNum', label: '剩余可发数量' },
         { prop: 'triggerTypeStr', label: '触发条件', width: 100 },
         { prop: 'status',
           label: '状态',
@@ -253,7 +231,7 @@ export default {
           return false
         }
       }
-      if (dialogtTitle === '编辑') {
+      if (dialogtTitle === '查看') {
         voucherManageApi.queryOneCouponInfo({
           couponId: data.id
         }).then(res => {
@@ -278,25 +256,32 @@ export default {
     doOpenDialog(type, dialogtTitle, data = {}) {
       this.voucherDialog[`detailData_${type}`] = type === 'systemVoucher' ? {
         dialogtTitle,
-        list: data.map(item => {
-          return {
-            id: item.id,
-            couponName: item.couponName
-          }
+        list: data.filter(item => {
+          return item.status !== 2 && item.residualQuantityNum * 1 > 0
         })
       } : {
         dialogtTitle,
         cityList: this.cityList,
         ...data
       }
-      this.$set(this.voucherDialog, `show_${type}`, true)
+      if (type === 'systemVoucher') {
+        this.$confirm(`已选择${this.voucherDialog[`detailData_${type}`].list.length}个抵扣券，请确认`, '提示', {
+          confirmButtonText: '已确认',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$set(this.voucherDialog, `show_${type}`, true)
+        }).catch()
+      } else {
+        this.$set(this.voucherDialog, `show_${type}`, true)
+      }
     },
     closeVoucher(type) {
       this.voucherDialog[`detailData_${type}`] = {}
       this.voucherDialog[`show_${type}`] = false
-      if (type === 'addEditVoucher') {
-        this.searchParam()
-      }
+      // if (type === 'addEditVoucher') {
+      //   this.searchParam()
+      // }
     },
 
     // 查询数据

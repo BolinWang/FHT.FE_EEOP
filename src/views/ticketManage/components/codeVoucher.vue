@@ -7,15 +7,15 @@
     <div class="voucherContent">
       <el-card class="box-card" shadow="hover">
         <div class="container_voucher">
-          <el-form size="small" ref="form" :model="codeData" label-width="80px">
+          <el-form size="small" ref="form" :model="codeData" label-width="110px">
             <el-form-item label="名称">
               <span>{{codeData.couponName}}</span>
             </el-form-item>
             <el-form-item label="面值">
               <span>{{codeData.discountAmount}}</span>
             </el-form-item>
-            <el-form-item label="发放总量">
-              <span>{{codeData.totalNum}}</span>
+            <el-form-item label="剩余可发数量">
+              <span>{{codeData.residualQuantityNum}}</span>
             </el-form-item>
           </el-form>
         </div>
@@ -69,8 +69,8 @@ export default {
       if (!Number.isInteger(value) || value < 0) {
         return callback(new Error('请输入正整数'))
       }
-      if (value > this.codeData.totalNum) {
-        return callback(new Error(`不能大于抵扣券发放总量：${this.codeData.totalNum}`))
+      if (value > this.codeData.residualQuantityNum) {
+        return callback(new Error(`不能大于抵扣券可发放数量：${this.codeData.residualQuantityNum}`))
       }
       callback()
     }
