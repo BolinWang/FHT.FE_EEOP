@@ -287,6 +287,7 @@ export default {
       ...this.voucherData
     })
     this.$set(this.dataInfo, 'cityIds', cityIds)
+    this.$set(this.dataInfo, 'monthNum', this.dataInfo.monthNum * 1)
     this.$set(this.dataInfo, 'housingType', this.voucherData.housingType || [])
     this.$set(this.dataInfo, 'effectiveDate', this.voucherData.effectiveDate || {})
     this.$set(this.dataInfo, 'expirationDate', this.voucherData.expirationDate || {})
@@ -340,7 +341,8 @@ export default {
               ...this.dataInfo.effectiveDate,
               fixedDate: this.dataInfo.effectiveDate.type === 2 ? this.dataInfo.effectiveDate.fixedDate : undefined
             }),
-            cityList: undefined
+            cityList: undefined,
+            monthNum: this.dataInfo.monthNum + ''
           })).then(res => {
             this.$message.success('保存成功')
             this.emitEventHandler('closeVoucher', 'addEditVoucher')
