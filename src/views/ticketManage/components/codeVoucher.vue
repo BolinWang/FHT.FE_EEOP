@@ -117,7 +117,7 @@ export default {
     },
     closeDialog() {
       this.$refs['codeForm'].clearValidate()
-      this.emitEventHandler('closeVoucher', 'codeVoucher')
+      this.emitEventHandler('closeVoucher', 'codeVoucher', true)
     },
     emitEventHandler(event) {
       this.$emit(event, ...Array.from(arguments).slice(1))

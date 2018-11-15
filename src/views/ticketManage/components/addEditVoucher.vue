@@ -345,7 +345,7 @@ export default {
             monthNum: this.dataInfo.monthNum + ''
           })).then(res => {
             this.$message.success('保存成功')
-            this.emitEventHandler('closeVoucher', 'addEditVoucher')
+            this.emitEventHandler('closeVoucher', 'addEditVoucher', true)
           })
         } else {
           this.$message.error('您还有信息未完善~')

@@ -103,19 +103,19 @@
       ref="addEditVoucher"
       :voucherData="voucherDialog.detailData_addEditVoucher"
       v-if="voucherDialog.show_addEditVoucher"
-      @closeVoucher="closeVoucher('addEditVoucher')">
+      @closeVoucher="closeVoucher">
     </add-edit-voucher>
     <code-voucher
       ref="codeVoucher"
       :codeData="voucherDialog.detailData_codeVoucher"
       v-if="voucherDialog.show_codeVoucher"
-      @closeVoucher="closeVoucher('codeVoucher')">
+      @closeVoucher="closeVoucher">
     </code-voucher>
     <system-voucher
       ref="systemVoucher"
       :codeData="voucherDialog.detailData_systemVoucher"
       v-if="voucherDialog.show_systemVoucher"
-      @closeVoucher="closeVoucher('systemVoucher')">
+      @closeVoucher="closeVoucher">
     </system-voucher>
   </div>
 </template>
@@ -276,10 +276,12 @@ export default {
         this.$set(this.voucherDialog, `show_${type}`, true)
       }
     },
-    closeVoucher(type) {
+    closeVoucher(type, isRefresh) {
       this.voucherDialog[`detailData_${type}`] = {}
       this.voucherDialog[`show_${type}`] = false
-      this.searchParam()
+      if (isRefresh) {
+        this.searchParam()
+      }
     },
 
     // 查询数据

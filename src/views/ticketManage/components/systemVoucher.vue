@@ -123,7 +123,7 @@ export default {
         } else {
           this.$message.success('抵扣券发放成功')
         }
-        this.emitEventHandler('closeVoucher', 'systemVoucher')
+        this.emitEventHandler('closeVoucher', 'systemVoucher', true)
       })
     },
     // 数据导入
