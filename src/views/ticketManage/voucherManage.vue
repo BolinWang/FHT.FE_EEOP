@@ -77,7 +77,7 @@
       :showSelection="true"
       @selection-change="handleSelectionChange"
       :form-options="formData">
-      <el-table-column slot="selection" type="selection">
+      <el-table-column slot="selection" type="selection" :selectable="selectable">
       </el-table-column>
       <template
         slot="handle"
@@ -317,6 +317,9 @@ export default {
         this.$message.success(`${row.status === 1 ? '停用' : '启用'}成功`)
         this.searchParam()
       })
+    },
+    selectable(row, index) {
+      return row.status !== 2 && row.residualQuantityNum > 0
     }
   }
 }
