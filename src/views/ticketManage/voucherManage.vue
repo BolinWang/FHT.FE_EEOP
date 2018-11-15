@@ -279,9 +279,7 @@ export default {
     closeVoucher(type) {
       this.voucherDialog[`detailData_${type}`] = {}
       this.voucherDialog[`show_${type}`] = false
-      // if (type === 'addEditVoucher') {
-      //   this.searchParam()
-      // }
+      this.searchParam()
     },
 
     // 查询数据
