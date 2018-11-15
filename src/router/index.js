@@ -158,28 +158,28 @@ export const asyncRouterMap = [
       }
     ]
   },
-  {
-    path: '/ticketManage',
-    component: Layout,
-    redirect: 'noredirect',
-    name: '优惠券管理',
-    icon: 'icon_tickets',
-    meta: {
-      role: ['admin', 'global']
-    },
-    children: [
-      {
-        path: '',
-        component: _import('ticketManage/voucherManage'),
-        name: '抵扣券管理'
-      },
-      {
-        path: 'voucherRecord',
-        component: _import('ticketManage/voucherRecord'),
-        name: '抵扣券记录'
-      }
-    ]
-  },
+  // {
+  //   path: '/ticketManage',
+  //   component: Layout,
+  //   redirect: 'noredirect',
+  //   name: '优惠券管理',
+  //   icon: 'icon_tickets',
+  //   meta: {
+  //     role: ['admin', 'global']
+  //   },
+  //   children: [
+  //     {
+  //       path: '',
+  //       component: _import('ticketManage/voucherManage'),
+  //       name: '抵扣券管理'
+  //     },
+  //     {
+  //       path: 'voucherRecord',
+  //       component: _import('ticketManage/voucherRecord'),
+  //       name: '抵扣券记录'
+  //     }
+  //   ]
+  // },
   {
     path: '/auditManage',
     component: Layout,
