@@ -265,7 +265,7 @@ export default {
         ...data
       }
       if (type === 'systemVoucher') {
-        this.$confirm(`已选择${this.voucherDialog[`detailData_${type}`].list.length}个抵扣券，请确认`, '提示', {
+        this.$confirm(`已选择${this.voucherDialog[`detailData_${type}`].list.length}个符合条件的抵扣券，请确认`, '提示', {
           confirmButtonText: '已确认',
           cancelButtonText: '取消',
           type: 'warning'
