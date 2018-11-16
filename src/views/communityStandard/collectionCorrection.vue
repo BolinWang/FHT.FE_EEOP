@@ -294,7 +294,7 @@ export default {
         fillColor: '#000000', // 填充色
         fillOpacity: 0.35// 填充透明度
       })
-      // this.map.setFitView() //自适应地图大小
+      // this.map.setFitView() //自适应地图
     }
   }
 
