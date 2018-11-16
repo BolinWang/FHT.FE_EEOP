@@ -7,7 +7,7 @@
 <template>
   <div class="container" v-loading="loading">
      <div class="label-box">
-        <span class='text'>未处理小区 {{count}}</span>
+        <span class='text'>未处理小区14c {{count}}</span>
         <span class="circle orange"></span>
         <span class="text">认证小区</span>
         <span class="circle blue"></span>
