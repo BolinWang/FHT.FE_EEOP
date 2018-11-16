@@ -2,10 +2,10 @@
  * @Author: ghost 
  * @Date: 2018-11-12 14:17:21 
  * @Last Modified by: ghost
- * @Last Modified time: 2018-11-14 18:34:50
+ * @Last Modified time: 2018-11-16 15:08:07
  */
 <template>
-  <div class="container">
+  <div class="container" v-loading="loading">
      <div class="label-box">
         <span class='text'>未处理小区 {{count}}</span>
         <span class="circle orange"></span>
@@ -35,7 +35,7 @@
          </el-form-item>
        </el-form>
        <div class="scroll-list">
-         <el-tabs class="tab-box" v-model="communitySearchForm.status" @tab-click="handleStatusClick">
+         <el-tabs class="tab-box" v-model="statusNow" @tab-click="handleStatusClick">
            <el-tab-pane 
              :key="index"
              v-for="(instatusItem,index) in statusList" 
@@ -44,22 +44,33 @@
           </el-tab-pane>
          </el-tabs>
          <div class="scroll" :style="scrollHeight">
-           <div class="box-none" v-if="checkList.length<=0">暂无小区数据，请先选择城市</div>
-           <el-checkbox-group  v-model="checkList" v-else>
-            <div class="scrollItem blue" @click="goMapCenter(item)">
+           <div class="box-none" v-if="communityList.length<=0">暂无小区数据，请先选择城市</div>
+           <el-checkbox-group class="scoll-checklist"  v-model="checkList" v-else>
+            <div class="scrollItem blue"
+              :class="statusNow==='1'?'bule':'orange'"
+              v-for='(communityListItem,index) in communityList' 
+              :key='index'
+              @click="goMapCenter(communityListItem)">
               <div class="checkbox">
-                <el-checkbox>
-                  <div class="name">翠苑一区</div>
-                  <div class="cityName">杭州市/西湖区/学院路213号</div>
+                <el-checkbox :disabled="statusNow!=='1'" :label="communityListItem.communityId">
+                  <div class="name">
+                    <span>{{communityListItem.name}}</span>
+                    <span class="text-btn">{{communityListItem.organizationId===0?'':'自'}}</span>
+                    <span class="text-btn">{{communityListItem.status|mapStatus}}</span>
+                    <span class="text-btn" v-if="communityListItem.status===3" @click="ignoreCommunity(false)">恢复忽略</span>
+                  </div>
+                  <el-tooltip class="item" effect="dark" :content="communityListItem.address" placement="top-start">
+                    <div class="cityName">{{communityListItem.address}}</div>
+                  </el-tooltip>
                 </el-checkbox>
               </div>
             </div>
            </el-checkbox-group> 
          </div>
          <div class="btn-box">
-           <el-button size="mini" type="primary" :disabled="communitySearchForm.status!=='1'">更正小区</el-button>
-           <el-button size="mini" type="primary" :disabled="communitySearchForm.status!=='1'">忽略小区</el-button>
-           <el-button size="mini" plain :disabled="communitySearchForm.status!=='1'">取消选择</el-button>
+           <el-button size="mini" type="primary" :disabled="communitySearchForm.status!==1&&checkList.length>0">更正小区</el-button>
+           <el-button size="mini" @click='ignoreCommunity(true)' type="primary" :disabled="communitySearchForm.status!==1&&checkList.length>0">忽略小区</el-button>
+           <el-button size="mini" @click="removeCheck" plain :disabled="communitySearchForm.status!==1">取消选择</el-button>
          </div>
        </div>
      </div>
@@ -67,18 +78,27 @@
    
   </div>
 </template>
+
 <script>
 import areaSelect from '@/components/AreaSelect'
 import { debounce } from '@/utils'
-import { communityPagelistApi } from '@/api/communityStandard'
+import { communityPagelistApi, queryUntreatedNumtApi, saveIgnoreApi } from '@/api/communityStandard'
+const imageHtp = {
+  '1': 'https://fh-mjgy-test.oss-cn-hangzhou.aliyuncs.com/blue.png',
+  '2': 'https://fh-mjgy-test.oss-cn-hangzhou.aliyuncs.com/orange.png',
+  '3': 'https://fh-mjgy-test.oss-cn-hangzhou.aliyuncs.com/green.png'
+}
+
 export default {
   data() {
     return {
       map: null,
+      loading: false,
       nowCenter: [],
-      searchListForm: {},
       count: '?',
+      markers: [],
       tableHeight: '500px',
+      communityList: [],
       statusList: [
         {
           label: '未处理小区',
@@ -98,11 +118,14 @@ export default {
           value: 2
         }
       ],
+      statusNow: '1',
       communitySearchForm: {
         address: ['330000', '330100'],
         sort: 1,
         displayIgnore: false,
-        status: '1'
+        status: 1,
+        pageNo: 1,
+        pageSize: 30
       }
     }
   },
@@ -110,11 +133,15 @@ export default {
     areaSelect
   },
   filters: {
-    mapStatus: {
-      '1': '',
-      '2': '',
-      '3': ''
+    mapStatus(val) {
+      const statusMap = {
+        1: '',
+        2: '认证',
+        3: '忽略'
+      }
+      return statusMap[val]
     }
+
   },
   computed: {
     mapHeight: function() {
@@ -131,7 +158,6 @@ export default {
   watch: {
     communitySearchForm: {
       handler(newValue, oldValue) {
-        console.log(newValue.address)
         if (newValue.address.length >= 2) {
           this.searchList()
         }
@@ -148,43 +174,105 @@ export default {
       changeTableSize()
     })
     window.addEventListener('resize', changeTableSize)
+
     this.initBMap()
-    this.logMapinfo()
     this.searchList()
   },
-  methods: {
-    goMapCenter() {
-      const item = {
 
+  methods: {
+
+    removeCheck() { // 取消选择
+      this.checkList = []
+    },
+    ignoreCommunity(beal) { // 忽略小区
+      const param = {
+        ids: this.checkList,
+        ignored: beal
       }
-      this.map.setZoomAndCenter(14, item.data.location.split(','))
+      saveIgnoreApi(param).then(res => {
+        this.$message.success('操作成功')
+        this.searchList()
+      })
+    },
+    searchUntreatedNum() {
+      queryUntreatedNumtApi({ address: this.communitySearchForm.address }).then(res => {
+        this.count = res.data || '?'
+      })
+    },
+    goMapCenter(item) {
+      item.gaodeLongitude !== null && item.gaodeLatitude !== null ? this.showMapCenter(item) : this.showNoLongLati()
+    },
+    showMapCenter(item) {
+      this.map.setZoomAndCenter(16, [item.gaodeLongitude, item.gaodeLatitude])
       const markerDia = new AMap.Marker({ // 添加聚合点
         map: this.map,
         icon: new AMap.Icon({
-          image: item.status === true ? '//webapi.amap.com/theme/v1.2/m3.png' : '//webapi.amap.com/theme/v1.2/m1.png',
+          image: imageHtp[item.status],
           imageSize: new AMap.Size(24, 24)
         }),
         offset: new AMap.Pixel(-26, -13),
-        position: item.data.location.split(',')
+        position: [item.gaodeLongitude, item.gaodeLatitude]
       })
       markerDia.info = new AMap.InfoWindow({
-        content: `<div class="content-amap">
-                       <div class='info'></div>
-                       <div class='info'>工作状态：${item === true ? '工作中' : '休息'}</div>
-                       <div class='info'>时间:</div>
-                      </div>`,
+        content: `<div class="content-amap" >
+                    <input onclick="go()" class='editGo' type="button" class="btn" value='编辑小区' />
+                    <div class='info'>${item.name}</div>
+                    <div class='info' >${item.address}</div>
+                  </div>`,
         offset: new AMap.Pixel(0, 0)
       })
-      markerDia.info.open(this.map, item.data.location.split(','))
+      markerDia.info.open(this.map, [item.gaodeLongitude, item.gaodeLatitude])
       this.addClickHandler(item, markerDia)
     },
-    handleStatusClick() {
-
+    showNoLongLati() {
+      this.$message.error('数据库告诉我 ，这个小区没坐标！')
     },
-    searchList() {
-      communityPagelistApi(this.communitySearchForm).then(res => {
-        console.log(res)
+    addClickHandler(item, markerDia) { // 聚合点点击事件
+      const self = this
+      markerDia.on('mouseover', function(e) {
+        e.target.info.open(self.map, [item.gaodeLongitude, item.gaodeLatitude])
       })
+    },
+    handleStatusClick() {
+      this.communitySearchForm.status = this.statusNow * 1
+    },
+    searchList() { // 开始搜索
+      this.map.remove(this.markers)
+      this.markers = []
+      this.loading = true
+      this.searchUntreatedNum()
+      communityPagelistApi(this.communitySearchForm).then(res => {
+        this.communityList = res.data.result
+        this.communityList.forEach(item => {
+          if (item.gaodeLongitude !== null && item.gaodeLatitude !== null) {
+            const markerDia = new AMap.Marker({ // 添加聚合点
+              map: this.map,
+              icon: new AMap.Icon({
+                image: imageHtp[item.status],
+                imageSize: new AMap.Size(24, 24)
+              }),
+              offset: new AMap.Pixel(-26, -13),
+              position: [item.gaodeLongitude, item.gaodeLatitude]
+            })
+            markerDia.info = new AMap.InfoWindow({
+              content: `<div class="content-amap">
+                       <div class='info'>${item.name}</div>
+                       <div class='info'>${item.address}</div>
+                      </div>`,
+              offset: new AMap.Pixel(0, 0)
+            })
+            this.markers.push(markerDia)
+            this.addClickHandler(item, markerDia)
+          }
+        })
+        this.logMapinfo()
+        this.$nextTick(res => {
+          this.loading = false
+        })
+      })
+    },
+    goEdit() {
+      alert('12')
     },
     initBMap() {
       /* global AMap */
@@ -194,8 +282,7 @@ export default {
     },
     logMapinfo() {
     // var zoom = this.map.getZoom() // 获取当前地图级别
-      var center = this.map.getCenter() // 获取当前地图级别
-      console.log(center)
+      const center = this.map.getCenter() // 获取当前地图级别
       this.nowCenter = center.toString().split(',')
       new AMap.Circle({
         map: this.map,
@@ -207,16 +294,44 @@ export default {
         fillColor: '#000000', // 填充色
         fillOpacity: 0.35// 填充透明度
       })
-      // this.map.setFitView()
+      // this.map.setFitView() //自适应地图大小
     }
   }
 
 }
 </script>
+<style>
+ .editGo{
+    position: absolute;
+    top: -3px;
+    border: 1px solid #ffd382;
+    color: #f9b331;
+    right: 3px;
+    font-size: 12px;
+    height: 20px;
+    line-height: 16px;
+  }
+  .content-amap{
+    position: relative;
+  }
+</style>
+
 <style lang="scss" scoped>
+  
   .container{
     padding: 15px;
     position: relative;
+    
+    .scoll-checklist{
+      flex:1;
+      overflow: auto;
+    }
+    .cityName{
+      overflow: hidden;
+      text-overflow:ellipsis;
+      white-space: nowrap;
+      max-width: 230px;
+    }
     .map{
       box-shadow: 2px 2px 2px #6d7777;
     }
@@ -238,7 +353,7 @@ export default {
       border-radius: 4px;
     }
     .scroll{
-      overflow: hidden;
+      overflow: auto;
       background: #fff;
       padding:0 10px;
       display: flex;

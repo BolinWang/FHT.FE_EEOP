@@ -1,8 +1,8 @@
 /*
  * @Author: FT.FE.Bolin
  * @Date: 2018-11-05 10:52:42
- * @Last Modified by: FT.FE.Bolin
- * @Last Modified time: 2018-11-08 18:10:19
+ * @Last Modified by: ghost
+ * @Last Modified time: 2018-11-14 20:25:00
  */
 const dataList = [
   {
@@ -98,6 +98,7 @@ export const voucherRecordApi = {
       'totalElements': recordList.length,
       'size': pageSize
     }
+    console.log(config)
     const resData = recordList.slice((pageNo - 1) * pageSize, pageNo * pageSize)
     return {
       code: '0',
