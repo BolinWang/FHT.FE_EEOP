@@ -19,7 +19,7 @@
           size="small" v-model="formData.triggerType" placeholder="触发类型"
           class="filter-item" style="width: 150px;" clearable filterable>
           <el-option label="无" value="无"></el-option>
-          <el-option label="注册" value="注册"></el-option>
+          <el-option disabled label="注册" value="注册"></el-option>
         </el-select>
         <el-select
           size="small" v-model="formData.status" placeholder="抵扣券状态"

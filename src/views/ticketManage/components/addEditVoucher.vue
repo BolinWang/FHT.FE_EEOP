@@ -33,7 +33,7 @@
                 <el-select
                   v-model="dataInfo.triggerType" placeholder="请选择触发条件" clearable style="width: 100%;">
                   <el-option label="无" value="无"></el-option>
-                  <el-option label="注册" value="注册"></el-option>
+                  <el-option disabled label="注册" value="注册"></el-option>
                 </el-select>
               </el-form-item>
               <el-form-item label="备注" prop="remark">
