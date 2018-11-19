@@ -7,7 +7,7 @@
 <template>
   <div class="container" v-loading="loading">
      <div class="label-box">
-        <span class='text'>未处理小区14c {{count}}</span>
+        <span class='text'>未处理小区 {{count}}</span>
         <span class="circle orange"></span>
         <span class="text">认证小区</span>
         <span class="circle blue"></span>
@@ -74,8 +74,43 @@
          </div>
        </div>
      </div>
-    <div class="map"  :style='mapHeight' id='bm-view'></div>
-   
+     <div class="map"  :style='mapHeight' id='bm-view'></div>
+     <!-- 更正小区 -->
+     <el-dialog
+        title="提示"
+        :visible.sync="dialogShow"
+        width="30%">
+        <span>  {{showDetail}}</span>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="dialogShow = false">取 消</el-button>
+          <el-button type="primary" @click="dialogShow = false">确 定</el-button>
+        </span>
+      </el-dialog>
+      <!-- 编辑小区地址 -->
+      <el-dialog
+        title="编辑小区地址"
+        :visible.sync="dialogShowEdit"
+        width="30%"
+        :before-close="handleClose">
+        <el-form :model="formEdit" label-width='110px'>
+          <el-form-item label="当前城市" >
+            <el-input v-model="form.name" autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="小区名称" >
+            <el-input v-model="form.name" autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="所在区域" >
+            <el-input v-model="form.name" autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="具体地址" >
+            <el-input v-model="form.name" autocomplete="off"></el-input>
+          </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="dialogShow = false">取 消</el-button>
+          <el-button type="primary" @click="dialogShow = false">确 定</el-button>
+        </span>
+      </el-dialog>
   </div>
 </template>
 
@@ -88,17 +123,24 @@ const imageHtp = {
   '2': 'https://fh-mjgy-test.oss-cn-hangzhou.aliyuncs.com/orange.png',
   '3': 'https://fh-mjgy-test.oss-cn-hangzhou.aliyuncs.com/green.png'
 }
-
+const showDetailList = {
+  '1': `缺认将此小区标记未<span class='red'>认证小区</span>吗？确认后，已选择要更正的小区会被合并至此小区`,
+  '2': '请确认小区信息，确认后已选择要更正的小区会被合并至此小区'
+}
 export default {
   data() {
     return {
+      dialogShow: false,
+      dialogShowEdit: false,
       map: null,
       loading: false,
       nowCenter: [],
+      nowListItem: '',
       count: '?',
       markers: [],
       tableHeight: '500px',
       communityList: [],
+      showDetail: showDetailList,
       statusList: [
         {
           label: '未处理小区',
@@ -169,18 +211,20 @@ export default {
     const changeTableSize = debounce(() => {
       this.tableHeight = Math.max(document.body.clientHeight - 100, 250)
     }, 100)
-
+    window.goOpen = (res) => {
+    }
     this.$nextTick(() => {
       changeTableSize()
     })
     window.addEventListener('resize', changeTableSize)
-
     this.initBMap()
     this.searchList()
   },
 
   methods: {
+    handleClose() {
 
+    },
     removeCheck() { // 取消选择
       this.checkList = []
     },
@@ -196,7 +240,7 @@ export default {
     },
     searchUntreatedNum() {
       queryUntreatedNumtApi({ address: this.communitySearchForm.address }).then(res => {
-        this.count = res.data || '?'
+        this.count = res.data
       })
     },
     goMapCenter(item) {
@@ -215,7 +259,7 @@ export default {
       })
       markerDia.info = new AMap.InfoWindow({
         content: `<div class="content-amap" >
-                    <input onclick="go()" class='editGo' type="button" class="btn" value='编辑小区' />
+                    <input onclick="goOpen()" class='editGo' type="button" class="btn" value='编辑小区' />
                     <div class='info'>${item.name}</div>
                     <div class='info' >${item.address}</div>
                   </div>`,
@@ -231,6 +275,7 @@ export default {
       const self = this
       markerDia.on('mouseover', function(e) {
         e.target.info.open(self.map, [item.gaodeLongitude, item.gaodeLatitude])
+        self.nowListItem = item
       })
     },
     handleStatusClick() {
@@ -271,9 +316,6 @@ export default {
         })
       })
     },
-    goEdit() {
-      alert('12')
-    },
     initBMap() {
       /* global AMap */
       this.map = new AMap.Map('bm-view', {
@@ -313,6 +355,7 @@ export default {
   }
   .content-amap{
     position: relative;
+    min-width: 200px;
   }
 </style>
 
@@ -441,7 +484,10 @@ export default {
   .checkbox .el-checkbox {
     display: flex;
     align-items: center;
-}
+  }
+  .red{
+    color: #c51919;
+  }
 </style>
 
 
